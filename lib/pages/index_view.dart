@@ -10,16 +10,21 @@ class IndexView extends GetView<IndexController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("主状态栏")),
-      body: controller.pages[controller.currentIndex.value],
-      bottomNavigationBar: _bottomNavIgationBar(),
+      // 使用GetPageView来管理页面切换
+      body:  Obx(() => IndexedStack(
+        index: controller.currentIndex.value,
+        children: controller.pages,
+      )),
+      bottomNavigationBar: _bottomNavigationBar(),
     );
   }
 
-  Widget _bottomNavIgationBar() => Obx(
-    () => BottomNavigationBar(
-      onTap: (i){
+  Widget _bottomNavigationBar() => Obx(
+        () => BottomNavigationBar(
+      onTap: (i) {
         controller.currentIndex.value = i;
-        Utils.logError("i");
+        // 切换GetPageView的索引
+        Utils.logError("切换到页面: $i");
       },
       currentIndex: controller.currentIndex.value,
       items: const [
