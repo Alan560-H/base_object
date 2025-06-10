@@ -267,6 +267,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_unionad:
+    dependency: transitive
+    description:
+      name: flutter_unionad
+      sha256: eb68ef24ecc66745f5041a691a079e1b4c6746cd264965d50c357a01f8ad3154
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.9"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -304,6 +312,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.3.2"
+  gtads:
+    dependency: "direct main"
+    description:
+      name: gtads
+      sha256: "26b564e5ad525fb9ef13fd4a945d92bc699d75aa64f095723ad88a597d962923"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.5.0"
+  gtads_csj:
+    dependency: "direct main"
+    description:
+      name: gtads_csj
+      sha256: f0ec7ff51c7d60655ae95eb36f73d100ee5070bb87cc3f122e1301e5d2e14b16
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.5.7"
   http:
     dependency: transitive
     description:

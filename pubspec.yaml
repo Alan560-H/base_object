@@ -49,7 +49,12 @@ dependencies:
   logger: ^2.5.0
   #loading 组件
   flutter_easyloading: ^3.0.5
+  #屏幕适配
   flutter_screenutil: ^5.9.3
+  #广告插件
+  gtads: ^1.5.0
+  #穿山甲广告支持
+  gtads_csj: ^1.5.7
 
 dev_dependencies:
   flutter_test:
