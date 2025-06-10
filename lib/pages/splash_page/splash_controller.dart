@@ -10,12 +10,13 @@ import 'package:gtads/gtads.dart';
 class SplashController extends GetxController {
   final loading = true.obs;
   void _init() async {
-    Utils.logError("initPage:");
-    //isDebug 是否开启debug日志
+    Utils.logError("初始化前:");
+    // //isDebug 是否开启debug日志
     GTAds.addProviders(AppAdConfig.providers);
     var a = await GTAds.init(isDebug: true);
     loading.value = false;
-    Utils.logError("initPage:$a");
+    Utils.logError("初始化后$a");
+
   }
   @override
   void onInit() {

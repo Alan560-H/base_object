@@ -13,10 +13,8 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      controller.loading.value?Center(child:
-      // CircularProgressIndicator(color: Colors.white,),
-        Text(controller.loading.value.toString())
+      body:Obx(()=> controller.loading.value?Center(child:
+      CircularProgressIndicator(color: Colors.white,),
       ):
       GTAdsSplashWidget(
         //需要的广告位组
@@ -50,9 +48,12 @@ class SplashView extends GetView<SplashController> {
           },
           onEnd: () {
             Utils.logError("onEnd");
+            Get.offAllNamed(AppRoutes.root);
+
           },
         ),
-      ),
+      ))
+     ,
     );
   }
 
