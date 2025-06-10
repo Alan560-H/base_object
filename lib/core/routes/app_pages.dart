@@ -6,12 +6,19 @@ import 'package:base_object/pages/home/sub_page/box_details/details_binding.dart
 import 'package:base_object/pages/home/sub_page/box_details/details_view.dart';
 import 'package:base_object/pages/index_binding.dart';
 import 'package:base_object/pages/index_view.dart';
+import 'package:base_object/pages/splash_page/splash_binding.dart';
+import 'package:base_object/pages/splash_page/splash_view.dart';
 import 'package:base_object/pages/user/user_binding.dart';
 import 'package:base_object/pages/user/user_view.dart';
 import 'package:get/get.dart';
 
 class AppPages {
   static final routes = [
+    GetPage(
+      name: AppRoutes.splashPage,
+      page: () => SplashView(),
+      binding: SplashBinding(),// 首页的依赖注入
+    ),
     GetPage(
       name: AppRoutes.root,
       page: () => IndexView(),

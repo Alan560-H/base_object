@@ -7,29 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtads/gtads.dart';
 
-class IndexController extends GetxController {
-  // 底部菜单索引
-  final currentIndex = 0.obs;
-  // 模块页面
-  final List<Navigator> pages = [
-    Navigator(
-      onGenerateRoute: (settings)=>MaterialPageRoute(builder: (_)=>HomeView()),
-    ),
-    Navigator(
-      onGenerateRoute: (settings)=>MaterialPageRoute(builder: (_)=>UserView()),
-    ),
-  ];
+class SplashController extends GetxController {
+  final loading = true.obs;
   void _init() async {
+    Utils.logError("initPage:");
     //isDebug 是否开启debug日志
     GTAds.addProviders(AppAdConfig.providers);
-    await GTAds.init(isDebug: true);
+    var a = await GTAds.init(isDebug: true);
+    loading.value = false;
+    Utils.logError("initPage:$a");
   }
   @override
   void onInit() {
     // TODO: implement onInit
-    Utils.logError("initPage");
-    _init();
+
     super.onInit();
+    _init();
   }
 
 }

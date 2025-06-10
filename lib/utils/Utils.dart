@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 
@@ -47,7 +48,15 @@ class Utils {
       }) {
     _logger.e(message, error: error, stackTrace: stackTrace);
   }
+// 获取屏幕宽度
+  static double getScreenWidth(BuildContext context) {
+    return MediaQuery.of(context).size.width;
+  }
 
+  // 获取屏幕高度
+  static double getScreenHeight(BuildContext context) {
+    return MediaQuery.of(context).size.height;
+  }
 
   /// 复制文本到剪切板
   static copyText(String? str) async {
