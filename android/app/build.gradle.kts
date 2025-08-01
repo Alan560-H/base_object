@@ -24,7 +24,7 @@ android {
         applicationId = "com.example.base_object"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-//        minSdk = flutter.minSdkVersion
+        minSdk = flutter.minSdkVersion
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
 
@@ -32,6 +32,9 @@ android {
         versionName = flutter.versionName
         // 添加默认的渠道信息
         manifestPlaceholders["channel"] = "default"
+        ndk {
+            abiFilters.add("arm64-v8a")
+        }
     }
     flavorDimensions("channel") // 配置渠道维度，这里使用括号的形式
     productFlavors {

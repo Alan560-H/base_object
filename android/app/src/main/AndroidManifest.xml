@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 检查wifi网络状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 检查网络状态 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- 允许修改网络状态 -->
     <application
         android:label="base_object"
         android:name="${applicationName}"
@@ -12,6 +15,10 @@
         tools:replace="android:label,android:allowBackup"
         android:allowBackup="true"
         >
+        <!-- 添加渠道信息的 meta-data -->
+        <meta-data
+            android:name="CHANNEL"
+            android:value="${channel}" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -33,7 +40,35 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Deep Link sample -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.ruyimh" android:host="paymentCallback" />
+            </intent-filter>
         </activity>
+        <activity
+            android:name="com.mobile.auth.gatewayauth.LoginAuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind"
+            android:theme="@style/authsdk_activity_dialog" /> //仅在弹窗模式下配置，全屏模式无需配置
+        //如使用自定义协议页跳转协议(即setProtocolAction)则不需注册该界面
+        <activity            android:name="com.mobile.auth.gatewayauth.activity.AuthWebVeiwActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind" />
+        //如果需要使用二次弹窗功能则添加该注册
+        <activity
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:name="com.mobile.auth.gatewayauth.PrivacyDialogActivity"
+            android:screenOrientation="behind"
+            android:theme="@style/authsdk_activity_dialog"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
