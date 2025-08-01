@@ -75,10 +75,14 @@ return Obx(() {
     child: MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
       child: GetMaterialApp(
-          localizationsDelegates: const [
-            _ChineseLocalizationsDelegate(),
+          locale: const Locale('zh', 'CN'), // 默认中文
+          fallbackLocale: const Locale('zh', 'CN'), //  fallback 语言
+          localizationsDelegates: [
             DefaultWidgetsLocalizations.delegate,
-            DefaultMaterialLocalizations.delegate,
+            DefaultWidgetsLocalizations.delegate,
+            DefaultWidgetsLocalizations.delegate,
+            // 保留自定义代理以覆盖特定文案
+            _ChineseLocalizationsDelegate(),
           ],
 
           // 导航唯一键

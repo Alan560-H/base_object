@@ -10,8 +10,16 @@ class UserInfo extends GetxController{
   /// 获取单例
   static UserInfo get instance => Get.find();
   final Rx<UserModel> _userModel = UserModel().obs;
-  /// 获取登录状态
-  bool get isLoginIn => userModel.userId>0;
+  /// 优化登录状态判断：同时验证 userId 和 token
+  bool get isLoginIn {
+    // 1. 基础判断：userId 有效
+    final hasValidUserId = userModel.userId > 0;
+    // 2. 补充判断：token 存在（内存中）
+    final hasToken = _token.isNotEmpty;
+
+    // 两者同时满足才视为登录状态有效
+    return hasValidUserId && hasToken;
+  }
   /// 获取余额
   double get yuE => userModel.mallAmount;
   /// 判断是不是模拟战用户
@@ -24,6 +32,25 @@ class UserInfo extends GetxController{
       return UserModel(); // 返回默认实例
     }
   }
+  String _token = "";
+
+  /// 设置token
+  void setToken(String value){
+    _token = value;
+    LocalStorage.setString(AppKeys.tokenName,value);
+  }
+  /// 获取token
+  Future<String> get getToken async {
+    // 优先从内存中获取（如果已缓存）
+    if (_token.isNotEmpty) {
+      return _token;
+    }
+    // 内存中没有则从本地存储读取，并更新内存缓存
+    final token = await LocalStorage.getString(AppKeys.tokenName);
+    _token = token ?? "";
+    return _token;
+  }
+
   /// 重置为默认用户数据
   void initUserInfo() => updateUserModel(UserModel());
   /// 标记是否已经初始化
@@ -71,5 +98,6 @@ class UserInfo extends GetxController{
   void loginOut(){
     initUserInfo();
     LocalStorage.removeString(AppKeys.userKey);
+    setToken('');
   }
 }

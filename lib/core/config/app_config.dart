@@ -1,7 +1,10 @@
+import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 
 class AppConfig extends GetxController{
   static AppConfig get instance => Get.find();
+
   /// 获取图片地址
   String get getImgUrl => "https://file.ruyicult.com";
   /// 获取wx_appid
@@ -22,6 +25,8 @@ class AppConfig extends GetxController{
   /// 公开访问的getter
   String get baseUrl => _baseUrl;
   String get socketUrl => _socketUrl;
+
+
 
   // 初始化配置
   void init() {
