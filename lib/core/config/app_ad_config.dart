@@ -5,6 +5,9 @@ class AppAdConfig extends GetxController{
   static const String appidStr = 'a67ffbeaf8b5a4';
   static const String appidkeyStr = 'a3911589a2b20fa5db32104d853988590';
   /// 横幅 id
+  static const String splashID = 'b1gdmis7usssq4';
+  static const String splashSceneID = 'b1gdmis7usssq4';
+  /// 横幅 id
   static const String bannerPlacementID = 'b6831641581cde';
   static const String bannerSceneID = 'b6831641581cde';
   /// 插屏id

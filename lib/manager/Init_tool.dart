@@ -94,10 +94,16 @@ class InitTool extends GetxService {
     });
   }
 
-  initTopon() async {
-    await ATInitManger.initAnyThinkSDK(
-        appidStr: AppAdConfig.appidStr,
-        appidkeyStr: AppAdConfig.appidkeyStr);
+  Future<bool>initTopon() async {
+    try{
+      await ATInitManger.initAnyThinkSDK(
+          appidStr: AppAdConfig.appidStr,
+          appidkeyStr: AppAdConfig.appidkeyStr);
+      return true;
+    }catch(e){
+      Utils.logError('flutter：初始化Topon失败 $e'); // 原"End of initialization"→"初始化Topon失败"
+      return false;
+    }
   }
 
   showGDPRAuth() async {
