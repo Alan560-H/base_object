@@ -63,7 +63,7 @@ mixin AppTheme {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      selectedItemColor: TextConfig.primary,
+      selectedItemColor: TextConfig.black333,
       unselectedItemColor: TextConfig.grey,
     ),
     scaffoldBackgroundColor: TextConfig.commonPageColor,

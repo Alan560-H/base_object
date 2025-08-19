@@ -13,5 +13,37 @@ class ImageConfig {
   /// 登录背景
   static String loginBg2 =
       "${AppConfig.instance.getImgUrl}/AdObject/login/login_bg2.png";
+//   ————————————————————底部导航——————————————————————
+  /// 首页激活
+  static String redBagActive =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/redBagActive.png";
+  /// 首页默认
+  static String redBagDefatult =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/redBagDefatult.png";
+  /// 短视频激活
+  static String videoActive =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/videoActive.png";
+  /// 短视频默认
+  static String videoDefault =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/videoDefault.png";
+  /// 短剧激活
+  static String shortVideoActive =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/shortVideoActive.png";
+  /// 短剧默认
+  static String shortVideoDefault =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/shortVideoDefault.png";
+  /// 邀请激活
+  static String inviteActive =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/inviteActive.png";
+  /// 邀请默认
+  static String inviteDefault =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/inviteDefault.png";
+  /// 我的激活
+  static String myActive =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myActive.png";
+  /// 我的默认
+  static String myDefatult =
+      "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myDefatult.png";
+//   ————————————————————底部导航结束——————————————————————
 
 }
