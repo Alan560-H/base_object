@@ -1,5 +1,7 @@
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/core/services/auth_service.dart';
+import 'package:base_object/pages/first_entry/first_entry_binding.dart';
+import 'package:base_object/pages/first_entry/first_entry_view.dart';
 import 'package:base_object/pages/home/home_binding.dart';
 import 'package:base_object/pages/home/home_view.dart';
 import 'package:base_object/pages/home/sub_page/box_details/details_binding.dart';
@@ -16,6 +18,11 @@ class AppPages {
       name: AppRoutes.splashPage,
       page: () => SplashView(),
       binding: SplashBinding(),// 首页的依赖注入
+    ),
+    GetPage(
+      name: AppRoutes.firstPage,
+      page: () => FirstEntryView(),
+      binding: FirstEntryBinding(),// 首页的依赖注入
     ),
 
     GetPage(

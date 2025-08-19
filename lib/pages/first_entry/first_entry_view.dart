@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'template_controller.dart';
+import 'first_entry_controller.dart';
 
-class TemplateView extends GetView<TemplateController> {
-  const TemplateView({super.key});
+class FirstEntryView extends GetView<FirstEntryController> {
+  const FirstEntryView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

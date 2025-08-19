@@ -7,7 +7,6 @@ import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
-  RxString appbarTitle = "表头".obs;
 
   // 用于标记是否已处理跳转（避免重复跳转）
   bool _hasJumped = false;
@@ -115,6 +114,12 @@ class SplashController extends GetxController {
     _hasJumped = true; // 标记为已跳转
     String? isFirst = await LocalStorage.getString("isFirst");
     Utils.logError("执行跳转首页$isFirst");
+    if (isFirst == null) {
+      Get.offAllNamed(AppRoutes.firstPage);
+    } else {
+      Get.offAllNamed(AppRoutes.home);
+    }
+
     // // 延迟 300ms 跳转，避免页面切换过于生硬
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   if (Get.currentRoute != AppRoutes.home) {
