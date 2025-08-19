@@ -118,7 +118,41 @@ android {
         }
     }
 }
+// 在这里添加子项目的依赖配置
+dependencies {
+    //Anythink (Necessary)
+    api("com.anythink.sdk:core-taku:6.5.10")
+    api("com.anythink.sdk:core-china-taku:6.5.10")
+    api("com.anythink.sdk:nativead-taku:6.5.10")
+    api("com.anythink.sdk:banner-taku:6.5.10")
+    api("com.anythink.sdk:interstitial-taku:6.5.10")
+    api("com.anythink.sdk:rewardedvideo-taku:6.5.10")
+    api("com.anythink.sdk:splash-taku:6.5.10")
 
+    //Support (Necessary)
+    api("com.android.support:appcompat-v7:28.0.0")
+
+    //Baidu
+    api("com.anythink.sdk:adapter-taku-baidu:6.5.10.1")
+    api("mobi.baidu.sdk:mobads:9.400")
+
+    //Kuaishou
+    api("com.anythink.sdk:adapter-taku-kuaishou:6.5.10")
+    api("com.anythink.sdk:sdk-ads-kuaishou:4.6.30.1")
+    api("com.android.support:design:28.0.0")
+
+    //Sigmob
+    api("com.anythink.sdk:adapter-taku-sigmob:6.5.10")
+    api("com.anythink.sdk:sdk-ads-sigmob:4.24.0")
+
+    //Csj
+    api("com.anythink.sdk:adapter-taku-csj:6.5.10")
+    api("com.pangle.cn:ads-sdk-pro:6.9.2.3")
+
+    //GDT
+    api("com.anythink.sdk:adapter-taku-gdt:6.5.10")
+    api("com.qq.e.union:union:4.642.1512")
+}
 flutter {
     source = "../.."
 }

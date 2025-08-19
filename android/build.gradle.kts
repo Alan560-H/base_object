@@ -6,6 +6,12 @@ allprojects {
         maven(url = "https://jitpack.io")
         maven(url = "https://developer.huawei.com/repo/")
         maven(url = "https://developer.hihonor.com/repo/")
+        flatDir {
+            dirs("libs")
+        }
+        //Anythink(Core)
+        maven(url = "https://jfrog.takuad.com/artifactory/china_sdk")
+        maven(url = "https://artifact.bytedance.com/repository/pangle")
         google()
         mavenCentral()
     }
@@ -17,6 +23,7 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+
 }
 subprojects {
     project.evaluationDependsOn(":app")
