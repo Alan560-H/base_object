@@ -4,12 +4,6 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  var count = 0.obs;
-  void increment() => count++;
-  void changeSteamName(){
-    UserModel newUserModel = UserModel();
-    newUserModel.steamName = "哈哈哈哈";
-    UserInfo.instance.updateUserModel(newUserModel);
-    Utils.logError(UserInfo.instance.userModel.toJson());
-  }
+  var appbarTitle = "红包群".obs;
+
 }
