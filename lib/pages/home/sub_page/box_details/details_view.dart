@@ -1,4 +1,4 @@
-import 'package:base_object/core/config/app_colors.dart';
+import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,7 +16,7 @@ class DetailView extends GetView<DetailController> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("详情"),
-        backgroundColor: AppColors.black333,
+        backgroundColor: TextConfig.black333,
       ),
       body: Column(
         children: [
