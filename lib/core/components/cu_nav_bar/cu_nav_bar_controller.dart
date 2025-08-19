@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:anythink_sdk/at_banner_response.dart';
 import 'package:base_object/core/config/image_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
@@ -31,7 +34,30 @@ class CuNavBarController extends GetxController {
   RxInt currentPageIndex = 0.obs;
   RxDouble height = 60.h.obs;
   void onTabChange(int index) {
-    currentPageIndex.value = index;
+    try{
+      currentPageIndex.value = index;
+      switch(index){
+        case 0:
+          Get.toNamed(AppRoutes.home);
+          break;
+        case 1:
+          Get.toNamed(AppRoutes.shortVideo);
+          break;
+        case 2:
+          Get.toNamed(AppRoutes.djVideo);
+          break;
+        case 3:
+          Get.toNamed(AppRoutes.invite);
+          break;
+        case 4:
+          Get.toNamed(AppRoutes.user);
+          break;
+      }
+    }catch(e){
+      Utils.logError("切换一级页面失败：$e");
+      Get.toNamed(AppRoutes.home);
+      currentPageIndex.value = 0;
+    }
   }
   List<MenuModel> menuModels = [];
   // 定义一个方法来生成 BottomNavigationBarItem 列表
@@ -94,6 +120,7 @@ class CuNavBarController extends GetxController {
       );
     }).toList();
   }
+
   // 用于标记是否已处理跳转（避免重复跳转）
   bool _hasShow = false;
   /// 订阅 ListenerTool 的开屏广告事件
@@ -112,7 +139,7 @@ class CuNavBarController extends GetxController {
       // banner广告加载失败
         case "BannerStatus.bannerAdFailToLoadAD":
           Utils.logError("banner广告加载失败");
-          height.value = 80.h;
+          height.value = 60.h;
           break;
       // banner广告加载完成
         case "BannerStatus.bannerAdDidFinishLoading":
@@ -123,7 +150,8 @@ class CuNavBarController extends GetxController {
 
       /// 横幅广告自动刷新成功
         case "BannerStatus.bannerAdAutoRefreshSucceed":
-          Utils.logError("自动刷新成功$event");
+          height.value = 110.h;
+          Utils.logError("好招术$event");
           break;
       /// 横幅广告被点击
         case "BannerStatus.bannerAdDidClick":
@@ -144,6 +172,7 @@ class CuNavBarController extends GetxController {
       /// 横幅广告点击关闭按钮
         case "BannerStatus.bannerAdTapCloseButton":
           Utils.logError("横幅广告点击关闭按钮");
+          height.value = 60.h;
           break;
       /// 横幅广告自动刷新失败
         case "BannerStatus.bannerAdAutoRefreshFail":

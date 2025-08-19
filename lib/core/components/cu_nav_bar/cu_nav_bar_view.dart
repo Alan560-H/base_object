@@ -17,7 +17,7 @@ class CuNavBarView extends GetView<CuNavBarController> {
       child: Column(
         children: [
           BottomNavigationBar(
-            key: Global.bottomNavigationBarState,
+            // key: Global.bottomNavigationBarState,
             type: BottomNavigationBarType.fixed,
             showUnselectedLabels: true,
             items: controller.getNavigationItems(),

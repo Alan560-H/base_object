@@ -6,21 +6,13 @@ abstract class AppRoutes{
 
   static const home = "/home";
   static const homeDetails = "/home/details";
+  /// 短视频
+  static const shortVideo = "/shortVideo";
+  /// 短剧
+  static const djVideo = "/djVideo";
 
-
-  static const arena = "/arena";
-  static const arenaCreate = "/arena/create";
-  static const arenaDetails = "/arena/details";
-
-
-  static const shop = "/shop";
-
-
-  static const exponent = "/exponent";
-  static const exponentBag = "/exponent/bag";
-  static const exponentHistory = "exponent/history";
-
-
+  /// 邀请
+  static const invite = "/invite";
 
   static const user = "/user";
   static const userAdTack = "/user/userAd";

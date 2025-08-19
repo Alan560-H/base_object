@@ -3,19 +3,19 @@ import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'template_controller.dart';
+import 'short_video_controller.dart';
 
-class TemplateView extends GetView<TemplateController> {
-  const TemplateView({super.key});
+class ShortVideoView extends GetView<ShortVideoController> {
+  const ShortVideoView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(()=>
-        Column(
-          children: [
-            CuAppBar(title: controller.appbarTitle.value,showBackArrow: false,),
-          ],
-        )
+          Column(
+            children: [
+              CuAppBar(title: controller.appbarTitle.value,showBackArrow: false,),
+            ],
+          )
       ),
       bottomNavigationBar: CuNavBarView(),
     );
