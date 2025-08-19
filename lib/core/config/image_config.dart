@@ -13,6 +13,9 @@ class ImageConfig {
   /// 登录背景
   static String loginBg2 =
       "${AppConfig.instance.getImgUrl}/AdObject/login/login_bg2.png";
+  /// 登录背景
+  static String hongbao =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao.png";
 //   ————————————————————底部导航——————————————————————
   /// 首页激活
   static String redBagActive =
@@ -45,5 +48,9 @@ class ImageConfig {
   static String myDefatult =
       "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myDefatult.png";
 //   ————————————————————底部导航结束——————————————————————
+  /// 头像
+  static String getUrlAvatar(int index) {
+    return "${AppConfig.instance.getImgUrl}/avatars/$index.jpg";
+  }
 
 }
