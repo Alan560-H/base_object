@@ -9,14 +9,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "85.0.0"
-  ali_auth:
-    dependency: "direct main"
-    description:
-      name: ali_auth
-      sha256: "6e17c8768ac4bcf55fc7e18cbba149b9187e5fd96b7d6222fc4970b42ada5834"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.3.5"
   analyzer:
     dependency: "direct dev"
     description:
@@ -25,6 +17,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "7.7.1"
+  anythink_sdk:
+    dependency: "direct main"
+    description:
+      name: anythink_sdk
+      sha256: "993b5e718ae48a20d54f07d1d4779225f465b3a782088e5e3289f55cbcb63f6a"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.7"
   archive:
     dependency: transitive
     description:
@@ -213,10 +213,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "253a18bbd4851fecba42f7343a1df3a9a4c1d31a2c1b37e221086b4fa8c8dbc9"
+      sha256: d90ee57923d1828ac14e492ca49440f65477f4bb1263575900be731a3dac66a9
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "5.8.0+1"
+    version: "5.9.0"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -302,27 +302,11 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.2.1"
-  flutter_tencentad:
-    dependency: transitive
-    description:
-      name: flutter_tencentad
-      sha256: "5d7373e10422441e6e1ae49d5e24b0a9eca6cb1245cdd56037d75dcd2614eba1"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.2.36"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_unionad:
-    dependency: transitive
-    description:
-      name: flutter_unionad
-      sha256: "7dd474716a84468051a4fe8c0e842fa94fb8a47a9a07022f195d36d3928f81cb"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.1.12"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -360,38 +344,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.3.2"
-  gtads:
-    dependency: "direct main"
-    description:
-      name: gtads
-      sha256: "26b564e5ad525fb9ef13fd4a945d92bc699d75aa64f095723ad88a597d962923"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.5.0"
-  gtads_csj:
-    dependency: "direct main"
-    description:
-      name: gtads_csj
-      sha256: f4b86656d10bfb87acf730bf0debd7966c24e6f601d3fdca60860f1987e64ae0
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.5.10"
-  gtads_ks:
-    dependency: "direct main"
-    description:
-      name: gtads_ks
-      sha256: "066d06d81960cb9e86c7d4754de2ee30b665f3c613aca84bb6a836554cb6f48a"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.5.2"
-  gtads_ylh:
-    dependency: "direct main"
-    description:
-      name: gtads_ylh
-      sha256: "76a2e2a23245ba70469b27157e0ef6fbc82134295e99dfbee30da8640338a293"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.5.5"
   http:
     dependency: transitive
     description:
@@ -456,14 +408,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.9.5"
-  ksad:
-    dependency: transitive
-    description:
-      name: ksad
-      sha256: "6046c09a54474c2c3ad79047aa90a088ec6ca2bab0c6dca5d602101ca9a0ae0e"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.5"
   leak_tracker:
     dependency: transitive
     description:

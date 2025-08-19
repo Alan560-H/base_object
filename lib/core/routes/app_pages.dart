@@ -4,8 +4,6 @@ import 'package:base_object/pages/home/home_binding.dart';
 import 'package:base_object/pages/home/home_view.dart';
 import 'package:base_object/pages/home/sub_page/box_details/details_binding.dart';
 import 'package:base_object/pages/home/sub_page/box_details/details_view.dart';
-import 'package:base_object/pages/index_binding.dart';
-import 'package:base_object/pages/index_view.dart';
 import 'package:base_object/pages/splash_page/splash_binding.dart';
 import 'package:base_object/pages/splash_page/splash_view.dart';
 import 'package:base_object/pages/user/user_binding.dart';
@@ -19,11 +17,7 @@ class AppPages {
       page: () => SplashView(),
       binding: SplashBinding(),// 首页的依赖注入
     ),
-    GetPage(
-      name: AppRoutes.root,
-      page: () => IndexView(),
-      binding: IndexBinding(),// 首页的依赖注入
-    ),
+
     GetPage(
       name: AppRoutes.home,
       page: () => HomeView(),

@@ -1,4 +1,4 @@
-package com.example.base_object
+package com.xinrui.vita
 
 
 import android.os.Bundle
