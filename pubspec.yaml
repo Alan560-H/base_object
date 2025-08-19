@@ -37,6 +37,8 @@ dependencies:
   get: ^4.7.2
   #dio 是一个强大的 HTTP 网络请求库，支持全局配置、Restful API、FormData、拦截器、 请求取消、Cookie 管理、文件上传/下载、超时、自定义适配器、转换器等。
   dio: ^5.9.0
+  # mock dio模拟库
+  http_mock_adapter: ^0.6.1
   #json_annotation 是一个 Flutter 插件，它提供了一些注解来帮助您在 Dart 和 JSON 之间进行转换。使用 json_annotation，您可以将 JSON 数据直接映射到 Dart 对象中，而无需手动解析 JSON 字符串。
   json_annotation: ^4.9.0
   #json_serializable 是一个 Flutter 插件，用于将 Dart 对象序列化为 JSON。它提供了一种简单的方式来将应用程序中的数据结构转换为 JSON 格式，以便在网络上传输或保存到本地存储中。

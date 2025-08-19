@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 
 class UserInfo extends GetxController{
   /// 获取单例
-  static UserInfo get instance => Get.find();
+  static UserInfo get instance => Get.find<UserInfo>();
   final Rx<UserModel> _userModel = UserModel().obs;
   /// 优化登录状态判断：同时验证 userId 和 token
   bool get isLoginIn {
@@ -95,9 +95,9 @@ class UserInfo extends GetxController{
     }
   }
   /// 退出登录
-  void loginOut(){
+  Future<void> loginOut() async{
     initUserInfo();
-    LocalStorage.removeString(AppKeys.userKey);
+    await LocalStorage.removeString(AppKeys.userKey);
     setToken('');
   }
 }

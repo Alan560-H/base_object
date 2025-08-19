@@ -4,9 +4,8 @@ import 'package:get/get.dart';
 
 class AppConfig extends GetxController{
   static AppConfig get instance => Get.find();
-
   /// 获取图片地址
-  String get getImgUrl => "https://file.ruyicult.com";
+  String get getImgUrl => "https://img.ruyimh.com";
   /// 获取wx_appid
   String get wxAppId => "wx5ef2b08e4bb891e4";
   /// 获取app 下载地址
@@ -21,10 +20,10 @@ class AppConfig extends GetxController{
   Uri get qQUrl => Uri.parse("http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=oQa4YkADFXhPbT3FJ0nkvXlhlJ6rb54-&authKey=td6mejWblP%2FX%2BgB231w1oj2KQsxM3NH%2BtwLRUAQT1UEEhox5VO%2B9M9Ep2yyS7ex%2F&noverify=0&group_code=1006103675");
   /// 私有变量，存储URL配置
   String _baseUrl = '';
-  String _socketUrl = '';
+  // String _socketUrl = '';
   /// 公开访问的getter
-  String get baseUrl => _baseUrl;
-  String get socketUrl => _socketUrl;
+  String get getBaseUrl => _baseUrl;
+  // String get socketUrl => _socketUrl;
 
 
 
@@ -32,13 +31,12 @@ class AppConfig extends GetxController{
   void init() {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // 生产环境（release模式）
-      _baseUrl = 'https://api.ruyimh.com';
-      _socketUrl = 'wss://sssws.ruyimh.com/wss';
+      _baseUrl = 'http://129.211.211.100:39300';
+      // _socketUrl = 'ws://129.211.211.100:39301/wss';
     } else {
       // 开发环境（debug模式）
       _baseUrl = 'http://129.211.211.100:39300';
-      _socketUrl = 'ws://129.211.211.100:39301/wss';
+      // _socketUrl = 'ws://129.211.211.100:39301/wss';
     }
-    update(); // 更新监听者
   }
 }
