@@ -20,7 +20,7 @@ class BannerTool extends GetxService{
   }
 
   bannerAdReady() async {
-    await ATBannerManager.bannerAdReady(
+   return await ATBannerManager.bannerAdReady(
         placementID: AppAdConfig.bannerPlacementID,
     ).then((value) {
       Utils.logError('flutter bannerAdReady: $value');

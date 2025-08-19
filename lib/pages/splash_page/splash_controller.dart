@@ -54,10 +54,6 @@ class SplashController extends GetxController {
       String placementID = event["placementID"] ?? "";
 
       Utils.logError("收到开屏广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
-      Utils.logError(SplashStatus.splashDidFinishLoading);
-      Utils.logError(eventType);
-      Utils.logError(SplashStatus.splashDidFinishLoading.toString()==eventType);
-
       // 根据事件类型执行业务逻辑
       switch (eventType) {
       // 开屏广告加载完成
