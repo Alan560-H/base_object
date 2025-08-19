@@ -1,5 +1,10 @@
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/app_config.dart';
+import 'package:base_object/manager/banner_sdk.dart';
+import 'package:base_object/manager/Init_tool.dart';
+import 'package:base_object/manager/interstitial_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/store/store.dart';
 import 'package:get/get.dart';
 
@@ -17,5 +22,15 @@ class DependencyInjection {
       Get.put<AppAdConfig>(AppAdConfig());
       // 注入
       Get.put<Store>(Store());
+      // 注入 banner 工具
+      Get.put<BannerTool>(BannerTool());
+      // 注入 广告工具
+      Get.put<InitTool>(InitTool());
+      // 注入 激励视频工具
+      Get.put<RewarderTool>(RewarderTool());
+      // 注入监听工具
+      Get.put<InterstitialTool>(InterstitialTool());
+      // 注入信息流工具
+      Get.put<NativeTool>(NativeTool());
     }
 }
