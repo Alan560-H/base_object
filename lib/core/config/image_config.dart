@@ -10,4 +10,8 @@ class ImageConfig {
   /// logo
   static String logo =
       "${AppConfig.instance.getImgUrl}/AdObject/common/logo.png";
+  /// 登录背景
+  static String loginBg2 =
+      "${AppConfig.instance.getImgUrl}/AdObject/login/login_bg2.png";
+
 }

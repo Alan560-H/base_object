@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
   // 初始化 Logger 实例，使用 PrettyPrinter 进行日志格式化
@@ -15,7 +16,9 @@ class Utils {
       printEmojis: true, // 是否打印表情符号
     ),
   );
-
+  static void openUrl(Uri url) async {
+    launchUrl(url);
+  }
   // 将十六进制字符串转换为 Color 对象
   static Color fromHex(String hexString) {
     final buffer = StringBuffer();

@@ -53,6 +53,8 @@ dependencies:
   flutter_screenutil: ^5.9.3
   #cached_network_image 是一个 Flutter 插件，它提供了一种简单而灵活的方式来从网络上缓存和显示图像。使用 cached_network_image，您可以轻松地在应用程序中显示网络或本地存储的图像，并在需要时自动更新它们。
   cached_network_image: ^3.4.1 #网络图片
+  # 启动URL的插件（支持Web） https://github.com/flutter/packages/tree/main/packages/url_launcher
+  url_launcher: ^6.3.2
   #广告
   anythink_sdk: ^1.0.7
 

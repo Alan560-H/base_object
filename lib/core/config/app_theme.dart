@@ -1,34 +1,84 @@
 import 'package:base_object/core/config/text_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 mixin AppTheme {
-  ThemeData get appTheme=>  ThemeData(
+  ThemeData get appTheme => ThemeData(
+    // 设置全局主要颜色为黑色
+    primaryColor:TextConfig.black333,
+    // 配置颜色方案，将主要文本颜色设为黑色
+    colorScheme: ColorScheme.light(
+      primary:TextConfig.black333,
+      onPrimary: Colors.white, // 主要颜色上的文本颜色
+      secondary:TextConfig.black333,
+      onSecondary: Colors.white, // 次要颜色上的文本颜色
+      surface: Colors.white,
+      onSurface:TextConfig.black333, // 表面上的文本颜色（最常用的文本颜色）
+    ),
+
+    // 按钮主题文字颜色
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black, // 设置 ElevatedButton 文字颜色
+        foregroundColor:TextConfig.black333,
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: Colors.black, // 设置 TextButton 文字颜色
+        foregroundColor:TextConfig.black333,
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.black, // 设置 OutlinedButton 文字颜色
+        foregroundColor:TextConfig.black333,
       ),
     ),
+
+    // 文本主题 - 配置所有可能的文本样式
     textTheme: TextTheme(
-      bodyMedium: TextStyle(fontSize: 14.sp, color: Colors.black),
+      // 大标题
+      displayLarge: TextStyle(color:TextConfig.black333),
+      displayMedium: TextStyle(color:TextConfig.black333),
+      displaySmall: TextStyle(color:TextConfig.black333),
+
+      // 标题
+      headlineLarge: TextStyle(color:TextConfig.black333),
+      headlineMedium: TextStyle(color:TextConfig.black333),
+      headlineSmall: TextStyle(color:TextConfig.black333),
+
+      // 副标题
+      titleLarge: TextStyle(color:TextConfig.black333),
+      titleMedium: TextStyle(color:TextConfig.black333),
+      titleSmall: TextStyle(color:TextConfig.black333),
+
+      // 正文
+      bodyLarge: TextStyle(fontSize: TextConfig.textSize_16, color:TextConfig.black333),
+      bodyMedium: TextStyle(fontSize: TextConfig.textSize_14, color:TextConfig.black333),
+      bodySmall: TextStyle(fontSize: TextConfig.textSize_12, color:TextConfig.black333),
+
+      // 标签
+      labelLarge: TextStyle(color:TextConfig.black333),
+      labelMedium: TextStyle(color:TextConfig.black333),
+      labelSmall: TextStyle(color:TextConfig.black333),
     ),
+
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.transparent, // 设置导航栏背景透明
-      elevation: 0, // 去除导航栏的阴影
-      selectedItemColor: TextConfig.primary, // 选中时的颜色
-      unselectedItemColor: TextConfig.grey, // 未选中时的颜色
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      selectedItemColor: TextConfig.primary,
+      unselectedItemColor: TextConfig.grey,
     ),
     scaffoldBackgroundColor: TextConfig.commonPageColor,
-    appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.transparent,
+      // 确保AppBar标题也是黑色
+      titleTextStyle: TextStyle(
+        color:TextConfig.black333,
+        fontSize: TextConfig.textSize_20,
+        fontWeight: FontWeight.bold,
+      ),
+      // 确保AppBar中的图标也是黑色
+      iconTheme: IconThemeData(color: TextConfig.black333),
+    ),
+    // 确保图标默认也是黑色
+    iconTheme: IconThemeData(color:TextConfig.black333),
   );
 }
