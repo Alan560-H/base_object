@@ -3,6 +3,7 @@ import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/listener_tool.dart'; // 导入 ListenerTool
 import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
@@ -67,7 +68,7 @@ class SplashController extends GetxController {
           break;
       // 开屏广告加载失败
         case "SplashStatus.splashDidFailToLoad":
-          Utils.logError("开屏广告关闭，跳转首页");
+          Utils.logError("开屏广告失败，跳转首页");
           _jumpToHome();
           break;
 
@@ -91,6 +92,7 @@ class SplashController extends GetxController {
       /// 关闭
         case "SplashStatus.splashDidClose":
           Utils.logError("开屏广告关闭");
+          _jumpToHome();
           break;
       /// 即将关闭
         case "SplashStatus.splashWillClose":
@@ -108,10 +110,11 @@ class SplashController extends GetxController {
   }
 
   /// 跳转首页（封装兜底逻辑，避免重复跳转）
-  void _jumpToHome() {
+  void _jumpToHome() async {
     if (_hasJumped) return;
     _hasJumped = true; // 标记为已跳转
-    Utils.logError("执行跳转首页");
+    String? isFirst = await LocalStorage.getString("isFirst");
+    Utils.logError("执行跳转首页$isFirst");
     // // 延迟 300ms 跳转，避免页面切换过于生硬
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   if (Get.currentRoute != AppRoutes.home) {
