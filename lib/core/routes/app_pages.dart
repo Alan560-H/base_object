@@ -10,6 +10,8 @@ import 'package:base_object/pages/home/sub_page/box_details/details_binding.dart
 import 'package:base_object/pages/home/sub_page/box_details/details_view.dart';
 import 'package:base_object/pages/invite/invite_binding.dart';
 import 'package:base_object/pages/invite/invite_view.dart';
+import 'package:base_object/pages/login/login_binding.dart';
+import 'package:base_object/pages/login/login_view.dart';
 import 'package:base_object/pages/short_video/short_video_binding.dart';
 import 'package:base_object/pages/short_video/short_video_view.dart';
 import 'package:base_object/pages/splash_page/splash_binding.dart';
@@ -30,7 +32,11 @@ class AppPages {
       page: () => FirstEntryView(),
       binding: FirstEntryBinding(),// 首页的依赖注入
     ),
-
+    GetPage(
+      name: AppRoutes.login,
+      page: () => LoginView(),
+      binding: LoginBinding(),// 登录的依赖注入
+    ),
     GetPage(
       name: AppRoutes.home,
       page: () => HomeView(),

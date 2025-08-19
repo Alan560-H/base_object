@@ -65,6 +65,7 @@ class UserInfo extends GetxController{
   /// 私有初始化方法
   Future<void> _initialize() async {
     try {
+      Utils.logError("更新用户数据_initialize");
       /// 从本地存储加载用户数据
       final String? userInfoJson = await LocalStorage.getString(AppKeys.userKey);
       if (userInfoJson!=null) {

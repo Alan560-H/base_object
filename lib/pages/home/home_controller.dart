@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
@@ -14,6 +15,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    UserInfo.instance.initialize();
     // 初始化添加5条随机消息
     for (int i = 0; i < 5; i++) {
       _addRandomChatMessage();
