@@ -95,14 +95,13 @@ class LoginController extends GetxController {
       return;
     }
     Utils.logError(loginForm.value.toJson());
-return;
       loginModel.value = await Api.to.login(loginForm.value);
     if (loginModel.value.tokenValue.isEmpty) return;
     UserInfo.instance.setToken(value: loginModel.value.tokenValue,key: loginModel.value.tokenValue);
     UserModel userModel = await Api.to.getUserInfo();
     if (userModel.id != 0) {
       Get.snackbar("提示", "登录成功");
-
+      UserInfo.instance.updateUserModel(userModel);
       cuNavBarController.onTabChange(0);
     }
   }

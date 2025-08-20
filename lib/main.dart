@@ -4,6 +4,7 @@ import 'package:base_object/core/config/global.dart';
 import 'package:base_object/core/routes/app_pages.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/store/di.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +23,7 @@ void main()async {
   bool isInitAd = await InitTool.to.initTopon();
   Utils.logError("广告初始化完成 $isInitAd");
   AppConfig.instance.init();
+  UserInfo.instance.initialize();
   runApp(const MyApp());
 }
 

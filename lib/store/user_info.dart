@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
@@ -16,7 +17,6 @@ class UserInfo extends GetxController{
     final hasValidUserId = userModel.id > 0;
     // 2. 补充判断：token 存在（内存中）
     final hasToken = _token.isNotEmpty;
-
     // 两者同时满足才视为登录状态有效
     return hasValidUserId && hasToken;
   }
@@ -35,7 +35,7 @@ class UserInfo extends GetxController{
   /// 设置token
   void setToken({String value ="",String key = "token"}){
     _token = value;
-    LocalStorage.setString(key,value);
+    LocalStorage.setString(AppKeys.tokenName,value);
   }
   /// 获取token
   Future<String> get getToken async {
@@ -55,35 +55,28 @@ class UserInfo extends GetxController{
   bool _initialized = false;
   /// 初始化用户数据（从本地加载或设置默认值）
   Future<void> initialize() async {
-    if (!_initialized) {
-      await _initialize();
-    }
-  }
-
-  /// 私有初始化方法
-  Future<void> _initialize() async {
-    try {
-      Utils.logError("更新用户数据_initialize");
+    final String token = await getToken;
+    Utils.logError("token哈哈是$token");
+    if(token.isNotEmpty){
+      setToken(value: token);
       /// 从本地存储加载用户数据
       final String? userInfoJson = await LocalStorage.getString(AppKeys.userKey);
+
       if (userInfoJson!=null) {
         // 解析 JSON 并更新用户模型
         final Map<String, dynamic> userInfoMap = jsonDecode(userInfoJson);
         final cachedUser = UserModel.fromJson(userInfoMap);
         updateUserModel(cachedUser);
-      } else {
-        // 没有缓存，使用默认值
-        initUserInfo();
+        _initialized = true;
       }
-
-      _initialized = true;
-    } catch (e) {
-      Utils.logError('初始化用户数据失败: $e');
-      // 出错时使用默认值
+    }
+    if (!_initialized) {
+      // 没有缓存，使用默认值
       initUserInfo();
-      _initialized = true;
     }
   }
+
+
   /// 更新用户数据
   void updateUserModel(UserModel newModel) {
     try{

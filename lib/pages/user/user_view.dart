@@ -1,10 +1,23 @@
+import 'package:base_object/core/components/cu_app_bar.dart';
+import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/pages/user/user_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class UserView extends StatelessWidget {
+class UserView extends GetView<UserController> {
   const UserView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("个人中心"),);
+    return Scaffold(
+      body: Obx(()=>
+          Column(
+            children: [
+              CuAppBar(title: controller.appbarTitle.value,showBackArrow: false,),
+            ],
+          )
+      ),
+      bottomNavigationBar: CuNavBarView(),
+    );
   }
 }
