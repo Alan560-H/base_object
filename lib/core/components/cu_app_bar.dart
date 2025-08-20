@@ -19,7 +19,7 @@ class CuAppBar extends StatelessWidget {
   final bool autoAddTopSafeArea;
   // 自定义顶部安全区高度（优先级高于autoAddTopSafeArea）
   final double? customTopSafeHeight;
-
+  final Color textColor;
   const CuAppBar({
     super.key,
     this.showBackArrow = true,
@@ -30,6 +30,7 @@ class CuAppBar extends StatelessWidget {
     this.titleStyle,
     this.autoAddTopSafeArea = true,
     this.customTopSafeHeight,
+    this.textColor = Colors.black87
   });
 
   @override
@@ -63,7 +64,7 @@ class CuAppBar extends StatelessWidget {
                   child: Icon(
                     Icons.arrow_back_ios,
                     size: 20.w,
-                    color: Colors.black,
+                    color: textColor,
                   ),
                 ),
               ),
@@ -82,7 +83,7 @@ class CuAppBar extends StatelessWidget {
                     TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: textColor,
                     ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,

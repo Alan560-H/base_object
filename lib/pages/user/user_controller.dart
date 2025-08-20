@@ -20,7 +20,7 @@ class UserController extends GetxController {
     ),
     MenuModel(
       id: 1,
-      path: AppRoutes.home,
+      path: AppRoutes.userInvite,
       menuName: "邀请好友",
       icon: Icons.share,
     ),

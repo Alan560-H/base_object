@@ -5,7 +5,12 @@ import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
+import 'package:base_object/models/backModel/userModel/UserBayModel.dart';
+import 'package:base_object/models/backModel/userModel/UserInviteCountModel.dart';
+import 'package:base_object/models/backModel/userModel/UserInviteInfoModel.dart';
+import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/models/backModel/userModel/UserSonModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
@@ -150,6 +155,96 @@ class Api extends GetxController{
     }catch(e){
       Utils.logError("getUserAmountList: $e");
       return <UserWithdrawalModel>[];
+    }
+  }
+  /// 邀请好友-邀请信息
+  Future<UserInviteCountModel> getInviteInfo() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteInfo,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserInviteCountModel();
+      }
+      final UserInviteCountModel userInviteCountModel = UserInviteCountModel.fromJson(backModel.data);
+      return userInviteCountModel;
+    }catch(e){
+      Utils.logError("getInviteInfo: $e");
+      return UserInviteCountModel();
+    }
+  }
+  /// 邀请好友-邀请任务
+  Future<UserInviteModel> getInviteList() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteList,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserInviteModel();
+      }
+      final UserInviteModel userInviteModel = UserInviteModel.fromJson(backModel.data);
+      return userInviteModel;
+    }catch(e){
+      Utils.logError("getInviteList: $e");
+      return UserInviteModel();
+    }
+  }
+  /// 邀请-我的推广信息
+  Future<UserInviteInfoModel> getMyInviteInfo() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getMyInviteInfo,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserInviteInfoModel();
+      }
+      final UserInviteInfoModel userInviteInfoModel = UserInviteInfoModel.fromJson(backModel.data);
+      return userInviteInfoModel;
+    }catch(e){
+      Utils.logError("getMyInviteInfo: $e");
+      return UserInviteInfoModel();
+    }
+  }
+  /// 邀请-我的钱包
+  Future<UserBayModel> getInviteMyBag() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteMyBag,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserBayModel();
+      }
+      final UserBayModel userBayModel = UserBayModel.fromJson(backModel.data);
+      return userBayModel;
+    }catch(e){
+      Utils.logError("getMyInviteInfo: $e");
+      return UserBayModel();
+    }
+  }
+  /// 邀请-我的粉丝列表
+  Future<UserSonModel> getInviteMyInvite() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteMyInvite,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserSonModel();
+      }
+      final UserSonModel userSonModel = UserSonModel.fromJson(backModel.data);
+      return userSonModel;
+    }catch(e){
+      Utils.logError("getMyInviteInfo: $e");
+      return UserSonModel();
     }
   }
 

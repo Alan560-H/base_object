@@ -19,7 +19,7 @@ class TextConfig {
   static Color commonPageColor = Utils.fromHex("#f5f5f5");
   // 淡黄色背景
   static Color commonYellowPageColor = Utils.fromHex("#ffe2b4");
-
+  static Color fensePageColor = Utils.fromHex("#f5e5e6");
 
   /// 模态框 或单元格颜色
   static Color dialogColor = Utils.fromHex("#806b53");

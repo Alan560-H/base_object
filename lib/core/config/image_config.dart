@@ -54,6 +54,10 @@ class ImageConfig {
   /// 我的激活
   static String myActive =
       "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myActive.png";
+  /// 立刻邀请
+  static String inviteBtn =
+      "${AppConfig.instance.getImgUrl}/AdObject/invite/invite_btn.png";
+
   /// 我的默认
   static String myDefatult =
       "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myDefatult.png";
@@ -72,6 +76,10 @@ class ImageConfig {
   /// 去提现按钮
   static String goTiXian =
       "${AppConfig.instance.getImgUrl}/AdObject/user/go_ti_xian.png";
+  /// 邀请好友背景
+  static String userInviteBg =
+      "${AppConfig.instance.getImgUrl}/AdObject/user/user_invite_bg.png";
+
 //   ————————————————————user结束——————————————————————
   /// 头像
   static String getUrlAvatar(int index) {
