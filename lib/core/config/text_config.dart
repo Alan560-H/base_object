@@ -17,6 +17,9 @@ class TextConfig {
   static Color black333 = Utils.fromHex("#333333");
   // 通用背景色
   static Color commonPageColor = Utils.fromHex("#f5f5f5");
+  // 淡黄色背景
+  static Color commonYellowPageColor = Utils.fromHex("#ffe2b4");
+
 
   /// 模态框 或单元格颜色
   static Color dialogColor = Utils.fromHex("#806b53");

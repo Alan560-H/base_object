@@ -55,6 +55,14 @@ class ImageConfig {
   static String myDefatult =
       "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myDefatult.png";
 //   ————————————————————底部导航结束——————————————————————
+//   ————————————————————user结束——————————————————————
+  /// 我的金币概括
+  static String userMenoyCardBg =
+      "${AppConfig.instance.getImgUrl}/AdObject/user/userMenoyCardBg.png";
+  /// 去提现按钮
+  static String goTiXian =
+      "${AppConfig.instance.getImgUrl}/AdObject/user/go_ti_xian.png";
+//   ————————————————————user结束——————————————————————
   /// 头像
   static String getUrlAvatar(int index) {
     return "${AppConfig.instance.getImgUrl}/avatars/$index.jpg";

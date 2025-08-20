@@ -47,6 +47,8 @@ dependencies:
   shared_preferences: ^2.5.3
   #日志记录
   logger: ^2.6.1
+  # 文字轮播
+  marquee: ^2.3.0
   #loading 组件
   flutter_easyloading: ^3.0.5
   #屏幕适配
