@@ -41,6 +41,7 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
   /// 账号控制器
   final accountController = TextEditingController();
+
   /// 获取图片验证码
   Future<void> getVerifyCodeImg() async {
     try{
@@ -103,6 +104,7 @@ class LoginController extends GetxController {
       Get.snackbar("提示", "登录成功");
       UserInfo.instance.updateUserModel(userModel);
       cuNavBarController.onTabChange(0);
+      swicthLoginType();
     }
   }
 }

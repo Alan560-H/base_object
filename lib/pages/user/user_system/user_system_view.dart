@@ -1,0 +1,62 @@
+import 'package:base_object/core/components/cu_app_bar.dart';
+import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/store/user_info.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+import 'user_system_controller.dart';
+
+class UserSystemView extends GetView<UserSystemController> {
+  const UserSystemView({super.key});
+  Widget rowContainer({required String title, required String value}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
+      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+      height: 40.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Row(children: [Text(title), Spacer(), Text(value)]),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Obx(
+        () => Column(
+          children: [
+            CuAppBar(title: controller.appbarTitle.value, showBackArrow: true),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        rowContainer(
+                          title: "昵称",
+                          value: controller.userInfo.userModel.username,
+                        ),
+                        rowContainer(
+                          title: "会员ID",
+                          value: controller.userInfo.userModel.id.toString(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  CuButton(width:Get.width-20.w,height:40.h,bgColor:Colors.white,textColor: TextConfig.black333,fontSize:TextConfig.textSize_16,text: "退出账号",radius: 10.r, onPressed: controller.userInfo.loginOut),
+                  SizedBox(height: 100.h,),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

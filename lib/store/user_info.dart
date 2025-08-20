@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
+import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -91,5 +93,10 @@ class UserInfo extends GetxController{
     initUserInfo();
     await LocalStorage.removeString(AppKeys.userKey);
     setToken(value: '');
+    bool isRegistered = Get.isRegistered<CuNavBarController>();
+    if(!isRegistered){
+      CuNavBarBinding().dependencies();
+    }
+    Get.find<CuNavBarController>().onTabChange(0);
   }
 }

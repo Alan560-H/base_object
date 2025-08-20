@@ -15,12 +15,15 @@ abstract class AppRoutes{
   static const invite = "/invite";
 
   static const user = "/user";
-  static const userAdTack = "/user/userAd";
-  static const userAddress = "/user/address";
-  static const userBag = "/user/bag";
-  static const userEditInfo = "/user/editInfo";
-  static const userHelp = "/user/help";
-  static const userHistory = "/user/history";
-  static const userInvite = "/user/invite";
-  static const userMsg = "/user/msg";
+  /// 系统设置
+  static const userSystem = "/user/system";
+  /// 团长招募
+  static const userLeader = "/user/leader";
+  /// 收支明细
+  static const userTransaction = "/user/transaction";
+  // static const userEditInfo = "/user/editInfo";
+  // static const userHelp = "/user/help";
+  // static const userHistory = "/user/history";
+  // static const userInvite = "/user/invite";
+  // static const userMsg = "/user/msg";
 }

@@ -16,7 +16,14 @@ import 'package:base_object/pages/short_video/short_video_binding.dart';
 import 'package:base_object/pages/short_video/short_video_view.dart';
 import 'package:base_object/pages/splash_page/splash_binding.dart';
 import 'package:base_object/pages/splash_page/splash_view.dart';
+import 'package:base_object/pages/user/leader_recruit/leader_recruit_binding.dart';
+import 'package:base_object/pages/user/leader_recruit/leader_recruit_controller.dart';
+import 'package:base_object/pages/user/leader_recruit/leader_recruit_view.dart';
+import 'package:base_object/pages/user/transaction_details/transaction_details_binding.dart';
+import 'package:base_object/pages/user/transaction_details/transaction_details_view.dart';
 import 'package:base_object/pages/user/user_binding.dart';
+import 'package:base_object/pages/user/user_system/user_system_binding.dart';
+import 'package:base_object/pages/user/user_system/user_system_view.dart';
 import 'package:base_object/pages/user/user_view.dart';
 import 'package:get/get.dart';
 
@@ -71,6 +78,27 @@ class AppPages {
       name: AppRoutes.user,
       page: () => UserView(),
       binding: UserBinding(),// 首页的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 系统设置
+    GetPage(
+      name: AppRoutes.userSystem,
+      page: () => UserSystemView(),
+      binding: UserSystemBinding(),// 系统设置的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 交易明细
+    GetPage(
+      name: AppRoutes.userTransaction,
+      page: () => TransactionDetailsView(),
+      binding: TransactionDetailsBinding(),// 交易明细的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 团长招募
+    GetPage(
+      name: AppRoutes.userLeader,
+      page: () => LeaderRecruitView(),
+      binding: LeaderRecruitBinding(),// 团长招募的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
   ];

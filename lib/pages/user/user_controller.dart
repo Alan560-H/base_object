@@ -13,6 +13,7 @@ class UserController extends GetxController {
     MenuModel(
       id: 0,
       menuName: "收支明细",
+      path: AppRoutes.userTransaction,
       icon: Icons.format_list_numbered,
     ),
     MenuModel(
@@ -24,6 +25,7 @@ class UserController extends GetxController {
     MenuModel(
       id: 2,
       menuName: "团长招募",
+      path: AppRoutes.userLeader,
       icon: Icons.supervisor_account,
     ),
     MenuModel(
@@ -42,11 +44,12 @@ class UserController extends GetxController {
       id: 5,
       path: AppRoutes.home,
       menuName: "隐私政策",
+
       icon: Icons.description,
     ),
     MenuModel(
       id: 6,
-      path: AppRoutes.home,
+      path: AppRoutes.userSystem,
       menuName: "我的设置",
       icon: Icons.settings_outlined,
     ),
