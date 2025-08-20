@@ -120,6 +120,7 @@ class CuHttpClient extends Getx.GetxService  {
   /// 格式化返回数据
   Future<BackModel> _parseData(Response response, String url) async {
     try {
+
       Map<String, dynamic> scores;
       if (response.data is String) {
         scores = json.decode(response.data);
@@ -130,7 +131,7 @@ class CuHttpClient extends Getx.GetxService  {
       }
 
       BackModel backModel = BackModel.fromJson(scores);
-
+      Utils.logError("返回的数据${backModel.toJson()}");
       /// 不是100 就代表出错
       if (backModel.code != CuErrorConfig.success) {
         BackModel errorModel = BackModel();
@@ -150,7 +151,7 @@ class CuHttpClient extends Getx.GetxService  {
         Utils.debounce(() {
           Utils.logError("$url接口发生错误,${errorModel.msg}，错误代码${backModel.code}");
           // CuToast.error(msg: errorModel.msg);
-          Getx.Get.snackbar("提示222", errorModel.msg);
+          Getx.Get.snackbar("提示", errorModel.msg);
         });
       }
 

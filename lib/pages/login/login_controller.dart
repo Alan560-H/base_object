@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
@@ -9,6 +10,7 @@ import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -91,20 +93,29 @@ class LoginController extends GetxController {
   }
   /// 登录按钮
   void submitForm() async {
-    if (!isChecked.value) {
-      Get.snackbar("提示", "请先同意相关协议再登录");
-      return;
-    }
-    Utils.logError(loginForm.value.toJson());
+    try{
+
+      if (!isChecked.value) {
+        Get.snackbar("提示", "请先同意相关协议再登录");
+        return;
+      }
+      Utils.logError(loginForm.value.toJson());
       loginModel.value = await Api.to.login(loginForm.value);
-    if (loginModel.value.tokenValue.isEmpty) return;
-    UserInfo.instance.setToken(value: loginModel.value.tokenValue,key: loginModel.value.tokenValue);
-    UserModel userModel = await Api.to.getUserInfo();
-    if (userModel.id != 0) {
-      Get.snackbar("提示", "登录成功");
-      UserInfo.instance.updateUserModel(userModel);
-      cuNavBarController.onTabChange(0);
-      swicthLoginType();
+      if (loginModel.value.tokenValue.isEmpty) return;
+      UserInfo.instance.setToken(value: loginModel.value.tokenValue,key: loginModel.value.tokenValue);
+      UserModel userModel = await Api.to.getUserInfo();
+      if (userModel.id != 0) {
+        Get.snackbar("提示", "登录成功");
+        UserInfo.instance.updateUserModel(userModel);
+        UserTodayModel userTodayModel = await Api.to.getTodayAmount();
+        UserInfo.instance.updateUserTodayModel(userTodayModel);
+        Utils.logError("用户今日收益：${userTodayModel.toJson()}");
+        cuNavBarController.onTabChange(0);
+        swicthLoginType();
+        isChecked.value =false;
+      }
+    }catch(e){
+      Utils.logError("登录出错: $e");
     }
   }
 }

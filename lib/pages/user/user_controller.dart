@@ -36,15 +36,12 @@ class UserController extends GetxController {
     ),
     MenuModel(
       id: 4,
-      path: AppRoutes.home,
       menuName: "用户协议",
       icon: Icons.description,
     ),
     MenuModel(
       id: 5,
-      path: AppRoutes.home,
       menuName: "隐私政策",
-
       icon: Icons.description,
     ),
     MenuModel(

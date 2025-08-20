@@ -26,6 +26,8 @@ class UserModel {
   double amount = 0;
   /// 可提现金额
   double money = 0;
+  /// 今日收益
+  double? todayAmount = 0;
   /// 用户信息
   UserModel();
   //不同的类使用不同的mixin即可

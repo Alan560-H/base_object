@@ -17,7 +17,8 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) =>
       ..mobile = json['mobile'] as String
       ..currentAmount = (json['currentAmount'] as num).toDouble()
       ..amount = (json['amount'] as num).toDouble()
-      ..money = (json['money'] as num).toDouble();
+      ..money = (json['money'] as num).toDouble()
+      ..todayAmount = (json['todayAmount'] as num?)?.toDouble();
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
   'id': instance.id,
@@ -30,4 +31,5 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
   'currentAmount': instance.currentAmount,
   'amount': instance.amount,
   'money': instance.money,
+  'todayAmount': instance.todayAmount,
 };

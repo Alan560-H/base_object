@@ -5,6 +5,7 @@ import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
@@ -93,6 +94,24 @@ class Api extends GetxController{
     }catch(e){
       Utils.logError("getUserInfo请求出错: $e");
       return UserModel();
+    }
+  }
+  /// 获取用户今日收益
+  Future<UserTodayModel> getTodayAmount() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getTodayAmount,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserTodayModel();
+      }
+      final UserTodayModel userTodayModel = UserTodayModel.fromJson(backModel.data);
+      return userTodayModel;
+    }catch(e){
+      Utils.logError("getTodayAmount请求出错: $e");
+      return UserTodayModel();
     }
   }
 }

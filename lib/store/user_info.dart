@@ -5,6 +5,7 @@ import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
@@ -73,7 +74,7 @@ class UserInfo extends GetxController{
       }
     }
     if (!_initialized) {
-      // 没有缓存，使用默认值
+      Utils.logError("没有缓存，使用默认值");
       initUserInfo();
     }
   }
@@ -84,6 +85,15 @@ class UserInfo extends GetxController{
     try{
       _userModel.value = newModel; // 直接更新 Rx 的值，自动触发响应式更新
       LocalStorage.setString(AppKeys.userKey,newModel);
+    }catch(e){
+      Utils.logError(e);
+    }
+  }
+  void updateUserTodayModel(UserTodayModel newModel){
+    try{
+      _userModel.value.currentAmount = newModel.currentAmount;
+      _userModel.value.todayAmount = newModel.todayAmount;
+      LocalStorage.setString(AppKeys.userKey,_userModel);
     }catch(e){
       Utils.logError(e);
     }

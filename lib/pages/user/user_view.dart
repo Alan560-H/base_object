@@ -1,9 +1,11 @@
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/pages/user/user_controller.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,7 +69,7 @@ class UserView extends GetView<UserController> {
                    children: [
                      Expanded(child: Row(
                        children: [
-                         Expanded(child: getCom(value:controller.userInfo.userModel.currentAmount.toString(),title:"可提现金币")),
+                         Expanded(child: getCom(value:controller.userInfo.userModel.money.toString(),title:"可提现金币")),
                          Expanded(child: getCom(value:controller.userInfo.userModel.currentAmount.toString(),title:"今日已赚金币")),
                          Expanded(child: Center(child: CuButton(text: "",width:90.w,height: 50.h,bgImage: ImageConfig.goTiXian, onPressed: (){}))),
                        ],
@@ -120,6 +122,13 @@ class UserView extends GetView<UserController> {
                          // 如果跳转二级页面，则优先跳转二级页面
                          if (menu.path != null) {
                            Get.toNamed(menu.path!);
+                         }else{
+                           if(menu.id==5){
+                             Utils.openUrl(AppConfig.instance.protocolUri);
+                           }
+                           if(menu.id==6){
+                             Utils.openUrl(AppConfig.instance.policyUri);
+                           }
                          }
                        },
                      ),
