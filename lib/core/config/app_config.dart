@@ -1,5 +1,3 @@
-import 'package:base_object/core/config/app_keys.dart';
-import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 
 class AppConfig extends GetxController{

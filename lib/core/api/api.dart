@@ -1,8 +1,12 @@
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
+import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 import '../net/cu_http_client.dart';
+import 'api_urls.dart';
 
 class Api extends GetxController{
   // GetX单例获取方式
@@ -23,6 +27,69 @@ class Api extends GetxController{
     } catch (e) {
       Utils.logError("_sendRequest请求出错: $e");
       rethrow;
+    }
+  }
+  /// 获取图片验证码
+  Future<VerifyCodeImgModel> postVerifyCodeImg(FormModel data) async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getImgCode,
+        data,
+        "post",
+      );
+      if (backModel.data == null) {
+        return VerifyCodeImgModel();
+      }
+      return VerifyCodeImgModel.fromJson(backModel.data);
+    }catch(e){
+      Utils.logError("postVerifyCodeImg请求出错: $e");
+      return VerifyCodeImgModel();
+    }
+  }
+  /// 发送手机验证码
+  Future<BackModel> postSendMobileCode(FormModel data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getSmsSend,
+        data,
+        "post",
+      );
+      return backModel;
+    } catch (e) {
+      Utils.logError("postSendMobileCode请求出错: $e");
+      return BackModel();
+    }
+  }
+  /// 登录
+  Future<LoginModel> login(FormModel data) async {
+    try {
+      BackModel backModel = await _sendRequest(ApiUrls.login, data, "post");
+      if (backModel.data == null) {
+        final LoginModel loginModel = LoginModel();
+        return loginModel;
+      }
+      return LoginModel.fromJson(backModel.data);
+    } catch (e) {
+      Utils.logError("login请求出错: $e");
+      return LoginModel();
+    }
+  }
+  /// 获取用户信息
+  Future<UserModel> getUserInfo() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getUserInfo,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return UserModel();
+      }
+      final UserModel userModel = UserModel.fromJson(backModel.data);
+      return userModel;
+    }catch(e){
+      Utils.logError("getUserInfo请求出错: $e");
+      return UserModel();
     }
   }
 }

@@ -2,7 +2,7 @@ class ApiUrls {
   /// 获取系统信息
   static const String getSystemInfo = "/v1/system/channel";
   /// 登录
-  static const String loginl = "/v1/loginl";
+  static const String login = "/v1/login";
   /// 获取图片验证码
   static const String getImgCode = "/v1/getImgCode";
   /// 获取手机号验证码

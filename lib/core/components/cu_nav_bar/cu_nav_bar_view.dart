@@ -1,4 +1,3 @@
-import 'package:base_object/core/config/global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

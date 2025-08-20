@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:anythink_sdk/at_banner_response.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
