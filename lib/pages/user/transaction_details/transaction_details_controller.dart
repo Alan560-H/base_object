@@ -7,7 +7,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 class TransactionDetailsController extends GetxController {
-  RxString appbarTitle = "交易明细页面标题".obs;
+  RxString appbarTitle = "收支明细".obs;
   final BannerTool bannerTool = Get.find<BannerTool>();
   // 收入表
   final RxList<UserAmountListModel> userAmountListModelList = <UserAmountListModel>[].obs;
