@@ -53,6 +53,8 @@ dependencies:
   flutter_easyloading: ^3.0.5
   # 加载更多
   easy_refresh: ^3.4.0
+  # 生成二维码
+  qr_flutter: ^4.1.0
   #受Animate.css启发的动画包，仅使用 Flutter 动画构建，没有任何依赖项
   animate_do: ^4.2.0
   #屏幕适配

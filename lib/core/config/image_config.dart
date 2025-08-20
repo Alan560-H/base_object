@@ -62,6 +62,10 @@ class ImageConfig {
   /// 我的金币概括
   static String userMenoyCardBg =
       "${AppConfig.instance.getImgUrl}/AdObject/user/userMenoyCardBg.png";
+  /// 招募团长
+  static String leaderRecruit =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/leader_recruit.jpg";
+
   /// 去提现按钮
   static String goTiXian =
       "${AppConfig.instance.getImgUrl}/AdObject/user/go_ti_xian.png";
