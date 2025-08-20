@@ -23,6 +23,9 @@ class ImageConfig {
   /// 登录背景
   static String hongbao =
       "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao.png";
+  /// 空数据
+  static String empty =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/empty.png";
 //   ————————————————————底部导航——————————————————————
   /// 首页激活
   static String redBagActive =

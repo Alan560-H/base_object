@@ -4,8 +4,10 @@ import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
+import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
+import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
@@ -114,4 +116,41 @@ class Api extends GetxController{
       return UserTodayModel();
     }
   }
+  /// 获取用户收入明细
+  Future<List<UserAmountListModel>> getUserAmountList() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getUserAmountList,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return <UserAmountListModel>[];
+      }
+      final List<UserAmountListModel> userAmountListModel = UserAmountListModel.fromJsonList(backModel.data);
+      return userAmountListModel;
+    }catch(e){
+      Utils.logError("getUserAmountList: $e");
+      return <UserAmountListModel>[];
+    }
+  }
+  /// 获取用户支出明细
+  Future<List<UserWithdrawalModel>> getWithdrawalOrderList() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getWithdrawalOrderList,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return <UserWithdrawalModel>[];
+      }
+      final List<UserWithdrawalModel> userWithdrawalModel = UserWithdrawalModel.fromJsonList(backModel.data);
+      return userWithdrawalModel;
+    }catch(e){
+      Utils.logError("getUserAmountList: $e");
+      return <UserWithdrawalModel>[];
+    }
+  }
+
 }

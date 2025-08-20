@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TextConfig {
   // 主动激活颜色 为金黄色
-  static Color primary = Utils.fromHex('#fec684');
+  static Color primary = Utils.fromHex('#ff6d20');
   // 默认按钮颜色，没有选中得颜色
   static Color defualtBtn = Utils.fromHex("#504b44");
   // 概率颜色，紫色

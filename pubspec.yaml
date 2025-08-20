@@ -51,6 +51,10 @@ dependencies:
   marquee: ^2.3.0
   #loading 组件
   flutter_easyloading: ^3.0.5
+  # 加载更多
+  easy_refresh: ^3.4.0
+  #受Animate.css启发的动画包，仅使用 Flutter 动画构建，没有任何依赖项
+  animate_do: ^4.2.0
   #屏幕适配
   flutter_screenutil: ^5.9.3
   #cached_network_image 是一个 Flutter 插件，它提供了一种简单而灵活的方式来从网络上缓存和显示图像。使用 cached_network_image，您可以轻松地在应用程序中显示网络或本地存储的图像，并在需要时自动更新它们。
