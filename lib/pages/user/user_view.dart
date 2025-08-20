@@ -1,6 +1,7 @@
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
@@ -8,6 +9,7 @@ import 'package:base_object/pages/user/user_controller.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
@@ -128,6 +130,14 @@ class UserView extends GetView<UserController> {
                            }
                            if(menu.id==6){
                              Utils.openUrl(AppConfig.instance.policyUri);
+                           }
+                           if(menu.id == 7){
+                             EasyLoading.show(status: "正在努力清除中...");
+                             await Future.delayed(const Duration(seconds: 3));
+                             CuToast.success(msg: "清除成功");
+                             EasyLoading.dismiss();
+                             controller.cuNavBarController.onTabChange(0);
+                             return;
                            }
                          }
                        },

@@ -49,6 +49,8 @@ dependencies:
   logger: ^2.6.1
   # 文字轮播
   marquee: ^2.3.0
+  #提示弹窗
+  toastification: ^3.0.3
   #loading 组件
   flutter_easyloading: ^3.0.5
   # 加载更多

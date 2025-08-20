@@ -269,7 +269,7 @@ class LoginView extends GetView<LoginController> {
   /// 登录按钮 立即登录
   Widget _buildSubmitButton() {
     return CuButton(
-      height: 50.h,
+      height: 40.h,
       width: 200.w,
       text: "",
       bgImage: ImageConfig.loginBtn,
