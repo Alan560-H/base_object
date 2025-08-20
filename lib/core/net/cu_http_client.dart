@@ -150,7 +150,7 @@ class CuHttpClient extends Getx.GetxService  {
         Utils.debounce(() {
           Utils.logError("$url接口发生错误,${errorModel.msg}，错误代码${backModel.code}");
           // CuToast.error(msg: errorModel.msg);
-          Getx.Get.snackbar("提示", errorModel.msg);
+          Getx.Get.snackbar("提示222", errorModel.msg);
         });
       }
 

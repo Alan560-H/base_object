@@ -1,3 +1,4 @@
+import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/app_theme.dart';
 import 'package:base_object/core/config/global.dart';
 import 'package:base_object/core/routes/app_pages.dart';
@@ -20,7 +21,7 @@ void main()async {
   // 初始化广告
   bool isInitAd = await InitTool.to.initTopon();
   Utils.logError("广告初始化完成 $isInitAd");
-
+  AppConfig.instance.init();
   runApp(const MyApp());
 }
 

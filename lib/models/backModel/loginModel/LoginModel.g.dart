@@ -11,8 +11,8 @@ LoginModel _$LoginModelFromJson(Map<String, dynamic> json) =>
       ..id = (json['id'] as num).toInt()
       ..account = json['account'] as String
       ..username = json['username'] as String
-      ..tokenName = json['tokenName'] as String?
-      ..tokenValue = json['tokenValue'] as String?;
+      ..tokenName = json['tokenName'] as String
+      ..tokenValue = json['tokenValue'] as String;
 
 Map<String, dynamic> _$LoginModelToJson(LoginModel instance) =>
     <String, dynamic>{

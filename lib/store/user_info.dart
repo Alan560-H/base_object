@@ -33,9 +33,9 @@ class UserInfo extends GetxController{
   String _token = "";
 
   /// 设置token
-  void setToken(String value){
+  void setToken({String value ="",String key = "token"}){
     _token = value;
-    LocalStorage.setString(AppKeys.tokenName,value);
+    LocalStorage.setString(key,value);
   }
   /// 获取token
   Future<String> get getToken async {
@@ -97,6 +97,6 @@ class UserInfo extends GetxController{
   Future<void> loginOut() async{
     initUserInfo();
     await LocalStorage.removeString(AppKeys.userKey);
-    setToken('');
+    setToken(value: '');
   }
 }

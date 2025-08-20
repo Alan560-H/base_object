@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:base_object/models/FormModel/FormModel.dart';
+import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
@@ -30,11 +33,11 @@ class Api extends GetxController{
     }
   }
   /// 获取图片验证码
-  Future<VerifyCodeImgModel> postVerifyCodeImg(FormModel data) async {
+  Future<VerifyCodeImgModel> postVerifyCodeImg() async {
     try{
       BackModel backModel = await _sendRequest(
         ApiUrls.getImgCode,
-        data,
+        FormModel(),
         "post",
       );
       if (backModel.data == null) {
@@ -47,7 +50,7 @@ class Api extends GetxController{
     }
   }
   /// 发送手机验证码
-  Future<BackModel> postSendMobileCode(FormModel data) async {
+  Future<BackModel> postSendMobileCode(SendMobileCodeModel data) async {
     try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getSmsSend,

@@ -1,6 +1,6 @@
 class CuErrorConfig{
   /// 成功
-  static const String success = "100";
+  static const String success = "200";
   /// 内部错误
   static final String err10001 = "10001";
   /// token过期

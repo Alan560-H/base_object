@@ -13,9 +13,9 @@ class LoginModel {
   /// 昵称
   String username = "";
   /// token 名字
-  String? tokenName = "";
+  String tokenName = "";
   /// token
-  String? tokenValue = "";
+  String tokenValue = "";
 
   /// 登录返回数据
   LoginModel();

@@ -11,8 +11,15 @@ class ImageConfig {
   static String logo =
       "${AppConfig.instance.getImgUrl}/AdObject/common/logo.png";
   /// 登录背景
+  static String loginBg1 =
+      "${AppConfig.instance.getImgUrl}/AdObject/login/login_bg1.png";
+  /// 登录背景
   static String loginBg2 =
       "${AppConfig.instance.getImgUrl}/AdObject/login/login_bg2.png";
+  /// 登录背景
+  static String loginBtn =
+      "${AppConfig.instance.getImgUrl}/AdObject/login/login_btn.png";
+
   /// 登录背景
   static String hongbao =
       "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao.png";

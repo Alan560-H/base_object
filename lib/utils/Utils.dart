@@ -16,6 +16,12 @@ class Utils {
       printEmojis: true, // 是否打印表情符号
     ),
   );
+  /// 静态方法用于校验手机号，true即代表通过，false代表不通过
+  static bool isValidPhoneNumber(String phoneNumber) {
+    // 定义正则表达式模式，用于匹配中国手机号格式
+    final RegExp phoneRegex = RegExp(r'^1[3-9]\d{9}$');
+    return phoneRegex.hasMatch(phoneNumber);
+  }
   static void openUrl(Uri url) async {
     launchUrl(url);
   }
