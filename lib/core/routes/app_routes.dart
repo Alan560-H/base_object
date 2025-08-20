@@ -21,6 +21,7 @@ abstract class AppRoutes{
   static const userLeader = "/user/leader";
   /// 收支明细
   static const userTransaction = "/user/transaction";
+  static const userService = "/user/service";
   // static const userEditInfo = "/user/editInfo";
   // static const userHelp = "/user/help";
   // static const userHistory = "/user/history";

@@ -30,7 +30,7 @@ class UserController extends GetxController {
     ),
     MenuModel(
       id: 3,
-      path: AppRoutes.home,
+      path: AppRoutes.userService,
       menuName: "联系客服",
       icon: Icons.support_agent,
     ),

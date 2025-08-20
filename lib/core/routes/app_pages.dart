@@ -22,6 +22,8 @@ import 'package:base_object/pages/user/leader_recruit/leader_recruit_view.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_binding.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_view.dart';
 import 'package:base_object/pages/user/user_binding.dart';
+import 'package:base_object/pages/user/user_service/user_service_binding.dart';
+import 'package:base_object/pages/user/user_service/user_service_view.dart';
 import 'package:base_object/pages/user/user_system/user_system_binding.dart';
 import 'package:base_object/pages/user/user_system/user_system_view.dart';
 import 'package:base_object/pages/user/user_view.dart';
@@ -99,6 +101,13 @@ class AppPages {
       name: AppRoutes.userLeader,
       page: () => LeaderRecruitView(),
       binding: LeaderRecruitBinding(),// 团长招募的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 联系客服
+    GetPage(
+      name: AppRoutes.userService,
+      page: () => UserServiceView(),
+      binding: UserServiceBinding(),// 团长招募的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
   ];

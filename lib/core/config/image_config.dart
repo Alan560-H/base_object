@@ -65,6 +65,9 @@ class ImageConfig {
   /// 招募团长
   static String leaderRecruit =
       "${AppConfig.instance.getImgUrl}/AdObject/common/leader_recruit.jpg";
+  /// 招募团长
+  static String userService =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/user_service.png";
 
   /// 去提现按钮
   static String goTiXian =
