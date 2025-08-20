@@ -13,7 +13,7 @@ class UserInfo extends GetxController{
   /// 优化登录状态判断：同时验证 userId 和 token
   bool get isLoginIn {
     // 1. 基础判断：userId 有效
-    final hasValidUserId = userModel.userId > 0;
+    final hasValidUserId = userModel.id > 0;
     // 2. 补充判断：token 存在（内存中）
     final hasToken = _token.isNotEmpty;
 
@@ -21,9 +21,7 @@ class UserInfo extends GetxController{
     return hasValidUserId && hasToken;
   }
   /// 获取余额
-  double get yuE => userModel.mallAmount;
-  /// 判断是不是模拟战用户
-  bool get isMockUser => userModel.userType == 6;
+  double get yuE => userModel.currentAmount;
   /// 获取UserModel
   UserModel get userModel {
     try {

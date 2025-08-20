@@ -8,7 +8,7 @@ class UserController extends GetxController {
   void increment() => count++;
   void changeSteamName(){
     UserModel newUserModel = UserModel();
-    newUserModel.steamName = "哈哈哈哈";
+    newUserModel.username = "哈哈哈哈";
     UserInfo.instance.updateUserModel(newUserModel);
     Utils.logError(UserInfo.instance.userModel.toJson());
   }
