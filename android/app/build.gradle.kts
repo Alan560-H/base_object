@@ -120,6 +120,7 @@ android {
 }
 // 在这里添加子项目的依赖配置
 dependencies {
+
     //Anythink (Necessary)
     api("com.anythink.sdk:core-taku:6.5.10")
     api("com.anythink.sdk:core-china-taku:6.5.10")
@@ -152,6 +153,12 @@ dependencies {
     //GDT
     api("com.anythink.sdk:adapter-taku-gdt:6.5.10")
     api("com.qq.e.union:union:4.642.1512")
+    // 本地 aar/jar 依赖
+    api(fileTree(mapOf(
+        "dir" to "../../libs",
+        "include" to listOf("*.aar", "*.jar"),
+//        "exclude" to listOf("**/AndroidManifest.xml") // 排除可能冲突的清单文件
+    )))
 }
 flutter {
     source = "../.."
