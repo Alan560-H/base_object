@@ -10,7 +10,6 @@ UserInviteCountModel _$UserInviteCountModelFromJson(
   Map<String, dynamic> json,
 ) =>
     UserInviteCountModel()
-      ..id = (json['id'] as num).toInt()
       ..inviteNum = (json['inviteNum'] as num).toDouble()
       ..inviteAmount = (json['inviteAmount'] as num).toDouble()
       ..currentAmount = (json['currentAmount'] as num).toDouble();
@@ -18,7 +17,6 @@ UserInviteCountModel _$UserInviteCountModelFromJson(
 Map<String, dynamic> _$UserInviteCountModelToJson(
   UserInviteCountModel instance,
 ) => <String, dynamic>{
-  'id': instance.id,
   'inviteNum': instance.inviteNum,
   'inviteAmount': instance.inviteAmount,
   'currentAmount': instance.currentAmount,

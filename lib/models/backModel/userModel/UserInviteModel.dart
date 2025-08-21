@@ -15,7 +15,7 @@ class UserInviteModel {
   double withdrawal = 0;
   /// 金币
   double benefit = 0;
-  /// 用户今日收益
+  /// 用户邀请任务
   UserInviteModel();
   //不同的类使用不同的mixin即可
   factory UserInviteModel.fromJson(Map<String, dynamic> json) =>

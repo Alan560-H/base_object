@@ -1,9 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,7 +41,30 @@ class UserInviteView extends GetView<UserInviteController> {
       ],
     );
   }
+// 邀请任务列表
+  Widget get userInviteModelListView {
+    if (controller.userInviteModelList.isEmpty) return CuEmpty();
+    return ListView.builder(
+      padding: EdgeInsets.zero,
+      itemCount: controller.userInviteModelList.length,
+      itemBuilder: (context, i) {
+        UserInviteModel item = controller.userInviteModelList[i];
+        return Container(
 
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: ListTile(
+
+            title: Text(item.title,style: TextStyle(fontSize: TextConfig.textSize_16,color: TextConfig.primary,fontWeight: FontWeight.bold),),
+            subtitle: Text(item.remark),
+
+            // trailing: Text("${item.withdrawal}￥",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
+          ),
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,9 +186,9 @@ class UserInviteView extends GetView<UserInviteController> {
                           ),
                           Row(
                             children: [
-                              Expanded(child: getCom(value: "1人",title:"已邀人数")),
-                              Expanded(child: getCom(value:"1人",title:"已赚金币")),
-                              Expanded(child: getCom(value:"1人",title:"可提现金额")),
+                              Expanded(child: getCom(value: "${controller.userInviteCountModel.value.inviteNum}人",title:"已邀人数")),
+                              Expanded(child: getCom(value:"${controller.userInviteCountModel.value.inviteAmount}元",title:"已赚金币")),
+                              Expanded(child: getCom(value:"${controller.userInviteCountModel.value.currentAmount}元",title:"可提现金额")),
                             ],
                           ),
                           CuButton(text: "立即提现",width:Get.width,height:40.h,radius:10.r,fontSize:TextConfig.textSize_20,bgColor:TextConfig.primary,textColor: Colors.white, onPressed: (){})
@@ -199,14 +224,8 @@ class UserInviteView extends GetView<UserInviteController> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Expanded(child: getCom(value: "1人",title:"已邀人数")),
-                              Expanded(child: getCom(value:"1人",title:"已赚金币")),
-                              Expanded(child: getCom(value:"1人",title:"可提现金额")),
-                            ],
-                          ),
-                          CuButton(text: "立即提现",width:Get.width,height:40.h,radius:10.r,fontSize:TextConfig.textSize_20,bgColor:TextConfig.primary,textColor: Colors.white, onPressed: (){})
+                         Expanded(child: userInviteModelListView)
+                          // CuButton(text: "立即提现",width:Get.width,height:40.h,radius:10.r,fontSize:TextConfig.textSize_20,bgColor:TextConfig.primary,textColor: Colors.white, onPressed: (){})
                         ],
                       ),
                     )

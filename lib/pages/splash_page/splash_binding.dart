@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 class SplashBinding implements Bindings {
   @override
   void dependencies() {
+    // Get.create(() => SplashController());
     Get.put(SplashController());
   }
 }

@@ -176,7 +176,7 @@ class Api extends GetxController{
     }
   }
   /// 邀请好友-邀请任务
-  Future<UserInviteModel> getInviteList() async {
+  Future<List<UserInviteModel>> getInviteList() async {
     try{
       BackModel backModel = await _sendRequest(
         ApiUrls.getInviteList,
@@ -184,13 +184,13 @@ class Api extends GetxController{
         "post",
       );
       if (backModel.data == null) {
-        return UserInviteModel();
+        return <UserInviteModel>[];
       }
-      final UserInviteModel userInviteModel = UserInviteModel.fromJson(backModel.data);
+      final List<UserInviteModel> userInviteModel = UserInviteModel.fromJsonList(backModel.data);
       return userInviteModel;
     }catch(e){
       Utils.logError("getInviteList: $e");
-      return UserInviteModel();
+      return <UserInviteModel>[];
     }
   }
   /// 邀请-我的推广信息

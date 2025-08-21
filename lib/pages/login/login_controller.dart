@@ -16,6 +16,7 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
@@ -99,6 +100,7 @@ class LoginController extends GetxController {
         Get.snackbar("提示", "请先同意相关协议再登录");
         return;
       }
+      EasyLoading.show(status: "登录中...");
       Utils.logError(loginForm.value.toJson());
       loginModel.value = await Api.to.login(loginForm.value);
       if (loginModel.value.tokenValue.isEmpty) return;
@@ -116,6 +118,8 @@ class LoginController extends GetxController {
       }
     }catch(e){
       Utils.logError("登录出错: $e");
-    }
+    }finally{
+      EasyLoading.dismiss();
+  }
   }
 }

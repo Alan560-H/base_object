@@ -6,7 +6,6 @@ part 'UserInviteCountModel.g.dart';
 /// 自动构建:  flutter packages pub run build_runner watch
 @JsonSerializable()
 class UserInviteCountModel {
-  int id = 0;
   /// 已邀请人数
   double inviteNum = 0;
   /// 已赚金额
