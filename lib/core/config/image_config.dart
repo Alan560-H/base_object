@@ -76,9 +76,17 @@ class ImageConfig {
   /// 去提现按钮
   static String goTiXian =
       "${AppConfig.instance.getImgUrl}/AdObject/user/go_ti_xian.png";
+
   /// 邀请好友背景
   static String userInviteBg =
       "${AppConfig.instance.getImgUrl}/AdObject/user/user_invite_bg.png";
+
+  /// 邀请好友背景
+  static String currentAmount =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/current_amount.png";
+  /// 邀请好友背景
+  static String tiJiaobiao =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/ti_jiaobiao.png";
 
 //   ————————————————————user结束——————————————————————
   /// 头像

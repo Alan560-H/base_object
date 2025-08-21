@@ -155,7 +155,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             controller: widget.controller, // 直接使用外部控制器
             // focusNode: _focusNode,
             style: TextStyle(
-              color: Colors.white, // 设置输入文本颜色为白色
+              color: widget.textColor, // 设置输入文本颜色为白色
               fontSize: widget.textSize,
             ),
             textAlignVertical: TextAlignVertical.center,

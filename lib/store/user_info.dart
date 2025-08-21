@@ -40,15 +40,21 @@ class UserInfo extends GetxController{
     _token = value;
     LocalStorage.setString(AppKeys.tokenName,value);
   }
-  /// 获取token
+  /// 获取token（关键：用 jsonDecode 解转义）
   Future<String> get getToken async {
-    // 优先从内存中获取（如果已缓存）
     if (_token.isNotEmpty) {
       return _token;
     }
-    // 内存中没有则从本地存储读取，并更新内存缓存
-    final token = await LocalStorage.getString(AppKeys.tokenName);
-    _token = token ?? "";
+    // 1. 从本地读取（此时是被 jsonEncode 后的字符串，如 "\"abc123\""）
+    final String? encodedToken = await LocalStorage.getString(AppKeys.tokenName);
+    if (encodedToken == null) {
+      _token = "";
+      return _token;
+    }
+    // 2. 用 jsonDecode 解转义，还原成原始字符串（如 "abc123"）
+    final decodedToken = jsonDecode(encodedToken) as String;
+    _token = decodedToken;
+    Utils.logError("解码后的token：$decodedToken"); // 此时已无多余斜杠
     return _token;
   }
 

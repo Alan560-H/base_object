@@ -41,7 +41,7 @@ class CuNavBarController extends GetxController {
           Get.toNamed(AppRoutes.shortVideo);
           break;
         case 2:
-          Get.toNamed(AppRoutes.userTixian);
+          Get.toNamed(AppRoutes.djVideo);
           break;
         case 3:
           Get.toNamed(AppRoutes.invite);

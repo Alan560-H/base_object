@@ -5,6 +5,7 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/pages/user/user_controller.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -73,7 +74,9 @@ class UserView extends GetView<UserController> {
                        children: [
                          Expanded(child: getCom(value:controller.userInfo.userModel.money.toString(),title:"可提现金币")),
                          Expanded(child: getCom(value:controller.userInfo.userModel.currentAmount.toString(),title:"今日已赚金币")),
-                         Expanded(child: Center(child: CuButton(text: "",width:90.w,height: 50.h,bgImage: ImageConfig.goTiXian, onPressed: (){}))),
+                         Expanded(child: Center(child: CuButton(text: "",width:90.w,height: 50.h,bgImage: ImageConfig.goTiXian, onPressed: (){
+                           Get.toNamed(AppRoutes.userTixian);
+                         }))),
                        ],
                      ),),
                      Container(
@@ -125,10 +128,10 @@ class UserView extends GetView<UserController> {
                          if (menu.path != null) {
                            Get.toNamed(menu.path!);
                          }else{
-                           if(menu.id==5){
+                           if(menu.id==4){
                              Utils.openUrl(AppConfig.instance.protocolUri);
                            }
-                           if(menu.id==6){
+                           if(menu.id==5){
                              Utils.openUrl(AppConfig.instance.policyUri);
                            }
                            if(menu.id == 7){

@@ -13,6 +13,7 @@ import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserSonModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
+import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
@@ -173,6 +174,25 @@ class Api extends GetxController{
     }catch(e){
       Utils.logError("getInviteInfo: $e");
       return UserInviteCountModel();
+    }
+  }
+
+  /// 我要提现-可选择的提现列表
+  Future<List<WithdrawalModel>> getWithdrawalList() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getWithdrawalList,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return <WithdrawalModel>[];
+      }
+      final List<WithdrawalModel> withdrawalModel = WithdrawalModel.fromJsonList(backModel.data);
+      return withdrawalModel;
+    }catch(e){
+      Utils.logError("getWithdrawalList: $e");
+      return <WithdrawalModel>[];
     }
   }
   /// 邀请好友-邀请任务
