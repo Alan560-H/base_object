@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // 定义输入框类型的枚举，包含普通输入框和密码输入框两种类型
@@ -7,7 +8,7 @@ enum InputFieldType {
   password, // 密码输入框
 }
 
-// 自定义输入框组件
+// 自定义输入框组件（仅修复键盘唤起问题，无额外功能）
 class CustomInputField extends StatefulWidget {
   /// 必须传入的输入框控制器，用于控制输入框的文本内容
   final TextEditingController controller;
@@ -40,7 +41,7 @@ class CustomInputField extends StatefulWidget {
   /// 密码可见性图标颜色，仅在输入框类型为密码时生效
   final Color? passwordIconColor;
 
-  // 组件构造函数
+  // 组件构造函数（完全保留你原有参数）
   const CustomInputField({
     super.key,
     required this.controller, // 必须传入控制器
@@ -60,63 +61,71 @@ class CustomInputField extends StatefulWidget {
     this.passwordIconColor = Colors.grey, // 默认图标颜色为灰色
   });
 
-  // 创建组件状态
+  // 重置输入框内容的方法（保留你原有逻辑）
+  void reset() {
+    controller.clear();
+  }
+
   @override
   State<CustomInputField> createState() => _CustomInputFieldState();
-
-  // 重置输入框内容的方法
-  void reset() {
-    // 直接通过外部控制器重置输入框内容
-    controller.clear();
-    // 移除了使用 key.currentState 的代码
-  }
 }
 
-// 自定义输入框组件的状态类
+// 自定义输入框组件的状态类（仅补充焦点管理逻辑）
 class _CustomInputFieldState extends State<CustomInputField> {
-  // 错误信息，用于显示输入内容不符合验证规则时的提示
+  // 错误信息，用于显示输入内容不符合验证规则时的提示（保留原有）
   String? _error;
-  // // 焦点节点，用于监听输入框的焦点状态
-  // late FocusNode _focusNode;
-  // 密码是否隐藏的标志，仅在输入框类型为密码时使用
+  // 【新增】显式焦点节点（修复键盘唤起核心）
+  late FocusNode _focusNode;
+  // 密码是否隐藏的标志，仅在输入框类型为密码时使用（保留原有）
   bool _obscureText = false;
 
-  // 组件初始化方法
+  // 组件初始化方法（补充焦点节点初始化）
   @override
   void initState() {
     super.initState();
-    // 设置默认值，如果传入了默认值，则将其设置到输入框控制器中
+    // 【新增】初始化焦点节点
+    _focusNode = FocusNode();
+    // 【新增】监听焦点变化：获取焦点时强制唤起键盘
+    _focusNode.addListener(_onFocusChange);
+
+    // 保留你原有逻辑：设置默认值
     if (widget.defaultValue != null) {
       widget.controller.text = widget.defaultValue!;
     }
-    // 监听外部控制器的变化，当输入框内容变化时调用 _onControllerChanged 方法
+    // 保留你原有逻辑：监听控制器变化
     widget.controller.addListener(_onControllerChanged);
-
-    // // 初始化焦点节点，并添加焦点变化监听
-    // _focusNode = FocusNode();
-    // _focusNode.addListener(_onFocusChange);
-
-    // 根据输入框类型设置密码是否隐藏的标志
+    // 保留你原有逻辑：初始化密码隐藏状态
     _obscureText = widget.inputFieldType == InputFieldType.password;
   }
 
-  // 组件销毁方法，用于释放资源
+  // 组件销毁方法（补充焦点节点释放）
   @override
   void dispose() {
-    // 移除输入框控制器的监听，避免内存泄漏
+    // 保留你原有逻辑：移除控制器监听
     widget.controller.removeListener(_onControllerChanged);
-    // // 移除焦点节点的监听，避免内存泄漏
-    // _focusNode.removeListener(_onFocusChange);
-    // // 释放焦点节点资源
-    // _focusNode.dispose();
+    // 【新增】释放焦点节点资源（避免内存泄漏）
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+
     super.dispose();
   }
 
-  // 输入框内容变化时的回调方法
+  // 【新增】焦点变化监听：获取焦点时主动唤起键盘
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      // 延迟执行：确保焦点注册完成后再唤起键盘
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // 1. 显式请求焦点（双重保障）
+        FocusScope.of(context).requestFocus(_focusNode);
+        // 2. 系统级强制唤起（兜底解决偶发不弹键盘）
+        SystemChannels.textInput.invokeMethod('TextInput.show');
+      });
+    }
+  }
+
+  // 输入框内容变化时的回调方法（完全保留原有逻辑）
   void _onControllerChanged() {
-    // 调用外部传入的 onChanged 方法
     widget.onChanged?.call(widget.controller.text);
-    // 如果传入了验证方法，则进行验证并更新错误信息
     if (widget.validator != null) {
       setState(() {
         _error = widget.validator!(widget.controller.text);
@@ -124,25 +133,14 @@ class _CustomInputFieldState extends State<CustomInputField> {
     }
   }
 
-  // // 输入框焦点变化时的回调方法
-  // void _onFocusChange() {
-  //   // 当输入框失去焦点时，清除错误信息
-  //   if (!_focusNode.hasFocus) {
-  //     setState(() {
-  //       _error = null;
-  //     });
-  //   }
-  // }
-
-  // 切换密码可见性的方法
+  // 切换密码可见性的方法（完全保留原有逻辑）
   void _toggleObscureText() {
     setState(() {
-      // 取反密码是否隐藏的标志
       _obscureText = !_obscureText;
     });
   }
 
-  // 构建组件的 UI
+  // 构建组件的 UI（仅补充焦点节点绑定和点击请求焦点）
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -150,21 +148,25 @@ class _CustomInputFieldState extends State<CustomInputField> {
       children: [
         SizedBox(
           width: widget.width,
-          height: widget.height ?? 40.h, // 固定高度，如果未传入高度则使用默认值
+          height: widget.height ?? 40.h,
           child: TextField(
-            controller: widget.controller, // 直接使用外部控制器
-            // focusNode: _focusNode,
+            controller: widget.controller, // 保留原有
+            // 【新增】绑定显式焦点节点
+            focusNode: _focusNode,
+            // 【新增】点击输入框时主动请求焦点（解决点击无响应）
+            onTap: () => FocusScope.of(context).requestFocus(_focusNode),
+            // 以下完全保留你原有配置
             style: TextStyle(
-              color: widget.textColor, // 设置输入文本颜色为白色
+              color: widget.textColor,
               fontSize: widget.textSize,
             ),
             textAlignVertical: TextAlignVertical.center,
             keyboardType: widget.inputType,
             maxLength: widget.maxLength,
-            obscureText: _obscureText, // 根据标志设置密码是否隐藏
+            obscureText: _obscureText,
             decoration: InputDecoration(
               hintStyle: TextStyle(
-                color: Colors.grey, // 设置提示语颜色为灰色
+                color: Colors.grey,
                 fontSize: widget.textSize,
               ),
               fillColor: widget.bgColor,
@@ -174,7 +176,6 @@ class _CustomInputFieldState extends State<CustomInputField> {
                 horizontal: 5.sp,
               ),
               hintText: widget.hintText,
-              // 移除 errorText，改为在外部显示
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0.sp),
                 borderSide: BorderSide(color: widget.bgColor!),
@@ -185,7 +186,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0.sp),
-                borderSide: BorderSide(color: Colors.red), // 错误边框颜色
+                borderSide: BorderSide(color: Colors.red),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0.sp),
@@ -195,7 +196,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
                   ? IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: widget.passwordIconColor, // 设置图标颜色
+                  color: widget.passwordIconColor,
                 ),
                 onPressed: _toggleObscureText,
               )
@@ -203,7 +204,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             ),
           ),
         ),
-        // 单独显示错误信息，如果有错误信息则显示
+        // 错误信息显示（完全保留原有逻辑）
         if (_error != null || widget.errorText != null)
           Padding(
             padding: EdgeInsets.only(top: 4.sp, left: 8.sp),

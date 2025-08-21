@@ -1,8 +1,8 @@
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
-import 'package:base_object/models/backModel/userModel/UserInviteCountModel.dart';
-import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -21,17 +21,33 @@ class TixianController extends GetxController {
   /// 账号控制器
   final accountController = TextEditingController();
   Future<void> submitForm()async{
-    if(withdrawalForm.value.payName.isEmpty){
-     CuToast.error(msg: "请输入姓名");
-      return;
-    }
-    if(withdrawalForm.value.payAccount.isEmpty){
-      CuToast.error(msg: "请输入账号");
-      return;
-    }
-    if(withdrawalForm.value.amountId==0){
-      CuToast.error(msg: "请选择金额");
-      return;
+    try{
+      if(withdrawalForm.value.payName.isEmpty){
+        CuToast.error(msg: "请输入姓名");
+        return;
+      }
+      if(withdrawalForm.value.payAccount.isEmpty){
+        CuToast.error(msg: "请输入账号");
+        return;
+      }
+      if(withdrawalForm.value.amountId==0){
+        CuToast.error(msg: "请选择金额");
+        return;
+      }
+      EasyLoading.show(status: "提现进行中...");
+      Utils.logError(withdrawalForm.toJson());
+      BackModel backModel = await Api().getWithdrawalMoney(withdrawalForm.value);
+      if(backModel.code==CuErrorConfig.success){
+        CuToast.success(msg: "提现成功");
+        nameController.clear();
+        accountController.clear();
+        withdrawalForm.value.payName = "";
+        withdrawalForm.value.payAccount = "";
+      }
+    }catch(e){
+      Utils.logError("提现提交出错: $e");
+    }finally{
+      EasyLoading.dismiss();
     }
   }
   /// 提现列表

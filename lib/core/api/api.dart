@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
+import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
@@ -72,6 +73,21 @@ class Api extends GetxController{
       return BackModel();
     }
   }
+  /// 提现方法
+  Future<BackModel> getWithdrawalMoney(WithdrawalForm data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getWithdrawalMoney,
+        data,
+        "post",
+      );
+      return backModel;
+    } catch (e) {
+      Utils.logError("getWithdrawalMoney: $e");
+      return BackModel();
+    }
+  }
+
   /// 登录
   Future<LoginModel> login(FormModel data) async {
     try {

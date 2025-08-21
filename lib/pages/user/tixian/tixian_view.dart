@@ -115,6 +115,7 @@ class TixianView extends GetView<TixianController> {
                   key: GlobalKey(),
                   height: 30.h,
                   textColor:TextConfig.black333,
+                  textSize: TextConfig.textSize_12,
                   bgColor: Colors.white,
                   hintText: "请输入账号",
                   onChanged: (value) {
@@ -286,6 +287,13 @@ class TixianView extends GetView<TixianController> {
                 title: controller.appbarTitle.value,
                 showBackArrow: true,
                 backgroundColor: Colors.transparent,
+                actions: [
+                  CuButton(
+                    width: 40.w,
+                    fontSize: TextConfig.textSize_24,
+                    onPressed: controller.getWithdrawalList, text: '刷新',icons: Icons.list_outlined,
+                  ),
+                ],
                 // textColor: Colors.white,
               ),
               Expanded(

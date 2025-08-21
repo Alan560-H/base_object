@@ -51,9 +51,14 @@ class CuButton extends StatelessWidget {
   /// 获取文字颜色
   get getTextColor => textColor ?? Colors.white;
 
-  /// 获取内边距
-  get getPadding =>
-      padding ?? EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
+  /// 获取内边距（关键修改：宽度小时减小水平内边距，避免挤压内容）
+  get getPadding {
+    // 若设定了宽度且宽度较小（如≤40.w），减小水平内边距，避免内容被内边距挤压
+    if (width != null && width! <= 40.w) {
+      return padding ?? EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h);
+    }
+    return padding ?? EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
+  }
   get getPaddingHor{
     Utils.logError(getPadding.left+getPadding.right);
     return getPadding.left+getPadding.right;
@@ -104,11 +109,11 @@ class CuButton extends StatelessWidget {
     );
   }
 
-  /// 获取前缀组件
+  /// 获取前缀组件（关键修改：限制前缀最大宽度，避免占用过多空间）
   Widget get getPreffWidget {
-    Widget res = Center();
+    Widget res = const SizedBox.shrink(); // 空组件用SizedBox.shrink()，比Center()更节省空间
 
-    /// 如果loading为true 那么就是显示加载中
+    /// 如果loading为true 显示加载中（限制最大宽度）
     if (getLoading) {
       res = SizedBox(
         width: getfontSize,
@@ -120,24 +125,32 @@ class CuButton extends StatelessWidget {
       );
     }
 
-    ///如果有应用图标
-    if (icons != null) {
-      res = Icon(color: getTextColor, icons, size: getfontSize);
+    /// 如果有图标（限制最大宽度）
+    else if (icons != null) {
+      res = Icon(
+        icons,
+        color: getTextColor,
+        size: getfontSize,
+      );
     }
 
-    /// 如果是图片图标
-    if (getIconImg.isNotEmpty) {
+    /// 如果是图片图标（限制最大宽度）
+    else if (getIconImg.isNotEmpty) {
       res = CachedNetworkImage(
         fit: BoxFit.fill,
         width: getfontSize,
         height: getfontSize,
         imageUrl: getIconImg,
-        errorWidget: (context, url, error) => Icon(Icons.error),
+        errorWidget: (context, url, error) => Icon(Icons.error, size: getfontSize),
       );
     }
-    return res;
-  }
 
+    // 关键：给前缀组件加最大宽度限制，避免宽度超标（尤其小宽度场景）
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: getWidth * 0.3), // 前缀最大占按钮宽度的30%
+      child: res,
+    );
+  }
   // 设定背景
   @override
   Widget build(BuildContext context) {
@@ -154,26 +167,28 @@ class CuButton extends StatelessWidget {
         height: getHeight,
         padding: getPadding,
         decoration: getBoxDecoration(),
-        child: Row(
-          spacing: 3.w,
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            getPreffWidget,
-            //  文字部分
-            // 关键修改：使用 Flexible 包裹 Text，并设置 flex 权重
-            Flexible(
-              flex: 1, // 根据需要调整权重
-              child: Text(
-                getText,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: TextStyle(fontSize: getfontSize, color: getTextColor,height: 1),
+        child: IntrinsicWidth(
+          child: Row(
+            spacing: 2.w,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              getPreffWidget,
+              //  文字部分
+              // 关键修改：使用 Flexible 包裹 Text，并设置 flex 权重
+              Flexible(
+                flex: 1, // 根据需要调整权重
+                child: Text(
+                  getText,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(fontSize: getfontSize, color: getTextColor,height: 1),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
