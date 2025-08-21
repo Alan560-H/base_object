@@ -60,5 +60,10 @@ class UserController extends GetxController {
 
 
   ];
-
+  @override
+  void onInit() {
+    Utils.logError("用户一级页面oninit");
+    // TODO: implement onInit
+    super.onInit();
+  }
 }

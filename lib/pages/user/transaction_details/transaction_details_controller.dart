@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 
 class TransactionDetailsController extends GetxController {
   RxString appbarTitle = "收支明细".obs;
-  final BannerTool bannerTool = Get.find<BannerTool>();
   // 收入表
   final RxList<UserAmountListModel> userAmountListModelList = <UserAmountListModel>[].obs;
   // 提现表
@@ -50,7 +49,14 @@ class TransactionDetailsController extends GetxController {
   }
   @override
   void onInit() {
+    Utils.logError("收支明细页面oninit");
     getUserAmountList();
     super.onInit();
+  }
+  @override
+  void onReady() {
+    Utils.logError("收支明细页面onready");
+    // TODO: implement onReady
+    super.onReady();
   }
 }

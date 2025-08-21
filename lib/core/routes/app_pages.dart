@@ -19,6 +19,8 @@ import 'package:base_object/pages/splash_page/splash_view.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_binding.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_controller.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_view.dart';
+import 'package:base_object/pages/user/tixian/tixian_binding.dart';
+import 'package:base_object/pages/user/tixian/tixian_view.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_binding.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_view.dart';
 import 'package:base_object/pages/user/user_binding.dart';
@@ -98,6 +100,14 @@ class AppPages {
       binding: TransactionDetailsBinding(),// 交易明细的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+    /// 交易明细
+    GetPage(
+      name: AppRoutes.userTixian,
+      page: () => TixianView(),
+      binding: TixianBinding(),// 交易明细的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+
     /// 团长招募
     GetPage(
       name: AppRoutes.userLeader,

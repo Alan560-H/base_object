@@ -28,6 +28,7 @@ abstract class AppRoutes {
   static const userTransaction = "/user/transaction";
   static const userService = "/user/service";
   static const userInvite = "/user/invite";
+  static const userTixian = "/user/tixian";
 
   // static const userEditInfo = "/user/editInfo";
   // static const userHelp = "/user/help";
