@@ -88,6 +88,10 @@ class ImageConfig {
   /// 邀请好友背景
   static String tiJiaobiao =
       "${AppConfig.instance.getImgUrl}/AdObject/common/ti_jiaobiao.png";
+  /// 我的收益背景
+  static String userIncome =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/user_income.png";
+
 
 //   ————————————————————user结束——————————————————————
 //   ————————————————————邀请开始——————————————————————
