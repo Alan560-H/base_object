@@ -26,9 +26,12 @@ class ImageConfig {
   /// 空数据
   static String empty =
       "${AppConfig.instance.getImgUrl}/AdObject/common/empty.png";
-  /// 空数据
+  /// 我的徒弟
   static String userSon =
       "${AppConfig.instance.getImgUrl}/AdObject/common/user_son.png";
+  /// 用户资料编辑
+  static String userEditInfo =
+      "${AppConfig.instance.getImgUrl}/AdObject/user/user_edit_info.png";
 
 //   ————————————————————底部导航——————————————————————
   /// 首页激活

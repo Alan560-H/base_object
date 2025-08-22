@@ -73,25 +73,29 @@ class UserSonView extends GetView<UserSonController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(()=>
-        Column(
-          children: [
-            CuAppBar(title: controller.appbarTitle.value,backgroundColor: Colors.transparent,),
-            Container(
-              height: 110.h,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                        image: CachedNetworkImageProvider(ImageConfig.userSon))
+        Container(
+          color: Utils.fromHex("#ff624b"),
+          child: Column(
+            spacing: 10.h,
+            children: [
+              CuAppBar(title: controller.appbarTitle.value,backgroundColor: Colors.transparent,textColor: Colors.white,),
+              Container(
+                height: 110.h,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                          image: CachedNetworkImageProvider(ImageConfig.userSon))
+                  ),
+                child:  Row(
+                  children: [
+                    Expanded(child: getCom(value: "${controller.userSonModel.value.inviteNum}人",title:"我的徒弟")),
+                    Expanded(child: getCom(value:"${controller.userSonModel.value.inviteAmount}",title:"已赚金额")),
+                  ],
                 ),
-              child:  Row(
-                children: [
-                  Expanded(child: getCom(value: "${controller.userSonModel.value.inviteNum}人",title:"我的徒弟")),
-                  Expanded(child: getCom(value:"${controller.userSonModel.value.inviteAmount}",title:"已赚金额")),
-                ],
               ),
-            ),
-            Expanded(child: mySonList)
-          ],
+              Expanded(child: mySonList)
+            ],
+          ),
         )
       ),
     );

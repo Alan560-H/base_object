@@ -70,6 +70,7 @@ class InviteView extends GetView<InviteController> {
                 child: Stack(
                   children: [
                     Column(
+                      spacing: 5.h,
                       children: [
                         // 头像，以及会员id以及邀请码
                         Row(
@@ -77,7 +78,7 @@ class InviteView extends GetView<InviteController> {
                           children: [
                             Avatar(headImage: controller.userInfo.userModel.headImage,size: 30.r,),
                             Column(
-                              spacing: 10.h,
+                              spacing: 5.h,
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -139,7 +140,7 @@ class InviteView extends GetView<InviteController> {
                     ),
                     Positioned(
                       left: 10.w,
-                      bottom: -16.w,
+                      bottom: -17.w,
                       child: Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
@@ -148,7 +149,7 @@ class InviteView extends GetView<InviteController> {
                                 image: CachedNetworkImageProvider(ImageConfig.inviteBanner))
                         ),
                         height: 60.h,
-                        width: 318.w,
+                        width: 320.w,
                           child: Padding(
                             padding: EdgeInsets.only(top: 10.h,left: 20.w,right: 10.w),
                             child: Row(
