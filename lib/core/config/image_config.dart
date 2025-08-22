@@ -26,6 +26,10 @@ class ImageConfig {
   /// 空数据
   static String empty =
       "${AppConfig.instance.getImgUrl}/AdObject/common/empty.png";
+  /// 空数据
+  static String userSon =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/user_son.png";
+
 //   ————————————————————底部导航——————————————————————
   /// 首页激活
   static String redBagActive =
