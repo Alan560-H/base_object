@@ -31,9 +31,12 @@ abstract class AppRoutes {
   static const userInvite = "/user/invite";
   /// 提现
   static const userTixian = "/user/tixian";
-
-  // static const userEditInfo = "/user/editInfo";
-  // static const userHelp = "/user/help";
-  // static const userHistory = "/user/history";
-  // static const userMsg = "/user/msg";
+  /// 用户收益
+  static const userEarnings = "/user/earnings";
+  /// 编辑个人信息
+  static const userEditInfo = "/user/editInfo";
+  /// 我的徒弟
+  static const userSon = "/user/son";
+  /// 我的钱包
+  static const userWallet = "/user/wallet";
 }

@@ -25,11 +25,19 @@ import 'package:base_object/pages/user/tixian/tixian_binding.dart';
 import 'package:base_object/pages/user/tixian/tixian_view.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_binding.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_view.dart';
+import 'package:base_object/pages/user/user_bag/user_bag_binding.dart';
+import 'package:base_object/pages/user/user_bag/user_bag_view.dart';
 import 'package:base_object/pages/user/user_binding.dart';
+import 'package:base_object/pages/user/user_earnings/user_earnings_binding.dart';
+import 'package:base_object/pages/user/user_earnings/user_earnings_view.dart';
+import 'package:base_object/pages/user/user_edit_info/user_edit_info_binding.dart';
+import 'package:base_object/pages/user/user_edit_info/user_edit_info_view.dart';
 import 'package:base_object/pages/user/user_invite/user_invite_binding.dart';
 import 'package:base_object/pages/user/user_invite/user_invite_view.dart';
 import 'package:base_object/pages/user/user_service/user_service_binding.dart';
 import 'package:base_object/pages/user/user_service/user_service_view.dart';
+import 'package:base_object/pages/user/user_son/user_son_binding.dart';
+import 'package:base_object/pages/user/user_son/user_son_view.dart';
 import 'package:base_object/pages/user/user_system/user_system_binding.dart';
 import 'package:base_object/pages/user/user_system/user_system_view.dart';
 import 'package:base_object/pages/user/user_view.dart';
@@ -135,6 +143,34 @@ class AppPages {
       name: AppRoutes.userInvite,
       page: () => UserInviteView(),
       binding: UserInviteBinding(),// 团长招募的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 我的钱包
+    GetPage(
+      name: AppRoutes.userWallet,
+      page: () => UserBagView(),
+      binding: UserBagBinding(),// 我的钱包的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 我的收益
+    GetPage(
+      name: AppRoutes.userEarnings,
+      page: () => UserEarningsView(),
+      binding: UserEarningsBinding(),// 我的收益的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 我的徒弟
+    GetPage(
+      name: AppRoutes.userSon,
+      page: () => UserSonView(),
+      binding: UserSonBinding(),// 我的收益的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 我的资料
+    GetPage(
+      name: AppRoutes.userEditInfo,
+      page: () => UserEditInfoView(),
+      binding: UserEditInfoBinding(),// 我的资料的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
   ];

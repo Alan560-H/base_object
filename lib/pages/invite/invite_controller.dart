@@ -17,24 +17,24 @@ class InviteController extends GetxController {
     MenuModel(
       id: 0,
       menuName: "我的钱包",
-      path: AppRoutes.userTransaction,
+      path: AppRoutes.userWallet,
       icon: Icons.shopping_bag,
     ),
     MenuModel(
       id: 1,
-      path: AppRoutes.userInvite,
+      path: AppRoutes.userEarnings,
       menuName: "我的收益",
       icon: Icons.share,
     ),
     MenuModel(
       id: 2,
       menuName: "我的徒弟",
-      path: AppRoutes.userLeader,
+      path: AppRoutes.userSon,
       icon: Icons.supervisor_account,
     ),
     MenuModel(
       id: 3,
-      path: AppRoutes.userService,
+      path: AppRoutes.userEditInfo,
       menuName: "我的资料",
       icon: Icons.info,
     ),
