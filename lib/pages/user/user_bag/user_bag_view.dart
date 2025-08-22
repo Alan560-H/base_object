@@ -85,7 +85,6 @@ class UserBagView extends GetView<UserBagController> {
           ),
         )
       ),
-      bottomNavigationBar: CuNavBarView(),
     );
   }
 }

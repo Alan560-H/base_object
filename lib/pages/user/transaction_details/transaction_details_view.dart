@@ -36,7 +36,7 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
       },
     );
   }
-// 收入表
+// 提现表
   Widget get userWithdrawalList {
     if (controller.userWithdrawalModelList.isEmpty) return CuEmpty();
     return ListView.builder(
