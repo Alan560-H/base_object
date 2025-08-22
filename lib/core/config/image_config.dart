@@ -84,11 +84,17 @@ class ImageConfig {
   /// 邀请好友背景
   static String currentAmount =
       "${AppConfig.instance.getImgUrl}/AdObject/common/current_amount.png";
+
   /// 邀请好友背景
   static String tiJiaobiao =
       "${AppConfig.instance.getImgUrl}/AdObject/common/ti_jiaobiao.png";
 
 //   ————————————————————user结束——————————————————————
+//   ————————————————————邀请开始——————————————————————
+  /// 邀请好友海报背景
+  static String commonBg =
+      "${AppConfig.instance.getImgUrl}/AdObject/invite/common_bg.png";
+//   ————————————————————邀请结束——————————————————————
   /// 头像
   static String getUrlAvatar(int index) {
     return "${AppConfig.instance.getImgUrl}/avatars/$index.jpg";

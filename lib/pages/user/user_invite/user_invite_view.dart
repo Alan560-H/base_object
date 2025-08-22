@@ -122,7 +122,9 @@ class UserInviteView extends GetView<UserInviteController> {
                             bgImage: ImageConfig.inviteBtn,
                             width: 120.w,
                             height: 50.h,
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed(AppRoutes.inviteUser);
+                            },
                           ),
                         ),
                       ],

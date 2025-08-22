@@ -9,6 +9,8 @@ import 'package:base_object/pages/home/home_view.dart';
 import 'package:base_object/pages/home/sub_page/box_details/details_binding.dart';
 import 'package:base_object/pages/home/sub_page/box_details/details_view.dart';
 import 'package:base_object/pages/invite/invite_binding.dart';
+import 'package:base_object/pages/invite/invite_user/invite_user_binding.dart';
+import 'package:base_object/pages/invite/invite_user/invite_user_view.dart';
 import 'package:base_object/pages/invite/invite_view.dart';
 import 'package:base_object/pages/login/login_binding.dart';
 import 'package:base_object/pages/login/login_view.dart';
@@ -78,6 +80,12 @@ class AppPages {
       name: AppRoutes.invite,
       page: () => InviteView(),
       binding: InviteBinding(),// 邀请的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    GetPage(
+      name: AppRoutes.inviteUser,
+      page: () => InviteUserView(),
+      binding: InviteUserBinding(),// 邀请好友的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
     GetPage(

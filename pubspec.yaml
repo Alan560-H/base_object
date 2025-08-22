@@ -45,6 +45,8 @@ dependencies:
   json_serializable: ^6.9.5
   #持久性存储，用于存储简单数据
   shared_preferences: ^2.5.3
+  # 轮播图插件
+  flutter_carousel_widget: ^3.1.0
   #日志记录
   logger: ^2.6.1
   # 文字轮播
