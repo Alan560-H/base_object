@@ -41,6 +41,8 @@ import 'package:base_object/pages/user/user_son/user_son_view.dart';
 import 'package:base_object/pages/user/user_system/user_system_binding.dart';
 import 'package:base_object/pages/user/user_system/user_system_view.dart';
 import 'package:base_object/pages/user/user_view.dart';
+import 'package:base_object/pages/user/withdrawal_history/withdrawal_history_binding.dart';
+import 'package:base_object/pages/user/withdrawal_history/withdrawal_history_view.dart';
 import 'package:get/get.dart';
 
 class AppPages {
@@ -171,6 +173,13 @@ class AppPages {
       name: AppRoutes.userEditInfo,
       page: () => UserEditInfoView(),
       binding: UserEditInfoBinding(),// 我的资料的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 我的提现记录
+    GetPage(
+      name: AppRoutes.userWithdrawalHistory,
+      page: () => WithdrawalHistoryView(),
+      binding: WithdrawalHistoryBinding(),// 我的提现记录的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
   ];

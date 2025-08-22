@@ -39,4 +39,6 @@ abstract class AppRoutes {
   static const userSon = "/user/son";
   /// 我的钱包
   static const userWallet = "/user/wallet";
+  /// 提现记录
+  static const userWithdrawalHistory = "/user/withdrawalHistory";
 }

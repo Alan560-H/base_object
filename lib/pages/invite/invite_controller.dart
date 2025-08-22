@@ -44,7 +44,7 @@ class InviteController extends GetxController {
       if(userInfo.isLoginIn){
         EasyLoading.show();
         userInviteInfoModel.value = await Api().getMyInviteInfo();
-        Utils.logError("遥信数据 ${userInviteInfoModel.toJson()}");
+        Utils.logError("我的邀请数据 ${userInviteInfoModel.toJson()}");
       }
     }catch(e){
       Utils.logError("getMyInviteInfo 邀请界面报错：$e");
