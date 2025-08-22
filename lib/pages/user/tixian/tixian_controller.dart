@@ -1,6 +1,7 @@
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
+import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
@@ -13,6 +14,8 @@ import 'package:get/get.dart';
 class TixianController extends GetxController {
   RxString appbarTitle = "提现界面".obs;
   UserInfo userInfo = Get.find<UserInfo>();
+  BannerTool bannerTool = Get.find<BannerTool>();
+
   RxList<WithdrawalModel> withdrawalList = <WithdrawalModel>[].obs;
   Rx<WithdrawalModel> selectedWithdrawalModel = WithdrawalModel().obs;
   Rx<WithdrawalForm> withdrawalForm = WithdrawalForm().obs;
@@ -74,6 +77,7 @@ class TixianController extends GetxController {
   }
   @override
   void onClose() {
+    bannerTool.afreshShowBannerAd();
     // TODO: implement onClose
     Utils.logError("提现界面onClose");
     super.onClose();
@@ -82,6 +86,7 @@ class TixianController extends GetxController {
   void onInit() {
     Utils.logError("提现界面初始化");
     // TODO: implement onInit
+    bannerTool.hideBannerAd();
     getWithdrawalList();
     super.onInit();
   }
