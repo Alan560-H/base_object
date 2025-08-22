@@ -94,6 +94,13 @@ class ImageConfig {
   /// 邀请好友海报背景
   static String commonBg =
       "${AppConfig.instance.getImgUrl}/AdObject/invite/common_bg.png";
+  /// 邀请好友海报背景
+  static String inviteBanner3 =
+      "${AppConfig.instance.getImgUrl}/AdObject/invite/invite_banner_3.png";
+  /// 邀请好友海报背景
+  static String inviteBanner1 =
+      "${AppConfig.instance.getImgUrl}/AdObject/invite/invite_banner_1.png";
+
 //   ————————————————————邀请结束——————————————————————
   /// 头像
   static String getUrlAvatar(int index) {

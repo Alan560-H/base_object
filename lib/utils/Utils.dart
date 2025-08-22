@@ -67,9 +67,18 @@ class Utils {
     return MediaQuery.of(context).size.height;
   }
 
-  /// 复制文本到剪切板
-  static copyText(String? str) async {
-    await Clipboard.setData(ClipboardData(text: str?? ""));
+  /// 复制文本到剪切板，返回是否成功
+  static Future<bool> copyText(String? str) async {
+    try {
+      // 执行复制操作
+      await Clipboard.setData(ClipboardData(text: str ?? ""));
+      // 复制成功返回true
+      return true;
+    } catch (e) {
+      // 复制失败返回false
+      Utils.logError("复制失败: $e");
+      return false;
+    }
   }
   static Timer? _debounceTimer;
   /// 防抖函数
