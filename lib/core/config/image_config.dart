@@ -100,6 +100,13 @@ class ImageConfig {
   /// 邀请好友海报背景
   static String inviteBanner1 =
       "${AppConfig.instance.getImgUrl}/AdObject/invite/invite_banner_1.png";
+  /// 邀请好友主界面背景
+  static String inviteBg =
+      "${AppConfig.instance.getImgUrl}/AdObject/invite/invite_bg.png";
+  /// 邀请好友主界面背景
+  static String inviteBanner =
+      "${AppConfig.instance.getImgUrl}/AdObject/invite/invite_banner.png";
+
 
 //   ————————————————————邀请结束——————————————————————
   /// 头像
