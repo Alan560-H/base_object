@@ -6,6 +6,7 @@ import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/components/custom_input_field.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/pages/user/tixian/tixian_controller.dart';
@@ -291,7 +292,9 @@ class TixianView extends GetView<TixianController> {
                   CuButton(
                     width: 40.w,
                     fontSize: TextConfig.textSize_24,
-                    onPressed: controller.getWithdrawalList, text: '刷新',icons: Icons.list_outlined,
+                    onPressed: (){
+                      Get.toNamed(AppRoutes.userTransaction);
+                    }, text: '刷新',icons: Icons.list_outlined,
                   ),
                 ],
                 // textColor: Colors.white,
