@@ -1,11 +1,25 @@
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/image_config.dart';
+import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
+import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
+import 'package:crypto/crypto.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:get/get.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeController extends GetxController {
   // 定时器对象，控制自动添加消息的周期
@@ -137,4 +151,114 @@ class HomeController extends GetxController {
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   // 随机数生成器（全局唯一）
   final Random random = Random();
+
+
+
+
+  String generateMD5(String input) {
+    // 将输入字符串转换为 UTF-8 字节
+    final bytes = utf8.encode(input);
+    // 计算 MD5 哈希
+    final md5Hash = md5.convert(bytes);
+    // 将哈希结果转换为字符串
+    return md5Hash.toString();
+  }
+  /// 获取渠道标识
+  Future<String> getAppChannel() async {
+    try {
+      var platform = MethodChannel('com.example.base_object/channel');
+      String channel = await platform.invokeMethod('getChannel');
+      return channel;
+    } catch (e) {
+      Utils.logError('获取渠道信息失败: $e');
+      return 'unknown';
+    }
+  }
+  Future<String?> getUserAgent() async {
+    const platform = MethodChannel('ua_channel');
+    try {
+      final String? ua = await platform.invokeMethod('getUA');
+      return ua;
+    } on PlatformException catch (e) {
+      Utils.logError("getUserAgent in error $e");
+    }
+    return null;
+  }
+  /// 获取app 升级信息
+  Future<void> getAppUpdata() async {
+    String channel = await getAppChannel();
+    /// 获取包信息
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    /// 构建服务器版本信息请求载荷
+    AppUpLoadForm appUpLoadForm = AppUpLoadForm();
+
+    if (channel.isEmpty) {
+      /// 渠道包名，主包名+渠道标识， 比如com.ruyimh.xiaomi
+      appUpLoadForm.channelPackage = packageInfo.packageName;
+    } else {
+      /// 渠道包名，主包名+渠道标识， 比如com.ruyimh.xiaomi
+      appUpLoadForm.channelPackage = "${packageInfo.packageName}.$channel";
+    }
+    /// 暂时性的
+    appUpLoadForm.channelPackage = "com.test.gf";
+    // Utils.logError("提交的标识符渠道名称${appUpLoadForm.toJson()}");
+
+    /// 返回的服务器版本信息
+    AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
+
+    // 获取oaid
+    appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
+    // 获取设备信息
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    // 获取ua
+    appUpLoadModel.ua = await getUserAgent();
+    appUpLoadModel.fingerprint = androidInfo.fingerprint;
+    appUpLoadModel.channel = channel;
+    appUpLoadModel.channelPackage = appUpLoadForm.channelPackage;
+
+    /// 将版本信息 存储到仓库
+    Store.instance.updateAppUpLoadModel(appUpLoadModel);
+
+    // Utils.logError("包信息：${packageInfo.toString()}");
+    // Utils.logError("服务器版本信息${appUpLoadModel.toJson()}");
+
+    /// 如果需要升级  ，那么就弹出升级框
+    if (appUpLoadModel.packageName.isEmpty) return;
+    String input =
+        "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";
+    // 生成 MD5 签名
+    String sign = generateMD5(input);
+
+    /// 当本地版本与服务器版本一致时，直接返回。
+    if (sign == appUpLoadModel.sign) return;
+
+    /// 当本地版本与服务器版本不一致或者must为强制更新时，显示更新框
+    if ((sign != appUpLoadModel.sign && appUpLoadModel.sign!=null) ||
+        Store.instance.getAppUpLoadModel.must == '1') {
+      appUpLoadModel.needUpdate = true;
+      /// 将版本信息 存储到仓库
+      Store.instance.updateAppUpLoadModel(appUpLoadModel);
+      String? lastTime = await LocalStorage.getString("isUpApp");
+      bool isShowUpDialog = true;
+      if(lastTime!=null&&Store.instance.getAppUpLoadModel.must != '1'){
+        Jiffy now = Jiffy.now();
+        Jiffy last = Jiffy.parse(
+            jsonDecode(lastTime)
+        );
+        isShowUpDialog = last.isBefore(now,unit: Unit.day);
+      }
+      if(isShowUpDialog){
+        Dialogs.showCommonDialog(
+          barrierDismissible: false,
+          dialogType: "AppUpLoadDialog",
+          data: appUpLoadModel,
+          dialogTitle: "升级提示",
+        );
+      }
+
+    }
+  }
+
 }

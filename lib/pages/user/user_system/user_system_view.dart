@@ -46,6 +46,10 @@ class UserSystemView extends GetView<UserSystemController> {
                           title: "会员ID",
                           value: controller.userInfo.userModel.id.toString(),
                         ),
+                        rowContainer(
+                          title: "当前版本",
+                          value: controller.packageInfo.value.version.toString(),
+                        ),
                       ],
                     ),
                   ),

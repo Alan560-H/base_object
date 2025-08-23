@@ -2,9 +2,11 @@ import 'dart:developer';
 
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
+import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserBayModel.dart';
@@ -41,6 +43,25 @@ class Api extends GetxController{
     } catch (e) {
       Utils.logError("_sendRequest请求出错: $e");
       rethrow;
+    }
+  }
+  /// 获取服务器版本信息
+  Future<AppUpLoadModel> postUpApp(AppUpLoadForm data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getSystemInfo,
+        data,
+        "post",
+      );
+      if (backModel.data == null) {
+        throw Exception('版本为空,无法解析${backModel.toJson()}',);
+      }
+      AppUpLoadModel appUpLoadModel = AppUpLoadModel.fromJson(backModel.data);
+      return appUpLoadModel;
+    } catch (e) {
+      Utils.logError(e);
+      AppUpLoadModel appUpLoadModel = AppUpLoadModel();
+      return appUpLoadModel;
     }
   }
   /// 获取图片验证码

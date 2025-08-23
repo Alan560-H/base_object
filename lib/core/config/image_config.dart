@@ -1,6 +1,14 @@
 import 'package:base_object/core/config/app_config.dart';
 
 class ImageConfig {
+  /// 通用对话框标题两侧 旁边的图标
+  static String dialogTitleSide =
+      "${AppConfig.instance.getImgUrl}/Rscsgo/images/web/common/comDialog_title_icon.png";/// 关闭图标
+  static String close =
+      "${AppConfig.instance.getImgUrl}/Rscsgo/images/web/common/close.png";
+  /// 通用对话框背景图片
+  static String dialogBodyBg =
+      "${AppConfig.instance.getImgUrl}/Rscsgo/images/web/common/dialog_2.png";
   /// 启动页背景 背景
   static String firstTitle =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_title.png";

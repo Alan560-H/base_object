@@ -102,6 +102,10 @@ class HomeView extends GetView<HomeController>{
   }
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      controller.getAppUpdata();
+    });
+
     return Scaffold(
       body: Obx(()=>
           Column(
