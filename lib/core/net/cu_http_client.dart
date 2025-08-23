@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
@@ -150,8 +151,8 @@ class CuHttpClient extends Getx.GetxService  {
 
         Utils.debounce(() {
           Utils.logError("$url接口发生错误,${errorModel.msg}，错误代码${backModel.code}");
-          // CuToast.error(msg: errorModel.msg);
-          Getx.Get.snackbar("提示", errorModel.msg);
+          CuToast.error(msg: errorModel.msg);
+          // Getx.Get.snackbar("提示", errorModel.msg);
         });
       }
 

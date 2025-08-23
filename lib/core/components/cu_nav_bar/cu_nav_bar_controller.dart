@@ -1,8 +1,14 @@
+import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/listener_tool.dart';
+import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -117,11 +123,26 @@ class CuNavBarController extends GetxController {
       );
     }).toList();
   }
-
+  upDataADFn(dynamic event)async{
+   try{
+     UpDataADForm upDataADForm = UpDataADForm();
+     DateTime now = DateTime.now();
+     int timestampMs  = now.millisecondsSinceEpoch;
+     upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
+     upDataADForm.amount = event['extraMap']['adsource_price'];
+     Utils.logError("凑成的字符串${ upDataADForm.extra }");
+     BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
+     if(backModel.code == CuErrorConfig.success){
+       CuToast.success(msg: "上报副广成功");
+     }
+    }catch(e){
+      Utils.logError("上报副广失败：$e");
+    }
+  }
   // 用于标记是否已处理跳转（避免重复跳转）
   bool _hasShow = false;
   /// 订阅 ListenerTool 的开屏广告事件
-  void _bannerEvent() {
+  void _bannerEvent() async {
     // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
     ever(ListenerTool.to.bannerEvent, (event) {
       if (event == null || _hasShow) return; // 过滤空事件或重复跳转
@@ -148,7 +169,11 @@ class CuNavBarController extends GetxController {
       /// 横幅广告自动刷新成功
         case "BannerStatus.bannerAdAutoRefreshSucceed":
           height.value = 110.h;
-          Utils.logError("好招术$event");
+          Utils.logError("好招术${event['extraMap']}");
+          if(Get.isRegistered<UserInfo>()){
+            upDataADFn(event);
+          }
+
           break;
       /// 横幅广告被点击
         case "BannerStatus.bannerAdDidClick":

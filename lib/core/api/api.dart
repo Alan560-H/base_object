@@ -4,6 +4,7 @@ import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
+import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
@@ -123,6 +124,21 @@ class Api extends GetxController{
       return BackModel();
     }
   }
+  /// 副广告上报
+  Future<BackModel> getSelectAdV2(UpDataADForm data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getSelectAdV2,
+        data,
+        "post",
+      );
+      return backModel;
+    } catch (e) {
+      Utils.logError("getSelectAdV2: $e");
+      return BackModel();
+    }
+  }
+
   /// 绑定邀请码
   Future<BackModel> getBindInviteUser(LoginForm data) async {
     try {
