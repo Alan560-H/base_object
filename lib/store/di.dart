@@ -1,5 +1,6 @@
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/api/api_binding.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/app_config.dart';
@@ -42,6 +43,8 @@ class DependencyInjection {
       Get.put<InterstitialTool>(InterstitialTool());
       // 注入信息流工具
       Get.put<NativeTool>(NativeTool());
+      // 注入进度条控制器
+      Get.put<CuCircularProgressController>(CuCircularProgressController(),);
       // 异步注入 ListenerTool（执行其 init() 方法）
       await Get.putAsync<ListenerTool>(() => ListenerTool().init());
       // 3. 最后注册 InterAdDialog（它依赖上面两个服务）
@@ -58,5 +61,7 @@ class DependencyInjection {
       Utils.logError("注入插屏广告工具：${Get.isRegistered<InterstitialTool>()}");
       Utils.logError("注入信息流广告工具：${Get.isRegistered<NativeTool>()}");
       Utils.logError("注入广告监听工具：${Get.isRegistered<ListenerTool>()}");
+      Utils.logError("注入进度条工具：${Get.isRegistered<CuCircularProgressController>()}");
+
     }
 }

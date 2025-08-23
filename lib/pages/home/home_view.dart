@@ -1,4 +1,5 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_view.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
@@ -118,7 +119,23 @@ class HomeView extends GetView<HomeController>{
                   backgroundColor: Colors.white,
               ),
               // 聊天列表
-              Expanded(child: _buildChatList()),
+              Expanded(child: Stack(children:
+              [
+                _buildChatList(),
+                // 1. 使用自定义圆形进度条组件
+                Positioned(
+                  top: Get.height/2-100.h,
+                  left: 0,
+                  child: CuCircularProgressView(
+                  imagePath: ImageConfig.progressBg, // 本地图片路径（需在pubspec.yaml配置）
+                  size: 60.h, // 自定义进度条大小
+                  strokeWidth: 5.h, // 自定义进度条宽度
+                  progressColor: TextConfig.primary, // 自定义进度色（橙色）
+                  backgroundColor: TextConfig.black333, // 自定义背景色
+                ),)
+              ]
+
+              )),
             ],
           )
       ),

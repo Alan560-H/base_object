@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
@@ -33,6 +34,12 @@ class InterAdDialog extends GetxService {
       int timestampMs  = now.millisecondsSinceEpoch;
       upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
       upDataADForm.amount = event['extraMap']['adsource_price'];
+      if(upDataADForm.amount!=null){
+        double pross = upDataADForm.amount!*100;
+        Utils.logError("插屏广告增加进度${pross}");
+
+        CuCircularProgressController.to.incrementProgress(pross);
+      }
       Utils.logError("凑成的字符串${ upDataADForm.extra }");
       BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
       if(backModel.code == CuErrorConfig.success){

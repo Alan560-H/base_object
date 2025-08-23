@@ -15,6 +15,10 @@ class ImageConfig {
   /// 启动页背景 背景
   static String firstBotton =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_botton.png";
+  /// 进度条图片
+  static String progressBg =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/progress_bg.png";
+
   /// logo
   static String logo =
       "${AppConfig.instance.getImgUrl}/AdObject/common/logo.png";
