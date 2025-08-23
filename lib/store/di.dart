@@ -1,5 +1,6 @@
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/api/api_binding.dart';
+import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/manager/banner_tool.dart';
@@ -43,6 +44,8 @@ class DependencyInjection {
       Get.put<NativeTool>(NativeTool());
       // 异步注入 ListenerTool（执行其 init() 方法）
       await Get.putAsync<ListenerTool>(() => ListenerTool().init());
+      // 3. 最后注册 InterAdDialog（它依赖上面两个服务）
+      await Get.putAsync<InterAdDialog>(() async => InterAdDialog());
       Utils.logError("用户：${Get.isRegistered<UserInfo>()}");
       Utils.logError("配置：${Get.isRegistered<AppConfig>()}");
       Utils.logError("广告配置：${Get.isRegistered<AppAdConfig>()}");

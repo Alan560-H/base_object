@@ -28,12 +28,10 @@ class InterstitialTool extends GetxService {
     checkInterstitialLoadStatus();
   }
 
-  hasInterstitialAdReady() async {
-    await ATInterstitialManager.hasInterstitialAdReady(
+  Future<bool> hasInterstitialAdReady() async {
+    return await ATInterstitialManager.hasInterstitialAdReady(
       placementID: AppAdConfig.interstitialPlacementID,
-    ).then((value) {
-      Utils.logError('flutter：插屏广告是否就绪：$value'); // 翻译：原"hasInterstitialAdReady"→"插屏广告是否就绪"
-    });
+    );
   }
 
   getInterstitialValidAds() async {
