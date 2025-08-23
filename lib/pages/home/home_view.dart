@@ -78,7 +78,9 @@ class HomeView extends GetView<HomeController>{
                  SizedBox(height: 5.h),
                 // 消息内容或红包
                 message.content == null
-                    ? CachedNetworkImage(imageUrl: ImageConfig.hongbao)
+                    ? InkWell(
+                    onTap: controller.showRewarder,
+                    child: CachedNetworkImage(imageUrl: ImageConfig.hongbao))
                     : Container(
                   padding:  EdgeInsets.symmetric(
                     horizontal: 12.w,

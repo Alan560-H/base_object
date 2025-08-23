@@ -9,6 +9,7 @@ import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
+import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserBayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserInviteCountModel.dart';
@@ -136,6 +137,20 @@ class Api extends GetxController{
     } catch (e) {
       Utils.logError("getSelectAdV2: $e");
       return BackModel();
+    }
+  }
+  /// 激励视频领取奖励
+  Future<RewarderModel> getSelectAd(UpDataADForm data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getSelectAd,
+        data,
+        "post",
+      );
+      return RewarderModel.fromJson(backModel.data);
+    } catch (e) {
+      Utils.logError("getSelectAd: $e");
+      return RewarderModel();
     }
   }
 

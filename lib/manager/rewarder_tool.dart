@@ -23,14 +23,11 @@ class RewarderTool extends GetxService{
     getRewardedVideoValidAds();
   }
 
-  rewardedVideoReady() async {
-    await ATRewardedManager
+  Future<bool> rewardedVideoReady() async {
+   return await ATRewardedManager
         .rewardedVideoReady(
       placementID: AppAdConfig.rewarderPlacementID,
-    )
-        .then((value) {
-      Utils.logError('flutter：激励视频是否就绪：$value'); // 原"rewardedVideoReady"→"激励视频是否就绪"
-    });
+    );
   }
 
   checkRewardedVideoLoadStatus() async {

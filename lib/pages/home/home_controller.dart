@@ -1,13 +1,19 @@
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
+import 'package:base_object/manager/listener_tool.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
+import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
+import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
@@ -22,13 +28,100 @@ import 'package:jiffy/jiffy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeController extends GetxController {
+  upDataADFn(dynamic event)async{
+    try{
+      UpDataADForm upDataADForm = UpDataADForm();
+      DateTime now = DateTime.now();
+      int timestampMs  = now.millisecondsSinceEpoch;
+      upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
+      // upDataADForm.amount = event['extraMap']['adsource_price'];
+      Utils.logError("主动领取激励视频凑成的字符串${ upDataADForm.extra }");
+      RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
+      Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
+
+        CuToast.success(msg: "恭喜获得${rewarderModel.amount} 金币");
+    }catch(e){
+      Utils.logError("领取激励视频奖励失败：$e");
+    }
+  }
+  // 用于标记是否已处理跳转（避免重复跳转）
+  bool _hasShow = false;
+
+  /// 订阅 ListenerTool 的开屏广告事件
+  void rewarderEvent() async {
+    // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
+    ever(ListenerTool.to.rewarderEvent, (event) {
+      if (event == null || _hasShow) return; // 过滤空事件或重复跳转
+
+      // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
+      String eventType = event["eventType"] ?? "";
+      String placementID = event["placementID"] ?? "";
+
+      Utils.logError("激励广告收到激励视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
+
+      // 根据事件类型执行业务逻辑
+      switch (eventType) {
+        // 激励视频广告加载失败
+        case "RewardedStatus.rewardedVideoDidFailToLoad":
+          Utils.logError("激励广告激励视频广告加载失败，广告位ID：$placementID，事件参数：$event");
+          break;
+        // 广告加载成功
+        case "RewardedStatus.rewardedVideoDidFinishLoading":
+          Utils.logError("激励广告激励视频广告加载完成，广告位ID：$placementID，事件参数：$event");
+          break;
+        // 广告开始播放
+        case "RewardedStatus.rewardedVideoDidStartPlaying":
+          Utils.logError("激励广告激励视频广告开始播放，广告位ID：$placementID，事件参数：$event");
+          break;
+      // 广告结束播放
+        case "RewardedStatus.rewardedVideoDidEndPlaying":
+          Utils.logError("激励广告激励视频广告结束播放，广告位ID：$placementID，事件参数：$event");
+          break;
+      // 广告播放失败
+        case "RewardedStatus.rewardedVideoDidFailToPlay":
+          Utils.logError("激励广告广告播放失败，广告位ID：$placementID，事件参数：$event");
+          break;
+      // 激励成功，建议在此回调中下发奖励
+        case "RewardedStatus.rewardedVideoDidRewardSuccess":
+          Utils.logError("激励广告激励成功，建议在此回调中下发奖励 ，广告位ID：$placementID，事件参数：$event ");
+          if(Get.isRegistered<UserInfo>()){
+            upDataADFn(event);
+          }
+          break;
+      // 广告被点击
+        case "RewardedStatus.rewardedVideoDidClick":
+          Utils.logError(" 激励广告广告被点击  ，广告位ID：$placementID，事件参数：$event");
+          break;
+      // 深度链接
+        case "RewardedStatus.rewardedVideoDidDeepLink":
+          Utils.logError("激励广告深度链接 ，广告位ID：$placementID，事件参数：$event ");
+          break;
+      // 激励广告被关闭
+        case "RewardedStatus.rewardedVideoDidClose":
+          Utils.logError("激励广告被关闭，广告位ID：$placementID，事件参数：$event");
+          break;
+      }
+    });
+  }
+
+  showRewarder() async {
+    bool isReady = await RewarderTool.to.rewardedVideoReady();
+    if (isReady) {
+      await RewarderTool.to.showRewardedVideo();
+    } else {
+      CuToast.error(msg: "激励广告加载失败。请稍后重试");
+    }
+  }
+
   // 定时器对象，控制自动添加消息的周期
   Timer? _autoMessageTimer;
 
   // 页面初始化：添加初始消息 + 启动自动消息定时器
   @override
   void onInit() {
+    rewarderEvent();
     super.onInit();
+    RewarderTool.to.loadRewardedVideo();
     UserInfo.instance.initialize();
     // 初始化添加5条随机消息
     for (int i = 0; i < 5; i++) {
@@ -75,13 +168,41 @@ class HomeController extends GetxController {
   String _generateRandomNickname() {
     // 常见姓氏库
     final List<String> surnames = [
-      "张", "李", "王", "刘", "陈", "杨", "赵", "黄", "周", "吴",
-      "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗"
+      "张",
+      "李",
+      "王",
+      "刘",
+      "陈",
+      "杨",
+      "赵",
+      "黄",
+      "周",
+      "吴",
+      "徐",
+      "孙",
+      "胡",
+      "朱",
+      "高",
+      "林",
+      "何",
+      "郭",
+      "马",
+      "罗",
     ];
     // 抢红包场景专属名字
     final List<String> givenNames = [
-      "抢包快", "红包控", "手慢无", "必中君", "好运来", "财气旺",
-      "秒抢王", "幸运星", "红包侠", "发财猫", "福气多", "抢不停"
+      "抢包快",
+      "红包控",
+      "手慢无",
+      "必中君",
+      "好运来",
+      "财气旺",
+      "秒抢王",
+      "幸运星",
+      "红包侠",
+      "发财猫",
+      "福气多",
+      "抢不停",
     ];
     // 昵称后缀（增加多样性）
     final List<String> suffixes = ["", "呀", "啦", "～", "！", "✨"];
@@ -124,7 +245,7 @@ class HomeController extends GetxController {
       "红包提醒太及时了，差点就错过了！",
       "有没有大红包？我已经准备好冲刺了！",
       "谢谢老板，祝您天天开心！",
-      "抢红包太快乐了，根本停不下来！"
+      "抢红包太快乐了，根本停不下来！",
     ];
     return redPacketQuotes[random.nextInt(redPacketQuotes.length)];
   }
@@ -133,7 +254,7 @@ class HomeController extends GetxController {
   void _startAutoMessageTimer() {
     _autoMessageTimer = Timer.periodic(
       const Duration(seconds: 3),
-          (Timer timer) => _addRandomChatMessage(),
+      (Timer timer) => _addRandomChatMessage(),
     );
   }
 
@@ -152,9 +273,6 @@ class HomeController extends GetxController {
   // 随机数生成器（全局唯一）
   final Random random = Random();
 
-
-
-
   String generateMD5(String input) {
     // 将输入字符串转换为 UTF-8 字节
     final bytes = utf8.encode(input);
@@ -163,6 +281,7 @@ class HomeController extends GetxController {
     // 将哈希结果转换为字符串
     return md5Hash.toString();
   }
+
   /// 获取渠道标识
   Future<String> getAppChannel() async {
     try {
@@ -174,6 +293,7 @@ class HomeController extends GetxController {
       return 'unknown';
     }
   }
+
   Future<String?> getUserAgent() async {
     const platform = MethodChannel('ua_channel');
     try {
@@ -184,9 +304,11 @@ class HomeController extends GetxController {
     }
     return null;
   }
+
   /// 获取app 升级信息
   Future<void> getAppUpdata() async {
     String channel = await getAppChannel();
+
     /// 获取包信息
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
@@ -200,6 +322,7 @@ class HomeController extends GetxController {
       /// 渠道包名，主包名+渠道标识， 比如com.ruyimh.xiaomi
       appUpLoadForm.channelPackage = "${packageInfo.packageName}.$channel";
     }
+
     /// 暂时性的
     appUpLoadForm.channelPackage = "com.test.gf";
     // Utils.logError("提交的标识符渠道名称${appUpLoadForm.toJson()}");
@@ -235,21 +358,20 @@ class HomeController extends GetxController {
     if (sign == appUpLoadModel.sign) return;
 
     /// 当本地版本与服务器版本不一致或者must为强制更新时，显示更新框
-    if ((sign != appUpLoadModel.sign && appUpLoadModel.sign!=null) ||
+    if ((sign != appUpLoadModel.sign && appUpLoadModel.sign != null) ||
         Store.instance.getAppUpLoadModel.must == '1') {
       appUpLoadModel.needUpdate = true;
+
       /// 将版本信息 存储到仓库
       Store.instance.updateAppUpLoadModel(appUpLoadModel);
       String? lastTime = await LocalStorage.getString("isUpApp");
       bool isShowUpDialog = true;
-      if(lastTime!=null&&Store.instance.getAppUpLoadModel.must != '1'){
+      if (lastTime != null && Store.instance.getAppUpLoadModel.must != '1') {
         Jiffy now = Jiffy.now();
-        Jiffy last = Jiffy.parse(
-            jsonDecode(lastTime)
-        );
-        isShowUpDialog = last.isBefore(now,unit: Unit.day);
+        Jiffy last = Jiffy.parse(jsonDecode(lastTime));
+        isShowUpDialog = last.isBefore(now, unit: Unit.day);
       }
-      if(isShowUpDialog){
+      if (isShowUpDialog) {
         Dialogs.showCommonDialog(
           barrierDismissible: false,
           dialogType: "AppUpLoadDialog",
@@ -257,8 +379,6 @@ class HomeController extends GetxController {
           dialogTitle: "升级提示",
         );
       }
-
     }
   }
-
 }
