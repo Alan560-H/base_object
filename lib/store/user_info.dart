@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_keys.dart';
@@ -8,6 +9,7 @@ import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class UserInfo extends GetxController{
@@ -84,7 +86,26 @@ class UserInfo extends GetxController{
       initUserInfo();
     }
   }
-
+  /// 请求最新用户信息
+  Future<void> getUserInfoFn() async {
+    try{
+      EasyLoading.show(status: "请求用户信息中...");
+      if(!Get.isRegistered<Api>()){
+        Get.put(Api());
+      }
+      UserModel userModel = await Api.to.getUserInfo();
+      if (userModel.id != 0) {
+        UserInfo.instance.updateUserModel(userModel);
+        UserTodayModel userTodayModel = await Api.to.getTodayAmount();
+        UserInfo.instance.updateUserTodayModel(userTodayModel);
+        Utils.logError("用户今日收益：${userTodayModel.toJson()}");
+      }
+    }catch(e){
+      Utils.logError("请求最新用户信息失败$e");
+    }finally{
+      EasyLoading.dismiss();
+    }
+  }
 
   /// 更新用户数据
   void updateUserModel(UserModel newModel) {

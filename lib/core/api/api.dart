@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:base_object/models/FormModel/FormModel.dart';
+import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
@@ -84,6 +85,34 @@ class Api extends GetxController{
       return backModel;
     } catch (e) {
       Utils.logError("getWithdrawalMoney: $e");
+      return BackModel();
+    }
+  }
+  /// 设置密码
+  Future<BackModel> getSetUser(LoginForm data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getSetUser,
+        data,
+        "post",
+      );
+      return backModel;
+    } catch (e) {
+      Utils.logError("getSetUser: $e");
+      return BackModel();
+    }
+  }
+  /// 绑定邀请码
+  Future<BackModel> getBindInviteUser(LoginForm data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getBindInviteUser,
+        data,
+        "post",
+      );
+      return backModel;
+    } catch (e) {
+      Utils.logError("getBindInviteUser: $e");
       return BackModel();
     }
   }

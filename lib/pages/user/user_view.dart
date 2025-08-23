@@ -32,6 +32,11 @@ class UserView extends GetView<UserController> {
   }
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+     if(controller.userInfo.isLoginIn){
+       await controller.userInfo.getUserInfoFn();
+     }
+    });
     return Scaffold(
       body: Obx(()=>
          Container(

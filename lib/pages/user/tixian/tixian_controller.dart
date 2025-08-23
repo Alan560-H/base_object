@@ -46,6 +46,7 @@ class TixianController extends GetxController {
         accountController.clear();
         withdrawalForm.value.payName = "";
         withdrawalForm.value.payAccount = "";
+        await UserInfo.instance.getUserInfoFn();
       }
     }catch(e){
       Utils.logError("提现提交出错: $e");

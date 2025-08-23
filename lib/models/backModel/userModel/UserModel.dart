@@ -18,6 +18,8 @@ class UserModel {
   int authentication = 0;
   /// 推广码
   String inviteCode = "";
+  /// 上级邀请人id
+  int? inviteUserId =0;
   /// 手机号
   String mobile = "";
   /// 当前收益
