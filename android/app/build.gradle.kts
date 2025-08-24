@@ -34,6 +34,7 @@ android {
         ndk {
             abiFilters.add("arm64-v8a")
         }
+        manifestPlaceholders.put("APPLOG_SCHEME", "rangersapplog.dc6f26f3112ee022".toLowerCase())
     }
     flavorDimensions("channel") // 配置渠道维度，这里使用括号的形式
 
