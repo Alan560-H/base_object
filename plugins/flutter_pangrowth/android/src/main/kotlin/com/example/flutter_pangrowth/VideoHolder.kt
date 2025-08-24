@@ -26,7 +26,7 @@ object VideoHolder : CoroutineScope by MainScope() {
 
     var isDPStarted: Boolean = false
 
-    fun initSDK(context: Application,  call: MethodCall,onInited: (Boolean) -> Unit) {
+    fun initSDK(context: Application, call: MethodCall, onInited: (Boolean) -> Unit) {
         val debug = call.argument<Boolean>("debug") as Boolean
         val androidAppId = call.argument<String>("andoridAppId")
 
@@ -46,11 +46,14 @@ object VideoHolder : CoroutineScope by MainScope() {
             .build()
 
         // 配置青少年模式，可选
-        djConfig.privacyController = object : IDJXPrivacyController() {
-            override fun isTeenagerMode(): Boolean {
-                return false
+        djConfig.apply {
+            privacyController = object : IDJXPrivacyController() {
+                override fun isTeenagerMode(): Boolean {
+                    return false
+                }
             }
         }
+
         DJXSdk.init(context, configJson, djConfig)
 
         TTAdSdk.start(object : TTAdSdk.Callback {

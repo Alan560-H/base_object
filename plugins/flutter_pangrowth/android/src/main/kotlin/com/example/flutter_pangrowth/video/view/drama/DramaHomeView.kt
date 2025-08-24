@@ -41,9 +41,11 @@ internal class DramaHomeView(
     init {
         Log.d(TAG, "init")
         //初始化 grid 组件
-        mContainer = FrameLayout(activity)
-        mContainer?.layoutParams?.width = viewWidth.toInt()
-        mContainer?.layoutParams?.height = viewHeight.toInt()
+        mContainer = FrameLayout(activity).apply {
+            this.id = View.generateViewId()
+            layoutParams?.width = viewWidth.toInt()
+            layoutParams?.height = viewHeight.toInt()
+        }
         Log.d(TAG, "height $viewHeight width $viewWidth")
         initDrawWidget()
     }
@@ -77,7 +79,12 @@ internal class DramaHomeView(
 
                 }
             }
-        ).hideBack(true, null).hideTopInfo(true)
+        ).apply {
+            hideBack(true) {
+
+            }
+            hideTopInfo(true)
+        }
         dpWidget = DJXSdk.factory().createDramaHome(
             DJXWidgetDramaHomeParams.obtain(detailConfig)
                 .setTopOffset(30)
@@ -110,10 +117,10 @@ internal class DramaHomeView(
             return
         }
         isAdded = true
-        flutterView.post {
+        mContainer?.post {
             dpWidget?.fragment?.let {
                 activity.supportFragmentManager.beginTransaction()
-                    .add(flutterView.id, it, "drama_home")
+                    .add(mContainer!!.id, it, "drama_home")
                     .commitAllowingStateLoss()
             }
         }

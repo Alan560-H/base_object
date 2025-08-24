@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 /// @Author: gstory
 /// @CreateDate: 2021/12/14 12:10 下午
 /// @Email gstory0404@gmail.com
-/// @Description: dart类作用描述 
+/// @Description: dart类作用描述
 
 class DrawHomeView extends StatefulWidget {
   final double viewWidth;
