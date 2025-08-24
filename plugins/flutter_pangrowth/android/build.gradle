@@ -1,0 +1,94 @@
+group 'com.example.flutter_pangrowth'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.3.50'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+
+        maven {
+            url "https://artifact.bytedance.com/repository/Volcengine/"
+        }
+
+        maven {
+            url "https://artifact.bytedance.com/repository/pangle/"
+        }
+
+        maven {
+            url "https://artifact.bytedance.com/repository/AwemeOpenSDK"
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace "com.example.flutter_pangrowth"
+    compileSdkVersion 35
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+    }
+}
+
+configurations.all {
+    //若接入流媒体sdk（小视频、直播）需要force constraint-layout版本
+    resolutionStrategy {
+        force 'com.android.support.constraint:constraint-layout:1.1.2'
+    }
+}
+
+dependencies {
+    implementation("com.pangle.cn:mediation-sdk:5.9.0.8")
+
+    api('com.bytedance.applog:RangersAppLog-Lite-cn:6.9.6')
+    api('com.volcengine:apm_insight_crash:1.4.4')
+    api('com.squareup.picasso:picasso:2.71828')
+    api('com.android.support:appcompat-v7:28.0.0')
+    api('com.android.support:support-v4:28.0.0')
+    api('com.android.support:recyclerview-v7:28.0.0')
+    api('com.android.support.constraint:constraint-layout:1.1.2')
+    api('com.android.support:design:28.0.0')
+    api('com.android.support:support-annotations:28.0.0')
+    api('com.volcengine:apm_insight_sdk:1.1.5')
+    api('com.kyleduo.switchbutton:library:2.1.0')
+    api('com.bytedance.ies.ugc.aweme:opensdk-china-external:0.1.4.0')
+    api('com.bytedance.ies.ugc.aweme:opensdk-common:0.1.4.0')
+    api('com.google.code.gson:gson:2.8.5')
+    api('com.android.support:multidex:1.0.3')
+    api('com.squareup.okhttp3:okhttp:3.10.0')
+
+    //为保证兼容性 建议使用广告SDK版本
+    //implementation 'com.pangle.cn:ads-sdk-pro:7.0.1.0'
+    implementation("com.pangle.cn:pangrowth-base:2.8.0.1")
+    implementation("com.pangle.cn:pangrowth-djx-sdk-lite:2.8.0.1")
+    implementation("com.pangle.cn:pangrowth-dpsdk:5.4.1.0")
+}

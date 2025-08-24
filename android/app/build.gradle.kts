@@ -105,8 +105,8 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("release")
             // 可选：启用代码混淆和资源压缩
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -148,7 +148,7 @@ dependencies {
 
     //Csj
     api("com.anythink.sdk:adapter-taku-csj:6.5.10")
-    api("com.pangle.cn:ads-sdk-pro:6.9.2.3")
+    //api("com.pangle.cn:ads-sdk-pro:6.9.2.3")
 
     //GDT
     api("com.anythink.sdk:adapter-taku-gdt:6.5.10")

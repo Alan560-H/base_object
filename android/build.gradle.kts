@@ -12,6 +12,12 @@ allprojects {
         //Anythink(Core)
         maven(url = "https://jfrog.takuad.com/artifactory/china_sdk")
         maven(url = "https://artifact.bytedance.com/repository/pangle")
+        maven (
+            url="https://artifact.bytedance.com/repository/Volcengine/"
+        )
+        maven (
+            url="https://artifact.bytedance.com/repository/pangle/"
+        )
         google()
         mavenCentral()
     }

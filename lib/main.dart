@@ -7,6 +7,7 @@ import 'package:base_object/store/di.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +15,7 @@ import 'manager/Init_tool.dart';
 import 'utils/ChineseLocalizationsDelegate.dart';
 import 'utils/Utils.dart';
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 全局依赖注入
   // 等待所有依赖注入完成（尤其是异步注入）
@@ -24,7 +25,22 @@ void main()async {
   Utils.logError("广告初始化完成 $isInitAd");
   AppConfig.instance.init();
   UserInfo.instance.initialize();
+
+  ///同意隐私政策之后调用
+  await _pangrowthInit();
+
   runApp(const MyApp());
+}
+
+Future _pangrowthInit() async {
+  await PangrowthVideo.registerVideo(
+    appName: "",
+    ////appid 必填
+    ///demo 使用
+    andoridAppId: "5713596",
+    iosAppId: "",
+    debug: true,
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -43,8 +59,10 @@ class _MyAppState extends State<MyApp> with AppTheme {
       designSize: const Size(375, 812),
       builder: (context, child) {
         return GetMaterialApp(
-          locale: const Locale('zh', 'CN'), // 默认中文
-          fallbackLocale: const Locale('zh', 'CN'), //  fallback 语言
+          locale: const Locale('zh', 'CN'),
+          // 默认中文
+          fallbackLocale: const Locale('zh', 'CN'),
+          //  fallback 语言
           localizationsDelegates: [
             DefaultWidgetsLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,

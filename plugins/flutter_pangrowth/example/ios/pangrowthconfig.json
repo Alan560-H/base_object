@@ -1,0 +1,58 @@
+{
+    "init": {
+        "site_id": "5425850",
+        "app_id": "545300",
+        "partner": "pangle_545300",
+        "secure_key": "e87b8c2e171822cf5e88214fa8a7fbe8",
+        "secure_key_d": "ZJSnPvTUn-TUyggOr4YZ1Q=="
+    },
+    "feed": {
+        "news_list_ad_code_id": "",
+        "news_first_ad_code_id": "",
+        "news_second_ad_code_id": "",
+        "video_first_ad_code_id": "",
+        "video_second_ad_code_id": "",
+        "related_ad_code_id": "",
+        "news_draw_ad_code_id": "953856271",
+        "news_draw_native_ad_code_id": "953856279",
+        "news_outer_list_ad_code_id": "",
+        "news_outer_first_ad_code_id": "",
+        "news_outer_second_ad_code_id": "",
+        "outer_video_second_ad_code_id": "",
+        "outer_related_ad_code_id": "",
+        "news_outer_draw_ad_code_id": "953856274",
+        "news_outer_draw_native_ad_code_id": "953856277",
+        "news_interstitial_code_id": ""
+    },
+    "small_video": {
+        "draw_ad_code_id": "953856275",
+        "draw_native_ad_code_id": "953856260",
+        "grid_ad_code_id": "953856263",
+        "grid_draw_ad_code_id": "953856270",
+        "grid_draw_native_ad_code_id": "953856278",
+        "video_card_ad_code_id": "953856266",
+        "video_card_draw_ad_code_id": "953856273",
+        "video_card_draw_native_ad_code_id": "953856272",
+        "interstitial_ad_code_id": "",
+        "interstitial_note_ad_code_id": "953856265",
+        "staggered_grid_ad_code_id": "953856267",
+        "staggered_grid_draw_ad_code_id": "953856275",
+        "staggered_grid_draw_native_ad_code_id": "953856260",
+        "draw_interstitial_ad_code_id": "953856268",
+        "draw_fullscreen_interstitial_ad_code_id": "953856261",
+        "draw_banner_code_id": "953856262",
+        "drama_rewarded_ad_code_id": "953856269",
+        "drama_rewarded_ad_code_id_02": "953856264",
+        "drama_draw_ad_code_id": "953856276"
+    },
+    "novel": {
+        "status": 0,
+        "pre_ad_code_id": "",
+        "mid_ad_code_id": "",
+        "exciting_ad_code_id": "",
+        "interstitial_code_id": "",
+        "banner_ad_code_id": "",
+        "end_ad_code_id": ""
+    },
+    "live": null
+}
