@@ -1,4 +1,6 @@
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,7 +32,9 @@ class CuCircularProgressView extends StatelessWidget {
     return Obx(
           () => InkWell(
             onTap: (){
-              CuCircularProgressController.to.incrementProgress(100);
+              // CuCircularProgressController.to.incrementProgress(100);
+              Utils.logError("点击进度条${CuCircularProgressController.to.progress}");
+              Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.progress.floor());
             },
             child: Stack(
                     alignment: Alignment.center,

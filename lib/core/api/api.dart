@@ -139,6 +139,21 @@ class Api extends GetxController{
       return BackModel();
     }
   }
+  /// 副广告奖励领取
+  Future<BackModel> getAdAmount() async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getAdAmount,
+        FormModel(),
+        "post",
+      );
+      return backModel;
+    } catch (e) {
+      Utils.logError("getSelectAdV2: $e");
+      return BackModel();
+    }
+  }
+
   /// 激励视频领取奖励
   Future<RewarderModel> getSelectAd(UpDataADForm data) async {
     try {

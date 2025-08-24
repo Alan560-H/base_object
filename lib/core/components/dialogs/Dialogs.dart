@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'commonDialog/BaseDialog.dart';
+import 'commonDialog/ClaimAdDialog.dart';
 
 /// 如果需要调用通用模态框，请调用showCommonDialog，否则直接调用其特殊模态框静态方法
 class Dialogs {
@@ -32,15 +33,22 @@ class Dialogs {
   }
 
 
-  // /// 领取红包
-  // static Future<Widget?> redBagDialog(BuildContext context) {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (BuildContext dialogContext) {
-  //       return RedBagDialog();
-  //     },
-  //   );
-  // }
+  /// 领取存钱罐
+  static Future<Widget?> ClaimAdDialogs({ dynamic data,
+    void Function(dynamic sonData)? onClick,
+    void Function()? onClose,
+    bool barrierDismissible = true,}
+      ) {
+    return showDialog(
+      context: Get.context!,
+      builder: (BuildContext dialogContext) {
+        return ClaimAdDialog(
+          data: data,
+          onClick: onClick,
+        );
+      },
+    );
+  }
 
   // /// 公告框
   // static Future<Widget?> noticeDialog(BuildContext context) {

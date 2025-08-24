@@ -12,6 +12,10 @@ class ImageConfig {
   /// 启动页背景 背景
   static String firstTitle =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_title.png";
+  /// 领取存钱罐背景
+  static String redBagBg =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/red_bag_bg.png";
+
   /// 启动页背景 背景
   static String firstBotton =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_botton.png";
