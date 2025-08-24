@@ -2,7 +2,6 @@ package com.example.flutter_pangrowth
 
 import android.app.Application
 import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 
 /**
  * @Author: gstory
@@ -14,8 +13,8 @@ object VideoPlugin {
     /**
      * 短视频注册
      */
-    fun registerVideo(context: Application?, call: MethodCall, result: MethodChannel.Result) {
-        VideoHolder.initSDK(context!!, call, result)
+    fun registerVideo(context: Application?, call: MethodCall, onInited: (Boolean) -> Unit) {
+        VideoHolder.initSDK(context!!, call, onInited)
     }
 
 }

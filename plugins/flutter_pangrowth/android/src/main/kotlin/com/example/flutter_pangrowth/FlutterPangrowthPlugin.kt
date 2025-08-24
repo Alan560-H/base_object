@@ -56,8 +56,9 @@ class FlutterPangrowthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(call: MethodCall, result: Result) {
         Log.d("FlutterPangrowthPlugin", "onMethodCall: ${call.method}")
         if (call.method == "registerVideo") {
-            VideoPlugin.registerVideo(applicationContext as? Application, call, result)
-            result.success(true)
+            VideoPlugin.registerVideo(applicationContext as? Application, call) {
+                result.success(it)
+            }
         } else {
             result.notImplemented()
         }

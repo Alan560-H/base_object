@@ -15,10 +15,6 @@ class PangrowthVideo {
       "andoridAppId": andoridAppId,
       "iosAppId": iosAppId,
       "debug": debug ?? false,
-      "mPartner": mPartner,
-      "mSecureKey": mSecureKey,
-      "mOldPartner": mOldPartner,
-      "mOldUUID": mOldUUID,
     });
   }
 

@@ -15,11 +15,8 @@ import com.bytedance.sdk.openadsdk.TTAdConfig
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 object VideoHolder : CoroutineScope by MainScope() {
 
@@ -29,7 +26,7 @@ object VideoHolder : CoroutineScope by MainScope() {
 
     var isDPStarted: Boolean = false
 
-    fun initSDK(context: Application, call: MethodCall, result: MethodChannel.Result) = launch {
+    fun initSDK(context: Application,  call: MethodCall,onInited: (Boolean) -> Unit) {
         val debug = call.argument<Boolean>("debug") as Boolean
         val androidAppId = call.argument<String>("andoridAppId")
 
@@ -67,11 +64,12 @@ object VideoHolder : CoroutineScope by MainScope() {
                 initDpSdk(context, debug)
             }
 
-
             override fun fail(code: Int, msg: String?) {
-                Log.e("", "TTAdSdk aysnc init fail, code = $code msg = $msg")
+                Log.e(TAG, "TTAdSdk aysnc init fail, code = $code msg = $msg")
             }
         })
+
+        onInited(true)
     }
 
     private var dpStartCount = 0
