@@ -58,8 +58,8 @@
 	"live": null,
 	"license_config": [
 		{
-			"PackageName": "com.xinrui.vita",
-			"BundleId": "com.xinrui.vita",
+			"PackageName": "com.cjbao",
+			"BundleId": "com.cjbao",
 			"StartTime": "20250806T080357Z",
 			"ExpireTime": "20270806T080357Z",
 			"CreatedTime": "20250806T080356Z",
