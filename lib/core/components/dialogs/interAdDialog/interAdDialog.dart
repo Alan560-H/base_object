@@ -28,21 +28,24 @@ class InterAdDialog extends GetxService {
   }
   upDataADFn(dynamic event)async{
     try{
-      UpDataADForm upDataADForm = UpDataADForm();
-      DateTime now = DateTime.now();
-      int timestampMs  = now.millisecondsSinceEpoch;
-      upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
-      upDataADForm.amount = event['extraMap']['adsource_price'];
-      if(upDataADForm.amount!=null){
-        double pross = upDataADForm.amount!*100;
-        Utils.logError("插屏广告增加进度${pross}");
+      UserInfo userInfo = UserInfo.instance;
+      if(userInfo.isLoginIn){
+        UpDataADForm upDataADForm = UpDataADForm();
+        DateTime now = DateTime.now();
+        int timestampMs  = now.millisecondsSinceEpoch;
+        upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
+        upDataADForm.amount = event['extraMap']['adsource_price'];
+        if(upDataADForm.amount!=null){
+          double pross = upDataADForm.amount!*100;
+          Utils.logError("插屏广告增加进度$pross");
 
-        CuCircularProgressController.to.incrementProgress(pross);
-      }
-      Utils.logError("凑成的字符串${ upDataADForm.extra }");
-      BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-      if(backModel.code == CuErrorConfig.success){
-        CuToast.success(msg: "上报副广成功");
+          CuCircularProgressController.to.incrementProgress(pross);
+        }
+        Utils.logError("凑成的字符串${ upDataADForm.extra }");
+        BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
+        if(backModel.code == CuErrorConfig.success){
+          CuToast.success(msg: "上报副广成功");
+        }
       }
     }catch(e){
       Utils.logError("上报副广失败：$e");

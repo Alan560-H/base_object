@@ -18,6 +18,7 @@ class AuthMiddleware extends GetMiddleware {
     // 定义需要登录的路由列表
     var needAuthRoutes = [
       AppRoutes.user, // 个人中心
+      AppRoutes.invite,
     ];
 
     // 如果访问的是需要登录的路由且未登录，重定向到登录页

@@ -152,7 +152,7 @@ class CuNavBarController extends GetxController {
   /// 订阅 ListenerTool 的开屏广告事件
   void _bannerEvent() async {
     // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
-    ever(ListenerTool.to.bannerEvent, (event) {
+    ever(ListenerTool.to.bannerEvent, (event) async {
       if (event == null || _hasShow) return; // 过滤空事件或重复跳转
 
       // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
@@ -169,7 +169,8 @@ class CuNavBarController extends GetxController {
           break;
       // banner广告加载完成
         case "BannerStatus.bannerAdDidFinishLoading":
-          Utils.logError("banner广告加载完成");
+          bool a = await BannerTool.to.bannerAdReady();
+          Utils.logError("banner广告加载完成,$a");
           height.value=110.h;
           BannerTool.to.showAdInPosition();
           break;

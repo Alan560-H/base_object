@@ -5,14 +5,17 @@ import android.webkit.WebView
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-
+import android.content.Intent
 /// 获取渠道标识的方法
 class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "com.example.base_object/channel"
     private val UACHANNEL = "ua_channel"
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-
+        if ((getIntent().getFlags() and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !== 0) {
+            finish()
+            return
+        }
         // 处理UACHANNEL
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
