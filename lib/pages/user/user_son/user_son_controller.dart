@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/models/backModel/userModel/UserSonModel.dart';

@@ -1,12 +1,10 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_empty.dart';
-import 'package:base_object/core/components/cu_refresh_wrapper.dart';
 import 'package:base_object/core/components/cu_tab_menu.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_controller.dart';
-import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

@@ -1,4 +1,3 @@
-import 'package:anythink_sdk/at_index.dart'; // 需导入 SplashStatus 枚举
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/listener_tool.dart'; // 导入 ListenerTool
 import 'package:base_object/manager/splash_tool.dart';

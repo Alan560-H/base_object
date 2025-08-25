@@ -1,5 +1,4 @@
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// 内置控制器：管理进度状态（对外隐藏实现，仅暴露操作方法）

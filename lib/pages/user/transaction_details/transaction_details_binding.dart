@@ -1,5 +1,4 @@
 import 'package:base_object/core/api/api.dart';
-import 'package:base_object/pages/user/leader_recruit/leader_recruit_controller.dart';
 import 'package:base_object/pages/user/user_binding.dart';
 import 'package:get/get.dart';
 

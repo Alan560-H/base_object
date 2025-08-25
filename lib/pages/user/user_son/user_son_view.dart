@@ -1,7 +1,6 @@
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_empty.dart';
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/userModel/UserSonModel.dart';

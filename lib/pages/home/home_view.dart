@@ -3,9 +3,7 @@ import 'package:base_object/core/components/cu_circular_progress/cu_circular_pro
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

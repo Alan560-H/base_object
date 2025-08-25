@@ -10,8 +10,6 @@ class DetailView extends GetView<DetailController> {
 
   @override
   Widget build(BuildContext context) {
-    final params = Get.parameters;
-    final args = Get.arguments;
 
     return Scaffold(
       appBar: AppBar(

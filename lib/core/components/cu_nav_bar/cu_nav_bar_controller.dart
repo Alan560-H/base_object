@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';

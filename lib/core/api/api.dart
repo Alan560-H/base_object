@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';

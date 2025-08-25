@@ -1,5 +1,4 @@
 import 'package:base_object/core/api/api.dart';
-import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/models/localModels/BoxCategory.dart';

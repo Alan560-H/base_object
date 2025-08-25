@@ -10,7 +10,6 @@ import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class InterAdDialog extends GetxService {

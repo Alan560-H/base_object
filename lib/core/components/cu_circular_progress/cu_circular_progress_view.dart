@@ -63,7 +63,6 @@ class CuCircularProgressView extends StatelessWidget {
   /// 构建中间圆形图片（处理加载中/失败状态）
   Widget _buildCenterImage() {
     // 图片尺寸：整体大小 - 2倍进度条宽度 - 16内边距（避免紧贴进度条）
-    final imageSize = size - (strokeWidth * 2) - 16;
 
     return ClipOval(
       child: Container(

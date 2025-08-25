@@ -1,13 +1,9 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/components/cu_empty.dart';
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/components/custom_input_field.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/pages/user/tixian/tixian_controller.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -15,7 +11,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:marquee/marquee.dart';
 
 class TixianView extends GetView<TixianController> {
   const TixianView({super.key});

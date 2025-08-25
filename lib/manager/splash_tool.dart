@@ -1,6 +1,5 @@
 import 'package:anythink_sdk/at_splash.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
-import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 

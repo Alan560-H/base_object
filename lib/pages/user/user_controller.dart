@@ -1,6 +1,5 @@
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';

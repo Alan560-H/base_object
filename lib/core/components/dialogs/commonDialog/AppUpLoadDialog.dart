@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/store/store.dart';
