@@ -180,7 +180,10 @@ class CuNavBarController extends GetxController {
           height.value = 110.h;
           Utils.logError("好招术${event['extraMap']}");
           if(Get.isRegistered<UserInfo>()){
-            upDataADFn(event);
+            if(UserInfo.instance.isLoginIn){
+              upDataADFn(event);
+
+            }
           }
 
           break;
