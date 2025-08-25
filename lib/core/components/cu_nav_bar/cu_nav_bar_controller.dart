@@ -134,7 +134,7 @@ class CuNavBarController extends GetxController {
      upDataADForm.amount = event['extraMap']['adsource_price'];
      if(upDataADForm.amount!=null){
        double pross = upDataADForm.amount!*100;
-       Utils.logError("横幅广告增加进度${pross}");
+       Utils.logError("横幅广告增加进度$pross");
 
        CuCircularProgressController.to.incrementProgress(pross);
      }
@@ -148,7 +148,7 @@ class CuNavBarController extends GetxController {
     }
   }
   // 用于标记是否已处理跳转（避免重复跳转）
-  bool _hasShow = false;
+  final bool _hasShow = false;
   /// 订阅 ListenerTool 的开屏广告事件
   void _bannerEvent() async {
     // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
