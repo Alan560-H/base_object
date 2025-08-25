@@ -6,6 +6,6 @@ class FirstEntryController extends GetxController {
   RxString appbarTitle = "模板页面标题".obs;
   void goHome() async {
     await LocalStorage.setString("isFirst", false);
-    Get.offAllNamed(AppRoutes.home);
+    Get.offNamed(AppRoutes.home);
   }
 }

@@ -110,9 +110,9 @@ class SplashController extends GetxController {
     String? isFirst = await LocalStorage.getString("isFirst");
     Utils.logError("执行跳转首页$isFirst");
     if (isFirst == null) {
-      Get.offAllNamed(AppRoutes.firstPage);
+      Get.offNamed(AppRoutes.firstPage);
     } else {
-      Get.offAllNamed(AppRoutes.home);
+      Get.offNamed(AppRoutes.home);
     }
 
     // // 延迟 300ms 跳转，避免页面切换过于生硬
