@@ -22,7 +22,9 @@ void main() async {
   await DependencyInjection.init();
   // 初始化广告
   bool isInitAd = await InitTool.to.initTopon();
-  Utils.logError("广告初始化完成 $isInitAd");
+  // bool isStartLog = await InitTool.to.setLogEnabled();
+  Utils.logError("广告初始化完成 $isInitAd ");
+  // Utils.logError("日志开启状态：$isStartLog");
   AppConfig.instance.init();
   UserInfo.instance.initialize();
 
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> with AppTheme {
           // 导航唯一键
           navigatorKey: Global.navigatorKey,
           // 初始化根路由路径
-          initialRoute: AppRoutes.home,
+          initialRoute: AppRoutes.splashPage,
           // 路由列表
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,

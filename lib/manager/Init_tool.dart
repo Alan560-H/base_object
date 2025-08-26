@@ -8,14 +8,12 @@ class InitTool extends GetxService {
   // GetX单例获取方式
   static InitTool get to => Get.find<InitTool>();
 
-  setLogEnabled() async {
-    await ATInitManger
+  Future<bool> setLogEnabled() async {
+
+   return await ATInitManger
         .setLogEnabled(
       logEnabled: true,
-    )
-        .then((value) {
-      Utils.logError('日志开关设置结果：$value'); // 原"Set log switch"→"日志开关设置结果"
-    });
+    );
   }
 
   setChannelStr() async {
@@ -95,6 +93,7 @@ class InitTool extends GetxService {
   }
 
   Future<bool>initTopon() async {
+    // await setLogEnabled();
     try{
       await ATInitManger.initAnyThinkSDK(
           appidStr: AppAdConfig.appidStr,

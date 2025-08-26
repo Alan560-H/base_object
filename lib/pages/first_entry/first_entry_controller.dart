@@ -8,4 +8,5 @@ class FirstEntryController extends GetxController {
     await LocalStorage.setString("isFirst", false);
     Get.offNamed(AppRoutes.home);
   }
+
 }

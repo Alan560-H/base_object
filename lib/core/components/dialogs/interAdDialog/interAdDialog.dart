@@ -41,7 +41,10 @@ class InterAdDialog extends GetxService {
 
           CuCircularProgressController.to.incrementProgress(pross);
         }
-        Utils.logError("凑成的字符串${ upDataADForm.extra }");
+        Utils.logError("凑成的字符串${ upDataADForm.extra },${Get.isRegistered<Api>()}");
+        if(Get.isRegistered<Api>()){
+          Api api = Get.find<Api>();
+        }
         BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
         if(backModel.code == CuErrorConfig.success){
           CuToast.success(msg: "上报副广成功");
