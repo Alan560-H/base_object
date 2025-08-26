@@ -76,7 +76,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.shortVideo,
-      page: () => ShortVideoView(),
+      page: () => ShortVideoView2(),
       binding: ShortVideoBinding(), // 短视频的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),

@@ -10,6 +10,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'manager/Init_tool.dart';
 import 'utils/ChineseLocalizationsDelegate.dart';
@@ -35,11 +36,15 @@ void main() async {
 }
 
 Future _pangrowthInit() async {
+  final status = await Permission.phone.request();
+  print("phone 权限状态 $status");
   await PangrowthVideo.registerVideo(
     appName: "",
     ////appid 必填
     ///demo 使用
-    andoridAppId: "5713596",
+    // andoridAppId: "5713596",
+    andoridAppId: "5670418",
+    appLogAppId :"751081",
     iosAppId: "",
     debug: true,
   );

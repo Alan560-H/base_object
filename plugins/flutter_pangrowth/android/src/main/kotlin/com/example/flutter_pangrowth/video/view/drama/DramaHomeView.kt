@@ -87,7 +87,6 @@ internal class DramaHomeView(
         }
         dpWidget = DJXSdk.factory().createDramaHome(
             DJXWidgetDramaHomeParams.obtain(detailConfig)
-                .setTopOffset(30)
                 .listener(object : IDJXDramaHomeListener() {
                     override fun onItemClick(drama: DJXDrama?, map: MutableMap<String, Any>?) {
                         super.onItemClick(drama, map)

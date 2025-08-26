@@ -2,6 +2,9 @@ package com.example.flutter_pangrowth
 
 import android.app.Application
 import android.util.Log
+import com.bytedance.applog.AppLog
+import com.bytedance.applog.InitConfig
+import com.bytedance.applog.util.UriConstants
 import com.bytedance.sdk.djx.DJXSdk
 import com.bytedance.sdk.djx.DJXSdkConfig
 import com.bytedance.sdk.djx.IDJXPrivacyController
@@ -17,23 +20,30 @@ import com.bytedance.sdk.openadsdk.TTAdSdk
 import io.flutter.plugin.common.MethodCall
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 
 object VideoHolder : CoroutineScope by MainScope() {
 
     private const val TAG = "VideoHolder"
 
-    private const val configJson = "pangrowthconfig.json"
+    //    private const val configJson = "pangrowthconfig.json"
+    private const val configJson = "SDK_Setting_5670418.json"
 
     var isDPStarted: Boolean = false
 
-    fun initSDK(context: Application, call: MethodCall, onInited: (Boolean) -> Unit) {
+    fun initSDK(context: Application, call: MethodCall, onInited: (Boolean) -> Unit) = launch {
         val debug = call.argument<Boolean>("debug") as Boolean
         val androidAppId = call.argument<String>("andoridAppId")
 
+        Log.d(TAG, "debug $debug androidAppId $androidAppId")
+
+        delay(100)
 
         val build = TTAdConfig.Builder()
             .appId(androidAppId) //穿山甲媒体id
-            .appName("")
+            .appName("如意盒子")
             .titleBarTheme(TTAdConstant.TITLE_BAR_THEME_DARK)
             .allowShowNotify(true)
             .supportMultiProcess(true)
@@ -56,6 +66,8 @@ object VideoHolder : CoroutineScope by MainScope() {
 
         DJXSdk.init(context, configJson, djConfig)
 
+        delay(100)
+
         TTAdSdk.start(object : TTAdSdk.Callback {
             override fun success() {
                 Log.e(TAG, "TTAdSdk aysnc init success")
@@ -64,6 +76,7 @@ object VideoHolder : CoroutineScope by MainScope() {
                 DJXSdk.start { isSuccess, message, error ->
                     Log.d(TAG, "DJXSdk doInitTask: $isSuccess, $message, $error")
                 }
+
                 initDpSdk(context, debug)
             }
 
@@ -80,7 +93,6 @@ object VideoHolder : CoroutineScope by MainScope() {
     fun initDpSdk(context: Application, debug: Boolean) {
         Log.e(TAG, "DPSdk start init dpStartCount $dpStartCount")
         val configBuilder = DPSdkConfig.Builder()
-            .debug(true)
             .debug(debug)
             .luckConfig(
                 DPSdkConfig.LuckConfig().application(context).enableLuck(false)

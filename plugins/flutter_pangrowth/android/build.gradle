@@ -67,28 +67,20 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.pangle.cn:mediation-sdk:5.9.0.8")
-
-    api('com.bytedance.applog:RangersAppLog-Lite-cn:6.9.6')
-    api('com.volcengine:apm_insight_crash:1.4.4')
-    api('com.squareup.picasso:picasso:2.71828')
-    api('com.android.support:appcompat-v7:28.0.0')
-    api('com.android.support:support-v4:28.0.0')
-    api('com.android.support:recyclerview-v7:28.0.0')
-    api('com.android.support.constraint:constraint-layout:1.1.2')
-    api('com.android.support:design:28.0.0')
-    api('com.android.support:support-annotations:28.0.0')
-    api('com.volcengine:apm_insight_sdk:1.1.5')
-    api('com.kyleduo.switchbutton:library:2.1.0')
-    api('com.bytedance.ies.ugc.aweme:opensdk-china-external:0.1.4.0')
-    api('com.bytedance.ies.ugc.aweme:opensdk-common:0.1.4.0')
-    api('com.google.code.gson:gson:2.8.5')
-    api('com.android.support:multidex:1.0.3')
-    api('com.squareup.okhttp3:okhttp:3.10.0')
+    api('com.google.code.gson:gson:2.13.1')
+    api('com.squareup.okhttp3:okhttp:5.1.0')
 
     //为保证兼容性 建议使用广告SDK版本
-    //implementation 'com.pangle.cn:ads-sdk-pro:7.0.1.0'
-    implementation("com.pangle.cn:pangrowth-base:2.8.0.1")
-    implementation("com.pangle.cn:pangrowth-djx-sdk-lite:2.8.0.1")
-    implementation("com.pangle.cn:pangrowth-dpsdk:5.4.1.0")
+    implementation 'com.pangle.cn:ads-sdk-pro:7.0.2.9'
+    implementation('com.pangle.cn:pangrowth-sdk:4.4.1.0') {
+        exclude group: 'com.pangle.cn', module: 'partner-live-sdk'
+        exclude group: 'com.pangle.cn', module: 'pangrowth-novel-sdk'
+        exclude group: 'com.pangle.cn', module: 'pangrowth-game-sdk'
+        exclude group: 'com.pangle.cn', module: 'pangrowth-luckycat-sdk'
+        exclude group: 'com.pangle.cn', module: 'pangrowth-reward-sdk'
+        exclude group: 'com.pangle.cn', module: 'partner-luckycat-api-sdk'
+        exclude group: 'com.pangle.cn', module: 'pangrowth-luckycat-api'
+    }
+    implementation 'com.pangle.cn:pangrowth-base:2.9.0.4'
+    implementation 'com.pangle.cn:pangrowth-djx-sdk-lite:2.9.0.4'
 }

@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.cjbao"
+        applicationId = "com.ruyimh"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -88,16 +88,16 @@ android {
     // 添加签名配置
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
-            storeFile = file("android.keystore")  // 替换为你的签名文件名
-            storePassword = "aa123456"  // 密钥库密码
-            keyAlias = "1"            // 密钥别名
-            keyPassword = "aa123456"      // 密钥密码
+            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
+            storePassword = "usxw4fQ4"  // 密钥库密码
+            keyAlias = "ym251627"            // 密钥别名
+            keyPassword = "usxw4fQ4"      // 密钥密码
         }
         create("customDebug") {  // 定义名为 "release" 的签名配置
-            storeFile = file("android.keystore")  // 替换为你的签名文件名
-            storePassword = "aa123456"  // 密钥库密码
-            keyAlias = "1"            // 密钥别名
-            keyPassword = "aa123456"      // 密钥密码
+            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
+            storePassword = "usxw4fQ4"  // 密钥库密码
+            keyAlias = "ym251627"            // 密钥别名
+            keyPassword = "usxw4fQ4"      // 密钥密码
         }
     }
     buildTypes {

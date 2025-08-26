@@ -31,7 +31,7 @@ internal class VideoSingleCardView(
 
     private val TAG = VideoSingleCardView::class.java.simpleName
 
-    private var mContainer: FrameLayout = FrameLayout(activity)
+    private var mContainer: FrameLayout
     private var viewWidth: Double = params["viewWidth"] as Double
     private var viewHeight: Double = params["viewHeight"] as Double
 
@@ -41,12 +41,16 @@ internal class VideoSingleCardView(
 
 
     init {
-        mContainer.layoutParams?.width = viewWidth.toInt()
-        mContainer.layoutParams?.height = viewHeight.toInt()
+        mContainer = FrameLayout(activity).apply {
+            this.id = View.generateViewId()
+            layoutParams?.width = viewWidth.toInt()
+            layoutParams?.height = viewHeight.toInt()
+        }
         if (DPSdk.isStartSuccess()) {
             Log.d(TAG, "dpsdk isStartSuccess")
             init()
         } else {
+            Log.d(TAG, "dpsdk isStartFailed")
             VideoHolder.initDpSdk(activity.applicationContext as Application, true);
         }
     }
@@ -61,8 +65,9 @@ internal class VideoSingleCardView(
         }
         dpWidget = VideoHolder.buildDrawWidget(
             DPWidgetDrawParams.obtain()
-                .adOffset(49) //单位 dp
-                .hideClose(false, null)
+                .hideClose(true) {
+
+                }
                 .listener(object : IDPDrawListener() {
                     override fun onDPRefreshFinish() {
                         Log.d(TAG, "onDPRefreshFinish")
@@ -118,10 +123,10 @@ internal class VideoSingleCardView(
             return
         }
         isAdded = true
-        flutterView.post {
+        mContainer.post {
             dpWidget?.fragment?.let {
                 activity.supportFragmentManager.beginTransaction()
-                    .add(flutterView.id, it)
+                    .add(mContainer.id, it)
                     .commitAllowingStateLoss()
             }
         }
