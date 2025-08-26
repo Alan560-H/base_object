@@ -25,7 +25,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="传家宝"
         android:networkSecurityConfig="@xml/net_config"
-        tools:replace="android:label,android:allowBackup">
+        tools:replace="android:label,android:allowBackup"
+
+        >
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -74,6 +76,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
+            android:clearTaskOnLaunch="true"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">

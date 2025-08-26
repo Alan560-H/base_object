@@ -1,6 +1,7 @@
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 
@@ -14,17 +15,21 @@ class NativeTool extends GetxService{
           ATCommon.isNativeShow() : true,
           ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
             Get.width,
-            340,
+            340.w,
           ),
           ATNativeManager.isAdaptiveHeight(): true
         });
   }
-  nativeAdReady() async {
-    await ATNativeManager.nativeAdReady(
-      placementID: AppAdConfig.nativePlacementID,
-    ).then((value) {
-      Utils.logError('flutter：原生广告是否就绪：$value'); // 原"nativeAdReady"→"原生广告是否就绪"
-    });
+  Future<bool> nativeAdReady() async {
+    try{
+      return await ATNativeManager.nativeAdReady(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+    }catch(e){
+      Utils.logError('flutter：原生广告是否就绪：$e'); // 原"nativeAdReady"→"原生广告是否就绪"
+      return false;
+    }
+
   }
 
   getNativeValidAds() async {
