@@ -9,16 +9,10 @@ import 'package:get/get.dart';
 class BannerTool extends GetxService{
   static BannerTool get to => Get.find<BannerTool>();
 
-  loadBannerWith() async {
+  loadBannerWith(Map<dynamic,dynamic> extraMap) async {
     await ATBannerManager.loadBannerAd(
         placementID: AppAdConfig.bannerPlacementID,
-        extraMap: {
-          ATCommon.isNativeShow() : true,
-          ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
-              Get.width, Get.width * (50 / 320)),
-          ATBannerManager.getAdaptiveWidthKey(): Get.width,
-          ATBannerManager.getAdaptiveOrientationKey(): ATBannerManager.adaptiveOrientationCurrent(),
-        });
+        extraMap: extraMap);
   }
 
   Future<bool> bannerAdReady() async {

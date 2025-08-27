@@ -13,13 +13,10 @@ class InterstitialTool extends GetxService {
     });
   }
 
-  loadInterstitialAd() async {
+  loadInterstitialAd(Map<String, dynamic> extraMap) async {
     await ATInterstitialManager.loadInterstitialAd(
         placementID: AppAdConfig.interstitialPlacementID,
-        extraMap: {
-          // Sigmob rewarded video ----> Interstitial ads
-          // ATInterstitialManager.useRewardedVideoAsInterstitialKey(): true
-        });
+        extraMap: extraMap);
   }
 
   interstitialAdcheck() async {

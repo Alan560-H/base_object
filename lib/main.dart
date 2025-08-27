@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> with AppTheme {
           // 导航唯一键
           navigatorKey: Global.navigatorKey,
           // 初始化根路由路径
-          initialRoute: AppRoutes.splashPage,
+          initialRoute: AppRoutes.home,
           // 路由列表
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,

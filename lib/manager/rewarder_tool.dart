@@ -8,12 +8,12 @@ class RewarderTool extends GetxService{
   // GetX单例获取方式
   static RewarderTool get to => Get.find<RewarderTool>();
 
-  loadRewardedVideo() async {
+  loadRewardedVideo({userID = '',extra=""}) async {
     await ATRewardedManager.loadRewardedVideo(
         placementID: AppAdConfig.rewarderPlacementID,
         extraMap: {
-          ATRewardedManager.kATAdLoadingExtraUserDataKeywordKey(): '1234',
-          ATRewardedManager.kATAdLoadingExtraUserIDKey(): '1234',
+          ATRewardedManager.kATAdLoadingExtraUserDataKeywordKey(): extra,
+          ATRewardedManager.kATAdLoadingExtraUserIDKey(): userID,
         });
   }
 

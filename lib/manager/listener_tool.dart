@@ -35,7 +35,7 @@ class ListenerTool extends GetxService {
   rewarderListen() {
     ATListenerManager.rewardedVideoEventHandler.listen((value) {
       // 1. 打印日志（保留原有功能）
-      _logRewarderEvent(value);
+      // _logRewarderEvent(value);
       // 2. 对外转发事件（携带关键信息：事件类型、广告位ID、附加信息等）
       rewarderEvent.value = {
         "eventType": value.rewardStatus.toString(), // 事件类型（如"rewardedVideoDidRewardSuccess"）
@@ -49,7 +49,7 @@ class ListenerTool extends GetxService {
   /// 插屏广告监听：接收SDK事件 → 转发到interEvent
   interListen() {
     ATListenerManager.interstitialEventHandler.listen((value) {
-      _logInterEvent(value);
+      // _logInterEvent(value);
       // 对外转发事件
       interEvent.value = {
         "eventType": value.interstatus.toString(),
@@ -63,7 +63,7 @@ class ListenerTool extends GetxService {
   /// 横幅广告监听：接收SDK事件 → 转发到bannerEvent
   bannerListen() {
     ATListenerManager.bannerEventHandler.listen((value) {
-      _logBannerEvent(value);
+      // _logBannerEvent(value);
       // 对外转发事件
       bannerEvent.value = {
         "eventType": value.bannerStatus.toString(),

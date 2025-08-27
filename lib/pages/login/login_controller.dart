@@ -1,8 +1,13 @@
 import 'dart:async';
 
+import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
+import 'package:base_object/manager/banner_tool.dart';
+import 'package:base_object/manager/interstitial_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
@@ -14,8 +19,23 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+class Common {
+
+
+
+  static String getUserIdKey(){
+    return 'userId';
+  }
+
+  static String getExtraKey(){
+    return 'extra';
+  }
+
+
+}
 class LoginController extends GetxController {
   final CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
   RxString appbarTitle = "登录页面标题".obs;
@@ -109,6 +129,39 @@ class LoginController extends GetxController {
         UserTodayModel userTodayModel = await Api.to.getTodayAmount();
         UserInfo.instance.updateUserTodayModel(userTodayModel);
         Utils.logError("用户今日收益：${userTodayModel.toJson()}");
+        DateTime now = DateTime.now();
+        int timestampMs  = now.millisecondsSinceEpoch;
+        RewarderTool.to.loadRewardedVideo(
+            userID: UserInfo.instance.userModel.id,
+            extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
+        BannerTool.to.loadBannerWith(
+            {
+              Common.getUserIdKey(): UserInfo.instance.userModel.id,
+              Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
+              ATCommon.isNativeShow() : true,
+              ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
+                  Get.width, Get.width * (50 / 320)),
+              ATBannerManager.getAdaptiveWidthKey(): Get.width,
+              ATBannerManager.getAdaptiveOrientationKey(): ATBannerManager.adaptiveOrientationCurrent(),
+            }
+        );
+        InterstitialTool.to.loadInterstitialAd({
+          Common.getUserIdKey(): UserInfo.instance.userModel.id,
+          Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
+        });
+        NativeTool.to.loadNativeWith(
+            {
+              Common.getUserIdKey(): UserInfo.instance.userModel.id,
+              Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
+              ATCommon.isNativeShow() : true,
+              ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
+                Get.width,
+                340.w,
+              ),
+              ATNativeManager.isAdaptiveHeight(): true
+            }
+        );
+
         cuNavBarController.onTabChange(0);
         swicthLoginType();
         isChecked.value =false;

@@ -8,6 +8,7 @@ import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,12 @@ class InterAdDialog extends GetxService {
     rewarderEvent();
     super.onInit();
     // 初始化插屏广告
-    interstitialTool.loadInterstitialAd();
+    DateTime now = DateTime.now();
+    int timestampMs  = now.millisecondsSinceEpoch;
+    interstitialTool.loadInterstitialAd({
+      Common.getUserIdKey(): UserInfo.instance.userModel.id,
+      Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
+    });
     // 初始化逻辑
   }
   upDataADFn(dynamic event)async{
@@ -43,7 +49,7 @@ class InterAdDialog extends GetxService {
         }
         Utils.logError("凑成的字符串${ upDataADForm.extra },${Get.isRegistered<Api>()}");
         if(Get.isRegistered<Api>()){
-          Api api = Get.find<Api>();
+          Get.put(Api());
         }
         BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
         if(backModel.code == CuErrorConfig.success){

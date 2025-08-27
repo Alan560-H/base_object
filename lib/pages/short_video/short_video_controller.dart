@@ -113,8 +113,6 @@ class ShortVideoController extends GetxController {
   @override
   void onInit() {
     Utils.logError("短视频页面初始化");
-    // TODO: implement onInit
-    // NativeTool.to.loadNativeWith();
     // nativeEvent();
     super.onInit();
   }

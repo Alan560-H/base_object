@@ -1,16 +1,17 @@
+import 'package:flutter/cupertino.dart';
+
 class ChatMessage {
   final String id;
   final VirtualUser user;
-  final String? content; // null = 红包消息
+  final Widget content; // 消息小部件
   final DateTime timestamp;
-  final bool hasPlaceholder; // 新增：标记是否为Placeholder消息
-
+  final bool isHasNative;
   ChatMessage({
     required this.id,
     required this.user,
-    this.content,
+    required this.content,
     required this.timestamp,
-    this.hasPlaceholder = false, // 默认false（普通消息/红包消息）
+    required this.isHasNative,
   });
 }
 // 虚拟人物模型

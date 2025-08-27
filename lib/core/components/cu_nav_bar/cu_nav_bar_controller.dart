@@ -1,4 +1,6 @@
 
+import 'package:anythink_sdk/at_common.dart';
+import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
@@ -10,6 +12,7 @@ import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
+import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -125,25 +128,44 @@ class CuNavBarController extends GetxController {
       );
     }).toList();
   }
-  upDataADFn(dynamic event)async{
-   try{
-     UpDataADForm upDataADForm = UpDataADForm();
-     DateTime now = DateTime.now();
-     int timestampMs  = now.millisecondsSinceEpoch;
-     upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
-     upDataADForm.amount = event['extraMap']['adsource_price'];
-     if(upDataADForm.amount!=null){
-       double pross = upDataADForm.amount!*100;
-       Utils.logError("横幅广告增加进度$pross");
+  upDataADFn(dynamic event) async {
+    try {
+      UpDataADForm upDataADForm = UpDataADForm();
+      DateTime now = DateTime.now();
+      int timestampMs = now.millisecondsSinceEpoch;
 
-       CuCircularProgressController.to.incrementProgress(pross);
-     }
-     Utils.logError("凑成的字符串${ upDataADForm.extra }");
-     BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-     if(backModel.code == CuErrorConfig.success){
-       CuToast.success(msg: "上报副广成功");
-     }
-    }catch(e){
+      // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
+      // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
+      dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
+      // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
+      double? amount = double.tryParse(adSourcePrice?.toString() ?? "");
+
+      // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
+      String userId = UserInfo.instance.userModel.id.toString();
+      upDataADForm.extra = "userid_$userId"
+          "_type_2"
+          "_amount_${adSourcePrice ?? 0}"
+          "_time_$timestampMs";
+
+      // 3. 赋值给表单（此时 amount 是 double?，匹配类型）
+      upDataADForm.amount = amount;
+
+      // 4. 原有进度逻辑不变（保留你的业务逻辑）
+      if (upDataADForm.amount != null) {
+        double pross = upDataADForm.amount! * 100;
+        Utils.logError("横幅广告增加进度$pross");
+        CuCircularProgressController.to.incrementProgress(pross);
+      }
+
+      Utils.logError("横幅广告凑成的字符串${ upDataADForm.extra }");
+      BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
+      Utils.logError("返回的数据${ backModel.toJson() }");
+      if (backModel.code == CuErrorConfig.success) {
+        CuToast.success(msg: "上报副广成功");
+      }else{
+        CuToast.error(msg: "上传banner广告失败${backModel.msg}");
+      }
+    } catch (e) {
       Utils.logError("上报副广失败：$e");
     }
   }
@@ -226,6 +248,18 @@ class CuNavBarController extends GetxController {
     super.onInit();
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
     _bannerEvent();
-    await BannerTool.to.loadBannerWith();
+    DateTime now = DateTime.now();
+    int timestampMs  = now.millisecondsSinceEpoch;
+    await BannerTool.to.loadBannerWith(
+        {
+          Common.getUserIdKey(): UserInfo.instance.userModel.id,
+          Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
+          ATCommon.isNativeShow() : true,
+          ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
+              Get.width, Get.width * (50 / 320)),
+          ATBannerManager.getAdaptiveWidthKey(): Get.width,
+          ATBannerManager.getAdaptiveOrientationKey(): ATBannerManager.adaptiveOrientationCurrent(),
+        }
+    );
   }
 }

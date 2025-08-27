@@ -19,6 +19,7 @@ class AuthMiddleware extends GetMiddleware {
     var needAuthRoutes = [
       AppRoutes.user, // 个人中心
       AppRoutes.invite,
+      AppRoutes.userTixian
     ];
 
     // 如果访问的是需要登录的路由且未登录，重定向到登录页
