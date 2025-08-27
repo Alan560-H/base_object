@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 
-class NativeTool extends GetxService{
+class NativeTool extends GetxController{
   // GetX单例获取方式
   static NativeTool get to => Get.find<NativeTool>();
   //检查加载状态

@@ -3,7 +3,7 @@ import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:get/get.dart';
 
 
-class SplashTool extends GetxService {
+class SplashTool extends GetxController {
   static SplashTool get to => Get.find<SplashTool>();
   /// 加载开屏
   loadSplash() async {

@@ -2,7 +2,7 @@ import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
-class ListenerTool extends GetxService {
+class ListenerTool extends GetxController {
   // GetX 单例获取方式
   static ListenerTool get to => Get.find<ListenerTool>();
 

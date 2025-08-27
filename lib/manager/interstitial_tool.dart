@@ -3,7 +3,7 @@ import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
-class InterstitialTool extends GetxService {
+class InterstitialTool extends GetxController {
   // GetX单例获取方式
   static InterstitialTool get to => Get.find<InterstitialTool>();
   // 初始化服务（GetX生命周期方法）
