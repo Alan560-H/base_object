@@ -79,14 +79,13 @@ internal class DramaHomeView(
 
                 }
             }
-        ).apply {
-            hideBack(true) {
-
-            }
-            hideTopInfo(true)
-        }
+        )
         dpWidget = DJXSdk.factory().createDramaHome(
             DJXWidgetDramaHomeParams.obtain(detailConfig)
+                .also {
+                    it.mShowBackBtn = false
+                    it.mShowPageTitle = false
+                }
                 .listener(object : IDJXDramaHomeListener() {
                     override fun onItemClick(drama: DJXDrama?, map: MutableMap<String, Any>?) {
                         super.onItemClick(drama, map)
