@@ -101,7 +101,7 @@ class NativeTool extends GetxService{
     try{
       final double adHeight = 200.h; // 广告固定高度（与原生广告配置一致）
       return Container(
-        key:UniqueKey(),
+        key:const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
         width: double.infinity,
         height: adHeight,
         constraints: BoxConstraints(maxHeight: adHeight),

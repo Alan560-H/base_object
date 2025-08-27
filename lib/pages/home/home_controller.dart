@@ -221,14 +221,14 @@ class HomeController extends GetxController {
       // 如果激励视频准备好，且概率已经小于0.2，则填充红包图片
 
       Utils.logError("原生广告加载状态$isNativeReady,");
-      if(timeCount!=0){
-        Utils.logError("这是6的倍数吗？${timeCount % 6 == 0}");
-        if (isNativeReady&&timeCount % 6 == 0) {
-          content = await NativeTool.to.startShowNativeAd();
-          content = Placeholder();
-          isHasNative = true;
-        }
-      }
+      // if(timeCount!=0){
+      //   Utils.logError("这是6的倍数吗？${timeCount % 6 == 0}");
+      //   if (isNativeReady&&timeCount % 6 == 0) {
+      //     content = await NativeTool.to.startShowNativeAd();
+      //     // content = Placeholder();
+      //     isHasNative = true;
+      //   }
+      // }
       if(isRewardReady && isShowRedBag){
         content = InkWell(
           onTap: showRewarder,
