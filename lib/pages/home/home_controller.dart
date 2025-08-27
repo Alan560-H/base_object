@@ -7,6 +7,7 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/manager/listener_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
@@ -26,192 +27,220 @@ import 'package:jiffy/jiffy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeController extends GetxController {
-  upDataADFn(dynamic event)async{
-    try{
+  // 激励广告奖励提交方法
+  upDataADFn(dynamic event) async {
+    try {
       UpDataADForm upDataADForm = UpDataADForm();
       DateTime now = DateTime.now();
-      int timestampMs  = now.millisecondsSinceEpoch;
-      upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
-      // upDataADForm.amount = event['extraMap']['adsource_price'];
-      Utils.logError("主动领取激励视频凑成的字符串${ upDataADForm.extra }");
+      int timestampMs = now.millisecondsSinceEpoch;
+      upDataADForm.extra =
+      "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
+      Utils.logError("主动领取激励视频凑成的字符串${upDataADForm.extra}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
 
-        CuToast.success(msg: "恭喜获得${rewarderModel.amount} 金币");
-    }catch(e){
+      CuToast.success(msg: "恭喜获得${rewarderModel.amount} 金币");
+    } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
     }
   }
-  // 用于标记是否已处理跳转（避免重复跳转）
-  bool _hasShow = false;
 
-  /// 订阅 ListenerTool 的开屏广告事件
+  // 定时器相关
+  Timer? _autoMessageTimer; // 普通消息定时器（3秒/条）
+  Timer? _placeholderTimer; // 广告消息定时器（6秒/条）
+  bool _hasShow = false; // 防止重复跳转标记
+
+  // 新增：原生广告渲染状态（响应式，控制View层显示加载/广告）
+  final RxBool isNativeAdReady = false.obs;
+
+  /// 订阅激励广告事件
   void rewarderEvent() async {
-    // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
     ever(ListenerTool.to.rewarderEvent, (event) {
-      if (event == null || _hasShow) return; // 过滤空事件或重复跳转
-
-      // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
+      if (event == null || _hasShow) return;
       String eventType = event["eventType"] ?? "";
       String placementID = event["placementID"] ?? "";
 
-      Utils.logError("激励广告收到激励视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
+      Utils.logError("激励广告事件：$eventType，广告位ID：$placementID，参数：$event");
 
-      // 根据事件类型执行业务逻辑
       switch (eventType) {
-        // 激励视频广告加载失败
         case "RewardedStatus.rewardedVideoDidFailToLoad":
-          Utils.logError("激励广告激励视频广告加载失败，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告加载失败，广告位ID：$placementID");
           break;
-        // 广告加载成功
         case "RewardedStatus.rewardedVideoDidFinishLoading":
-          Utils.logError("激励广告激励视频广告加载完成，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告加载完成，广告位ID：$placementID");
           break;
-        // 广告开始播放
         case "RewardedStatus.rewardedVideoDidStartPlaying":
-          Utils.logError("激励广告激励视频广告开始播放，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告开始播放，广告位ID：$placementID");
           break;
-      // 广告结束播放
         case "RewardedStatus.rewardedVideoDidEndPlaying":
-          Utils.logError("激励广告激励视频广告结束播放，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告结束播放，广告位ID：$placementID");
           break;
-      // 广告播放失败
         case "RewardedStatus.rewardedVideoDidFailToPlay":
-          Utils.logError("激励广告广告播放失败，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告播放失败，广告位ID：$placementID");
           break;
-      // 激励成功，建议在此回调中下发奖励
         case "RewardedStatus.rewardedVideoDidRewardSuccess":
-          Utils.logError("激励广告激励成功，建议在此回调中下发奖励 ，广告位ID：$placementID，事件参数：$event ");
-          if(Get.isRegistered<UserInfo>()){
+          Utils.logError("激励广告奖励成功，广告位ID：$placementID");
+          if (Get.isRegistered<UserInfo>()) {
             upDataADFn(event);
           }
           break;
-      // 广告被点击
         case "RewardedStatus.rewardedVideoDidClick":
-          Utils.logError(" 激励广告广告被点击  ，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告被点击，广告位ID：$placementID");
           break;
-      // 深度链接
         case "RewardedStatus.rewardedVideoDidDeepLink":
-          Utils.logError("激励广告深度链接 ，广告位ID：$placementID，事件参数：$event ");
+          Utils.logError("激励广告深度链接，广告位ID：$placementID");
           break;
-      // 激励广告被关闭
         case "RewardedStatus.rewardedVideoDidClose":
-          Utils.logError("激励广告被关闭，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("激励广告被关闭，广告位ID：$placementID");
           break;
       }
     });
   }
 
+  /// 订阅原生广告事件（含广告状态更新）
+  void nativeEvent() async {
+    ever(ListenerTool.to.nativeEvent, (event) {
+      if (event == null || _hasShow) return;
+      String eventType = event["eventType"] ?? "";
+      String placementID = event["placementID"] ?? "";
+
+      Utils.logError("原生广告事件：$eventType，广告位ID：$placementID，参数：$event");
+
+      switch (eventType) {
+        case "NativeStatus.nativeAdFailToLoadAD":
+          Utils.logError("原生广告加载失败，广告位ID：$placementID");
+          isNativeAdReady.value = false; // 加载失败，重置状态
+          break;
+        case "NativeStatus.nativeAdDidFinishLoading":
+          Utils.logError("原生广告加载完成，广告位ID：$placementID");
+          isNativeAdReady.value = true; // 加载失败，重置状态
+
+          // showNatvieAd(); // 触发广告显示（实际渲染后才会更新状态）
+          break;
+        case "NativeStatus.nativeAdDidClick":
+          Utils.logError("原生广告被点击，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdDidDeepLink":
+          Utils.logError("原生广告深度链接，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdDidEndPlayingVideo":
+          Utils.logError("原生广告视频结束，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdEnterFullScreenVideo":
+          Utils.logError("原生广告进入全屏，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdExitFullScreenVideoInAd":
+          Utils.logError("原生广告退出全屏，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdDidShowNativeAd":
+          Utils.logError("原生广告展示成功，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdDidStartPlayingVideo":
+          Utils.logError("原生广告视频开始，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdDidTapCloseButton":
+          Utils.logError("原生广告被关闭，广告位ID：$placementID");
+          // isNativeAdReady.value = false; // 关闭后重置状态
+          break;
+        case "NativeStatus.nativeAdDidLoadSuccessDraw":
+          Utils.logError("原生广告渲染成功，广告位ID：$placementID");
+          // isNativeAdReady.value = true; // 渲染成功，标记可显示
+          break;
+        case "NativeStatus.nativeAdDidCloseDetailInAdView":
+          Utils.logError("原生广告关闭详情页，广告位ID：$placementID");
+          break;
+        case "NativeStatus.nativeAdUnknown":
+        default:
+          Utils.logError("原生广告未知事件，广告位ID：$placementID");
+          break;
+      }
+    });
+  }
+
+  // 显示激励广告
   showRewarder() async {
     bool isReady = await RewarderTool.to.rewardedVideoReady();
     if (isReady) {
       await RewarderTool.to.showRewardedVideo();
     } else {
-      CuToast.error(msg: "激励广告加载失败。请稍后重试");
+      CuToast.error(msg: "激励广告加载失败，请稍后重试");
     }
   }
 
-  // 定时器对象，控制自动添加消息的周期
-  Timer? _autoMessageTimer;
-
-  // 页面初始化：添加初始消息 + 启动自动消息定时器
-  @override
-  void onInit() {
-    rewarderEvent();
-    super.onInit();
-    RewarderTool.to.loadRewardedVideo();
-    UserInfo.instance.initialize();
-    // 初始化添加5条随机消息
-    for (int i = 0; i < 5; i++) {
-      _addRandomChatMessage();
+  // 显示原生广告
+  showNatvieAd() async {
+    bool isReadyNative = await NativeTool.to.nativeAdReady();
+    if (isReadyNative) {
+      NativeTool.to.showNative();
     }
-    // 启动每3秒添加一条消息的定时器
-    _startAutoMessageTimer();
+    Utils.logError("原生广告准备状态：$isReadyNative");
   }
 
-  // 生成并添加随机消息（核心逻辑：随机昵称、本地头像、抢红包语录）
-  void _addRandomChatMessage() {
-    // 1. 生成随机网络昵称
+  // 启动普通消息定时器（3秒/条）
+  void _startAutoMessageTimer() {
+    _autoMessageTimer = Timer.periodic(
+      const Duration(seconds: 3),
+          (Timer timer) => _addRandomChatMessage(hasPlaceholder: false),
+    );
+  }
+
+  // 启动广告消息定时器（6秒/条）
+  void _startPlaceholderTimer() {
+    _placeholderTimer = Timer.periodic(
+      const Duration(seconds: 6),
+          (Timer timer) => _addRandomChatMessage(hasPlaceholder: true),
+    );
+  }
+
+  // 生成聊天消息（支持普通/红包/广告消息）
+  void _addRandomChatMessage({required bool hasPlaceholder}) {
+    // 1. 生成随机用户信息
     final String randomNickname = _generateRandomNickname();
-    // 2. 随机选择本地头像（0~30.png，需确保assets路径正确）
     final int avatarIndex = random.nextInt(31); // 0-30共31张头像
     final String localAvatarPath = ImageConfig.getUrlAvatar(avatarIndex);
-
-    // 3. 创建用户（使用已定义的VirtualUser类，仅传参）
     final VirtualUser randomUser = VirtualUser(
-      id: DateTime.now().microsecondsSinceEpoch.toString(), // 时间戳确保ID唯一
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: randomNickname,
       avatarUrl: localAvatarPath,
     );
 
-    // 4. 20%概率生成红包消息（content为null时显示红包提示）
-    final bool hasRedPacket = random.nextDouble() < 0.2;
+    // 2. 消息类型逻辑：广告消息不生成红包，普通消息20%概率红包
+    final bool isRedPacket = !hasPlaceholder && random.nextDouble() < 0.2;
 
-    // 5. 创建聊天消息对象
+    // 3. 创建消息对象
     final ChatMessage newMessage = ChatMessage(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       user: randomUser,
-      content: hasRedPacket ? null : _getRandomRedPacketQuote(),
+      content: hasPlaceholder ? null : (isRedPacket ? null : _getRandomRedPacketQuote()),
       timestamp: DateTime.now(),
+      hasPlaceholder: hasPlaceholder,
     );
 
-    // 6. 添加消息并限制列表最大长度为20条
+    // 4. 添加消息并限制列表长度（最多20条）
     messages.add(newMessage);
     if (messages.length > 20) {
-      messages.removeAt(0); // 超出20条时删除最早的消息
+      messages.removeAt(0);
     }
   }
 
-  // 随机昵称生成器（姓氏+抢红包场景名+后缀，模拟真实网络昵称）
+  // 生成随机昵称
   String _generateRandomNickname() {
-    // 常见姓氏库
     final List<String> surnames = [
-      "张",
-      "李",
-      "王",
-      "刘",
-      "陈",
-      "杨",
-      "赵",
-      "黄",
-      "周",
-      "吴",
-      "徐",
-      "孙",
-      "胡",
-      "朱",
-      "高",
-      "林",
-      "何",
-      "郭",
-      "马",
-      "罗",
+      "张", "李", "王", "刘", "陈", "杨", "赵", "黄", "周", "吴",
+      "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗"
     ];
-    // 抢红包场景专属名字
     final List<String> givenNames = [
-      "抢包快",
-      "红包控",
-      "手慢无",
-      "必中君",
-      "好运来",
-      "财气旺",
-      "秒抢王",
-      "幸运星",
-      "红包侠",
-      "发财猫",
-      "福气多",
-      "抢不停",
+      "抢包快", "红包控", "手慢无", "必中君", "好运来", "财气旺",
+      "秒抢王", "幸运星", "红包侠", "发财猫", "福气多", "抢不停"
     ];
-    // 昵称后缀（增加多样性）
     final List<String> suffixes = ["", "呀", "啦", "～", "！", "✨"];
 
-    // 组合生成昵称
     return "${surnames[random.nextInt(surnames.length)]}"
         "${givenNames[random.nextInt(givenNames.length)]}"
         "${suffixes[random.nextInt(suffixes.length)]}";
   }
 
-  // 获取随机抢红包语录（从30条中选1条）
+  // 生成随机抢红包语录
   String _getRandomRedPacketQuote() {
     final List<String> redPacketQuotes = [
       "谁发的红包？我火速赶来！",
@@ -243,44 +272,20 @@ class HomeController extends GetxController {
       "红包提醒太及时了，差点就错过了！",
       "有没有大红包？我已经准备好冲刺了！",
       "谢谢老板，祝您天天开心！",
-      "抢红包太快乐了，根本停不下来！",
+      "抢红包太快乐了，根本停不下来！"
     ];
     return redPacketQuotes[random.nextInt(redPacketQuotes.length)];
   }
 
-  // 启动自动添加消息的定时器（每3秒触发一次）
-  void _startAutoMessageTimer() {
-    _autoMessageTimer = Timer.periodic(
-      const Duration(seconds: 3),
-      (Timer timer) => _addRandomChatMessage(),
-    );
-  }
-
-  // 控制器销毁时取消定时器，防止内存泄漏
-  @override
-  void onClose() {
-    super.onClose();
-    _autoMessageTimer?.cancel();
-  }
-
-  // ------------------- 状态管理相关 -------------------
-  // 导航栏标题（响应式）
-  final RxString appbarTitle = "红包群".obs;
-  // 聊天消息列表（响应式，自动更新UI）
-  final RxList<ChatMessage> messages = <ChatMessage>[].obs;
-  // 随机数生成器（全局唯一）
-  final Random random = Random();
-
+  // ------------------- 其他工具方法 -------------------
+  // 生成MD5
   String generateMD5(String input) {
-    // 将输入字符串转换为 UTF-8 字节
     final bytes = utf8.encode(input);
-    // 计算 MD5 哈希
     final md5Hash = md5.convert(bytes);
-    // 将哈希结果转换为字符串
     return md5Hash.toString();
   }
 
-  /// 获取渠道标识
+  // 获取渠道标识
   Future<String> getAppChannel() async {
     try {
       var platform = MethodChannel('com.example.base_object/channel');
@@ -292,76 +297,58 @@ class HomeController extends GetxController {
     }
   }
 
+  // 获取UserAgent
   Future<String?> getUserAgent() async {
     const platform = MethodChannel('ua_channel');
     try {
       final String? ua = await platform.invokeMethod('getUA');
       return ua;
     } on PlatformException catch (e) {
-      Utils.logError("getUserAgent in error $e");
+      Utils.logError("getUserAgent 错误: $e");
     }
     return null;
   }
 
-  /// 获取app 升级信息
+  // 获取App升级信息
   Future<void> getAppUpdata() async {
     String channel = await getAppChannel();
-
-    /// 获取包信息
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-    /// 构建服务器版本信息请求载荷
     AppUpLoadForm appUpLoadForm = AppUpLoadForm();
 
+    // 配置渠道包名
     if (channel.isEmpty) {
-      /// 渠道包名，主包名+渠道标识， 比如com.ruyimh.xiaomi
       appUpLoadForm.channelPackage = packageInfo.packageName;
     } else {
-      /// 渠道包名，主包名+渠道标识， 比如com.ruyimh.xiaomi
       appUpLoadForm.channelPackage = "${packageInfo.packageName}.$channel";
     }
+    appUpLoadForm.channelPackage = "com.test.gf"; // 临时配置
 
-    /// 暂时性的
-    appUpLoadForm.channelPackage = "com.test.gf";
-    // Utils.logError("提交的标识符渠道名称${appUpLoadForm.toJson()}");
-
-    /// 返回的服务器版本信息
+    // 请求升级信息
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
-
-    // 获取oaid
+    // 补充设备信息
     appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
-    // 获取设备信息
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    // 获取ua
     appUpLoadModel.ua = await getUserAgent();
     appUpLoadModel.fingerprint = androidInfo.fingerprint;
     appUpLoadModel.channel = channel;
     appUpLoadModel.channelPackage = appUpLoadForm.channelPackage;
 
-    /// 将版本信息 存储到仓库
+    // 存储升级信息
     Store.instance.updateAppUpLoadModel(appUpLoadModel);
 
-    // Utils.logError("包信息：${packageInfo.toString()}");
-    // Utils.logError("服务器版本信息${appUpLoadModel.toJson()}");
-
-    /// 如果需要升级  ，那么就弹出升级框
+    // 校验版本并弹窗
     if (appUpLoadModel.packageName.isEmpty) return;
-    String input =
-        "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";
-    // 生成 MD5 签名
+    String input = "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";
     String sign = generateMD5(input);
 
-    /// 当本地版本与服务器版本一致时，直接返回。
     if (sign == appUpLoadModel.sign) return;
-
-    /// 当本地版本与服务器版本不一致或者must为强制更新时，显示更新框
     if ((sign != appUpLoadModel.sign && appUpLoadModel.sign != null) ||
         Store.instance.getAppUpLoadModel.must == '1') {
       appUpLoadModel.needUpdate = true;
-
-      /// 将版本信息 存储到仓库
       Store.instance.updateAppUpLoadModel(appUpLoadModel);
+
+      // 控制弹窗频率（每天一次）
       String? lastTime = await LocalStorage.getString("isUpApp");
       bool isShowUpDialog = true;
       if (lastTime != null && Store.instance.getAppUpLoadModel.must != '1') {
@@ -369,6 +356,7 @@ class HomeController extends GetxController {
         Jiffy last = Jiffy.parse(jsonDecode(lastTime));
         isShowUpDialog = last.isBefore(now, unit: Unit.day);
       }
+
       if (isShowUpDialog) {
         Dialogs.showCommonDialog(
           barrierDismissible: false,
@@ -379,4 +367,37 @@ class HomeController extends GetxController {
       }
     }
   }
+
+  // ------------------- 生命周期 -------------------
+  @override
+  void onInit() {
+    super.onInit();
+    // 初始化广告监听和加载
+    rewarderEvent();
+    nativeEvent();
+    RewarderTool.to.loadRewardedVideo();
+    NativeTool.to.loadNativeWith();
+    // 初始化用户信息
+    UserInfo.instance.initialize();
+    // 初始化消息（5条普通消息）
+    for (int i = 0; i < 5; i++) {
+      _addRandomChatMessage(hasPlaceholder: false);
+    }
+    // 启动定时器
+    _startAutoMessageTimer();
+    _startPlaceholderTimer();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    // 取消定时器，防止内存泄漏
+    _autoMessageTimer?.cancel();
+    _placeholderTimer?.cancel();
+  }
+
+  // ------------------- 响应式状态 -------------------
+  final RxString appbarTitle = "红包群".obs; // 导航栏标题
+  final RxList<ChatMessage> messages = <ChatMessage>[].obs; // 聊天消息列表
+  final Random random = Random(); // 全局随机数生成器
 }
