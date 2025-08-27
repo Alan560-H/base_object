@@ -26,7 +26,7 @@ class ApiUrls {
   /// 获取广告配置
   static const String getAdConfig = "/v1/ad/config";
   /// 查询用户获得广告奖励
-  static const String getSelectAd = "/v1/user/selectAd";
+  static const String getSelectAd = "/v1/user/ad";
   /// 副广上报
   static const String getSelectAdV2 = "/v1/user/selectAdV2";
   /// 副广收益领取

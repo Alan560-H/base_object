@@ -74,7 +74,7 @@ class TixianView extends GetView<TixianController> {
                 ),
                 SizedBox(height: 20.h),
                 Text(
-                  "${controller.userInfo.userModel.money} 元",
+                  "${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount/10000)} 元",
                   style: TextStyle(
                     fontSize: TextConfig.textSize_20,
                     color: Colors.white,

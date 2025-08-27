@@ -41,15 +41,14 @@ class HomeController extends GetxController {
   upDataADFn(dynamic event) async {
     try {
       UpDataADForm upDataADForm = UpDataADForm();
-      DateTime now = DateTime.now();
-      int timestampMs = now.millisecondsSinceEpoch;
       upDataADForm.extra =
-          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
+          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_0";
+      upDataADForm.transId = event?['extraMap']?['id'];
       Utils.logError("主动领取激励视频凑成的字符串${upDataADForm.extra}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
 
-      CuToast.success(msg: "恭喜获得${rewarderModel.amount} 金币");
+      CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
     }

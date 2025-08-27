@@ -41,13 +41,14 @@ class InterAdDialog extends GetxService {
         int timestampMs  = now.millisecondsSinceEpoch;
         upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
         upDataADForm.amount = event['extraMap']['adsource_price'];
+        upDataADForm.transId = event?['extraMap']?['id'];
         if(upDataADForm.amount!=null){
-          double pross = upDataADForm.amount!*100;
+          double pross = upDataADForm.amount!;
           Utils.logError("插屏广告增加进度$pross");
 
           CuCircularProgressController.to.incrementProgress(pross);
         }
-        Utils.logError("凑成的字符串${ upDataADForm.extra },${Get.isRegistered<Api>()}");
+        Utils.logError("凑成的字符串${ upDataADForm.extra },${upDataADForm.transId} ,${Get.isRegistered<Api>()}");
         if(Get.isRegistered<Api>()){
           Get.put(Api());
         }

@@ -1,6 +1,7 @@
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
+import 'package:base_object/pages/invite/invite_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class UserController extends GetxController {
   RxString appbarTitle = "我的页面标题".obs;
   final UserInfo userInfo = Get.find<UserInfo>();
   final CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
+  final InviteController inviteController = Get.find<InviteController>();
   List<MenuModel> menuList = [
     MenuModel(
       id: 0,

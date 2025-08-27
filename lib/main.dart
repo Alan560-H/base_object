@@ -22,7 +22,7 @@ void main() async {
   // 等待所有依赖注入完成（尤其是异步注入）
   await DependencyInjection.init();
   InitTool.to.setCustomDataDic({
-    "userId": 8888,
+    "user_id": 8888,
     "extra": "userid_8888_type_1_amount_0_time_345",
   });
   // 初始化广告

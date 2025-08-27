@@ -6,6 +6,11 @@ import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
+  // 想下取整
+  static double floorToTwoDecimal(double value) {
+    // 先乘以100放大，向下取整，再除以100还原，得到保留两位小数的结果
+    return (value * 100).floorToDouble() / 100;
+  }
   // 初始化 Logger 实例，使用 PrettyPrinter 进行日志格式化
   static final Logger _logger = Logger(
     printer: PrettyPrinter(

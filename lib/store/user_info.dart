@@ -85,13 +85,13 @@ class UserInfo extends GetxController{
         // 等待当前帧结束（约16ms），让GetX完成实际销毁
         await Future.delayed(const Duration(milliseconds: 20));
         // 此时检查，返回 false（旧实例已被移除）
-        Utils.logError("是否注册：${Get.isRegistered<InitTool>()}");
         Get.put<InitTool>(InitTool());
 
         await Future.delayed(const Duration(milliseconds: 20));
         bool isInitAd = await InitTool.to.initTopon();
+        Utils.logError("初始化触发的广告userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
         InitTool.to.setCustomDataDic({
-          "userId": UserInfo.instance.userModel.id,
+          "user_id": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
           "extra": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
         });
         _initialized = true;

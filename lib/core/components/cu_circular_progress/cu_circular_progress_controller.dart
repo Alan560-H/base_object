@@ -8,7 +8,7 @@ class CuCircularProgressController extends GetxController {
   // 进度值（响应式）
   final RxDouble _progress = 0.0.obs;
   // 最大进度值（固定100，与原逻辑一致）
-  final double maxProgress = 2000.0;
+  final double maxProgress = 6000.0;
 
   // 获取当前进度（只读）
   double get progress => _progress.value;
@@ -22,7 +22,6 @@ class CuCircularProgressController extends GetxController {
 
   /// 增加进度（对外核心操作方法）
   void incrementProgress(double step) {
-    Utils.logError("增加进度：$step，上一进度");
     if (step <= 0) return; // 步长不能为负
     setProgress(_progress.value + step);
   }

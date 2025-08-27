@@ -99,7 +99,7 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.white,
                 actions: [
-                  CuButton(bgColor: TextConfig.primary,radius: 15.r, text: UserInfo.instance.isLoginIn?"￥${UserInfo.instance.userModel.money} 提现":"登录", width: 130.w, onPressed:() {
+                  CuButton(bgColor: TextConfig.primary,radius: 15.r, text: UserInfo.instance.isLoginIn?"${UserInfo.instance.userModel.currentAmount} 提现":"登录", width: 130.w, onPressed:() {
                     Get.toNamed(AppRoutes.userTixian);
                   })
                 ],

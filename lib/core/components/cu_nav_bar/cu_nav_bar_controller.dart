@@ -131,8 +131,6 @@ class CuNavBarController extends GetxController {
   upDataADFn(dynamic event) async {
     try {
       UpDataADForm upDataADForm = UpDataADForm();
-      DateTime now = DateTime.now();
-      int timestampMs = now.millisecondsSinceEpoch;
 
       // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
@@ -142,22 +140,19 @@ class CuNavBarController extends GetxController {
 
       // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
       String userId = UserInfo.instance.userModel.id.toString();
-      upDataADForm.extra = "userid_$userId"
-          "_type_2"
-          "_amount_${adSourcePrice ?? 0}"
-          "_time_$timestampMs";
-
+      upDataADForm.extra = "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
+      upDataADForm.transId = event?['extraMap']?['id'];
       // 3. 赋值给表单（此时 amount 是 double?，匹配类型）
       upDataADForm.amount = amount;
 
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
       if (upDataADForm.amount != null) {
-        double pross = upDataADForm.amount! * 100;
+        double pross = upDataADForm.amount!;
         Utils.logError("横幅广告增加进度$pross");
         CuCircularProgressController.to.incrementProgress(pross);
       }
 
-      Utils.logError("横幅广告凑成的字符串${ upDataADForm.extra }");
+      Utils.logError("横幅广告凑成的字符串${upDataADForm.extra} ${upDataADForm.transId} ");
       BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
       Utils.logError("返回的数据${ backModel.toJson() }");
       if (backModel.code == CuErrorConfig.success) {

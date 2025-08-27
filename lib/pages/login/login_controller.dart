@@ -143,8 +143,9 @@ class LoginController extends GetxController {
         await Future.delayed(const Duration(milliseconds: 20));
         bool isInitAd = await InitTool.to.initTopon();
         InitTool.to.setCustomDataDic({
-          "userId": UserInfo.instance.userModel.id,
+          "user_id":"userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
           "extra": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
+
         });
         Utils.logError("是否注册2：${Get.isRegistered<RewarderTool>()}");
         // 此时检查，返回 false（旧实例已被移除）

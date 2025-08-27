@@ -14,7 +14,7 @@ class UpDataADForm extends FormModel {
   String extra = "";
   /// 名字
   double? amount = 0;
-
+  String? transId = "";
   /// 上报广告
   UpDataADForm();
   //不同的类使用不同的mixin即可
