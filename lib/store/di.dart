@@ -37,8 +37,7 @@ class DependencyInjection {
       Get.put<InitTool>(InitTool());
       // 注入开屏广告工具
       Get.put<SplashTool>(SplashTool());
-      // 注入激励视频工具
-      Get.put<RewarderTool>(RewarderTool());
+
       // 注入监听工具
       Get.put<InterstitialTool>(InterstitialTool());
       // 注入信息流工具
@@ -57,7 +56,6 @@ class DependencyInjection {
       Utils.logError("banner：${Get.isRegistered<BannerTool>()}");
       Utils.logError("注入广告工具：${Get.isRegistered<InitTool>()}");
       Utils.logError("注入开屏广告工具：${Get.isRegistered<SplashTool>()}");
-      Utils.logError("注入激励广告工具：${Get.isRegistered<RewarderTool>()}");
       Utils.logError("注入插屏广告工具：${Get.isRegistered<InterstitialTool>()}");
       Utils.logError("注入信息流广告工具：${Get.isRegistered<NativeTool>()}");
       Utils.logError("注入广告监听工具：${Get.isRegistered<ListenerTool>()}");

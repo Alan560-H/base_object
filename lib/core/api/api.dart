@@ -161,6 +161,7 @@ class Api extends GetxController{
         data,
         "post",
       );
+      Utils.logError("激励视频领取奖励返回的数据${backModel.toJson()}");
       return RewarderModel.fromJson(backModel.data);
     } catch (e) {
       Utils.logError("getSelectAd: $e");

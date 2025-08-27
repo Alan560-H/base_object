@@ -4,11 +4,12 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 
-class RewarderTool extends GetxService{
+class RewarderTool extends GetxController{
   // GetX单例获取方式
   static RewarderTool get to => Get.find<RewarderTool>();
 
   loadRewardedVideo({userID = '',extra=""}) async {
+    Utils.logError("初始化的userId:$userID,extra=$extra");
     await ATRewardedManager.loadRewardedVideo(
         placementID: AppAdConfig.rewarderPlacementID,
         extraMap: {

@@ -6,10 +6,11 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 
-class BannerTool extends GetxService{
+class BannerTool extends GetxController{
   static BannerTool get to => Get.find<BannerTool>();
 
   loadBannerWith(Map<dynamic,dynamic> extraMap) async {
+    Utils.logError("横幅广告透传参数:$extraMap");
     await ATBannerManager.loadBannerAd(
         placementID: AppAdConfig.bannerPlacementID,
         extraMap: extraMap);

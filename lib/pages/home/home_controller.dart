@@ -87,9 +87,7 @@ class HomeController extends GetxController {
           break;
         case "RewardedStatus.rewardedVideoDidRewardSuccess":
           Utils.logError("激励广告奖励成功，广告位ID：$placementID");
-          if (Get.isRegistered<UserInfo>()) {
-            upDataADFn(event);
-          }
+
           break;
         case "RewardedStatus.rewardedVideoDidClick":
           Utils.logError("激励广告被点击，广告位ID：$placementID");
@@ -99,6 +97,9 @@ class HomeController extends GetxController {
           break;
         case "RewardedStatus.rewardedVideoDidClose":
           Utils.logError("激励广告被关闭，广告位ID：$placementID");
+          if (Get.isRegistered<UserInfo>()) {
+            upDataADFn(event);
+          }
           break;
       }
     });

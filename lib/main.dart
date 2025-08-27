@@ -21,8 +21,13 @@ void main() async {
   // 全局依赖注入
   // 等待所有依赖注入完成（尤其是异步注入）
   await DependencyInjection.init();
+  InitTool.to.setCustomDataDic({
+    "userId": 8888,
+    "extra": "userid_8888_type_1_amount_0_time_345",
+  });
   // 初始化广告
   bool isInitAd = await InitTool.to.initTopon();
+
   // bool isStartLog = await InitTool.to.setLogEnabled();
   Utils.logError("广告初始化完成 $isInitAd ");
   // Utils.logError("日志开启状态：$isStartLog");

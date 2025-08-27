@@ -4,7 +4,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 
-class InitTool extends GetxService {
+class InitTool extends GetxController {
   // GetX单例获取方式
   static InitTool get to => Get.find<InitTool>();
 
@@ -36,11 +36,10 @@ class InitTool extends GetxService {
     });
   }
 
-  setCustomDataDic() async {
+  setCustomDataDic(Map<String,Object> customDataMap) async {
+    Utils.logError("整个收到的map$customDataMap");
     await ATInitManger.setCustomDataMap(
-      customDataMap: {
-        'setCustomDataDic': 'myCustomDataDic',
-      },
+      customDataMap: customDataMap,
     ).then((value) {
       Utils.logError('自定义数据设置完成'); // 原"Set up custom rules"→"自定义数据设置完成"（结合方法功能修正，原"rules"表述不准确）
     });

@@ -4,6 +4,7 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -77,6 +78,22 @@ class UserInfo extends GetxController{
         final Map<String, dynamic> userInfoMap = jsonDecode(userInfoJson);
         final cachedUser = UserModel.fromJson(userInfoMap);
         updateUserModel(cachedUser);
+        DateTime now = DateTime.now();
+        int timestampMs  = now.millisecondsSinceEpoch;
+        Get.delete<InitTool>();
+        // Get.delete<BannerTool>();
+        // 等待当前帧结束（约16ms），让GetX完成实际销毁
+        await Future.delayed(const Duration(milliseconds: 20));
+        // 此时检查，返回 false（旧实例已被移除）
+        Utils.logError("是否注册：${Get.isRegistered<InitTool>()}");
+        Get.put<InitTool>(InitTool());
+
+        await Future.delayed(const Duration(milliseconds: 20));
+        bool isInitAd = await InitTool.to.initTopon();
+        InitTool.to.setCustomDataDic({
+          "userId": UserInfo.instance.userModel.id,
+          "extra": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
+        });
         _initialized = true;
       }
     }
