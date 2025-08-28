@@ -12,15 +12,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class ClaimAdDialog extends StatelessWidget {
-  final int data;
+  final RxInt data;
 
   /// 回调
   final void Function(dynamic callBackData)? onClick;
 
   /// 领取存钱罐
   const ClaimAdDialog({super.key, required this.onClick, required this.data});
-  // 修改为 getter 方法
-  int get helpTexts => data;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +48,7 @@ class ClaimAdDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(height: 100.h,),
-                      Text(data.toString(),style: TextStyle(fontSize: TextConfig.textSize_36,color: Colors.white),),
+                      Obx(()=>Text(data.value.toString(),style: TextStyle(fontSize: TextConfig.textSize_36,color: Colors.white),)),
                       SizedBox(height: 30.h,),
                       CuButton(text: "立即领取",width: 120.w,height: 40.h,radius: 10.r,bgColor: TextConfig.primary, onPressed: ()async{
                         if(Get.isRegistered<Api>()){

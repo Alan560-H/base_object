@@ -32,9 +32,7 @@ class CuCircularProgressView extends StatelessWidget {
     return Obx(
           () => InkWell(
             onTap: (){
-              // CuCircularProgressController.to.incrementProgress(100);
-              Utils.logError("点击进度条${CuCircularProgressController.to.progress}");
-              Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.progress.floor());
+              Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.currentValue);
             },
             child: Stack(
                     alignment: Alignment.center,

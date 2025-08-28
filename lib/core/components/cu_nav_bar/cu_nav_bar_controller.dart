@@ -1,5 +1,6 @@
 
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:anythink_sdk/at_common.dart';
 import 'package:anythink_sdk/at_index.dart';
@@ -152,15 +153,13 @@ class CuNavBarController extends GetxController {
       upDataADForm.sign=Utils.generateEncryptedString(userId: userId,reqId:reqId,adsourceId: adsourceId);
       Utils.logError("横幅广告凑成的字符串${upDataADForm.toJson()}");
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
-      if (amount != null) {
-        double pross = amount!;
-        Utils.logError("横幅广告增加进度$pross");
-        CuCircularProgressController.to.incrementProgress(pross);
-      }
+      int pross = amount.toInt();
+      Utils.logError("横幅广告金额$pross");
+      CuCircularProgressController.to.addCurrentValue(pross);
 
 
       BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-      Utils.logError("返回的数据${ backModel.toJson() }");
+      Utils.logError("横幅广告返回的数据${ backModel.toJson() }");
       if (backModel.code == CuErrorConfig.success) {
         CuToast.success(msg: "上报副广成功");
       }else{
