@@ -11,39 +11,36 @@ class DrawHomeView extends StatefulWidget {
   final double viewWidth;
   final double viewHeight;
 
-  const DrawHomeView(
-      {Key? key,
-        required this.viewWidth,
-        required this.viewHeight})
-      : super(key: key);
+  const DrawHomeView({
+    Key? key,
+    required this.viewWidth,
+    required this.viewHeight,
+  }) : super(key: key);
 
   @override
   _DrawHomeViewState createState() => _DrawHomeViewState();
 }
 
 class _DrawHomeViewState extends State<DrawHomeView> {
-
   final String _viewType = "com.gstory.flutter_pangrowth/DramaHomeView";
 
-  MethodChannel? _channel;
+  final MethodChannel _channel = const MethodChannel("DramaHomeView_channel");
 
-  //广告是否显示
-  bool _isShow = true;
+  final String onUnlockMethod = "on_unlock_method";
 
   @override
   void initState() {
     super.initState();
-    // _isShow = true;
-    // setState(() {
-    //
-    // });
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == onUnlockMethod) {
+        print("onUnlockMethod: ${call.arguments}");
+        final bool isUnlock = call.arguments<bool>("isUnlock") ?? false;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (!_isShow) {
-    //   return Container();
-    // }
     if (defaultTargetPlatform == TargetPlatform.android) {
       return SizedBox(
         width: widget.viewWidth,
@@ -78,16 +75,5 @@ class _DrawHomeViewState extends State<DrawHomeView> {
   }
 
   //注册cannel
-  void _registerChannel(int id) {
-    _channel = MethodChannel("${_viewType}_$id");
-    _channel?.setMethodCallHandler(_platformCallHandler);
-  }
-
-  //监听原生view传值
-  Future<dynamic> _platformCallHandler(MethodCall call) async {
-    switch (call.method) {
-    }
-  }
+  void _registerChannel(int id) {}
 }
-
-

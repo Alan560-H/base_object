@@ -51,6 +51,7 @@ class FlutterPangrowthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         channel.setMethodCallHandler(this)
         applicationContext = flutterPluginBinding.applicationContext
         mFlutterPluginBinding = flutterPluginBinding
+        Channel.init(flutterPluginBinding.binaryMessenger)
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {

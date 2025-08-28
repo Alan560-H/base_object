@@ -70,6 +70,8 @@ dependencies {
     api('com.google.code.gson:gson:2.13.1')
     api('com.squareup.okhttp3:okhttp:5.1.0')
 
+    implementation ('com.blankj:utilcodex:1.31.1')
+
     //为保证兼容性 建议使用广告SDK版本
     implementation 'com.pangle.cn:ads-sdk-pro:7.0.2.9'
     implementation('com.pangle.cn:pangrowth-sdk:4.4.1.0') {
