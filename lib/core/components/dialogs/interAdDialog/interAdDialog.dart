@@ -24,11 +24,9 @@ class InterAdDialog extends GetxService {
     rewarderEvent();
     super.onInit();
     // 初始化插屏广告
-    DateTime now = DateTime.now();
-    int timestampMs  = now.millisecondsSinceEpoch;
     interstitialTool.loadInterstitialAd({
       Common.getUserIdKey(): UserInfo.instance.userModel.id,
-      Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
+      Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_0",
     });
     // 初始化逻辑
   }

@@ -133,28 +133,28 @@ class LoginController extends GetxController {
         DateTime now = DateTime.now();
         int timestampMs  = now.millisecondsSinceEpoch;
         Get.delete<InitTool>();
-        // Get.delete<BannerTool>();
+        Get.delete<RewarderTool>();
         // 等待当前帧结束（约16ms），让GetX完成实际销毁
         await Future.delayed(const Duration(milliseconds: 20));
         // 此时检查，返回 false（旧实例已被移除）
         Utils.logError("是否注册：${Get.isRegistered<InitTool>()}");
         Get.put<InitTool>(InitTool());
-
+        Get.put<RewarderTool>(RewarderTool());
         await Future.delayed(const Duration(milliseconds: 20));
         bool isInitAd = await InitTool.to.initTopon();
         InitTool.to.setCustomDataDic({
           "user_id":"userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
           "extra": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
-
         });
+        RewarderTool.to.loadRewardedVideo(
+            userID: UserInfo.instance.userModel.id,
+            extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
         Utils.logError("是否注册2：${Get.isRegistered<RewarderTool>()}");
         // 此时检查，返回 false（旧实例已被移除）
         // Utils.logError("banner是否注册：${Get.isRegistered<BannerTool>()}");
         // Get.put<BannerTool>(BannerTool());
         // Utils.logError("banner是否注册2：${Get.isRegistered<BannerTool>()}");
-        // RewarderTool.to.loadRewardedVideo(
-        //     userID: UserInfo.instance.userModel.id,
-        //     extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
+
         // BannerTool.to.loadBannerWith(
         //     {
         //       Common.getUserIdKey(): UserInfo.instance.userModel.id,

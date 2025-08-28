@@ -47,8 +47,10 @@ class HomeController extends GetxController {
       Utils.logError("主动领取激励视频凑成的字符串${upDataADForm.extra}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
+      if(rewarderModel.amount>0){
+        CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
+      }
 
-      CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
     }
@@ -280,25 +282,8 @@ class HomeController extends GetxController {
     // 初始化广告监听和加载
     rewarderEvent();
     nativeEvent();
-
-
     // 初始化用户信息
     UserInfo.instance.initialize();
-    DateTime now = DateTime.now();
-    int timestampMs  = now.millisecondsSinceEpoch;
-    RewarderTool.to.loadRewardedVideo(
-        userID: UserInfo.instance.userModel.id,
-        extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
-    NativeTool.to.loadNativeWith({
-      Common.getUserIdKey(): UserInfo.instance.userModel.id,
-      Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
-      ATCommon.isNativeShow() : true,
-      ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-        Get.width,
-        340.w,
-      ),
-      ATNativeManager.isAdaptiveHeight(): true
-    });
     // 初始化消息（5条普通消息）
     for (int i = 0; i < 5; i++) {
       _addRandomChatMessage();
