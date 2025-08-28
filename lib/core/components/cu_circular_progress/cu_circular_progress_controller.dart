@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
@@ -13,8 +17,13 @@ class CuCircularProgressController extends GetxController {
   final RxDouble _progress = 0.0.obs;
   // 最大进度值（固定100，与原逻辑一致）
   final double maxProgress = 6000.0;
-  final RxInt currentValue = 0.obs;
+  final RxDouble currentValue = (0.0).obs;
   Timer? setStepTimer;
+  void resetProgressTimer(){
+    setStepTimer?.cancel();
+    setStepTimer = null;
+    startAutoSetProgressTimer();
+  }
   // 启动普通消息定时器（3秒/条）
   void startAutoSetProgressTimer() {
     setStepTimer = Timer.periodic(
@@ -48,35 +57,26 @@ class CuCircularProgressController extends GetxController {
   void resetProgress() {
     _progress.value = 0.0;
   }
-  /// 增加存钱罐余额
-  void addCurrentValue(int value) {
-    Utils.logError("增加存钱罐余额$value");
-    setCurrentValue(currentValue.value += value);
-  }
+  // /// 增加存钱罐余额
+  // void addCurrentValue(int value) {
+  //   setCurrentValue(currentValue.value += value);
+  // }
   /// 设定存钱罐余额
-  void setCurrentValue(int value) {
-    currentValue.value = value;
-    LocalStorage.setString("currentValue", value.toString());
-
-    Utils.logError("设定存钱罐余额$value");
-  }
-  void initCurrentValue() async {
+  // void setCurrentValue(double value) {
+  //   currentValue.value = value;
+  //   // LocalStorage.setString("currentValue", value.toString());
+  // }
+  void showDialog() async {
     try {
-      // 1. 读取存储的原始值（可能是带双引号的JSON字符串）
-      String? value = await LocalStorage.getString("currentValue");
-      if (value != null) {
-        // 2. 先通过 jsonDecode 解码（去掉双引号）
-        dynamic decodedValue = jsonDecode(value);
-
-        // 3. 再转换为整数（兼容字符串或数字类型）
-        if (decodedValue is String) {
-          currentValue.value = int.tryParse(decodedValue) ?? 0;
-        } else if (decodedValue is num) {
-          currentValue.value = decodedValue.toInt();
-        } else {
-          currentValue.value = 0; // 非数字类型，设为默认值
-        }
+      // onTap: ()async{getSelectAdV3
+      //
+      // },
+      if(!Get.isRegistered<Api>()){
+        Get.put(Api());
       }
+      RewarderModel rewarderModel = await Get.find<Api>().getSelectAdV3();
+      currentValue.value = rewarderModel.amount;
+      Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.currentValue);
       Utils.logError("存钱罐初始化余额: ${currentValue.value}");
     } catch (e) {
       Utils.logError("存钱罐初始化余额失败: $e");
@@ -85,7 +85,7 @@ class CuCircularProgressController extends GetxController {
   }
   @override
   void onInit() {
-    initCurrentValue();
+    // initCurrentValue();
     startAutoSetProgressTimer();
     // TODO: implement onInit
     super.onInit();

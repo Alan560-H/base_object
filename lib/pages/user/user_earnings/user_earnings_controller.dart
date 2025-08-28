@@ -17,6 +17,14 @@ class UserEarningsController extends GetxController {
     BoxCategory(id: 0, categoryName: "日账单"),
     BoxCategory(id: 1, categoryName: "邀新奖励"),
   ];
+  /// 来源
+  Map<int,String> sourceFn = {
+    1:"广告收益",
+    2:"新人福利",
+    3:"邀请人福利",
+    4:"提现扣币",
+    5:"平台奖励"
+  };
   RxInt currentIndex = 0.obs;
   void tabChange(i) {
     currentIndex.value = i;

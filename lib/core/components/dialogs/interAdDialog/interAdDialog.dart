@@ -56,16 +56,16 @@ class InterAdDialog extends GetxService {
         Utils.logError("插屏广告凑成的字符串${upDataADForm.toJson()}");
         int pross = amount.toInt();
         Utils.logError("插屏广告金额$pross");
-        CuCircularProgressController.to.addCurrentValue(pross);
+        // CuCircularProgressController.to.addCurrentValue(pross);
 
-        if(Get.isRegistered<Api>()){
-          Get.put(Api());
-        }
-        BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-        Utils.logError("插屏广告返回的数据${ backModel.toJson() }");
-        if(backModel.code == CuErrorConfig.success){
-          CuToast.success(msg: "上报副广成功");
-        }
+        // if(Get.isRegistered<Api>()){
+        //   Get.put(Api());
+        // }
+        // BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
+        // Utils.logError("插屏广告返回的数据${ backModel.toJson() }");
+        // if(backModel.code == CuErrorConfig.success){
+        //   CuToast.success(msg: "上报副广成功");
+        // }
       }
     }catch(e){
       Utils.logError("上报副广失败：$e");

@@ -22,6 +22,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:jiffy/jiffy.dart';
 
 class CuNavBarController extends GetxController {
   var selectedIndex = 0.obs;
@@ -155,16 +156,16 @@ class CuNavBarController extends GetxController {
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
       int pross = amount.toInt();
       Utils.logError("横幅广告金额$pross");
-      CuCircularProgressController.to.addCurrentValue(pross);
+      // CuCircularProgressController.to.addCurrentValue(pross);
 
 
-      BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-      Utils.logError("横幅广告返回的数据${ backModel.toJson() }");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "上报副广成功");
-      }else{
-        CuToast.error(msg: "上传banner广告失败${backModel.msg}");
-      }
+      // BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
+      // Utils.logError("横幅广告返回的数据${ backModel.toJson() }");
+      // if (backModel.code == CuErrorConfig.success) {
+      //   CuToast.success(msg: "上报副广成功");
+      // }else{
+      //   CuToast.error(msg: "上传banner广告失败${backModel.msg}");
+      // }
     } catch (e) {
       Utils.logError("上报副广失败：$e");
     }
@@ -200,11 +201,10 @@ class CuNavBarController extends GetxController {
       /// 横幅广告自动刷新成功
         case "BannerStatus.bannerAdAutoRefreshSucceed":
           height.value = 110.h;
-          Utils.logError("好招术${event['extraMap']}");
+          Utils.logError("${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}好招术${event['extraMap']}");
           if(Get.isRegistered<UserInfo>()){
             if(UserInfo.instance.isLoginIn){
               upDataADFn(event);
-
             }
           }
 
@@ -223,7 +223,7 @@ class CuNavBarController extends GetxController {
           break;
       /// 横幅广告展示成功
         case "BannerStatus.bannerAdDidShowSucceed":
-          Utils.logError("横幅广告展示成功$event，增加进度");
+          Utils.logError("${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告展示成功$event，增加进度");
           break;
       /// 横幅广告点击关闭按钮
         case "BannerStatus.bannerAdTapCloseButton":

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// 圆形进度条组件（无需外部传入控制器）
-class CuCircularProgressView extends StatelessWidget {
+class CuCircularProgressView extends GetView<CuCircularProgressController> {
   // 1. 外部可配置参数（均含默认值，核心参数标记required）
   final String imagePath; // 必传中间图片路径（本地资源）
   final double size; // 进度条整体大小（默认200）
@@ -31,9 +31,8 @@ class CuCircularProgressView extends StatelessWidget {
     // 响应式监听进度变化，自动刷新UI
     return Obx(
           () => InkWell(
-            onTap: (){
-              Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.currentValue);
-            },
+            onTap:controller.showDialog,
+
             child: Stack(
                     alignment: Alignment.center,
                     children: [

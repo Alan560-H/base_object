@@ -11,7 +11,7 @@ part 'RewarderModel.g.dart';
 /// 查询广告奖励
 @JsonSerializable()
 class RewarderModel {
-  /// 图片base64
+  /// 金额
   double amount = 0;
 
   /// 查询广告奖励

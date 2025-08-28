@@ -48,7 +48,11 @@ class HomeController extends GetxController {
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
       if(rewarderModel.amount>0){
-        CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
+        Utils.debounce((){
+          UserInfo.instance.getUserInfoFn();
+          CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
+        },duration:Duration(seconds: 1));
+
       }
 
     } catch (e) {
@@ -222,7 +226,7 @@ class HomeController extends GetxController {
       bool isNativeReady = await NativeTool.to.nativeAdReady(); // 原生广告是否准备好
       // 如果激励视频准备好，且概率已经小于0.2，则填充红包图片
 
-      Utils.logError("原生广告加载状态$isNativeReady,");
+      // Utils.logError("原生广告加载状态$isNativeReady,");
       // if(timeCount!=0){
       //   Utils.logError("这是6的倍数吗？${timeCount % 6 == 0}");
       //   if (isNativeReady&&timeCount % 6 == 0) {

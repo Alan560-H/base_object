@@ -125,17 +125,32 @@ class Api extends GetxController{
     }
   }
   /// 副广告上报
-  Future<BackModel> getSelectAdV2(UpDataADForm data) async {
+  // Future<BackModel> getSelectAdV2(UpDataADForm data) async {
+  //   try {
+  //     BackModel backModel = await _sendRequest(
+  //       ApiUrls.getSelectAdV2,
+  //       data,
+  //       "post",
+  //     );
+  //     return backModel;
+  //   } catch (e) {
+  //     Utils.logError("getSelectAdV2: $e");
+  //     return BackModel();
+  //   }
+  // }
+  /// 查询当前存钱罐余额
+  Future<RewarderModel> getSelectAdV3() async {
     try {
       BackModel backModel = await _sendRequest(
-        ApiUrls.getSelectAdV2,
-        data,
+        ApiUrls.getSelectAdV3,
+        FormModel(),
         "post",
       );
-      return backModel;
+      Utils.logError("激励视频领取奖励返回的数据${backModel.toJson()}");
+      return RewarderModel.fromJson(backModel.data);
     } catch (e) {
-      Utils.logError("getSelectAdV2: $e");
-      return BackModel();
+      Utils.logError("getSelectAdV3: $e");
+      return RewarderModel();
     }
   }
   /// 副广告奖励领取

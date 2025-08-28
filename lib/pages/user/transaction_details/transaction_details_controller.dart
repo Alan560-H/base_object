@@ -13,7 +13,14 @@ class TransactionDetailsController extends GetxController {
   // 提现表
   final RxList<UserWithdrawalModel> userWithdrawalModelList = <UserWithdrawalModel>[].obs;
   BannerTool bannerTool = Get.find<BannerTool>();
-
+  /// 来源
+  Map<int,String> sourceFn = {
+    1:"广告收益",
+    2:"新人福利",
+    3:"邀请人福利",
+    4:"提现扣币",
+    5:"平台奖励"
+  };
   /// 饰品分类列表
   List<BoxCategory> userBagNavs = [
     BoxCategory(id: 0, categoryName: "收入"),
