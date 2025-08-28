@@ -41,15 +41,20 @@ class HomeController extends GetxController {
   upDataADFn(dynamic event) async {
     try {
       UpDataADForm upDataADForm = UpDataADForm();
-      DateTime now = DateTime.now();
-      int timestampMs = now.millisecondsSinceEpoch;
       upDataADForm.extra =
-          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
-      Utils.logError("主动领取激励视频凑成的字符串${upDataADForm.extra}");
+          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_0";
+      upDataADForm.transId = event?['extraMap']?['id'];
+      Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
+      if(rewarderModel.amount>0){
+        Utils.debounce((){
+          UserInfo.instance.getUserInfoFn();
+          CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
+        },duration:Duration(seconds: 1));
 
-      CuToast.success(msg: "恭喜获得${rewarderModel.amount} 金币");
+      }
+
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
     }
@@ -221,7 +226,7 @@ class HomeController extends GetxController {
       bool isNativeReady = await NativeTool.to.nativeAdReady(); // 原生广告是否准备好
       // 如果激励视频准备好，且概率已经小于0.2，则填充红包图片
 
-      Utils.logError("原生广告加载状态$isNativeReady,");
+      // Utils.logError("原生广告加载状态$isNativeReady,");
       // if(timeCount!=0){
       //   Utils.logError("这是6的倍数吗？${timeCount % 6 == 0}");
       //   if (isNativeReady&&timeCount % 6 == 0) {
@@ -281,25 +286,8 @@ class HomeController extends GetxController {
     // 初始化广告监听和加载
     rewarderEvent();
     nativeEvent();
-
-
     // 初始化用户信息
     UserInfo.instance.initialize();
-    DateTime now = DateTime.now();
-    int timestampMs  = now.millisecondsSinceEpoch;
-    RewarderTool.to.loadRewardedVideo(
-        userID: UserInfo.instance.userModel.id,
-        extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
-    NativeTool.to.loadNativeWith({
-      Common.getUserIdKey(): UserInfo.instance.userModel.id,
-      Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
-      ATCommon.isNativeShow() : true,
-      ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-        Get.width,
-        340.w,
-      ),
-      ATNativeManager.isAdaptiveHeight(): true
-    });
     // 初始化消息（5条普通消息）
     for (int i = 0; i < 5; i++) {
       _addRandomChatMessage();

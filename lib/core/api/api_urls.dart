@@ -26,13 +26,13 @@ class ApiUrls {
   /// 获取广告配置
   static const String getAdConfig = "/v1/ad/config";
   /// 查询用户获得广告奖励
-  static const String getSelectAd = "/v1/user/selectAd";
+  static const String getSelectAd = "/v1/user/ad";
   /// 副广上报
-  static const String getSelectAdV2 = "/v1/user/selectAdV2";
+  // static const String getSelectAdV2 = "/v1/user/adV2";
   /// 副广收益领取
   static const String getAdAmount = "/v1/user/getAdAmount";
   /// 副广累计收益查询
-  static const String getSelectAdV3 = "/v1/user/selectAdV3";
+  static const String getSelectAdV3 = "/v1/user/adSum";
   /// 新人福利查询
   static const String getNewcomerConfig = "/v1/benefit/newcomerConfig";
   /// 新人福利领取

@@ -1,4 +1,7 @@
 
+import 'dart:developer';
+import 'dart:ffi';
+
 import 'package:anythink_sdk/at_common.dart';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
@@ -19,6 +22,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:jiffy/jiffy.dart';
 
 class CuNavBarController extends GetxController {
   var selectedIndex = 0.obs;
@@ -131,40 +135,37 @@ class CuNavBarController extends GetxController {
   upDataADFn(dynamic event) async {
     try {
       UpDataADForm upDataADForm = UpDataADForm();
-      DateTime now = DateTime.now();
-      int timestampMs = now.millisecondsSinceEpoch;
 
       // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
       dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
-      double? amount = double.tryParse(adSourcePrice?.toString() ?? "");
-
+      double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
+      String reqId = event?['extraMap']?['req_id'];
+      String adsourceId = event?['extraMap']?['adsource_id'];
       // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
       String userId = UserInfo.instance.userModel.id.toString();
-      upDataADForm.extra = "userid_$userId"
-          "_type_2"
-          "_amount_${adSourcePrice ?? 0}"
-          "_time_$timestampMs";
+      upDataADForm.extra = "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
+      upDataADForm.transId = event?['extraMap']?['id'];
+      upDataADForm.amount = (amount!/1000);
+      upDataADForm.adsourceId = adsourceId;
+      upDataADForm.reqId = reqId;
 
-      // 3. 赋值给表单（此时 amount 是 double?，匹配类型）
-      upDataADForm.amount = amount;
-
+      upDataADForm.sign=Utils.generateEncryptedString(userId: userId,reqId:reqId,adsourceId: adsourceId);
+      Utils.logError("横幅广告凑成的字符串${upDataADForm.toJson()}");
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
-      if (upDataADForm.amount != null) {
-        double pross = upDataADForm.amount! * 100;
-        Utils.logError("横幅广告增加进度$pross");
-        CuCircularProgressController.to.incrementProgress(pross);
-      }
+      int pross = amount.toInt();
+      Utils.logError("横幅广告金额$pross");
+      // CuCircularProgressController.to.addCurrentValue(pross);
 
-      Utils.logError("横幅广告凑成的字符串${ upDataADForm.extra }");
-      BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-      Utils.logError("返回的数据${ backModel.toJson() }");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "上报副广成功");
-      }else{
-        CuToast.error(msg: "上传banner广告失败${backModel.msg}");
-      }
+
+      // BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
+      // Utils.logError("横幅广告返回的数据${ backModel.toJson() }");
+      // if (backModel.code == CuErrorConfig.success) {
+      //   CuToast.success(msg: "上报副广成功");
+      // }else{
+      //   CuToast.error(msg: "上传banner广告失败${backModel.msg}");
+      // }
     } catch (e) {
       Utils.logError("上报副广失败：$e");
     }
@@ -200,11 +201,10 @@ class CuNavBarController extends GetxController {
       /// 横幅广告自动刷新成功
         case "BannerStatus.bannerAdAutoRefreshSucceed":
           height.value = 110.h;
-          Utils.logError("好招术${event['extraMap']}");
+          Utils.logError("${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}好招术${event['extraMap']}");
           if(Get.isRegistered<UserInfo>()){
             if(UserInfo.instance.isLoginIn){
               upDataADFn(event);
-
             }
           }
 
@@ -223,7 +223,7 @@ class CuNavBarController extends GetxController {
           break;
       /// 横幅广告展示成功
         case "BannerStatus.bannerAdDidShowSucceed":
-          Utils.logError("横幅广告展示成功$event，增加进度");
+          Utils.logError("${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告展示成功$event，增加进度");
           break;
       /// 横幅广告点击关闭按钮
         case "BannerStatus.bannerAdTapCloseButton":

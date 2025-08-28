@@ -1,4 +1,5 @@
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/models/localModels/BoxCategory.dart';
@@ -11,6 +12,15 @@ class TransactionDetailsController extends GetxController {
   final RxList<UserAmountListModel> userAmountListModelList = <UserAmountListModel>[].obs;
   // 提现表
   final RxList<UserWithdrawalModel> userWithdrawalModelList = <UserWithdrawalModel>[].obs;
+  BannerTool bannerTool = Get.find<BannerTool>();
+  /// 来源
+  Map<int,String> sourceFn = {
+    1:"广告收益",
+    2:"新人福利",
+    3:"邀请人福利",
+    4:"提现扣币",
+    5:"平台奖励"
+  };
   /// 饰品分类列表
   List<BoxCategory> userBagNavs = [
     BoxCategory(id: 0, categoryName: "收入"),
@@ -49,6 +59,7 @@ class TransactionDetailsController extends GetxController {
   @override
   void onInit() {
     Utils.logError("收支明细页面oninit");
+    bannerTool.hideBannerAd();
     getUserAmountList();
     super.onInit();
   }
@@ -57,5 +68,12 @@ class TransactionDetailsController extends GetxController {
     Utils.logError("收支明细页面onready");
     // TODO: implement onReady
     super.onReady();
+  }
+  @override
+  void onClose() {
+    bannerTool.afreshShowBannerAd();
+    // TODO: implement onClose
+    Utils.logError("收支明细页面onClose");
+    super.onClose();
   }
 }

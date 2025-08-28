@@ -22,8 +22,8 @@ void main() async {
   // 等待所有依赖注入完成（尤其是异步注入）
   await DependencyInjection.init();
   InitTool.to.setCustomDataDic({
-    "userId": 8888,
-    "extra": "userid_8888_type_1_amount_0_time_345",
+    "user_id": 0,
+    "extra": "userid_0_type_1_amount_0_time_0",
   });
   // 初始化广告
   bool isInitAd = await InitTool.to.initTopon();
@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> with AppTheme {
           // 导航唯一键
           navigatorKey: Global.navigatorKey,
           // 初始化根路由路径
-          initialRoute: AppRoutes.home,
+          initialRoute: AppRoutes.splashPage,
           // 路由列表
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,

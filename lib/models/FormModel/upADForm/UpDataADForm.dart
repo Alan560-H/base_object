@@ -12,9 +12,19 @@ part 'UpDataADForm.g.dart';
 class UpDataADForm extends FormModel {
   /// 手机号
   String extra = "";
-  /// 名字
+  /// 预估价格（主广，副广用）
   double? amount = 0;
+  /// 激励视频用。
+  String? transId = "";
 
+
+  /// 副广用
+  /// 请求id
+  String? reqId = "";
+  /// 广告源id
+  String? adsourceId = "";
+  /// 副广 加密参数 sign = MD5(base64(用户id+req_id+adsource_id))
+  String? sign = "";
   /// 上报广告
   UpDataADForm();
   //不同的类使用不同的mixin即可

@@ -28,7 +28,14 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
           child: ListTile(
             title: Text("传家宝"),
             subtitle: Text(item.createTime),
-            trailing: Text("${item.initAmount}金币",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("${item.initAmount}金币",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
+                Text("${controller.sourceFn[item.type]}",style: TextStyle(color: TextConfig.grey, fontSize: TextConfig.textSize_12,),)
+              ],
+            ),
           ),
         );
       },

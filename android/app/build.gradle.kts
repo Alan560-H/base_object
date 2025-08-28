@@ -88,16 +88,16 @@ android {
     // 添加签名配置
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
-            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
-            storePassword = "usxw4fQ4"  // 密钥库密码
-            keyAlias = "ym251627"            // 密钥别名
-            keyPassword = "usxw4fQ4"      // 密钥密码
+            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
+            storePassword = "aa123456"  // 密钥库密码
+            keyAlias = "cjbao"            // 密钥别名
+            keyPassword = "aa123456"      // 密钥密码
         }
         create("customDebug") {  // 定义名为 "release" 的签名配置
-            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
-            storePassword = "usxw4fQ4"  // 密钥库密码
-            keyAlias = "ym251627"            // 密钥别名
-            keyPassword = "usxw4fQ4"      // 密钥密码
+            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
+            storePassword = "aa123456"  // 密钥库密码
+            keyAlias = "cjbao"            // 密钥别名
+            keyPassword = "aa123456"      // 密钥密码
         }
     }
     buildTypes {
