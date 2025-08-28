@@ -44,7 +44,7 @@ class HomeController extends GetxController {
       upDataADForm.extra =
           "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_0";
       upDataADForm.transId = event?['extraMap']?['id'];
-      Utils.logError("主动领取激励视频凑成的字符串${upDataADForm.extra}");
+      Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
       if(rewarderModel.amount>0){

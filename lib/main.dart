@@ -22,8 +22,8 @@ void main() async {
   // 等待所有依赖注入完成（尤其是异步注入）
   await DependencyInjection.init();
   InitTool.to.setCustomDataDic({
-    "user_id": 8888,
-    "extra": "userid_8888_type_1_amount_0_time_345",
+    "user_id": 0,
+    "extra": "userid_0_type_1_amount_0_time_0",
   });
   // 初始化广告
   bool isInitAd = await InitTool.to.initTopon();

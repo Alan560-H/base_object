@@ -92,11 +92,11 @@ class UserInfo extends GetxController{
         bool isInitAd = await InitTool.to.initTopon();
         Utils.logError("初始化触发的广告userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0");
         InitTool.to.setCustomDataDic({
-          "user_id": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+          "user_id": "${UserInfo.instance.userModel.id}",
           "extra": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
         });
         RewarderTool.to.loadRewardedVideo(
-            userID: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+            userID: "${UserInfo.instance.userModel.id}",
             extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0");
         Utils.logError("是否注册2：${Get.isRegistered<RewarderTool>()}");
         _initialized = true;

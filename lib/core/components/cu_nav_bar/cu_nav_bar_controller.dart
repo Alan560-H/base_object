@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:anythink_sdk/at_common.dart';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
@@ -136,23 +138,27 @@ class CuNavBarController extends GetxController {
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
       dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
-      double? amount = double.tryParse(adSourcePrice?.toString() ?? "");
-
+      double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
+      String reqId = event?['extraMap']?['req_id'];
+      String adsourceId = event?['extraMap']?['adsource_id'];
       // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
       String userId = UserInfo.instance.userModel.id.toString();
       upDataADForm.extra = "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
       upDataADForm.transId = event?['extraMap']?['id'];
-      // 3. 赋值给表单（此时 amount 是 double?，匹配类型）
-      upDataADForm.amount = amount;
+      upDataADForm.amount = (amount!/1000);
+      upDataADForm.adsourceId = adsourceId;
+      upDataADForm.reqId = reqId;
 
+      upDataADForm.sign=Utils.generateEncryptedString(userId: userId,reqId:reqId,adsourceId: adsourceId);
+      Utils.logError("横幅广告凑成的字符串${upDataADForm.toJson()}");
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
-      if (upDataADForm.amount != null) {
-        double pross = upDataADForm.amount!;
+      if (amount != null) {
+        double pross = amount!;
         Utils.logError("横幅广告增加进度$pross");
         CuCircularProgressController.to.incrementProgress(pross);
       }
 
-      Utils.logError("横幅广告凑成的字符串${upDataADForm.extra} ${upDataADForm.transId} ");
+
       BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
       Utils.logError("返回的数据${ backModel.toJson() }");
       if (backModel.code == CuErrorConfig.success) {

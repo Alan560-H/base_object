@@ -14,7 +14,10 @@ UpDataADForm _$UpDataADFormFromJson(Map<String, dynamic> json) =>
       ..type = json['type']
       ..extra = json['extra'] as String
       ..amount = (json['amount'] as num?)?.toDouble()
-      ..transId = json['transId'] as String?;
+      ..transId = json['transId'] as String?
+      ..reqId = json['reqId'] as String?
+      ..adsourceId = json['adsourceId'] as String?
+      ..sign = json['sign'] as String?;
 
 Map<String, dynamic> _$UpDataADFormToJson(UpDataADForm instance) =>
     <String, dynamic>{
@@ -25,4 +28,7 @@ Map<String, dynamic> _$UpDataADFormToJson(UpDataADForm instance) =>
       'extra': instance.extra,
       'amount': instance.amount,
       'transId': instance.transId,
+      'reqId': instance.reqId,
+      'adsourceId': instance.adsourceId,
+      'sign': instance.sign,
     };

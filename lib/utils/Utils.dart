@@ -1,11 +1,34 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
+  /// 生成 MD5(base64(用户id+req_id+adsource_id)) 的加密结果
+  /// [userId] 用户ID
+  /// [reqId] 请求ID
+  /// [adsourceId] 广告源ID
+  static String generateEncryptedString({
+    required String userId,
+    required String reqId,
+    required String adsourceId,
+  }) {
+    // 1. 拼接字符串：用户id + req_id + adsource_id
+    final String rawString = '$userId$reqId$adsourceId';
+
+    // 2. 对拼接后的字符串进行 Base64 编码
+    final String base64Encoded = base64.encode(utf8.encode(rawString));
+
+    // 3. 对 Base64 结果进行 MD5 加密
+    final Digest md5Digest = md5.convert(utf8.encode(base64Encoded));
+
+    // 4. 将 MD5 结果转换为 32 位小写十六进制字符串
+    return md5Digest.toString();
+  }
   // 想下取整
   static double floorToTwoDecimal(double value) {
     // 先乘以100放大，向下取整，再除以100还原，得到保留两位小数的结果

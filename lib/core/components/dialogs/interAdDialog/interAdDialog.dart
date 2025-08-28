@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
@@ -35,18 +37,30 @@ class InterAdDialog extends GetxService {
       UserInfo userInfo = UserInfo.instance;
       if(userInfo.isLoginIn){
         UpDataADForm upDataADForm = UpDataADForm();
-        DateTime now = DateTime.now();
-        int timestampMs  = now.millisecondsSinceEpoch;
-        upDataADForm.extra = "userid_${UserInfo.instance.userModel.id}_type_2_amount_${event['extraMap']['adsource_price']}_time_$timestampMs";
-        upDataADForm.amount = event['extraMap']['adsource_price'];
+
+        // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
+        // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
+        dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
+        // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
+        double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
+        String reqId = event?['extraMap']?['req_id'];
+        String adsourceId = event?['extraMap']?['adsource_id'];
+        // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
+        String userId = UserInfo.instance.userModel.id.toString();
+        upDataADForm.extra = "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
         upDataADForm.transId = event?['extraMap']?['id'];
+        upDataADForm.amount = (amount!/1000);
+        upDataADForm.adsourceId = adsourceId;
+        upDataADForm.reqId = reqId;
+        upDataADForm.sign=Utils.generateEncryptedString(userId: userId,reqId:reqId,adsourceId: adsourceId);
+        Utils.logError("插屏广告凑成的字符串${upDataADForm.toJson()}");
         if(upDataADForm.amount!=null){
           double pross = upDataADForm.amount!;
           Utils.logError("插屏广告增加进度$pross");
 
           CuCircularProgressController.to.incrementProgress(pross);
         }
-        Utils.logError("凑成的字符串${ upDataADForm.extra },${upDataADForm.transId} ,${Get.isRegistered<Api>()}");
+
         if(Get.isRegistered<Api>()){
           Get.put(Api());
         }
@@ -82,8 +96,14 @@ class InterAdDialog extends GetxService {
       // 插屏广告加载成功
         case "InterstitialStatus.interstitialAdDidFinishLoading":
           Utils.logError("插屏广告加载完成，广告位ID：$placementID，事件参数：$event");
+          Utils.logError("当前路由：${Get.currentRoute}");
           /// 展示插屏广告
-          interstitialTool.showInterstitialAd();
+          if(Get.currentRoute.isNotEmpty&&Get.currentRoute!=AppRoutes.splashPage){
+            interstitialTool.showInterstitialAd();
+          }else{
+            _startTimer();
+          }
+
           break;
       // 插屏广告深度链接
         case "InterstitialStatus.interstitialAdDidDeepLink":
@@ -142,7 +162,7 @@ class InterAdDialog extends GetxService {
     _timer?.cancel();
 
     // 关键修改：用 Timer() 替代 Timer.periodic()，仅延迟6秒后执行一次
-    _timer = Timer(const Duration(seconds: 9999), () async {
+    _timer = Timer(const Duration(seconds: 40), () async {
       bool isInterReady = await interstitialTool.hasInterstitialAdReady();
       if (isInterReady) {
         Utils.logError("60秒后检查到广告就绪，尝试展示一次");

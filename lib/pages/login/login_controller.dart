@@ -143,7 +143,7 @@ class LoginController extends GetxController {
         await Future.delayed(const Duration(milliseconds: 20));
         bool isInitAd = await InitTool.to.initTopon();
         InitTool.to.setCustomDataDic({
-          "user_id":"userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
+          "user_id":"${UserInfo.instance.userModel.id}",
           "extra": "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
         });
         RewarderTool.to.loadRewardedVideo(
