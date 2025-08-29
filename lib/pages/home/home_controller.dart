@@ -280,6 +280,8 @@ class HomeController extends GetxController {
   }
 
   // ------------------- 生命周期 -------------------
+
+  
   @override
   void onInit() {
     super.onInit();

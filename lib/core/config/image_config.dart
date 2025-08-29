@@ -8,7 +8,7 @@ class ImageConfig {
       "${AppConfig.instance.getImgUrl}/Rscsgo/images/web/common/close.png";
   /// 通用对话框背景图片
   static String dialogBodyBg =
-      "${AppConfig.instance.getImgUrl}/Rscsgo/images/web/common/dialog_2.png";
+      "${AppConfig.instance.getImgUrl}/AdObject/common/com_dialog_bg.png";
   /// 启动页背景 背景
   static String firstTitle =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_title.png";

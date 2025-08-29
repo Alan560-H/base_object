@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'AppMaintenanceDialog.dart';
 import 'AppUpLoadDialog.dart';
 import 'AuthenticationDialog.dart';
+import 'BindViteCodeDialog.dart';
 import 'ConfirmDialog.dart';
 import 'DeregisterDialog.dart';
 /// 如果调用通用模态框，请调用showCustomDialog,如果是特殊模态框，请直接调用其静态方法
@@ -37,6 +38,9 @@ class _BaseDialogState extends State<BaseDialog> {
     'DeregisterDialog': () => DeregisterDialog(),
     // 实名认证
     'AuthenticationDialog': () => AuthenticationDialog(),
+    // 绑定邀请码
+    'BindViteCodeDialog': () => BindViteCodeDialog(),
+
     // 维护中
     'AppMaintenanceDialog': () => AppMaintenanceDialog(),
   };
@@ -98,7 +102,7 @@ class _BaseDialogState extends State<BaseDialog> {
               padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 0),
               child: Text(
                 widget.dialogTitle,
-                style: TextStyle(fontSize: TextConfig.textSize_20),
+                style: TextStyle(fontSize: TextConfig.textSize_20,color: Colors.white),
               ),
             ),
             // titleSideImg,
@@ -146,11 +150,11 @@ class _BaseDialogState extends State<BaseDialog> {
         ),
 
         constraints: BoxConstraints(
-          minHeight:Utils.getScreenHeight(context) * 0.3,
-          maxHeight: Utils.getScreenHeight(context) * 0.8,
-          maxWidth: Utils.getScreenWidth(context) * 0.9,
+          minHeight:Get.height * 0.3,
+          maxHeight: Get.height * 0.8,
+          maxWidth: Get.width * 0.9,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 25.sp,vertical: 35.sp),
+        padding: EdgeInsets.symmetric(horizontal: 30.w,vertical: 20.sp),
         child: Column(
           spacing: 10.h,
           mainAxisSize: MainAxisSize.min,
@@ -158,7 +162,7 @@ class _BaseDialogState extends State<BaseDialog> {
             title,
             // Flexible(child: Container(height: 20.h,color: Colors.red,))
             LimitedBox(
-              maxHeight: Utils.getScreenHeight(context) * 0.5,
+              maxHeight: Get.height * 0.5,
               child: SingleChildScrollView(
                 child: getDialogTypeWidget,
               ),
