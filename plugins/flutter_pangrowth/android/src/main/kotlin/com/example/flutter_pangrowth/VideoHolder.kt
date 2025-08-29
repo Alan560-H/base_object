@@ -37,7 +37,7 @@ object VideoHolder : CoroutineScope by MainScope() {
         val debug = call.argument<Boolean>("debug") as Boolean
         val androidAppId = call.argument<String>("andoridAppId")
 
-        Log.d(TAG, "debug $debug androidAppId $androidAppId")
+        Log.d(TAG, "debug $debug androidAppId $androidAppId 哈哈哈哈")
 
         delay(100)
 

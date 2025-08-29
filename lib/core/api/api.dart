@@ -7,6 +7,7 @@ import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
+import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
@@ -94,6 +95,23 @@ class Api extends GetxController{
     } catch (e) {
       Utils.logError("postSendMobileCode请求出错: $e");
       return BackModel();
+    }
+  }
+  /// 获取风控配置
+  Future<FKConfigVo> getFkConfig() async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getFkConfig,
+        FormModel(),
+        "post",
+      );
+      if(backModel.data ==null){
+        return FKConfigVo();
+      }
+      return FKConfigVo.fromJson(backModel.data);
+    } catch (e) {
+      Utils.logError("postSendMobileCode请求出错: $e");
+      return FKConfigVo();
     }
   }
   /// 提现方法

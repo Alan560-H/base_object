@@ -70,7 +70,7 @@ dependencies:
   #广告
   anythink_sdk: ^1.0.7
   #一组用于 Dart 的加密散列函数。
-  crypto: ^3.0.6
+  encrypt: ^5.0.3
   #此 Flutter 插件提供了查询应用程序包信息的 API。
   package_info_plus: ^8.3.0
   # 获取设备信息

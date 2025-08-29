@@ -1,6 +1,9 @@
+import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/listener_tool.dart'; // 导入 ListenerTool
 import 'package:base_object/manager/splash_tool.dart';
+import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
@@ -28,10 +31,18 @@ class SplashController extends GetxController {
       _jumpToHome(); // 异常时兜底跳转，避免卡住
     }
   }
-
+  void getFkConfig()async {
+   try{
+     FKConfigVo data = await Api.to.getFkConfig();
+     Store.instance.setFKConfigVo(data);
+   }catch(e){
+     Utils.logError("获取风控配置失败$e");
+   }
+  }
   @override
   void onInit() async {
     Utils.logError("开屏页面init初始化");
+    getFkConfig();
     super.onInit();
 
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/manager/banner_tool.dart';
@@ -149,7 +150,7 @@ class LoginController extends GetxController {
         RewarderTool.to.loadRewardedVideo(
             userID: UserInfo.instance.userModel.id,
             extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
-        Utils.logError("是否注册2：${Get.isRegistered<RewarderTool>()}");
+
         // 此时检查，返回 false（旧实例已被移除）
         // Utils.logError("banner是否注册：${Get.isRegistered<BannerTool>()}");
         // Get.put<BannerTool>(BannerTool());
@@ -186,6 +187,10 @@ class LoginController extends GetxController {
         cuNavBarController.onTabChange(0);
         swicthLoginType();
         isChecked.value =false;
+        Utils.logError("是否显示弹窗：${UserInfo.instance.userModel.inviteUserId==null||UserInfo.instance.userModel.inviteUserId==0}");
+        if(UserInfo.instance.userModel.inviteUserId==null||UserInfo.instance.userModel.inviteUserId==0){
+          Dialogs.showCommonDialog(dialogType: "BindViteCodeDialog",dialogTitle: "绑定上级邀请人");
+        }
       }
     }catch(e){
       Utils.logError("登录出错: $e");

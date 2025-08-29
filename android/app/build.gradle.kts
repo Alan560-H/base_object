@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.cjbao"
+    namespace = "com.ruyimh"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.cjbao"
+        applicationId = "com.ruyimh"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -86,18 +86,32 @@ android {
 
     }
     // 添加签名配置
+//    signingConfigs {
+//        create("release") {  // 定义名为 "release" 的签名配置
+//            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
+//            storePassword = "aa123456"  // 密钥库密码
+//            keyAlias = "cjbao"            // 密钥别名
+//            keyPassword = "aa123456"      // 密钥密码
+//        }
+//        create("customDebug") {  // 定义名为 "release" 的签名配置
+//            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
+//            storePassword = "aa123456"  // 密钥库密码
+//            keyAlias = "cjbao"            // 密钥别名
+//            keyPassword = "aa123456"      // 密钥密码
+//        }
+//    }
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
-            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
-            storePassword = "aa123456"  // 密钥库密码
-            keyAlias = "cjbao"            // 密钥别名
-            keyPassword = "aa123456"      // 密钥密码
+            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
+            storePassword = "usxw4fQ4"  // 密钥库密码
+            keyAlias = "ym251627"            // 密钥别名
+            keyPassword = "usxw4fQ4"      // 密钥密码
         }
         create("customDebug") {  // 定义名为 "release" 的签名配置
-            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
-            storePassword = "aa123456"  // 密钥库密码
-            keyAlias = "cjbao"            // 密钥别名
-            keyPassword = "aa123456"      // 密钥密码
+            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
+            storePassword = "usxw4fQ4"  // 密钥库密码
+            keyAlias = "ym251627"            // 密钥别名
+            keyPassword = "usxw4fQ4"      // 密钥密码
         }
     }
     buildTypes {
@@ -121,8 +135,6 @@ android {
 }
 // 在这里添加子项目的依赖配置
 dependencies {
-
-    //Anythink (Necessary)
     api("com.anythink.sdk:core-taku:6.5.10")
     api("com.anythink.sdk:core-china-taku:6.5.10")
     api("com.anythink.sdk:nativead-taku:6.5.10")
@@ -130,36 +142,29 @@ dependencies {
     api("com.anythink.sdk:interstitial-taku:6.5.10")
     api("com.anythink.sdk:rewardedvideo-taku:6.5.10")
     api("com.anythink.sdk:splash-taku:6.5.10")
-
-    //Support (Necessary)
     api("com.android.support:appcompat-v7:28.0.0")
-
     //Baidu
     api("com.anythink.sdk:adapter-taku-baidu:6.5.10.1")
     api("mobi.baidu.sdk:mobads:9.400")
-
     //Kuaishou
     api("com.anythink.sdk:adapter-taku-kuaishou:6.5.10")
     api("com.anythink.sdk:sdk-ads-kuaishou:4.6.30.1")
     api("com.android.support:design:28.0.0")
-
     //Sigmob
     api("com.anythink.sdk:adapter-taku-sigmob:6.5.10")
     api("com.anythink.sdk:sdk-ads-sigmob:4.24.0")
-
     //Csj
     api("com.anythink.sdk:adapter-taku-csj:6.5.10")
     //api("com.pangle.cn:ads-sdk-pro:6.9.2.3")
-
     //GDT
     api("com.anythink.sdk:adapter-taku-gdt:6.5.10")
     api("com.qq.e.union:union:4.642.1512")
     // 本地 aar/jar 依赖
-    api(fileTree(mapOf(
-        "dir" to "../../libs",
-        "include" to listOf("*.aar", "*.jar"),
-//        "exclude" to listOf("**/AndroidManifest.xml") // 排除可能冲突的清单文件
-    )))
+//    api(fileTree(mapOf(
+//        "dir" to "../../libs",
+//        "include" to listOf("*.aar", "*.jar"),
+////        "exclude" to listOf("**/AndroidManifest.xml") // 排除可能冲突的清单文件
+//    )))
 }
 flutter {
     source = "../.."
