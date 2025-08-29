@@ -1,4 +1,7 @@
 class ApiUrls {
+
+  /// 获取风控配置
+  static const String getFkConfig = "/v1/api/fkConfig";
   /// 获取系统信息
   static const String getSystemInfo = "/v1/system/channel";
   /// 登录
