@@ -70,6 +70,13 @@
         <meta-data
             android:name="CHANNEL"
             android:value="${channel}" />
+        <!-- 必须添加：解决华为广告 hw_ads_sdk_type 冲突 -->
+        <!-- 或 2，根据华为SDK选择 -->
+        <!-- 强制覆盖 -->
+        <meta-data
+            android:name="hw_ads_sdk_type"
+            android:value="6"
+        tools:replace="android:value" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
