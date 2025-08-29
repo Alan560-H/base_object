@@ -4,6 +4,7 @@ import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -62,7 +63,7 @@ class UserBagView extends GetView<UserBagController> {
                   children: [
                     CachedNetworkImage(imageUrl: ImageConfig.icon,height: 60.h,),
                     Text("可提现金额(元)",style: TextStyle(fontSize: TextConfig.textSize_20,color: Colors.white,fontWeight: FontWeight.bold),),
-                    Text("￥：${controller.userBayModel.value.currentAmount}",style: TextStyle(fontSize: TextConfig.textSize_20,color: Colors.white,fontWeight: FontWeight.bold),),
+                    Text("${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount/10000)} 元",style: TextStyle(fontSize: TextConfig.textSize_20,color: Colors.white,fontWeight: FontWeight.bold),),
                     Row(
                       children: [
                         Expanded(child: getCom(value: controller.userBayModel.value.yesterdayAmount.toString(),title: "昨日收益")),

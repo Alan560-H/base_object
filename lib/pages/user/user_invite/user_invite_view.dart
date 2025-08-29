@@ -6,6 +6,7 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -187,7 +188,7 @@ class UserInviteView extends GetView<UserInviteController> {
                             children: [
                               Expanded(child: getCom(value: "${controller.userInviteCountModel.value.inviteNum}人",title:"已邀人数")),
                               Expanded(child: getCom(value:"${controller.userInviteCountModel.value.inviteAmount}元",title:"已赚金币")),
-                              Expanded(child: getCom(value:"${controller.userInviteCountModel.value.currentAmount}元",title:"可提现金额")),
+                              Expanded(child: getCom(value:"${Utils.floorToTwoDecimal(controller.userInviteCountModel.value.currentAmount/10000)}元",title:"可提现金额")),
                             ],
                           ),
                           CuButton(text: "立即提现",width:Get.width,height:40.h,radius:10.r,fontSize:TextConfig.textSize_20,bgColor:TextConfig.primary,textColor: Colors.white, onPressed: (){

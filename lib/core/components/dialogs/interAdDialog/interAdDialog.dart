@@ -168,7 +168,8 @@ class InterAdDialog extends GetxService {
       } else {
         Utils.logError("60秒后检查到广告未就绪，不展示");
         // 可选：只提示一次“加载失败”，避免频繁弹窗骚扰用户
-        CuToast.error(msg: "插屏广告加载失败");
+        Get.snackbar("提示", "插屏广告加载失败");
+        // CuToast.error(msg: "插屏广告加载失败");
       }
 
       // 单次触发后，定时器自动失效（无需手动取消，也不会重复执行）

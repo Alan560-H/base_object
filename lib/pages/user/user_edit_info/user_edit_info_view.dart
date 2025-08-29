@@ -80,11 +80,11 @@ class UserEditInfoView extends GetView<UserEditInfoController> {
                 child: Row(
                   spacing: 5.w,
                   children: [
-                    SizedBox(width: 60.w,child: Text("邀请码：")),
+                    SizedBox(width: 60.w,child: Text("上级邀请码：")),
                     /// 修改邀请码
                     Expanded(
                       child: CustomInputField(
-                        defaultValue: controller.userInfo.userModel.inviteCode.toString(),
+                        defaultValue: controller.userInfo.userModel.inviteUserId!=null?controller.userInfo.userModel.inviteUserId.toString():"",
                         key: GlobalKey(),
                         height: 30.h,
                         textColor:TextConfig.black333,
@@ -98,7 +98,7 @@ class UserEditInfoView extends GetView<UserEditInfoController> {
                         controller: controller.inviteCodeController,
                       ),
                     ),
-                    if(controller.userInfo.userModel.inviteUserId==null)
+                    if(controller.userInfo.userModel.inviteUserId==null||controller.userInfo.userModel.inviteUserId==0)
                       CuButton(text: "保存",width: 60.w,radius:10.r,bgColor: TextConfig.primary, onPressed:controller.getBindInviteUser)
                   ],
                 ),

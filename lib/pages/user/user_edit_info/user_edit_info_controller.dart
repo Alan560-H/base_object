@@ -53,7 +53,7 @@ class UserEditInfoController extends GetxController {
   @override
   void onInit() {
     // TODO: implement onInit
-    Utils.logError("资料编辑页面初始化");
+    Utils.logError("资料编辑页面初始化,${UserInfo.instance.userModel.toJson()}");
     bannerTool.hideBannerAd();
     super.onInit();
   }
