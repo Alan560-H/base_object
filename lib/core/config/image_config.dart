@@ -36,9 +36,13 @@ class ImageConfig {
   static String loginBtn =
       "${AppConfig.instance.getImgUrl}/AdObject/login/login_btn.png";
 
-  /// 登录背景
+  /// 红包
   static String hongbao =
       "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao.png";
+  // 红包打开了
+  static String hongbaoOpen =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao_open.png";
+
   /// 空数据
   static String empty =
       "${AppConfig.instance.getImgUrl}/AdObject/common/empty.png";

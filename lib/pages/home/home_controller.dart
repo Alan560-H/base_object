@@ -102,6 +102,7 @@ class HomeController extends GetxController {
           break;
         case "RewardedStatus.rewardedVideoDidClose":
           Utils.logError("激励广告被关闭，广告位ID：$placementID");
+          redBagOpen.value = false;
           if (Get.isRegistered<UserInfo>()) {
             upDataADFn(event);
           }
@@ -110,65 +111,15 @@ class HomeController extends GetxController {
     });
   }
 
-  /// 订阅原生广告事件（含广告状态更新）
-  void nativeEvent() async {
-    ever(ListenerTool.to.nativeEvent, (event) {
-      if (event == null || _hasShow) return;
-      String eventType = event["eventType"] ?? "";
-      String placementID = event["placementID"] ?? "";
-
-      Utils.logError("原生广告事件：$eventType，广告位ID：$placementID，参数：$event");
-      switch (eventType) {
-        case "NativeStatus.nativeAdFailToLoadAD":
-          Utils.logError("原生广告加载失败，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidFinishLoading":
-          Utils.logError("原生广告加载完成，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidClick":
-          Utils.logError("原生广告被点击，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidDeepLink":
-          Utils.logError("原生广告深度链接，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidEndPlayingVideo":
-          Utils.logError("原生广告视频结束，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdEnterFullScreenVideo":
-          Utils.logError("原生广告进入全屏，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdExitFullScreenVideoInAd":
-          Utils.logError("原生广告退出全屏，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidShowNativeAd":
-          Utils.logError("原生广告展示成功，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidStartPlayingVideo":
-          Utils.logError("原生广告视频开始，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidTapCloseButton":
-          Utils.logError("原生广告被关闭，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidLoadSuccessDraw":
-          Utils.logError("原生广告渲染成功，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdDidCloseDetailInAdView":
-          Utils.logError("原生广告关闭详情页，广告位ID：$placementID");
-          break;
-        case "NativeStatus.nativeAdUnknown":
-        default:
-          Utils.logError("原生广告未知事件，广告位ID：$placementID");
-          break;
-      }
-    });
-  }
 
   // 显示激励广告
   showRewarder() async {
     bool isReady = await RewarderTool.to.rewardedVideoReady();
     if (isReady) {
-      await RewarderTool.to.showRewardedVideo();
+      redBagOpen.value = true;
+      // await RewarderTool.to.showRewardedVideo();
     } else {
+      redBagOpen.value =false;
       CuToast.error(msg: "激励广告加载失败，请稍后重试");
     }
   }
@@ -202,7 +153,7 @@ class HomeController extends GetxController {
       ),
     );
   }
-
+  RxBool redBagOpen = false.obs;
   // 生成聊天消息（支持普通/红包/广告消息）
   void _addRandomChatMessage() async {
     try {
@@ -235,10 +186,11 @@ class HomeController extends GetxController {
       //     isHasNative = true;
       //   }
       // }
+      // 生成红包
       if(isRewardReady && isShowRedBag){
         content = InkWell(
           onTap: showRewarder,
-          child: CachedNetworkImage(imageUrl: ImageConfig.hongbao),
+          child: CachedNetworkImage(imageUrl: redBagOpen.value?ImageConfig.hongbaoOpen:ImageConfig.hongbao),
         );
       }
       // 3. 创建消息对象
@@ -281,13 +233,12 @@ class HomeController extends GetxController {
 
   // ------------------- 生命周期 -------------------
 
-  
+
   @override
   void onInit() {
     super.onInit();
     // 初始化广告监听和加载
     rewarderEvent();
-    nativeEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
     // 初始化消息（5条普通消息）
