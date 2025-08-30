@@ -65,6 +65,7 @@ class HomeUtils {
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
     // 补充设备信息
     appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
+    Utils.logError("oaid是：${appUpLoadModel.oaid}");
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     appUpLoadModel.ua = await getUserAgent();
