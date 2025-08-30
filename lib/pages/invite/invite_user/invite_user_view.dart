@@ -57,7 +57,7 @@ class InviteUserView extends GetView<InviteUserController> {
                               children: [
                                 Expanded(child:  Center(
                                   child: QrImageView(
-                                    data: controller.userInfo.userModel.inviteCode,
+                                    data: "https://www.pgyer.com/chuanjiabao-android",
                                     version: QrVersions.auto,
                                     size: 140.r,
                                   ),
@@ -129,7 +129,7 @@ class InviteUserView extends GetView<InviteUserController> {
                    Expanded(
                      child: InkWell(
                        onTap: ()async{
-                         bool success = await Utils.copyText(controller.userInfo.userModel.inviteCode);
+                         bool success = await Utils.copyText("https://www.pgyer.com/chuanjiabao-android");
                          if(success){
                            CuToast.success(msg: "复制成功");
                          }else{

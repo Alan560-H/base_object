@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
@@ -15,8 +16,9 @@ class CuCircularProgressController extends GetxController {
   static CuCircularProgressController get to => Get.find<CuCircularProgressController>();
   // 进度值（响应式）
   final RxDouble _progress = 0.0.obs;
+  int _seconds = 65;
   // 最大进度值（固定100，与原逻辑一致）
-  final double maxProgress = 6000.0;
+   double maxProgress = 6000.0;
   final RxDouble currentValue = (0.0).obs;
   Timer? setStepTimer;
   void resetProgressTimer(){
@@ -29,8 +31,9 @@ class CuCircularProgressController extends GetxController {
     setStepTimer = Timer.periodic(
       const Duration(seconds: 1),
           (Timer timer){
-        if(_progress.value<maxProgress){
+        if(_progress.value<maxProgress&&_seconds>0){
           _progress.value += 100;
+          _seconds--;
         }else{
           Utils.logError("进度条满了");
           setStepTimer?.cancel();
@@ -52,7 +55,6 @@ class CuCircularProgressController extends GetxController {
     if (step <= 0) return; // 步长不能为负
     setProgress(_progress.value + step);
   }
-
   /// 重置进度到0
   void resetProgress() {
     _progress.value = 0.0;
@@ -83,9 +85,12 @@ class CuCircularProgressController extends GetxController {
       currentValue.value = 0; // 出错时设为默认值，避免后续异常
     }
   }
+
   @override
   void onInit() {
     // initCurrentValue();
+    _seconds = Store.instance.getFkConfig.adv1Time;
+    maxProgress = (_seconds*100).toDouble();
     startAutoSetProgressTimer();
     // TODO: implement onInit
     super.onInit();

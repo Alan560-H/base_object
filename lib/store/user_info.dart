@@ -152,9 +152,7 @@ class UserInfo extends GetxController{
     await LocalStorage.removeString(AppKeys.userKey);
     setToken(value: '');
     bool isRegistered = Get.isRegistered<CuNavBarController>();
-    if(!isRegistered){
-      CuNavBarBinding().dependencies();
-    }
+
     Get.find<CuNavBarController>().onTabChange(0);
   }
 }
