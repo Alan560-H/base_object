@@ -203,9 +203,7 @@ class CuNavBarController extends GetxController {
           height.value = 110.h;
           Utils.logError("${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}好招术${event['extraMap']}");
           if(Get.isRegistered<UserInfo>()){
-            if(UserInfo.instance.isLoginIn){
               upDataADFn(event);
-            }
           }
 
           break;

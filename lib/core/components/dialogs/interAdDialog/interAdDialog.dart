@@ -11,6 +11,7 @@ import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/pages/login/login_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
@@ -56,16 +57,6 @@ class InterAdDialog extends GetxService {
         Utils.logError("插屏广告凑成的字符串${upDataADForm.toJson()}");
         int pross = amount.toInt();
         Utils.logError("插屏广告金额$pross");
-        // CuCircularProgressController.to.addCurrentValue(pross);
-
-        // if(Get.isRegistered<Api>()){
-        //   Get.put(Api());
-        // }
-        // BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-        // Utils.logError("插屏广告返回的数据${ backModel.toJson() }");
-        // if(backModel.code == CuErrorConfig.success){
-        //   CuToast.success(msg: "上报副广成功");
-        // }
       }
     }catch(e){
       Utils.logError("上报副广失败：$e");
@@ -158,9 +149,11 @@ class InterAdDialog extends GetxService {
   void _startTimer() {
     // 先取消可能存在的定时器，避免重复
     _timer?.cancel();
-
+    if(!Get.isRegistered<Store>()){
+      Get.put(Store());
+    }
     // 关键修改：用 Timer() 替代 Timer.periodic()，仅延迟6秒后执行一次
-    _timer = Timer(const Duration(seconds: 40), () async {
+    _timer = Timer(Duration(seconds: Store.instance.getFkConfig.adv1Time), () async {
       bool isInterReady = await interstitialTool.hasInterstitialAdReady();
       if (isInterReady) {
         Utils.logError("60秒后检查到广告就绪，尝试展示一次");

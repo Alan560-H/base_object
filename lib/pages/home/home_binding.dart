@@ -1,4 +1,5 @@
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
@@ -12,6 +13,8 @@ class HomeBinding implements Bindings {
     Get.put(RewarderTool());
     Get.put(Api());
     Get.put(NativeTool());
+    // 注入进度条控制器
+    Get.put<CuCircularProgressController>(CuCircularProgressController(),);
     CuNavBarBinding().dependencies();
     Get.lazyPut(() => HomeController());
     // 可以在这里注入首页需要的其他服务

@@ -42,8 +42,7 @@ class DependencyInjection {
       Get.put<InterstitialTool>(InterstitialTool());
       // 注入信息流工具
       Get.put<NativeTool>(NativeTool());
-      // 注入进度条控制器
-      Get.put<CuCircularProgressController>(CuCircularProgressController(),);
+
       // 异步注入 ListenerTool（执行其 init() 方法）
       await Get.putAsync<ListenerTool>(() => ListenerTool().init());
       // 3. 最后注册 InterAdDialog（它依赖上面两个服务）

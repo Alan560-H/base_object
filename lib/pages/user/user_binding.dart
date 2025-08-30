@@ -11,7 +11,6 @@ class UserBinding implements Bindings {
     Get.put(Api());
     InviteBinding().dependencies();
     // 个人中心不需要独立控制器
-    Get.lazyPut(()=>CuNavBarController());
     Get.lazyPut(()=>UserController());
   }
 }
