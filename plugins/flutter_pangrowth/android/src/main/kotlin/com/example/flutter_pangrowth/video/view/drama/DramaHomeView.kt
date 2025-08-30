@@ -164,8 +164,12 @@ internal class DramaHomeView(
 //                    super.showCustomAd(drama, callback)
                     showAdDefault(callback)
                 }
+
+
             }
-        )
+        ).apply {
+            hideRewardDialog(true)
+        }
         dpWidget = DJXSdk.factory().createDramaHome(
             DJXWidgetDramaHomeParams.obtain(detailConfig)
                 .also {
