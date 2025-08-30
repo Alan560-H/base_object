@@ -64,7 +64,7 @@ mixin AppTheme {
       backgroundColor: Colors.transparent,
       elevation: 0,
       selectedItemColor: TextConfig.black333,
-      unselectedItemColor: TextConfig.grey,
+      unselectedItemColor: TextConfig.black333,
     ),
     scaffoldBackgroundColor: TextConfig.commonPageColor,
     appBarTheme: AppBarTheme(

@@ -50,19 +50,19 @@ class CuNavBarController extends GetxController {
       currentPageIndex.value = index;
       switch(index){
         case 0:
-          Get.toNamed(AppRoutes.home);
+          Get.offNamed(AppRoutes.home);
           break;
         case 1:
-          Get.toNamed(AppRoutes.shortVideo);
+          Get.offNamed(AppRoutes.shortVideo);
           break;
         case 2:
-          Get.toNamed(AppRoutes.djVideo);
+          Get.offNamed(AppRoutes.djVideo);
           break;
         case 3:
-          Get.toNamed(AppRoutes.invite);
+          Get.offNamed(AppRoutes.invite);
           break;
         case 4:
-          Get.toNamed(AppRoutes.user);
+          Get.offNamed(AppRoutes.user);
           break;
       }
     }catch(e){
@@ -79,7 +79,7 @@ class CuNavBarController extends GetxController {
         0,
         "红包群",
         false,
-        ImageConfig.redBagDefatult,
+        ImageConfig.redBagActive,
         ImageConfig.redBagActive,
 
       ),
@@ -87,7 +87,7 @@ class CuNavBarController extends GetxController {
         1,
         "短视频",
         true,
-        ImageConfig.videoDefault,
+        ImageConfig.videoActive,
         ImageConfig.videoActive,
 
       ),
@@ -95,7 +95,7 @@ class CuNavBarController extends GetxController {
         2,
         "短剧",
         true,
-        ImageConfig.shortVideoDefault,
+        ImageConfig.shortVideoActive,
         ImageConfig.shortVideoActive,
 
       ),
@@ -103,7 +103,7 @@ class CuNavBarController extends GetxController {
         3,
         "邀请",
         false,
-        ImageConfig.inviteDefault,
+        ImageConfig.inviteActive,
         ImageConfig.inviteActive,
 
       ),
@@ -111,7 +111,7 @@ class CuNavBarController extends GetxController {
         4,
         "我的",
         false,
-        ImageConfig.myDefatult,
+        ImageConfig.myActive,
         ImageConfig.myActive,
       ),
     ];

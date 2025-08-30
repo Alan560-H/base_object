@@ -7,7 +7,6 @@ import 'login_controller.dart';
 class LoginBinding implements Bindings {
   @override
   void dependencies() {
-    CuNavBarBinding().dependencies();
     Get.put(Api());
     Get.lazyPut(() => LoginController());
 
