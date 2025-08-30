@@ -157,13 +157,13 @@ internal class DramaHomeView(
 
                 }
 
-                override fun showCustomAd(
+                /*override fun showCustomAd(
                     drama: DJXDrama,
                     callback: IDJXDramaUnlockListener.CustomAdCallback
                 ) {
 //                    super.showCustomAd(drama, callback)
                     showAdDefault(callback)
-                }
+                }*/
 
 
             }
