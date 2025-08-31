@@ -121,7 +121,7 @@ class NativeTool extends GetxService{
               Get.width,
               170,
               x: 0,
-              y: 20,
+              y: 30,
               backgroundColorStr: '#FFFFFF'
           ),
           ATNativeManager.appIcon(): ATNativeManager.createNativeSubViewAttribute(
