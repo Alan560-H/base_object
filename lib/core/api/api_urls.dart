@@ -4,6 +4,14 @@ class ApiUrls {
   static const String getFkConfig = "/v1/api/fkConfig";
   /// 获取系统信息
   static const String getSystemInfo = "/v1/system/channel";
+  /// 获取公告
+  static const String getNotice = "/v1/announce/list";
+
+  /// 看广告小技巧
+  static const String getNoticeAD = "/v1/announce/announceAd";
+  /// 屏蔽快应用
+  static const String getNoticeAPP = "/v1/announce/announceApp";
+
   /// 登录
   static const String login = "/v1/login";
   /// 获取图片验证码

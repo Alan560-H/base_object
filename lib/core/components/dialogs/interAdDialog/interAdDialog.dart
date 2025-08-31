@@ -135,16 +135,8 @@ class InterAdDialog extends GetxService {
       }
     });
   }
-
-
-
-
-
   // 定时器对象
   Timer? _timer;
-
-
-
   // 启动定时器
   void _startTimer() {
     // 先取消可能存在的定时器，避免重复

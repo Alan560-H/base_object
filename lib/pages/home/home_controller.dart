@@ -7,6 +7,7 @@ import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/components/dialogs/noteDialog/noteDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/listener_tool.dart';
@@ -256,7 +257,12 @@ class HomeController extends GetxController {
     _autoMessageTimer?.cancel();
     _placeholderTimer?.cancel();
   }
-
+  @override
+  void onReady() {
+    Dialogs.noticeDialog();
+    // TODO: implement onReady
+    super.onReady();
+  }
   // ------------------- 响应式状态 -------------------
   final RxString appbarTitle = "红包群".obs; // 导航栏标题
   final RxList<ChatMessage> messages = <ChatMessage>[].obs; // 聊天消息列表

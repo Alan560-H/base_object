@@ -6,6 +6,7 @@ import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
@@ -65,6 +66,33 @@ class Api extends GetxController{
       AppUpLoadModel appUpLoadModel = AppUpLoadModel();
       return appUpLoadModel;
     }
+  }
+  /// 获取首页公告列表
+  Future<List<NoticeModel>> postNotice() async {
+    BackModel backModel = await _sendRequest(ApiUrls.getNotice, FormModel(), "post");
+    if (backModel.data == null) {
+      Utils.logError("公告列表返回为空");
+      return [];
+    }
+    return NoticeModel.fromJsonList(backModel.data);
+  }
+  /// 获取看广告小技巧
+  Future<List<NoticeModel>> getNoticeAD() async {
+    BackModel backModel = await _sendRequest(ApiUrls.getNoticeAD, FormModel(), "post");
+    if (backModel.data == null) {
+      Utils.logError("公告列表返回为空");
+      return [];
+    }
+    return NoticeModel.fromJsonList(backModel.data);
+  }
+  /// 获取屏蔽快应用
+  Future<List<NoticeModel>> getNoticeAPP() async {
+    BackModel backModel = await _sendRequest(ApiUrls.getNoticeAPP, FormModel(), "post");
+    if (backModel.data == null) {
+      Utils.logError("公告列表返回为空");
+      return [];
+    }
+    return NoticeModel.fromJsonList(backModel.data);
   }
   /// 获取图片验证码
   Future<VerifyCodeImgModel> postVerifyCodeImg() async {

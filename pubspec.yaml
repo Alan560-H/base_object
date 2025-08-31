@@ -45,6 +45,11 @@ dependencies:
   json_serializable: ^6.9.5
   #持久性存储，用于存储简单数据
   shared_preferences: ^2.5.3
+  #  chart_sparkline: ^1.1.1
+  #富文本，可以包含链接等
+  markdown: ^7.3.0
+  #显示html
+  flutter_html: ^3.0.0
   # 轮播图插件
   flutter_carousel_widget: ^3.1.0
   #日志记录

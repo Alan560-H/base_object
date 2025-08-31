@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'NoticeDialog.dart';
 import 'commonDialog/BaseDialog.dart';
 import 'commonDialog/ClaimAdDialog.dart';
 
@@ -31,7 +32,16 @@ class Dialogs {
       },
     );
   }
-
+  /// 公告框
+  static Future<Widget?> noticeDialog() {
+    return showDialog(
+      barrierDismissible: false, // 禁用遮罩层点击
+      context: Get.context!,
+      builder: (BuildContext dialogContext) {
+        return NoticeDialog();
+      },
+    );
+  }
 
   /// 领取存钱罐
   static Future<Widget?> ClaimAdDialogs({ dynamic data,
