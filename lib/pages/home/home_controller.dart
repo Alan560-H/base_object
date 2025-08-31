@@ -211,14 +211,7 @@ class HomeController extends GetxController {
           await NativeTool.to.removeNativeAd();
           Utils.logError("先删除广告");
           messages.removeAt(0);
-          NativeTool.to.loadNativeWith({
-            ATCommon.isNativeShow() : true,
-            ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-              Get.width,
-              340.w,
-            ),
-            ATNativeManager.isAdaptiveHeight(): true
-          });
+          NativeTool.to.loadNativeWith();
         } else {
           messages.removeAt(0);
         }

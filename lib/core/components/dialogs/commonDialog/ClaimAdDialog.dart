@@ -6,6 +6,7 @@ import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/listener_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
@@ -47,6 +48,8 @@ class ClaimAdDialog extends StatelessWidget {
         if(Get.isRegistered<CuCircularProgressController>()){
           CuCircularProgressController.to.setProgress(0);
           CuCircularProgressController.to.resetProgressTimer;
+          NativeTool.to.removeNativeAd();
+          NativeTool.to.loadNativeWith();
           Get.back();
         }
       }
@@ -133,6 +136,9 @@ class ClaimAdDialog extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox(
+            height:220.h,
+          ),
           Container(
               decoration: BoxDecoration(
                   image: DecorationImage(image: CachedNetworkImageProvider(ImageConfig.redBagBg))
@@ -141,7 +147,7 @@ class ClaimAdDialog extends StatelessWidget {
             width:300.w,
             child: Stack(
               children: [
-                Container(
+                SizedBox(
                   width: Get.width,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -160,7 +166,12 @@ class ClaimAdDialog extends StatelessWidget {
                 Positioned(
                     top: 0.h,
                     right: 0.w,
-                  child: CuButton(text: "",icons: Icons.close,fontSize: TextConfig.textSize_24, onPressed: ()=>Get.back()),
+                  child: CuButton(text: "",icons: Icons.close,fontSize: TextConfig.textSize_24, onPressed: (){
+                    NativeTool.to.removeNativeAd();
+                    NativeTool.to.loadNativeWith();
+                    Get.back();
+
+                  }),
                     )
               ],
             ),

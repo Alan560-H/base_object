@@ -76,17 +76,18 @@ class CuCircularProgressController extends GetxController {
   void showDialog() async {
     try {
 
-     bool isReady = await NativeTool.to.nativeAdReady();
-      Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
-      if(Get.isRegistered<NativeTool>()){
-        NativeTool.to.showNative();
-      }
+
       if(!UserInfo.instance.isLoginIn){
         Get.toNamed(AppRoutes.login);
         return;
       }
       if(!Get.isRegistered<Api>()){
         Get.put(Api());
+      }
+      bool isReady = await NativeTool.to.nativeAdReady();
+      Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
+      if(Get.isRegistered<NativeTool>()){
+        NativeTool.to.showNative();
       }
       RewarderModel rewarderModel = await Get.find<Api>().getSelectAdV3();
       currentValue.value = rewarderModel.amount;
@@ -110,14 +111,7 @@ class CuCircularProgressController extends GetxController {
       if(!Get.isRegistered<NativeTool>()){
         Get.put(NativeTool());
       }
-      NativeTool.to.loadNativeWith({
-        ATCommon.isNativeShow() : true,
-        ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width,
-          340.w,
-        ),
-        ATNativeManager.isAdaptiveHeight(): true
-      });
+      NativeTool.to.loadNativeWith();
 
     }
 
