@@ -2,12 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 /// 内置控制器：管理进度状态（对外隐藏实现，仅暴露操作方法）
@@ -70,9 +75,16 @@ class CuCircularProgressController extends GetxController {
   // }
   void showDialog() async {
     try {
-      // onTap: ()async{getSelectAdV3
-      //
-      // },
+
+     bool isReady = await NativeTool.to.nativeAdReady();
+      Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
+      if(Get.isRegistered<NativeTool>()){
+        NativeTool.to.showNative();
+      }
+      if(!UserInfo.instance.isLoginIn){
+        Get.toNamed(AppRoutes.login);
+        return;
+      }
       if(!Get.isRegistered<Api>()){
         Get.put(Api());
       }
@@ -90,7 +102,25 @@ class CuCircularProgressController extends GetxController {
   void onInit() {
     // initCurrentValue();
     _seconds = Store.instance.getFkConfig.adv1Time;
-    maxProgress = (_seconds*100).toDouble();
+    if(_seconds== 0){
+      _seconds = 60;
+      maxProgress = 6000.0;
+    }else{
+      maxProgress = (_seconds*100).toDouble();
+      if(!Get.isRegistered<NativeTool>()){
+        Get.put(NativeTool());
+      }
+      NativeTool.to.loadNativeWith({
+        ATCommon.isNativeShow() : true,
+        ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
+          Get.width,
+          340.w,
+        ),
+        ATNativeManager.isAdaptiveHeight(): true
+      });
+
+    }
+
     startAutoSetProgressTimer();
     // TODO: implement onInit
     super.onInit();

@@ -7,6 +7,7 @@ import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/noteDialog/noteDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
@@ -231,7 +232,11 @@ class HomeController extends GetxController {
   getAppUpdata() async {
     await HomeUtils.getAppUpdata();
   }
-
+  isShow()async {
+    if(await NoticeDialog.shouldShow()){
+      Dialogs.noticeDialog();
+    }
+  }
   // ------------------- 生命周期 -------------------
 
 
@@ -257,9 +262,12 @@ class HomeController extends GetxController {
     _autoMessageTimer?.cancel();
     _placeholderTimer?.cancel();
   }
+
   @override
   void onReady() {
-    Dialogs.noticeDialog();
+
+
+
     // TODO: implement onReady
     super.onReady();
   }

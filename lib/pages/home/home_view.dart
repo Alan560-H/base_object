@@ -108,7 +108,7 @@ class HomeView extends GetView<HomeController> {
               Expanded(child: Stack(children:
               [
                 _buildChatList(),
-                // 1. 使用自定义圆形进度条组件
+                // 1. 使用自定义圆形进度条组件  存钱罐
                 Positioned(
                   top: Get.height/2-100.h,
                   left: 0,

@@ -153,8 +153,6 @@ class ClaimAdDialog extends StatelessWidget {
                       CuButton(text: "立即领取",width: 120.w,height: 40.h,radius: 10.r,bgColor: TextConfig.primary, onPressed: ()async{
                         rewarderEvent();
                         showRewarder();
-
-
                       })
                     ],
                   ),
