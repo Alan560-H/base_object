@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
@@ -39,6 +40,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
+
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
     try {
@@ -59,6 +61,10 @@ class HomeController extends GetxController {
 
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
+    }finally{
+      NativeTool.to.removeNativeAd();
+      NativeTool.to.loadNativeWith();
+      Get.back();
     }
   }
 
@@ -91,6 +97,8 @@ class HomeController extends GetxController {
           break;
         case "RewardedStatus.rewardedVideoDidFailToPlay":
           Utils.logError("激励广告播放失败，广告位ID：$placementID");
+          NativeTool.to.removeNativeAd();
+          NativeTool.to.loadNativeWith();
           break;
         case "RewardedStatus.rewardedVideoDidRewardSuccess":
           Utils.logError("激励广告奖励成功，广告位ID：$placementID");
@@ -116,14 +124,56 @@ class HomeController extends GetxController {
 
   // 显示激励广告
   showRewarder() async {
-    bool isReady = await RewarderTool.to.rewardedVideoReady();
-    if (isReady) {
-      redBagOpen.value = true;
-      // await RewarderTool.to.showRewardedVideo();
-    } else {
-      redBagOpen.value =false;
-      CuToast.error(msg: "激励广告加载失败，请稍后重试");
+    bool isReady = await NativeTool.to.nativeAdReady();
+    Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
+    if(Get.isRegistered<NativeTool>()){
+      NativeTool.to.showNative();
     }
+    Get.dialog(
+      Container(
+        constraints: BoxConstraints(
+          maxWidth: Get.width,
+          maxHeight: Get.height
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 300.h,
+              child: Stack(
+                children: [
+                  InkWell(
+                      onTap: ()async{
+                        bool isRewReady = await RewarderTool.to.rewardedVideoReady();
+                        if (isRewReady) {
+                          redBagOpen.value = true;
+                          await RewarderTool.to.showRewardedVideo();
+                        } else {
+                          redBagOpen.value =false;
+                          CuToast.error(msg: "激励广告加载失败，请稍后重试");
+                        }
+                      },
+                      child: Center(child: CachedNetworkImage(imageUrl: ImageConfig.hongbaoCover))),
+                  Positioned(
+                    top: 0.h,
+                    right: 50.w,
+                    child: CuButton(text: "",icons: Icons.close,fontSize: TextConfig.textSize_24, onPressed: (){
+                      NativeTool.to.removeNativeAd();
+                      NativeTool.to.loadNativeWith();
+                      Get.back();
+
+                    }),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(height: 110.h,)
+          ],
+        ),
+      )
+    );
+
   }
   int timeCount = 0;
   // 启动普通消息定时器（3秒/条）

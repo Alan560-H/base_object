@@ -137,7 +137,7 @@ class ClaimAdDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height:220.h,
+            height:260.h,
           ),
           Container(
               decoration: BoxDecoration(
