@@ -40,7 +40,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
-
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
     try {
@@ -51,17 +50,18 @@ class HomeController extends GetxController {
       Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
-      if(rewarderModel.amount>0){
-        Utils.debounce((){
+      if (rewarderModel.amount > 0) {
+        Utils.debounce(() {
           UserInfo.instance.getUserInfoFn();
-          CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
-        },duration:Duration(seconds: 1));
-
+          CuToast.success(
+            msg: "恭喜获得${(rewarderModel.amount * 10000).toStringAsFixed(2)} 金币",
+          );
+          Store.instance.addCurrentCount(1);
+        }, duration: Duration(seconds: 1));
       }
-
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
-    }finally{
+    } finally {
       NativeTool.to.removeNativeAd();
       NativeTool.to.loadNativeWith();
       Get.back();
@@ -121,20 +121,20 @@ class HomeController extends GetxController {
     });
   }
 
-
   // 显示激励广告
   showRewarder() async {
     bool isReady = await NativeTool.to.nativeAdReady();
     Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
-    if(Get.isRegistered<NativeTool>()){
+    if(Store.instance.getCurrentCount.dayMaxCount>4){
+      CuToast.error(msg: "今日领取次数已达上限，请明日再来");
+      return;
+    }
+    if (Get.isRegistered<NativeTool>()) {
       NativeTool.to.showNative();
     }
     Get.dialog(
       Container(
-        constraints: BoxConstraints(
-          maxWidth: Get.width,
-          maxHeight: Get.height
-        ),
+        constraints: BoxConstraints(maxWidth: Get.width, maxHeight: Get.height),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -144,37 +144,63 @@ class HomeController extends GetxController {
               child: Stack(
                 children: [
                   InkWell(
-                      onTap: ()async{
-                        bool isRewReady = await RewarderTool.to.rewardedVideoReady();
-                        if (isRewReady) {
-                          redBagOpen.value = true;
-                          await RewarderTool.to.showRewardedVideo();
-                        } else {
-                          redBagOpen.value =false;
-                          CuToast.error(msg: "激励广告加载失败，请稍后重试");
-                        }
-                      },
-                      child: Center(child: CachedNetworkImage(imageUrl: ImageConfig.hongbaoCover))),
+                    onTap: () async {
+                      bool isRewReady =
+                          await RewarderTool.to.rewardedVideoReady();
+                      if (isRewReady) {
+                        redBagOpen.value = true;
+                        await RewarderTool.to.showRewardedVideo();
+                      } else {
+                        redBagOpen.value = false;
+                        CuToast.error(msg: "激励广告加载失败，请稍后重试");
+                      }
+                    },
+                    child: Center(
+                      child: CachedNetworkImage(
+                        imageUrl: ImageConfig.hongbaoCover,
+                      ),
+                    ),
+                  ),
                   Positioned(
                     top: 0.h,
                     right: 50.w,
-                    child: CuButton(text: "",icons: Icons.close,fontSize: TextConfig.textSize_24, onPressed: (){
-                      NativeTool.to.removeNativeAd();
-                      NativeTool.to.loadNativeWith();
-                      Get.back();
-
-                    }),
-                  )
+                    child: CuButton(
+                      text: "",
+                      icons: Icons.close,
+                      fontSize: TextConfig.textSize_24,
+                      onPressed: () {
+                        NativeTool.to.removeNativeAd();
+                        NativeTool.to.loadNativeWith();
+                        Get.back();
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    top: 80.h,
+                    left: 0,
+                    child: Container(
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "今日已领取红包${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
+                        style: TextStyle(
+                          fontSize: TextConfig.textSize_20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.yellowAccent,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            SizedBox(height: 110.h,)
+            SizedBox(height: 110.h),
           ],
         ),
-      )
+      ),
     );
-
   }
+
   int timeCount = 0;
   // 启动普通消息定时器（3秒/条）
   void _startAutoMessageTimer() {
@@ -205,6 +231,7 @@ class HomeController extends GetxController {
       ),
     );
   }
+
   RxBool redBagOpen = false.obs;
   // 生成聊天消息（支持普通/红包/广告消息）
   void _addRandomChatMessage() async {
@@ -239,10 +266,15 @@ class HomeController extends GetxController {
       //   }
       // }
       // 生成红包
-      if(isRewardReady && isShowRedBag){
+      if (isRewardReady && isShowRedBag) {
         content = InkWell(
           onTap: showRewarder,
-          child: CachedNetworkImage(imageUrl: redBagOpen.value?ImageConfig.hongbaoOpen:ImageConfig.hongbao),
+          child: CachedNetworkImage(
+            imageUrl:
+                redBagOpen.value
+                    ? ImageConfig.hongbaoOpen
+                    : ImageConfig.hongbao,
+          ),
         );
       }
       // 3. 创建消息对象
@@ -275,13 +307,13 @@ class HomeController extends GetxController {
   getAppUpdata() async {
     await HomeUtils.getAppUpdata();
   }
-  isShow()async {
-    if(await NoticeDialog.shouldShow()){
+
+  isShow() async {
+    if (await NoticeDialog.shouldShow()) {
       Dialogs.noticeDialog();
     }
   }
   // ------------------- 生命周期 -------------------
-
 
   @override
   void onInit() {
@@ -308,12 +340,10 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
-
-
-
     // TODO: implement onReady
     super.onReady();
   }
+
   // ------------------- 响应式状态 -------------------
   final RxString appbarTitle = "红包群".obs; // 导航栏标题
   final RxList<ChatMessage> messages = <ChatMessage>[].obs; // 聊天消息列表

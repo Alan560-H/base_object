@@ -46,3 +46,19 @@ Map<String, dynamic> _$FKConfigVoToJson(FKConfigVo instance) =>
       'amountMin': instance.amountMin,
       'adv1Time': instance.adv1Time,
     };
+
+CurrentCountVo _$CurrentCountVoFromJson(Map<String, dynamic> json) =>
+    CurrentCountVo()
+      ..dayMaxCount = (json['dayMaxCount'] as num).toInt()
+      ..hourMaxAmountV1Count = (json['hourMaxAmountV1Count'] as num).toDouble()
+      ..wactchMaxAmountCount = (json['wactchMaxAmountCount'] as num).toDouble()
+      ..wactchMaxAmountV1Count =
+          (json['wactchMaxAmountV1Count'] as num).toDouble();
+
+Map<String, dynamic> _$CurrentCountVoToJson(CurrentCountVo instance) =>
+    <String, dynamic>{
+      'dayMaxCount': instance.dayMaxCount,
+      'hourMaxAmountV1Count': instance.hourMaxAmountV1Count,
+      'wactchMaxAmountCount': instance.wactchMaxAmountCount,
+      'wactchMaxAmountV1Count': instance.wactchMaxAmountV1Count,
+    };

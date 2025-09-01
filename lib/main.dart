@@ -4,6 +4,7 @@ import 'package:base_object/core/config/global.dart';
 import 'package:base_object/core/routes/app_pages.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/store/di.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,6 +26,7 @@ void main() async {
     "user_id": 0,
     "extra": "userid_0_type_1_amount_0_time_0",
   });
+  await Store.instance.initCurrentCount();
   // 初始化广告
   bool isInitAd = await InitTool.to.initTopon();
 

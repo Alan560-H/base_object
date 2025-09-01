@@ -11,6 +11,8 @@ import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/pages/home/home_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,6 +31,11 @@ class ClaimAdDialog extends StatelessWidget {
 
   // 显示激励广告
   showRewarder() async {
+    if(Store.instance.getCurrentCount.dayMaxCount>3){
+      CuToast.error(msg: "今日领取次数已达上限，请明日再来");
+      checkClaim();
+      return;
+    }
     bool isReady = await RewarderTool.to.rewardedVideoReady();
     if (isReady) {
       await RewarderTool.to.showRewardedVideo();
@@ -58,20 +65,9 @@ class ClaimAdDialog extends StatelessWidget {
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
     try {
-      UpDataADForm upDataADForm = UpDataADForm();
-      upDataADForm.extra =
-      "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_0";
-      upDataADForm.transId = event?['extraMap']?['id'];
-      Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
-      RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
-      Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
-      if(rewarderModel.amount>0){
-        Utils.debounce((){
-          UserInfo.instance.getUserInfoFn();
-          CuToast.success(msg: "恭喜获得${(rewarderModel.amount*10000).toStringAsFixed(2)} 金币");
-        },duration:Duration(seconds: 1));
-
-      }
+     if(Get.isRegistered<HomeController>()){
+       HomeController().upDataADFn(event);
+     }
 
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");

@@ -46,11 +46,27 @@ class FKConfigVo {
   int adv1Time = 0;
 
 
-  /// 登录返回数据
+  /// 风控配置数据
   FKConfigVo();
   //不同的类使用不同的mixin即可
   factory FKConfigVo.fromJson(Map<String, dynamic> json) =>
       _$FKConfigVoFromJson(json);
 
   Map<String, dynamic> toJson() => _$FKConfigVoToJson(this);
+}
+@JsonSerializable()
+class CurrentCountVo{
+  /// 当日激励视频观看次数
+  int dayMaxCount = 0;
+  /// 每小时观看副广累计收益
+  double hourMaxAmountV1Count = 0;
+  /// 超过此数值，禁止观看主广
+  double wactchMaxAmountCount = 0;
+  /// 超过此数值，禁止观看副广
+  double wactchMaxAmountV1Count = 0;
+  CurrentCountVo();
+
+  factory CurrentCountVo.fromJson(Map<String, dynamic> json) =>
+      _$CurrentCountVoFromJson(json);
+  Map<String, dynamic> toJson() => _$CurrentCountVoToJson(this);
 }
