@@ -93,7 +93,7 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
 
       String url = widget.appUpLoadModel.downUrl;
       String savePath = await getSavePath();
-
+      Utils.logError("保存地址：$savePath");
       // 检查文件是否已存在
       File file = File(savePath);
       if (file.existsSync()) {
