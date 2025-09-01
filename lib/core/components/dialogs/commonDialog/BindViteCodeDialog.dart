@@ -87,6 +87,7 @@ class _BindViteCodeDialogState extends State<BindViteCodeDialog> {
             ],
           ),
           CuButton(text: "保存",width: 100.w,height: 40.h,fontSize: TextConfig.textSize_16, onPressed: (){
+            getBindInviteUser();
           },bgColor: TextConfig.primary,
           radius: 10.r,
           )

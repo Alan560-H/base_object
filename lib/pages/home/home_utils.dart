@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:math';
 
 import 'package:base_object/core/api/api.dart';
@@ -62,6 +63,7 @@ class HomeUtils {
     Utils.logError("设备信息提交：${appUpLoadForm.toJson()}，$channel,通道");
     // 请求升级信息
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
+    Utils.logError("返回的版本信息：${appUpLoadModel.toJson()}");
     // 补充设备信息
     appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
     Utils.logError("oaid是：${appUpLoadModel.oaid}");
@@ -74,7 +76,6 @@ class HomeUtils {
 
     // 存储升级信息
     Store.instance.updateAppUpLoadModel(appUpLoadModel);
-
     // 校验版本并弹窗
     if (appUpLoadModel.packageName.isEmpty) return;
     String input = "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";
