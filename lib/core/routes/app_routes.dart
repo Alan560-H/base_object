@@ -37,6 +37,8 @@ abstract class AppRoutes {
   static const userEditInfo = "/user/editInfo";
   /// 我的徒弟
   static const userSon = "/user/son";
+  /// 设备检查不通过页面
+  static const userError = "/user/error";
   /// 我的钱包
   static const userWallet = "/user/wallet";
   /// 提现记录

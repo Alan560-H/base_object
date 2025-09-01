@@ -24,6 +24,7 @@ import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
+import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import '../net/cu_http_client.dart';
 import 'api_urls.dart';
 
@@ -122,6 +123,20 @@ class Api extends GetxController{
       return backModel;
     } catch (e) {
       Utils.logError("postSendMobileCode请求出错: $e");
+      return BackModel();
+    }
+  }
+  /// 获取设备是否被风控
+  Future<BackModel> getVer(CheckDeviceForm checkDeviceForm) async {
+    try {
+      return await _sendRequest(
+        ApiUrls.getVer,
+        checkDeviceForm,
+        "post",
+      );
+
+    } catch (e) {
+      Utils.logError("getVer请求出错: $e");
       return BackModel();
     }
   }

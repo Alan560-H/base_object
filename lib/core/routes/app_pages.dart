@@ -32,6 +32,8 @@ import 'package:base_object/pages/user/user_earnings/user_earnings_binding.dart'
 import 'package:base_object/pages/user/user_earnings/user_earnings_view.dart';
 import 'package:base_object/pages/user/user_edit_info/user_edit_info_binding.dart';
 import 'package:base_object/pages/user/user_edit_info/user_edit_info_view.dart';
+import 'package:base_object/pages/user/user_error/user_error_binding.dart';
+import 'package:base_object/pages/user/user_error/user_error_view.dart';
 import 'package:base_object/pages/user/user_invite/user_invite_binding.dart';
 import 'package:base_object/pages/user/user_invite/user_invite_view.dart';
 import 'package:base_object/pages/user/user_service/user_service_binding.dart';
@@ -186,6 +188,12 @@ class AppPages {
       page: () => WithdrawalHistoryView(),
       binding: WithdrawalHistoryBinding(),// 我的提现记录的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    /// 我的提现记录
+    GetPage(
+      name: AppRoutes.userError,
+      page: () => UserErrorView(),
+      binding: UserErrorBinding(),// 我的提现记录的依赖注入
     ),
   ];
 }

@@ -11,6 +11,8 @@ class ApiUrls {
   static const String getNoticeAD = "/v1/announce/announceAd";
   /// 屏蔽快应用
   static const String getNoticeAPP = "/v1/announce/announceApp";
+  /// 检查设备是否被风控
+  static const String getVer = "/v1/api/ver";
 
   /// 登录
   static const String login = "/v1/login";
