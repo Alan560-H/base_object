@@ -8,7 +8,7 @@ import io.flutter.plugin.common.MethodChannel
 
 /// 获取渠道标识的方法
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.example.base_object/channel"
+    private val CHANNEL = "com.cjbao/channel"
     private val UACHANNEL = "ua_channel"
 
     // 1. 新增：保存 MethodChannel 引用，用于 Activity 销毁时解绑

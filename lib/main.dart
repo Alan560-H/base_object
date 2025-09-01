@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> with AppTheme {
           // 路由列表
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,
-          title: '如意盒子',
+          title: '传家宝',
           builder: EasyLoading.init(),
           theme: appTheme,
         );

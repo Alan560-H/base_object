@@ -25,7 +25,7 @@ class WithdrawalHistoryView extends GetView<WithdrawalHistoryController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("如意盒子"),
+            title: Text("传家宝"),
             subtitle: Text(item.payTime),
             trailing: Text("${item.payMoney}￥",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
           ),

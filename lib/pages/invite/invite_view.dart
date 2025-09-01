@@ -109,7 +109,7 @@ class InviteView extends GetView<InviteController> {
                                   children: [
                                     getCom(value: controller.userInviteInfoModel.value.inviteNum.toString(),title: "总人数"),
                                     Spacer(),
-                                    getCom(value: controller.userInviteInfoModel.value.todayAmount.toString(),title: "今日收益(元)"),
+                                    getCom(value: controller.userInviteInfoModel.value.todayAmount.toString(),title: "今日收益(金币)"),
                                   ],
                                 ),
                               ),

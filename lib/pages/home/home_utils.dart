@@ -31,7 +31,7 @@ class HomeUtils {
   // 获取渠道标识
   static Future<String> getAppChannel() async {
     try {
-      var platform = MethodChannel('com.example.base_object/channel');
+      var platform = MethodChannel('com.cjbao/channel');
       String channel = await platform.invokeMethod('getChannel');
       return channel;
     } catch (e) {
@@ -59,10 +59,11 @@ class HomeUtils {
     } else {
       appUpLoadForm.channelPackage = "${packageInfo.packageName}.$channel";
     }
-    appUpLoadForm.channelPackage = "com.test.gf"; // 临时配置
-
+    // appUpLoadForm.channelPackage = "com.test.gf"; // 临时配置
+    Utils.logError("提交的版本数据：${appUpLoadForm.toJson()},通道${channel}");
     // 请求升级信息
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
+
     // 补充设备信息
     appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
     Utils.logError("oaid是：${appUpLoadModel.oaid}");

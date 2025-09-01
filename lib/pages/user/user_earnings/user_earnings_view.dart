@@ -54,7 +54,7 @@ class UserEarningsView extends GetView<UserEarningsController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("如意盒子"),
+            title: Text("传家宝"),
             subtitle: Text(item.createTime),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
