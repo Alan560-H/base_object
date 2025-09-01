@@ -1,68 +1,82 @@
 package com.ruyimh
 
 import android.content.Intent
+import android.os.Bundle // 1. 新增：导入 Bundle 类（解决 Unresolved reference 问题）
+import android.util.Log
 import android.webkit.WebView
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-/// 获取渠道标识的方法
 class MainActivity : FlutterFragmentActivity() {
+    // 调试日志标签
+    private val TAG = "ChannelFixDebug"
+    // 通道名称（与 Dart 端一致，无需修改）
     private val CHANNEL = "com.example.base_object/channel"
     private val UACHANNEL = "ua_channel"
 
-    // 1. 新增：保存 MethodChannel 引用，用于 Activity 销毁时解绑
+    // 保留通道引用
     private lateinit var uaMethodChannel: MethodChannel
     private lateinit var channelMethodChannel: MethodChannel
 
+    // 2. 修复：onCreate 方法签名（参数类型 Bundle? 已导入，与父类匹配）
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(TAG, "MainActivity 已创建：onCreate 执行")
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        Log.d(TAG, "=== configureFlutterEngine 开始执行 ===")
 
-        // 页面复用逻辑（原有逻辑保留，无需修改）
+        // 关键修复：移除 finish()，避免阻断通道注册
         if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !== 0) {
-            finish()
-            return
+            Log.d(TAG, "检测到页面复用标记，不销毁 Activity")
+            return // 仅跳过后续初始化，不销毁 Activity
         }
 
-        // 2. 处理 UACHANNEL（修复 WebView Context 问题）
+        // 处理 UA 通道
+        Log.d(TAG, "开始注册 UA 通道：$UACHANNEL")
         uaMethodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             UACHANNEL
         )
         uaMethodChannel.setMethodCallHandler { call, result ->
+            Log.d(TAG, "UA 通道收到调用：方法名=${call.method}")
             if (call.method == "getUA") {
-                // 核心修复1：用 Application Context 代替 Activity Context（避免随页面销毁失效）
                 val appContext = applicationContext
                 if (appContext == null) {
-                    // 防御性判断：若 Context 无效，返回错误而非崩溃
+                    Log.e(TAG, "UA 通道错误：应用 Context 为空")
                     result.error("CONTEXT_ERROR", "应用 Context 为空，无法获取 UserAgent", null)
                     return@setMethodCallHandler
                 }
 
                 var webView: WebView? = null
                 try {
-                    // 用 Application Context 创建 WebView
                     webView = WebView(appContext)
                     val ua = webView.settings.userAgentString
-                    result.success(ua) // 成功返回 UserAgent
+                    Log.d(TAG, "UA 获取成功：$ua")
+                    result.success(ua)
                 } catch (e: Exception) {
-                    // 核心修复2：捕获异常（如 WebView 初始化失败），避免崩溃
+                    Log.e(TAG, "UA 获取失败：${e.message}", e)
                     result.error("UA_GET_FAILED", "获取 UserAgent 失败：${e.message}", null)
                 } finally {
-                    // 核心修复3：手动销毁 WebView，释放 Context 引用和内存
                     webView?.destroy()
                 }
             } else {
+                Log.w(TAG, "UA 通道：未实现的方法=${call.method}")
                 result.notImplemented()
             }
         }
 
-        // 3. 处理 CHANNEL（原有逻辑保留，因已用 Application Context 无需修改）
+        // 处理 CHANNEL 通道
+        Log.d(TAG, "开始注册 CHANNEL 通道：$CHANNEL")
         channelMethodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL
         )
         channelMethodChannel.setMethodCallHandler { call, result ->
+            Log.d(TAG, "CHANNEL 通道收到调用：方法名=${call.method}")
             if (call.method == "getChannel") {
                 val context = applicationContext
                 try {
@@ -72,24 +86,29 @@ class MainActivity : FlutterFragmentActivity() {
                     )
                     val channel = metaData.metaData.getString("CHANNEL")
                     if (channel != null) {
+                        Log.d(TAG, "CHANNEL 获取成功：$channel")
                         result.success(channel)
                     } else {
+                        Log.e(TAG, "CHANNEL 获取失败：Manifest 中未找到 CHANNEL meta-data")
                         result.error("CHANNEL_NOT_FOUND", "未找到渠道信息", null)
                     }
                 } catch (e: Exception) {
-                    // 新增：捕获包管理相关异常（如权限问题），避免崩溃
+                    Log.e(TAG, "CHANNEL 获取异常：${e.message}", e)
                     result.error("CHANNEL_GET_FAILED", "获取渠道信息失败：${e.message}", null)
                 }
             } else {
+                Log.w(TAG, "CHANNEL 通道：未实现的方法=${call.method}")
                 result.notImplemented()
             }
         }
+
+        Log.d(TAG, "=== configureFlutterEngine 执行完成 ===")
     }
 
-    // 4. 新增：Activity 销毁时解绑 MethodChannel，避免内存泄漏和无效回调
+    // Activity 销毁时解绑通道
     override fun onDestroy() {
         super.onDestroy()
-        // 解绑后，Flutter 侧再调用方法不会触发回调，避免使用已失效的 Context
+        Log.d(TAG, "MainActivity 销毁：解绑所有通道")
         uaMethodChannel.setMethodCallHandler(null)
         channelMethodChannel.setMethodCallHandler(null)
     }

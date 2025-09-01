@@ -59,8 +59,7 @@ class HomeUtils {
     } else {
       appUpLoadForm.channelPackage = "${packageInfo.packageName}.$channel";
     }
-    appUpLoadForm.channelPackage = "com.test.gf"; // 临时配置
-
+    Utils.logError("设备信息提交：${appUpLoadForm.toJson()}，$channel,通道");
     // 请求升级信息
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
     // 补充设备信息
