@@ -9,11 +9,11 @@ class NoticeModel {
   /// id
   String content = "";
   /// 活动id
-  int id=0;
+  int? id=0;
   /// 公告名称
   String name="";
   /// 公告名称
-  String timeCreate="";
+  String? timeCreate="";
   /// 公告
   NoticeModel();
 

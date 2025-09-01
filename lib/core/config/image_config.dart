@@ -39,9 +39,15 @@ class ImageConfig {
   /// 红包
   static String hongbao =
       "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao.png";
+  // 看广小技巧
+  static String kgxjq =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/kgxjq.png";
   // 红包打开了
   static String hongbaoOpen =
       "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao_open.png";
+  // 屏蔽快应用
+  static String pbkyy =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/pbkyy.png";
 
   /// 空数据
   static String empty =
