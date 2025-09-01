@@ -31,8 +31,9 @@ class CuCircularProgressController extends GetxController {
     setStepTimer = null;
     startAutoSetProgressTimer();
   }
-  // 启动普通消息定时器（3秒/条）
+  // 启动发财树进度条
   void startAutoSetProgressTimer() {
+    Utils.logError("开始倒计时");
     setStepTimer = Timer.periodic(
       const Duration(seconds: 1),
           (Timer timer){
@@ -64,19 +65,8 @@ class CuCircularProgressController extends GetxController {
   void resetProgress() {
     _progress.value = 0.0;
   }
-  // /// 增加存钱罐余额
-  // void addCurrentValue(int value) {
-  //   setCurrentValue(currentValue.value += value);
-  // }
-  /// 设定存钱罐余额
-  // void setCurrentValue(double value) {
-  //   currentValue.value = value;
-  //   // LocalStorage.setString("currentValue", value.toString());
-  // }
   void showDialog() async {
     try {
-
-
       if(!UserInfo.instance.isLoginIn){
         Get.toNamed(AppRoutes.login);
         return;
@@ -84,8 +74,6 @@ class CuCircularProgressController extends GetxController {
       if(!Get.isRegistered<Api>()){
         Get.put(Api());
       }
-      bool isReady = await NativeTool.to.nativeAdReady();
-      Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
       if(Get.isRegistered<NativeTool>()){
         NativeTool.to.showNative();
       }

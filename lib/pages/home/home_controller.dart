@@ -15,27 +15,18 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
-import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
-import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
-import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:crypto/crypto.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import 'home_utils.dart';
 
@@ -49,14 +40,18 @@ class HomeController extends GetxController {
       upDataADForm.transId = event?['extraMap']?['id'];
       Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
-      Utils.logError("主动领取激励视频返回的数据${rewarderModel.toJson()}");
       if (rewarderModel.amount > 0) {
         Utils.debounce(() {
           UserInfo.instance.getUserInfoFn();
           CuToast.success(
             msg: "恭喜获得${(rewarderModel.amount * 10000).toStringAsFixed(2)} 金币",
           );
+          // 增加次数
           Store.instance.addCurrentCount(1);
+          // 重置间隔时间
+          Store.instance.setRemainingSeconds();
+          // 开始倒计时
+          Store.instance.countDown();
         }, duration: Duration(seconds: 1));
       }
     } catch (e) {
@@ -123,82 +118,80 @@ class HomeController extends GetxController {
 
   // 显示激励广告
   showRewarder() async {
-    bool isReady = await NativeTool.to.nativeAdReady();
-    Utils.logError("准备状态：${isReady} ${Get.isRegistered<NativeTool>()}");
-    if(Store.instance.getCurrentCount.dayMaxCount>4){
-      CuToast.error(msg: "今日领取次数已达上限，请明日再来");
-      return;
-    }
-    if (Get.isRegistered<NativeTool>()) {
-      NativeTool.to.showNative();
-    }
-    Get.dialog(
-      Container(
-        constraints: BoxConstraints(maxWidth: Get.width, maxHeight: Get.height),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 300.h,
-              child: Stack(
-                children: [
-                  InkWell(
-                    onTap: () async {
-                      bool isRewReady =
-                          await RewarderTool.to.rewardedVideoReady();
-                      if (isRewReady) {
-                        redBagOpen.value = true;
-                        await RewarderTool.to.showRewardedVideo();
-                      } else {
-                        redBagOpen.value = false;
-                        CuToast.error(msg: "激励广告加载失败，请稍后重试");
-                      }
-                    },
-                    child: Center(
-                      child: CachedNetworkImage(
-                        imageUrl: ImageConfig.hongbaoCover,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0.h,
-                    right: 50.w,
-                    child: CuButton(
-                      text: "",
-                      icons: Icons.close,
-                      fontSize: TextConfig.textSize_24,
-                      onPressed: () {
-                        NativeTool.to.removeNativeAd();
-                        NativeTool.to.loadNativeWith();
-                        Get.back();
+
+    if(await Store.instance.canLookReward()){
+      if (Get.isRegistered<NativeTool>()) {
+        NativeTool.to.showNative();
+      }
+      Get.dialog(
+        Container(
+          constraints: BoxConstraints(maxWidth: Get.width, maxHeight: Get.height),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 300.h,
+                child: Stack(
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        bool isRewReady =
+                        await RewarderTool.to.rewardedVideoReady();
+                        if (isRewReady) {
+                          redBagOpen.value = true;
+                          await RewarderTool.to.showRewardedVideo();
+                        } else {
+                          redBagOpen.value = false;
+                          CuToast.error(msg: "激励广告加载失败，请稍后重试");
+                        }
                       },
-                    ),
-                  ),
-                  Positioned(
-                    top: 80.h,
-                    left: 0,
-                    child: Container(
-                      width: Get.width,
-                      alignment: Alignment.center,
-                      child: Text(
-                        "今日已领取红包${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
-                        style: TextStyle(
-                          fontSize: TextConfig.textSize_20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.yellowAccent,
+                      child: Center(
+                        child: CachedNetworkImage(
+                          imageUrl: ImageConfig.hongbaoCover,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 0.h,
+                      right: 50.w,
+                      child: CuButton(
+                        text: "",
+                        icons: Icons.close,
+                        fontSize: TextConfig.textSize_24,
+                        onPressed: () {
+                          NativeTool.to.removeNativeAd();
+                          NativeTool.to.loadNativeWith();
+                          Get.back();
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      top: 80.h,
+                      left: 0,
+                      child: Container(
+                        width: Get.width,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "今日已领取红包${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
+                          style: TextStyle(
+                            fontSize: TextConfig.textSize_20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.yellowAccent,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 110.h),
-          ],
+              SizedBox(height: 110.h),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+
   }
 
   int timeCount = 0;

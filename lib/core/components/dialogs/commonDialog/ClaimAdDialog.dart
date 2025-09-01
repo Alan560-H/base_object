@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
@@ -31,16 +33,9 @@ class ClaimAdDialog extends StatelessWidget {
 
   // 显示激励广告
   showRewarder() async {
-    if(Store.instance.getCurrentCount.dayMaxCount>3){
-      CuToast.error(msg: "今日领取次数已达上限，请明日再来");
-      checkClaim();
-      return;
-    }
-    bool isReady = await RewarderTool.to.rewardedVideoReady();
-    if (isReady) {
+    if (await Store.instance.canLookReward()) {
       await RewarderTool.to.showRewardedVideo();
     } else {
-      CuToast.error(msg: "激励广告加载失败，请稍后重试");
       checkClaim();
     }
   }
@@ -54,7 +49,7 @@ class ClaimAdDialog extends StatelessWidget {
         Utils.logError("是否有进度条${Get.isRegistered<CuCircularProgressController>()}");
         if(Get.isRegistered<CuCircularProgressController>()){
           CuCircularProgressController.to.setProgress(0);
-          CuCircularProgressController.to.resetProgressTimer;
+          CuCircularProgressController.to.resetProgressTimer();
           NativeTool.to.removeNativeAd();
           NativeTool.to.loadNativeWith();
           Get.back();

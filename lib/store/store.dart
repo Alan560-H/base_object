@@ -1,12 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
+
+import '../manager/native_tool.dart';
 
 class Store extends GetxController{
   /// 获取单例
@@ -35,6 +40,43 @@ class Store extends GetxController{
   final Rx<CurrentCountVo> _currentCount = CurrentCountVo().obs;
   /// 当日计数
   CurrentCountVo get getCurrentCount => _currentCount.value;
+  Timer? _timer;
+  /// 倒计时
+  Future<void> countDown()async{
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+      } else {
+       _timer?.cancel();
+        _timer = null;
+      }
+    });
+  }
+  setRemainingSeconds(){
+    _remainingSeconds = _fkConfig.value.adTime;
+    Utils.logError("当前间隔时间${_remainingSeconds}");
+  }
+  int _remainingSeconds = 0;
+
+  /// 是否可以观看激励广告,true 是可以，false不可以
+  Future<bool> canLookReward()async{
+    bool isReady = await RewarderTool.to.rewardedVideoReady();
+    Utils.logError("准备状态：${isReady}}");
+    if(!isReady){
+      CuToast.error(msg: "广告还没准备好，请稍后再试");
+      return false;
+    }
+    /// 如果今日观看主广次数已达最大次数
+    if(_currentCount.value.dayMaxCount>=_fkConfig.value.dayMax){
+      CuToast.error(msg: "今日领取次数已达上限，请明日再来");
+      return false;
+    }
+    if(_remainingSeconds>0){
+      CuToast.error(msg: "距离下一次广告时间$_remainingSeconds秒");
+      return false;
+    }
+    return true;
+  }
   /// 增加主广计数
   void addCurrentCount(int count)async{
     _currentCount.value.dayMaxCount+=count;
