@@ -147,6 +147,8 @@ class ClaimAdDialog extends StatelessWidget {
                       SizedBox(height: 100.h,),
                       Obx(()=>Text(data.value.toString(),style: TextStyle(fontSize: TextConfig.textSize_36,color: Colors.white),)),
                       SizedBox(height: 30.h,),
+                      Text("温馨提示：建议累计到2000以上再领取哦",style: TextStyle(fontSize: TextConfig.textSize_12,color: Colors.white),),
+                      SizedBox(height: 10.h,),
                       CuButton(text: "立即领取",width: 120.w,height: 40.h,radius: 10.r,bgColor: TextConfig.primary, onPressed: ()async{
                         rewarderEvent();
                         showRewarder();

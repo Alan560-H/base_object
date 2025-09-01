@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/config/app_keys.dart';
@@ -29,6 +31,7 @@ class NoticeDialog extends StatefulWidget {
         int weekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
 
         // 如果在一周内，则不显示
+
         if (now - lastTime < weekInMilliseconds) {
           return false;
         }

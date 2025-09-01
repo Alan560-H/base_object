@@ -315,6 +315,7 @@ class HomeController extends GetxController {
     rewarderEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
+    isShow();
     // 初始化消息（5条普通消息）
     for (int i = 0; i < 5; i++) {
       _addRandomChatMessage();
