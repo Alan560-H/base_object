@@ -26,7 +26,7 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("传家宝"),
+            title: Text("如意盒子"),
             subtitle: Text(item.createTime),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -56,7 +56,7 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("传家宝"),
+            title: Text("如意盒子"),
             subtitle: Text(item.payTime),
             trailing: Text("${item.payMoney}￥",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
           ),
