@@ -9,9 +9,9 @@ class AppConfig extends GetxController{
   /// 获取app 下载地址
   String get appDownUrl => "https://img.ruyimh.com/Rscsgo/app/ruyimh.apk";
   /// 获取app 服务协议
-  Uri get protocolUri => Uri.parse("https://www.ruyimh.com/protocol.html");
+  Uri get protocolUri => Uri.parse("http://ysxy.ruyigx.com/protocol.html");
   /// 获取app 隐私政策
-  Uri get policyUri => Uri.parse("https://www.ruyimh.com/policy.html");
+  Uri get policyUri => Uri.parse("http://ysxy.ruyigx.com/policy.html");
   /// 获取app 53客服
   Uri get serviceUri => Uri.parse("https://tb.53kf.com/code/client/0336539cc38692d6e967984a52d8a6ed9/1");
   /// 获取app qq群链接
