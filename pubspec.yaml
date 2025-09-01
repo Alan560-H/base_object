@@ -91,8 +91,8 @@ dependencies:
   #打开文件
   open_file: ^3.5.10
   #穿山甲
-  flutter_pangrowth:
-    path: ./plugins/flutter_pangrowth
+#  flutter_pangrowth:
+#    path: ./plugins/flutter_pangrowth
 
 dev_dependencies:
   flutter_test:

@@ -414,13 +414,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.0.0"
-  flutter_pangrowth:
-    dependency: "direct main"
-    description:
-      path: "plugins/flutter_pangrowth"
-      relative: true
-    source: path
-    version: "1.0.9"
   flutter_screenutil:
     dependency: "direct main"
     description:

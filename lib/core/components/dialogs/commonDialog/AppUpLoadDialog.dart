@@ -151,7 +151,7 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
       directory = await getApplicationDocumentsDirectory();
     }
 
-    return '${directory?.path}/ruyimh.apk';
+    return '${directory?.path}/cjbao.apk';
   }
 
   @override
