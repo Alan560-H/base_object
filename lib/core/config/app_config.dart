@@ -7,7 +7,7 @@ class AppConfig extends GetxController{
   /// 获取wx_appid
   String get wxAppId => "wx5ef2b08e4bb891e4";
   /// 获取app 下载地址
-  String get appDownUrl => "https://img.ruyimh.com/Rscsgo/app/ruyimh.apk";
+  String get appDownUrl => "";
   /// 获取app 服务协议
   Uri get protocolUri => Uri.parse("http://ysxy.ruyigx.com/protocol.html");
   /// 获取app 隐私政策
