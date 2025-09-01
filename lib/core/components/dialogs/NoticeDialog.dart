@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
@@ -25,12 +26,13 @@ class NoticeDialog extends StatefulWidget {
     String? lastTimeStr = await LocalStorage.getString(AppKeys.noteLastTimeKey);
     if (lastTimeStr != null && lastTimeStr.isNotEmpty) {
       try {
-        int lastTime = int.parse(lastTimeStr);
+        String _time = jsonDecode(lastTimeStr);
+        int lastTime = int.parse(_time);
         int now = DateTime.now().millisecondsSinceEpoch;
         // 计算时间差（一周 = 7 * 24 * 60 * 60 * 1000 毫秒）
-        int weekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+        int weekInMilliseconds = 1 * 24 * 60 * 60 * 1000;
 
-        // 如果在一周内，则不显示
+        // 如果在一天内，则不显示
 
         if (now - lastTime < weekInMilliseconds) {
           return false;
@@ -79,7 +81,7 @@ class _NoticeDialogState extends State<NoticeDialog> {
 
   // 关闭弹窗的方法
   void closeDialog() {
-    // 如果勾选了一周内不显示，存储当前时间戳
+    // 如果勾选了一天内不显示，存储当前时间戳
     if (isChecked) {
       LocalStorage.setString(
         AppKeys.noteLastTimeKey,
@@ -182,7 +184,7 @@ class _NoticeDialogState extends State<NoticeDialog> {
                       : CuEmpty(),
                 ),
 
-                /// 一周内不显示
+                /// 一天内不显示
                 InkWell(
                   onTap: () {
                     setState(() {
@@ -212,7 +214,7 @@ class _NoticeDialogState extends State<NoticeDialog> {
                         ),
                         Expanded(
                           child: Text(
-                            "本周内不显示",
+                            "本日不再显示",
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),

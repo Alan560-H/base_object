@@ -1,6 +1,11 @@
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/manager/Init_tool.dart';
+import 'package:base_object/manager/banner_tool.dart';
+import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/listener_tool.dart'; // 导入 ListenerTool
+import 'package:base_object/manager/native_tool.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
@@ -35,24 +40,31 @@ class SplashController extends GetxController {
     }
   }
 
-  void getVer()async {
+  Future<void> getVer()async {
     try{
       CheckDeviceForm checkDeviceForm = CheckDeviceForm();
       checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
       checkDeviceForm.type = 1;
       BackModel data = await Api.to.getVer(checkDeviceForm);
       Utils.logError("设备检查情况${data.data}");
-      if(data.data == true){
+      if(!data.data){
         Get.offAllNamed(AppRoutes.userError);
+        NativeTool.to.removeNativeAd();
+        BannerTool.to.removeBannerAd();
+        Get.delete<NativeTool>();
+        Get.delete<RewarderTool>();
+        Get.delete<InitTool>();
+        Get.delete<SplashTool>();
       }
     }catch(e){
       Utils.logError("获取风控配置失败$e");
     }
   }
-  void getFkConfig()async {
+  Future<void> getFkConfig()async {
    try{
      FKConfigVo data = await Api.to.getFkConfig();
      Store.instance.setFKConfigVo(data);
+     Utils.logError("风控设置：${Store.instance.getFkConfig.toJson()}");
    }catch(e){
      Utils.logError("获取风控配置失败$e");
    }
@@ -60,9 +72,10 @@ class SplashController extends GetxController {
   @override
   void onInit() async {
     Utils.logError("开屏页面init初始化");
-    getFkConfig();
+    await getVer();
+    await getFkConfig();
     super.onInit();
-    getVer();
+
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
     _subscribeSplashEvent();
 

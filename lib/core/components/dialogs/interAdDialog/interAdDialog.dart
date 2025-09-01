@@ -8,12 +8,14 @@ import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/listener_tool.dart';
+import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:get/get.dart';
 
 class InterAdDialog extends GetxService {
@@ -21,6 +23,7 @@ class InterAdDialog extends GetxService {
   static InterAdDialog get to => Get.find<InterAdDialog>();
   /// 插屏广告定时器
   final InterstitialTool interstitialTool = Get.find<InterstitialTool>();
+
   @override
   void onInit() {
     Utils.logError("插屏广告初始化触发");
@@ -57,6 +60,14 @@ class InterAdDialog extends GetxService {
         Utils.logError("插屏广告凑成的字符串${upDataADForm.toJson()}");
         int pross = amount.toInt();
         Utils.logError("插屏广告金额$pross");
+        if(pross>Store.instance.getFkConfig.wactchMaxAmountV1){
+          CheckDeviceForm checkDeviceForm = CheckDeviceForm();
+          checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+          checkDeviceForm.userId = UserInfo.instance.userModel.id;
+          checkDeviceForm.type = 2;
+          BackModel data = await Api.to.getVer(checkDeviceForm);
+          Get.offAllNamed(AppRoutes.userError);
+        }
       }
     }catch(e){
       Utils.logError("上报副广失败：$e");

@@ -20,12 +20,11 @@ class UserErrorView extends GetView<UserErrorController> {
             spacing: 10.h,
             children: [
               CuAppBar(title: controller.appbarTitle.value,showBackArrow: false,backgroundColor: Colors.transparent,),
-              CachedNetworkImage(imageUrl: ImageConfig.userService,height: 300.h,),
-
+              CachedNetworkImage(imageUrl: ImageConfig.error,height: 300.h,),
               Text("服务时间：9:00~21:00",style: TextStyle(color: TextConfig.primary,fontSize: TextConfig.textSize_24),),
               Text("当前设备已被封禁，请联系客服解封",style: TextStyle(fontSize: TextConfig.textSize_16),),
-              Text("手机号：18942693171",style: TextStyle(fontSize: TextConfig.textSize_16),),
-              Text("微信号：18942693171",style: TextStyle(fontSize: TextConfig.textSize_16),),
+              Text("手机号：16796786949",style: TextStyle(fontSize: TextConfig.textSize_16),),
+              Text("微信号：TX888888880088888888",style: TextStyle(fontSize: TextConfig.textSize_16),),
             ],
           ),
         )

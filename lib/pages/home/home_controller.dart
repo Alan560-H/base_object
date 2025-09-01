@@ -25,9 +25,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../core/routes/app_routes.dart';
+import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
+import '../../models/backModel/BackModel.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
@@ -39,6 +43,19 @@ class HomeController extends GetxController {
           "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_0";
       upDataADForm.transId = event?['extraMap']?['id'];
       Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
+      // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
+      // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
+      dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
+      double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
+      int pross = amount?.toInt() ?? 0;
+      if(pross>Store.instance.getFkConfig.wactchMaxAmountV1){
+        CheckDeviceForm checkDeviceForm = CheckDeviceForm();
+        checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+        checkDeviceForm.userId = UserInfo.instance.userModel.id;
+        checkDeviceForm.type = 2;
+        BackModel data = await Api.to.getVer(checkDeviceForm);
+        Get.offAllNamed(AppRoutes.userError);
+      }
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       if (rewarderModel.amount > 0) {
         Utils.debounce(() {

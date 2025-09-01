@@ -14,7 +14,7 @@ class CheckDeviceForm extends FormModel {
   /// 手机号
   String? oaid = "";
   /// 预估价格（主广，副广用）
-  double? userId = 0;
+  int? userId = 0;
 
 
 

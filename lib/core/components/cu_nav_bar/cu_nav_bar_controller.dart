@@ -12,14 +12,17 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/listener_tool.dart';
+import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
 import 'package:base_object/pages/login/login_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
@@ -156,6 +159,15 @@ class CuNavBarController extends GetxController {
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
       int pross = amount.toInt();
       Utils.logError("横幅广告金额$pross");
+      if(pross>Store.instance.getFkConfig.wactchMaxAmountV1){
+        CheckDeviceForm checkDeviceForm = CheckDeviceForm();
+        checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+        checkDeviceForm.userId = UserInfo.instance.userModel.id;
+        checkDeviceForm.type = 2;
+        BackModel data = await Api.to.getVer(checkDeviceForm);
+        Get.offAllNamed(AppRoutes.userError);
+      }
+
       // CuCircularProgressController.to.addCurrentValue(pross);
 
 

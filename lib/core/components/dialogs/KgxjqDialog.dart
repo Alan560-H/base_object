@@ -17,30 +17,8 @@ import '../../config/image_config.dart';
 import '../../config/text_config.dart';
 
 class KgxjqDialog extends StatefulWidget {
-  /// 公告弹窗
+  /// 看广小技巧
   const KgxjqDialog({super.key});
-
-  // 添加一个静态方法检查是否需要显示弹窗
-  static Future<bool> shouldShow() async {
-    String? lastTimeStr = await LocalStorage.getString(AppKeys.noteLastTimeKey);
-    if (lastTimeStr != null && lastTimeStr.isNotEmpty) {
-      try {
-        int lastTime = int.parse(lastTimeStr);
-        int now = DateTime.now().millisecondsSinceEpoch;
-        // 计算时间差（一周 = 7 * 24 * 60 * 60 * 1000 毫秒）
-        int weekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
-
-        // 如果在一周内，则不显示
-
-        if (now - lastTime < weekInMilliseconds) {
-          return false;
-        }
-      } catch (e) {
-        Utils.logDebug("解析时间戳错误: $e");
-      }
-    }
-    return true;
-  }
 
   @override
   State<KgxjqDialog> createState() => _KgxjqDialogState();
@@ -52,8 +30,6 @@ class _KgxjqDialogState extends State<KgxjqDialog> {
   // 当前条目索引
   int index = 0;
 
-  /// 是否同意用户隐私协议
-  bool isChecked = false;
 
   void getNoticeAD() async {
     noticeList = await Api.to.getNoticeAD();
@@ -79,13 +55,7 @@ class _KgxjqDialogState extends State<KgxjqDialog> {
 
   // 关闭弹窗的方法
   void closeDialog() {
-    // 如果勾选了一周内不显示，存储当前时间戳
-    if (isChecked) {
-      LocalStorage.setString(
-        AppKeys.noteLastTimeKey,
-        DateTime.now().millisecondsSinceEpoch.toString(),
-      );
-    }
+
     Get.back();
   }
 
@@ -180,46 +150,6 @@ class _KgxjqDialogState extends State<KgxjqDialog> {
                     ),
                   )
                       : CuEmpty(),
-                ),
-
-                /// 一周内不显示
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      isChecked = !isChecked;
-                    });
-                  },
-                  child: Container(
-                    constraints: BoxConstraints(maxHeight: 40.h),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 25.h,
-                          width: 25.w,
-                          child: Checkbox(
-                            activeColor: TextConfig.primary,
-                            materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap,
-                            value: isChecked,
-                            onChanged: (bool? value) {
-                              if (value != null) {
-                                setState(() {
-                                  isChecked = value;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            "本周内不显示",
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ],
             ),
