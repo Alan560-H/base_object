@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
@@ -111,18 +112,28 @@ class HomeView extends GetView<HomeController> {
               Expanded(child: Stack(children:
               [
                 _buildChatList(),
-                // 1. 使用自定义圆形进度条组件  存钱罐
+                // 新人福利
+                controller.isShowNew.value?Positioned(
+                  top: Get.height/2,
+                  left: 0,
+                  child: Tada(
+                    infinite: true,
+                    duration: const Duration(milliseconds: 1000),
+                    child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
+                  ),
+                 ):Center(),
+                // 存钱罐
                 Positioned(
                   top: Get.height/2-100.h,
                   left: 0,
                   child: CuCircularProgressView(
-                    imagePath: ImageConfig.progressBg, // 本地图片路径（需在pubspec.yaml配置）
+                    imagePath: ImageConfig.progressBg,
                     size: 60.h, // 自定义进度条大小
                     strokeWidth: 5.h, // 自定义进度条宽度
                     progressColor: TextConfig.primary, // 自定义进度色（橙色）
                     backgroundColor: TextConfig.black333, // 自定义背景色
                   ),),
-                // 1. 使用自定义圆形进度条组件  存钱罐
+                // 看广小技巧
                 Positioned(
                   top: Get.height/2-100.h,
                   right: 0,
@@ -140,6 +151,7 @@ class HomeView extends GetView<HomeController> {
                       child: CachedNetworkImage(imageUrl: ImageConfig.kgxjq),
                     ),
                   ),),
+                // 屏蔽快应用
                 Positioned(
                   top: Get.height/2-210.h,
                   right: 0,

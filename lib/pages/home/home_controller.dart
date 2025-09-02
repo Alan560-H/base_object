@@ -8,8 +8,7 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
-import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
-import 'package:base_object/core/components/dialogs/noteDialog/noteDialog.dart';
+import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/listener_tool.dart';
@@ -22,13 +21,12 @@ import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../core/components/dialogs/NoticeDialog.dart';
 import '../../core/routes/app_routes.dart';
 import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import '../../models/backModel/BackModel.dart';
@@ -317,7 +315,12 @@ class HomeController extends GetxController {
   getAppUpdata() async {
     await HomeUtils.getAppUpdata();
   }
-
+  RxBool isShowNew = false.obs;
+  isShowNewUser()async{
+    Utils.logError("登录？？${UserInfo.instance.isLoginIn}");
+    if(!UserInfo.instance.isLoginIn)return false;
+    isShowNew.value =  await UserInfo.instance.isNewUser();
+  }
   isShow() async {
     if (await NoticeDialog.shouldShow()) {
       Dialogs.noticeDialog();
@@ -332,6 +335,7 @@ class HomeController extends GetxController {
     rewarderEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
+    isShowNewUser();
     isShow();
     // 初始化消息（5条普通消息）
     for (int i = 0; i < 5; i++) {

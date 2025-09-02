@@ -6,7 +6,6 @@ import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,7 +13,6 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:flutter_html/flutter_html.dart';
 
 import '../../../utils/local_storage.dart';
-import '../../config/image_config.dart';
 import '../../config/text_config.dart';
 
 class NoticeDialog extends StatefulWidget {

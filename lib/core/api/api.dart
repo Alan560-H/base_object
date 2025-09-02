@@ -10,6 +10,7 @@ import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
+import 'package:base_object/models/backModel/newUserModel/NewUserModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserBayModel.dart';
@@ -67,6 +68,19 @@ class Api extends GetxController{
       AppUpLoadModel appUpLoadModel = AppUpLoadModel();
       return appUpLoadModel;
     }
+  }
+  /// 获取新人是否领取过福利
+  Future<NewUserModel> getNewcomerConfig() async {
+    BackModel backModel = await _sendRequest(ApiUrls.getNewcomerConfig, FormModel(), "post");
+    if (backModel.data == null) {
+      Utils.logError("新人福利返回为空");
+      return NewUserModel();
+    }
+    return NewUserModel.fromJson(backModel.data);
+  }
+  /// 领取新人福利
+  Future<BackModel> getNewcomer() async {
+    return await _sendRequest(ApiUrls.getNewcomer, FormModel(), "post");
   }
   /// 获取首页公告列表
   Future<List<NoticeModel>> postNotice() async {
