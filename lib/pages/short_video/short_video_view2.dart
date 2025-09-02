@@ -14,11 +14,6 @@ class ShortVideoView2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        toolbarHeight: 0,
-        backgroundColor: Colors.black,
-      ),
       bottomNavigationBar: CuNavBarView(),
       body: PangrowthVideo.videoSingleCardView(
         viewWidth: 10.sw,

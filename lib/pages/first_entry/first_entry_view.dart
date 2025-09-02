@@ -82,10 +82,24 @@ class FirstEntryView extends GetView<FirstEntryController> {
       child: CachedNetworkImage(imageUrl: ImageConfig.logo, height: 150.h),
     );
   }
+  Widget get splachView{
+    return SizedBox(
+      width: Get.width,
+      height: Get.height,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          CachedNetworkImage(imageUrl: ImageConfig.firstTitle),
+          CachedNetworkImage(imageUrl: ImageConfig.firstBotton),
+        ],
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: Obx(()=>controller.loading.value? splachView: Stack(
         fit: StackFit.expand,
         children: [
           Positioned(top: 0, child: logoAndBanner),
@@ -107,17 +121,17 @@ class FirstEntryView extends GetView<FirstEntryController> {
                 children: [
                   Text("服务协议和隐私政策", style: TextStyle(
                       fontSize: TextConfig.textSize_20,
-                    color: TextConfig.black333
-                      ),),
+                      color: TextConfig.black333
+                  ),),
                   Expanded(child: checkedXieyi,),
                   CuButton(
-                      width: 1.sw,
-                      height: 40.h,
-                      bgColor: TextConfig.primary,
-                      radius: 5.sp,
-                      fontSize: TextConfig.textSize_16,
-                      text: "同意并接受",
-                      onPressed: controller.goHome,),
+                    width: 1.sw,
+                    height: 40.h,
+                    bgColor: TextConfig.primary,
+                    radius: 5.sp,
+                    fontSize: TextConfig.textSize_16,
+                    text: "同意并接受",
+                    onPressed: controller.goHome,),
                   CuButton(
                       width: 1.sw,
                       textColor: TextConfig.black333,
@@ -131,7 +145,7 @@ class FirstEntryView extends GetView<FirstEntryController> {
             ),
           ))
         ],
-      ),
+      )),
     );
   }
 }

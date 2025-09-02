@@ -258,6 +258,9 @@ class HomeController extends GetxController {
         HomeUtils.getRandomRedPacketQuote(),
       );
       bool isHasNative = false;
+      if(!Get.isRegistered<RewarderTool>()){
+        Get.put<RewarderTool>(RewarderTool());
+      }
       bool isRewardReady =
           await RewarderTool.to.rewardedVideoReady(); // 激励视频是否准备好
       bool isShowRedBag = HomeUtils.random.nextDouble() < 0.2; // 是否展示红包
@@ -275,6 +278,7 @@ class HomeController extends GetxController {
       // }
       // 生成红包
       if (isRewardReady && isShowRedBag) {
+        redBagOpen.value = false;
         content = InkWell(
           onTap: showRewarder,
           child: CachedNetworkImage(

@@ -102,10 +102,17 @@ class UserInfo extends GetxController {
         Get.put<RewarderTool>(RewarderTool());
 
         await Future.delayed(const Duration(milliseconds: 20));
+        if(!Get.isRegistered<InitTool>()){
+          Get.put<InitTool>(InitTool());
+        }
+        if(!Get.isRegistered<RewarderTool>()){
+          Get.put<RewarderTool>(RewarderTool());
+        }
         bool isInitAd = await InitTool.to.initTopon();
         Utils.logError(
           "初始化触发的广告userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
         );
+
         InitTool.to.setCustomDataDic({
           "user_id": "${UserInfo.instance.userModel.id}",
           "extra":

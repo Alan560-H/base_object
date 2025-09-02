@@ -13,9 +13,9 @@ class NativeTool extends GetxService{
         placementID: AppAdConfig.nativePlacementID,
         extraMap: {
           ATCommon.isNativeShow() : true,
-          ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
+          ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
             Get.width,
-            340.w,
+            340,
           ),
           ATNativeManager.isAdaptiveHeight(): true
         });

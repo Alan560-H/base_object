@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/manager/Init_tool.dart';
@@ -126,7 +127,7 @@ class LoginController extends GetxController {
       UserInfo.instance.setToken(value: loginModel.value.tokenValue,key: loginModel.value.tokenValue);
       UserModel userModel = await Api.to.getUserInfo();
       if (userModel.id != 0) {
-        Get.snackbar("提示", "登录成功");
+        CuToast.success(msg: "登录成功");
         UserInfo.instance.updateUserModel(userModel);
         UserTodayModel userTodayModel = await Api.to.getTodayAmount();
         UserInfo.instance.updateUserTodayModel(userTodayModel);
