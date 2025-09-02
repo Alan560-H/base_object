@@ -101,6 +101,7 @@ class CuAppBar extends StatelessWidget {
               top: topSafeHeight,
               bottom: 0,
               child: Row(
+                spacing: 5.w,
                 mainAxisSize: MainAxisSize.min,
                 children: actions!,
               ),

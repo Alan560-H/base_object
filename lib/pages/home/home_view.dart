@@ -4,6 +4,7 @@ import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_view.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/KgxjqDialog.dart';
 import 'package:base_object/core/components/dialogs/PbkyyDialog.dart';
 import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
@@ -104,6 +105,15 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.white,
                 actions: [
+                  // if(controller.isShowNew.value)
+                  Tada(
+                    infinite: true,
+                    duration: const Duration(milliseconds: 1000),
+                    child: CuButton(bgColor: TextConfig.primary,radius: 10.r, text: "新人福利", width: 80.w, onPressed:() {
+                      Get.dialog(NewUserDialog());
+                    }),
+                  ),
+                  SizedBox(width: 40.w,),
                   CuButton(bgColor: TextConfig.primary,radius: 15.r, text: UserInfo.instance.isLoginIn?"${UserInfo.instance.userModel.currentAmount} 提现":"登录", width: 130.w, onPressed:() {
                     Get.toNamed(AppRoutes.userTixian);
                   })
@@ -114,18 +124,18 @@ class HomeView extends GetView<HomeController> {
               [
                 _buildChatList(),
                 // 新人福利
-                controller.isShowNew.value?Positioned(
-                  top: Get.height/2,
-                  left: 0,
-                  child: InkWell(
-                    onTap: ()=>Get.dialog(NewUserDialog()),
-                    child: Tada(
-                      infinite: true,
-                      duration: const Duration(milliseconds: 1000),
-                      child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
-                    ),
-                  ),
-                 ):Center(),
+                // controller.isShowNew.value?Positioned(
+                //   top: Get.height/2,
+                //   left: 0,
+                //   child: InkWell(
+                //     onTap: ()=>Get.dialog(NewUserDialog()),
+                //     child: Tada(
+                //       infinite: true,
+                //       duration: const Duration(milliseconds: 1000),
+                //       child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
+                //     ),
+                //   ),
+                //  ):Center(),
                 // 存钱罐
                 Positioned(
                   top: Get.height/2-100.h,
