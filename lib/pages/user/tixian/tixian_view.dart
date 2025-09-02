@@ -179,6 +179,7 @@ class TixianView extends GetView<TixianController> {
                     () => InkWell(
                   onTap: () {
                     controller.selectedWithdrawalModel.value = item;
+                    controller.withdrawalForm.value.amountId = item.id;
                   },
                   child: Container(
                     decoration: BoxDecoration(

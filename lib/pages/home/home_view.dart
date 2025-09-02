@@ -133,7 +133,7 @@ class HomeView extends GetView<HomeController> {
                     child:Container(
                       height: 100.h,
                       decoration: BoxDecoration(
-                        color: TextConfig.fensePageColor,
+                        color: Colors.greenAccent,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
 
@@ -150,7 +150,7 @@ class HomeView extends GetView<HomeController> {
                     child:Container(
                       height: 100.h,
                       decoration: BoxDecoration(
-                        color: TextConfig.fensePageColor,
+                        color: Colors.greenAccent,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: CachedNetworkImage(imageUrl: ImageConfig.pbkyy),

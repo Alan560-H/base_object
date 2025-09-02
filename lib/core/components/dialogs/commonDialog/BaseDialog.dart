@@ -110,7 +110,7 @@ class _BaseDialogState extends State<BaseDialog> {
         ),
         Positioned(
           right: 0,
-          top: 5.h,
+          top: 0.h,
           child: GestureDetector(
             onTap: (){
               if(widget.barrierDismissible){
@@ -120,11 +120,7 @@ class _BaseDialogState extends State<BaseDialog> {
                 }
               }
             },
-            child: CachedNetworkImage(
-              width: TextConfig.textSize_20,
-              imageUrl: ImageConfig.close,
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
+            child:Icon(Icons.close,size: TextConfig.textSize_30,color: Colors.white,),
           ),
         ),
       ],
