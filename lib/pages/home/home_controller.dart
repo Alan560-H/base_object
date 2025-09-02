@@ -315,6 +315,7 @@ class HomeController extends GetxController {
   getAppUpdata() async {
     await HomeUtils.getAppUpdata();
   }
+
   RxBool isShowNew = false.obs;
   isShowNewUser()async{
     Utils.logError("登录？？${UserInfo.instance.isLoginIn}");

@@ -60,28 +60,4 @@ class Dialogs {
     );
   }
 
-  // /// 公告框
-  // static Future<Widget?> noticeDialog(BuildContext context) {
-  //   return showDialog(
-  //     barrierDismissible: false, // 禁用遮罩层点击
-  //     context: context,
-  //     builder: (BuildContext dialogContext) {
-  //       return NoticeDialog();
-  //     },
-  //   );
-  // }
-  /// 看广告得框
-  // /// 公告框
-  // static Future<Widget?> lookADDialog(BuildContext context,{
-  //   void Function(dynamic sonData)? onClick,
-  //   bool barrierDismissible = true,
-  // }) {
-  //   return showDialog(
-  //     barrierDismissible: barrierDismissible, // 禁用遮罩层点击
-  //     context: context,
-  //     builder: (BuildContext dialogContext) {
-  //       return LookADDialog(onClick: onClick);
-  //     },
-  //   );
-  // }
 }

@@ -6,6 +6,7 @@ import 'package:base_object/core/components/cu_circular_progress/cu_circular_pro
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/components/dialogs/KgxjqDialog.dart';
 import 'package:base_object/core/components/dialogs/PbkyyDialog.dart';
+import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
@@ -116,10 +117,13 @@ class HomeView extends GetView<HomeController> {
                 controller.isShowNew.value?Positioned(
                   top: Get.height/2,
                   left: 0,
-                  child: Tada(
-                    infinite: true,
-                    duration: const Duration(milliseconds: 1000),
-                    child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
+                  child: InkWell(
+                    onTap: ()=>Get.dialog(NewUserDialog()),
+                    child: Tada(
+                      infinite: true,
+                      duration: const Duration(milliseconds: 1000),
+                      child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
+                    ),
                   ),
                  ):Center(),
                 // 存钱罐
