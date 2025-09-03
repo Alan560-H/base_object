@@ -46,11 +46,13 @@ class _BindViteCodeDialogState extends State<BindViteCodeDialog> {
       if(backModel.code == CuErrorConfig.success){
         CuToast.success(msg: backModel.data);
         await UserInfo.instance.getUserInfoFn();
+        Get.back();
       }
     }catch(e){
       Utils.logError("绑定邀请码失败$e");
     }finally{
       EasyLoading.dismiss();
+
     }
   }
 

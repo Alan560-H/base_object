@@ -59,6 +59,7 @@ class ClaimAdDialog extends StatelessWidget {
   }
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
+    debugger();
     try {
      if(Get.isRegistered<HomeController>()){
        HomeController().upDataADFn(event);
@@ -72,6 +73,9 @@ class ClaimAdDialog extends StatelessWidget {
   }
   /// 订阅激励广告事件
   void rewarderEvent() async {
+    if(!Get.isRegistered<ListenerTool>()){
+      Get.put<ListenerTool>(ListenerTool());
+    }
     ever(ListenerTool.to.rewarderEvent, (event) {
       if (event == null ) return;
       String eventType = event["eventType"] ?? "";

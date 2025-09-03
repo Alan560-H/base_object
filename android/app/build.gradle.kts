@@ -41,7 +41,7 @@ android {
     productFlavors {
         create("maingf") {
             dimension = "channel"
-            manifestPlaceholders["channel"] = ""
+            manifestPlaceholders["channel"] = "maingf"
         }
 
         create("huawei") {

@@ -16,7 +16,7 @@ class CustomClassicHeader extends ClassicHeader {
     super.readyText = "",
     super.processingText = "努力加载中...",
     super.processedText = "加载完成",
-    super.messageText = "传家宝",
+    super.messageText = "",
     super.textStyle = const TextStyle(color: Colors.black87),
     super.messageStyle = const TextStyle(color: Colors.black87),
   });
@@ -37,7 +37,7 @@ class CustomClassicFooter extends ClassicFooter {
     super.readyText = "",
     super.processingText = "努力加载中...",
     super.processedText = "加载完成",
-    super.messageText = "传家宝",
+    super.messageText = "",
     super.textStyle = const TextStyle(color: Colors.black87),
     super.messageStyle = const TextStyle(color: Colors.black87),
     super.noMoreText = "没有更多数据了",

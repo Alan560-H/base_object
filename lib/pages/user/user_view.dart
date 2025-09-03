@@ -77,7 +77,8 @@ class UserView extends GetView<UserController> {
                    children: [
                      Expanded(child: Row(
                        children: [
-                         Expanded(child: getCom(value:controller.userInfo.userModel.currentAmount.toString(),title:"可提现金币")),
+                         //
+                         Expanded(child: getCom(value:"${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount/10000)} 元",title:"可提现金额")),
                          Expanded(child: getCom(value:controller.inviteController.userInviteInfoModel.value.todayAmount.toString(),title:"今日已赚金币")),
                          Expanded(child: Center(child: CuButton(text: "",width:90.w,height: 50.h,bgImage: ImageConfig.goTiXian, onPressed: (){
                            Get.toNamed(AppRoutes.userTixian);

@@ -2,7 +2,6 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/listener_tool.dart'; // 导入 ListenerTool
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
@@ -10,11 +9,12 @@ import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
+import 'package:base_object/store/di.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SplashController extends GetxController {
 
@@ -69,13 +69,31 @@ class SplashController extends GetxController {
      Utils.logError("获取风控配置失败$e");
    }
   }
+  Future _pangrowthInit() async {
+    final status = await Permission.phone.request();
+    print("phone 权限状态 $status");
+
+  }
+  Future<void> initAll()async{
+    DependencyInjection.adInit();
+    InitTool.to.setCustomDataDic({
+      "user_id": 0,
+      "extra": "userid_0_type_1_amount_0_time_0",
+    });
+    await Store.instance.initCurrentCount();
+    // 初始化广告
+    bool isInitAd = await InitTool.to.initTopon();
+    Utils.logError("广告初始化完成 $isInitAd ");
+  }
   @override
   void onInit() async {
     Utils.logError("开屏页面init初始化");
+    await initAll();
     await getVer();
     await getFkConfig();
     super.onInit();
-
+    ///同意隐私政策之后调用
+    await _pangrowthInit();
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
     _subscribeSplashEvent();
 
@@ -149,14 +167,8 @@ class SplashController extends GetxController {
   void _jumpToHome() async {
     if (_hasJumped) return;
     _hasJumped = true; // 标记为已跳转
-    String? isFirst = await LocalStorage.getString("isFirst");
-    Utils.logError("执行跳转首页$isFirst");
-    if (isFirst == null) {
-      Get.offNamed(AppRoutes.firstPage);
-    } else {
-      Get.offNamed(AppRoutes.home);
-    }
 
+    Get.offAllNamed(AppRoutes.home);
     // // 延迟 300ms 跳转，避免页面切换过于生硬
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   if (Get.currentRoute != AppRoutes.home) {

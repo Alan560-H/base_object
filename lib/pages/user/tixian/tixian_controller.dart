@@ -41,7 +41,7 @@ class TixianController extends GetxController {
       Utils.logError(withdrawalForm.toJson());
       BackModel backModel = await Api().getWithdrawalMoney(withdrawalForm.value);
       if(backModel.code==CuErrorConfig.success){
-        CuToast.success(msg: "提现成功");
+        CuToast.success(msg: backModel.data);
         nameController.clear();
         accountController.clear();
         withdrawalForm.value.payName = "";

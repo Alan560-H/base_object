@@ -25,7 +25,7 @@ class CuToast {
   // 封装通用的 toast 显示方法，并检查上下文有效性
   static void _showToast(
       String title, String msg, ToastificationType type,
-      {Duration autoCloseDuration = const Duration(seconds: 3)}) {
+      {Duration autoCloseDuration = const Duration(seconds: 3),Color? backgroundColor,Color? foregroundColor}) {
 
       toastification.show(
         context: Get.context,
@@ -37,15 +37,17 @@ class CuToast {
         borderRadius: BorderRadius.circular(12),
         showProgressBar: true,
         autoCloseDuration: autoCloseDuration,
+        backgroundColor: backgroundColor??Colors.white,
+          foregroundColor: foregroundColor??Colors.black
       );
   }
 
   static success({String title = "提示", String msg = "",Duration autoCloseDuration = const Duration(seconds: 3)}) {
-    _showToast(title, msg, ToastificationType.success,autoCloseDuration:autoCloseDuration );
+    _showToast(title, msg, ToastificationType.success,autoCloseDuration:autoCloseDuration,backgroundColor: Colors.white);
   }
 
   static error({String title = "提示", String msg = "",Duration autoCloseDuration = const Duration(seconds: 3)}) {
-    _showToast(title, msg, ToastificationType.error);
+    _showToast(title, msg, ToastificationType.error,autoCloseDuration:autoCloseDuration,);
   }
 
   // 通知提示，并统一参数结构

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
@@ -5,6 +6,7 @@ import 'package:base_object/core/components/cu_circular_progress/cu_circular_pro
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/components/dialogs/KgxjqDialog.dart';
 import 'package:base_object/core/components/dialogs/PbkyyDialog.dart';
+import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
@@ -44,17 +46,6 @@ class HomeView extends GetView<HomeController> {
     return Container(
       padding: EdgeInsets.all(10.h),
       margin: EdgeInsets.only(bottom: 8.r), // 消息间距
-      decoration: BoxDecoration(
-        color: Colors.grey[50], // 消息背景色
-        borderRadius: BorderRadius.circular(10.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey[200]!,
-            blurRadius: 2.r,
-            offset: const Offset(0, 1),
-          )
-        ],
-      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,9 +62,9 @@ class HomeView extends GetView<HomeController> {
                 Text(
                   message.user.name,
                   style: TextStyle(
-                    fontSize: TextConfig.textSize_14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: TextConfig.grey,
+                    fontSize: TextConfig.textSize_14,
+                    fontWeight: FontWeight.bold,
+                    color: TextConfig.black333,
                   ),
                 ),
                 SizedBox(height: 5.h), // 用户名与内容间距
@@ -102,6 +93,15 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.white,
                 actions: [
+                  if(controller.isShowNew.value)
+                  Tada(
+                    infinite: true,
+                    duration: const Duration(milliseconds: 1000),
+                    child: CuButton(bgColor: TextConfig.primary,radius: 10.r, text: "新人福利", width: 80.w, onPressed:() {
+                      Get.dialog(NewUserDialog());
+                    }),
+                  ),
+                  SizedBox(width: 40.w,),
                   CuButton(bgColor: TextConfig.primary,radius: 15.r, text: UserInfo.instance.isLoginIn?"${UserInfo.instance.userModel.currentAmount} 提现":"登录", width: 130.w, onPressed:() {
                     Get.toNamed(AppRoutes.userTixian);
                   })
@@ -111,18 +111,31 @@ class HomeView extends GetView<HomeController> {
               Expanded(child: Stack(children:
               [
                 _buildChatList(),
-                // 1. 使用自定义圆形进度条组件  存钱罐
+                // 新人福利
+                // controller.isShowNew.value?Positioned(
+                //   top: Get.height/2,
+                //   left: 0,
+                //   child: InkWell(
+                //     onTap: ()=>Get.dialog(NewUserDialog()),
+                //     child: Tada(
+                //       infinite: true,
+                //       duration: const Duration(milliseconds: 1000),
+                //       child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
+                //     ),
+                //   ),
+                //  ):Center(),
+                // 存钱罐
                 Positioned(
                   top: Get.height/2-100.h,
                   left: 0,
                   child: CuCircularProgressView(
-                    imagePath: ImageConfig.progressBg, // 本地图片路径（需在pubspec.yaml配置）
+                    imagePath: ImageConfig.progressBg,
                     size: 60.h, // 自定义进度条大小
                     strokeWidth: 5.h, // 自定义进度条宽度
                     progressColor: TextConfig.primary, // 自定义进度色（橙色）
                     backgroundColor: TextConfig.black333, // 自定义背景色
                   ),),
-                // 1. 使用自定义圆形进度条组件  存钱罐
+                // 看广小技巧
                 Positioned(
                   top: Get.height/2-100.h,
                   right: 0,
@@ -133,13 +146,14 @@ class HomeView extends GetView<HomeController> {
                     child:Container(
                       height: 100.h,
                       decoration: BoxDecoration(
-                        color: TextConfig.fensePageColor,
+                        color: Colors.greenAccent,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
 
                       child: CachedNetworkImage(imageUrl: ImageConfig.kgxjq),
                     ),
                   ),),
+                // 屏蔽快应用
                 Positioned(
                   top: Get.height/2-210.h,
                   right: 0,
@@ -150,7 +164,7 @@ class HomeView extends GetView<HomeController> {
                     child:Container(
                       height: 100.h,
                       decoration: BoxDecoration(
-                        color: TextConfig.fensePageColor,
+                        color: Colors.greenAccent,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: CachedNetworkImage(imageUrl: ImageConfig.pbkyy),

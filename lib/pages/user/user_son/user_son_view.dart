@@ -16,7 +16,6 @@ class UserSonView extends GetView<UserSonController> {
   const UserSonView({super.key});
   // 我的徒弟列表
   Widget get mySonList {
-    Utils.logError(controller.userSonModel.value.userList.length);
     if (controller.userSonModel.value.userList.isEmpty) return CuEmpty();
     return ListView.builder(
       padding: EdgeInsets.zero,
@@ -92,6 +91,7 @@ class UserSonView extends GetView<UserSonController> {
                   ],
                 ),
               ),
+              Text("有效徒弟（已提现用户）才会显示头像及金额",style: TextStyle(color: Colors.white,fontSize: TextConfig.textSize_12),),
               Expanded(child: mySonList)
             ],
           ),

@@ -19,26 +19,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 全局依赖注入
   // 等待所有依赖注入完成（尤其是异步注入）
-  await DependencyInjection.init();
-  InitTool.to.setCustomDataDic({
-    "user_id": 0,
-    "extra": "userid_0_type_1_amount_0_time_0",
-  });
-  await Store.instance.initCurrentCount();
-  // 初始化广告
-  bool isInitAd = await InitTool.to.initTopon();
-
-  // bool isStartLog = await InitTool.to.setLogEnabled();
-  Utils.logError("广告初始化完成 $isInitAd ");
-  // Utils.logError("日志开启状态：$isStartLog");
+  await DependencyInjection.mainInit();
   AppConfig.instance.init();
   UserInfo.instance.initialize();
-
-
   runApp(const MyApp());
 }
-
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -70,11 +55,11 @@ class _MyAppState extends State<MyApp> with AppTheme {
           // 导航唯一键
           navigatorKey: Global.navigatorKey,
           // 初始化根路由路径
-          initialRoute: AppRoutes.splashPage,
+          initialRoute: AppRoutes.firstPage,
           // 路由列表
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,
-          title: '传家宝',
+          title: Store.instance.getAppUpLoadModel.appName,
           builder: EasyLoading.init(),
           theme: appTheme,
         );

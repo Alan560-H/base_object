@@ -6,9 +6,9 @@ allprojects {
         maven(url = "https://jitpack.io")
         maven(url = "https://developer.huawei.com/repo/")
         maven(url = "https://developer.hihonor.com/repo/")
-        flatDir {
-            dirs("libs")
-        }
+//        flatDir {
+//            dirs("libs")
+//        }
         //Anythink(Core)
         maven(url = "https://jfrog.takuad.com/artifactory/china_sdk")
         maven(url = "https://artifact.bytedance.com/repository/pangle")

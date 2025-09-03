@@ -22,7 +22,9 @@ class ImageConfig {
   /// 进度条图片
   static String progressBg =
       "${AppConfig.instance.getImgUrl}/AdObject/common/progress_bg.png";
-
+  /// 新人福利
+  static String newUser1 =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/newUser1.png";
   /// logo
   static String logo =
       "${AppConfig.instance.getImgUrl}/AdObject/common/logo.png";

@@ -82,6 +82,8 @@ dependencies:
   device_info_plus: ^11.5.0
   # 获取oaid
   flutter_android_oaid_plugin: ^0.0.4
+  # 保存图片
+  image_gallery_saver_plus: ^4.0.1
   #计算时间
   jiffy: ^6.4.3
   #此插件提供跨平台 (iOS、Android) API 来请求权限并检查其状态。您还可以打开设备的应用设置，以便用户授予权限。

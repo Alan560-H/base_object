@@ -39,6 +39,7 @@ class TixianView extends GetView<TixianController> {
       ],
     );
   }
+
   Widget get userCurrentAmount {
     return Container(
       color: Colors.white,
@@ -53,9 +54,7 @@ class TixianView extends GetView<TixianController> {
               borderRadius: BorderRadius.circular(10.r),
               image: DecorationImage(
                 fit: BoxFit.fitWidth,
-                image: CachedNetworkImageProvider(
-                  ImageConfig.currentAmount,
-                ),
+                image: CachedNetworkImageProvider(ImageConfig.currentAmount),
               ),
             ),
             padding: EdgeInsets.all(20.w),
@@ -74,7 +73,7 @@ class TixianView extends GetView<TixianController> {
                 ),
                 SizedBox(height: 20.h),
                 Text(
-                  "${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount/10000)} 元",
+                  "${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount / 10000)} 元",
                   style: TextStyle(
                     fontSize: TextConfig.textSize_20,
                     color: Colors.white,
@@ -88,7 +87,8 @@ class TixianView extends GetView<TixianController> {
       ),
     );
   }
-  Widget get enterForm{
+
+  Widget get enterForm {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.r),
@@ -104,19 +104,19 @@ class TixianView extends GetView<TixianController> {
         children: [
           Row(
             children: [
-              Text("账号："),
+              Text("支付宝账号："),
+
               /// 账号登录
               Expanded(
                 child: CustomInputField(
                   key: GlobalKey(),
                   height: 30.h,
-                  textColor:TextConfig.black333,
+                  textColor: TextConfig.black333,
                   textSize: TextConfig.textSize_12,
                   bgColor: Colors.white,
                   hintText: "请输入账号",
                   onChanged: (value) {
-                    controller.withdrawalForm.value.payAccount =
-                        value;
+                    controller.withdrawalForm.value.payAccount = value;
                   },
                   controller: controller.accountController,
                 ),
@@ -130,7 +130,7 @@ class TixianView extends GetView<TixianController> {
               /// 实名
               Expanded(
                 child: CustomInputField(
-                  textColor:TextConfig.black333,
+                  textColor: TextConfig.black333,
                   textSize: TextConfig.textSize_12,
                   key: GlobalKey(),
                   height: 30.h,
@@ -151,13 +151,21 @@ class TixianView extends GetView<TixianController> {
               fontSize: TextConfig.textSize_12,
             ),
           ),
+          Text(
+            "名下多个支付账号，请填支付宝账号，不要填手机号，否则无法到账。",
+            style: TextStyle(
+              color: TextConfig.primary,
+              fontSize: TextConfig.textSize_12,
+            ),
+          ),
         ],
       ),
     );
   }
+
   Widget get tixianLiebiao {
     /// 提现列表
-   return Container(
+    return Container(
       constraints: BoxConstraints(maxWidth: Get.width),
       child: Column(
         spacing: 10.h,
@@ -176,17 +184,17 @@ class TixianView extends GetView<TixianController> {
             itemBuilder: (_, index) {
               WithdrawalModel item = controller.withdrawalList[index];
               return Obx(
-                    () => InkWell(
+                () => InkWell(
                   onTap: () {
                     controller.selectedWithdrawalModel.value = item;
+                    controller.withdrawalForm.value.amountId = item.id;
                   },
                   child: Container(
                     decoration: BoxDecoration(
                       color:
-                      controller.selectedWithdrawalModel.value.id ==
-                          item.id
-                          ? TextConfig.primary
-                          : TextConfig.commonYellowPageColor,
+                          controller.selectedWithdrawalModel.value.id == item.id
+                              ? TextConfig.primary
+                              : TextConfig.commonYellowPageColor,
                       borderRadius: BorderRadius.circular(10.sp),
                     ),
                     child: Stack(
@@ -201,13 +209,13 @@ class TixianView extends GetView<TixianController> {
                                 style: TextStyle(
                                   fontSize: TextConfig.textSize_20,
                                   color:
-                                  controller
-                                      .selectedWithdrawalModel
-                                      .value
-                                      .id ==
-                                      item.id
-                                      ? Utils.fromHex("#FCEEE5")
-                                      : TextConfig.primary,
+                                      controller
+                                                  .selectedWithdrawalModel
+                                                  .value
+                                                  .id ==
+                                              item.id
+                                          ? Utils.fromHex("#FCEEE5")
+                                          : TextConfig.primary,
                                 ),
                               ),
                               Text(
@@ -215,13 +223,13 @@ class TixianView extends GetView<TixianController> {
                                 style: TextStyle(
                                   fontSize: TextConfig.textSize_14,
                                   color:
-                                  controller
-                                      .selectedWithdrawalModel
-                                      .value
-                                      .id ==
-                                      item.id
-                                      ? Utils.fromHex("#FCEEE5")
-                                      : TextConfig.primary,
+                                      controller
+                                                  .selectedWithdrawalModel
+                                                  .value
+                                                  .id ==
+                                              item.id
+                                          ? Utils.fromHex("#FCEEE5")
+                                          : TextConfig.primary,
                                 ),
                               ),
                             ],
@@ -231,7 +239,7 @@ class TixianView extends GetView<TixianController> {
                           top: 0,
                           right: 0,
                           child: Container(
-                            padding: EdgeInsets.only(left: 20.w,right: 10.w),
+                            padding: EdgeInsets.only(left: 20.w, right: 10.w),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.r),
                               image: DecorationImage(
@@ -241,7 +249,13 @@ class TixianView extends GetView<TixianController> {
                                 ),
                               ),
                             ),
-                            child: Text(item.remark,style: TextStyle(fontSize: TextConfig.textSize_12,color: TextConfig.primary),),
+                            child: Text(
+                              item.remark,
+                              style: TextStyle(
+                                fontSize: TextConfig.textSize_12,
+                                color: TextConfig.primary,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -265,6 +279,7 @@ class TixianView extends GetView<TixianController> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -272,9 +287,7 @@ class TixianView extends GetView<TixianController> {
         () => Container(
           width: Get.width,
           height: Get.height,
-          constraints: BoxConstraints(
-            maxHeight: Get.height
-          ),
+          constraints: BoxConstraints(maxHeight: Get.height),
           decoration: BoxDecoration(color: TextConfig.commonYellowPageColor),
           child: Column(
             spacing: 10.h,
@@ -287,9 +300,11 @@ class TixianView extends GetView<TixianController> {
                   CuButton(
                     width: 40.w,
                     fontSize: TextConfig.textSize_24,
-                    onPressed: (){
+                    onPressed: () {
                       Get.toNamed(AppRoutes.userTransaction);
-                    }, text: '刷新',icons: Icons.list_outlined,
+                    },
+                    text: '刷新',
+                    icons: Icons.list_outlined,
                   ),
                 ],
                 // textColor: Colors.white,
@@ -297,27 +312,36 @@ class TixianView extends GetView<TixianController> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.w,vertical: 10.h),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
                     child: Column(
                       spacing: 10.h,
                       children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w,vertical: 20.h),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.r),
-                          color: Colors.white,
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 20.h,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            spacing: 10.h,
+                            children: [
+                              userCurrentAmount,
+                              enterForm,
+                              tixianLiebiao,
+                            ],
+                          ),
                         ),
-                        child: Column(
-                          spacing: 10.h,
-                          children: [
-                            userCurrentAmount,
-                            enterForm,
-                            tixianLiebiao,
-                          ],
-                        ),
-                      ),
-                      Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20.w,vertical: 20.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 20.h,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.r),
                             color: Colors.white,
@@ -327,21 +351,38 @@ class TixianView extends GetView<TixianController> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("温馨提示",style: TextStyle(fontSize: TextConfig.textSize_20,color: TextConfig.primary),),
-                              Text("1、提现金额一般24小时内到账，如遇节假日和特殊情况会适当延迟到账",style: TextStyle(color: TextConfig.black333),),
-                              Text("2、支付宝未实名认证会导致提现无法到账，请确认支付宝已完成实名认证",style: TextStyle(color: TextConfig.black333),),
-                              Text("3、由于支付宝提现机制原因，每日提现有次数限制，如有余额，可次日申请",style: TextStyle(color: TextConfig.black333),),
-                              Text("4、如果提现遇到问题，请即使联系客服解决",style: TextStyle(color: TextConfig.black333),),
+                              Text(
+                                "温馨提示",
+                                style: TextStyle(
+                                  fontSize: TextConfig.textSize_20,
+                                  color: TextConfig.primary,
+                                ),
+                              ),
+                              Text(
+                                "1、提现金额一般24小时内到账，如遇节假日和特殊情况会适当延迟到账",
+                                style: TextStyle(color: TextConfig.black333),
+                              ),
+                              Text(
+                                "2、支付宝未实名认证会导致提现无法到账，请确认支付宝已完成实名认证",
+                                style: TextStyle(color: TextConfig.black333),
+                              ),
+                              Text(
+                                "3、由于支付宝提现机制原因，每日提现有次数限制，如有余额，可次日申请",
+                                style: TextStyle(color: TextConfig.black333),
+                              ),
+                              Text(
+                                "4、如果提现遇到问题，请即使联系客服解决",
+                                style: TextStyle(color: TextConfig.black333),
+                              ),
                             ],
-                          )
-                      ),
-                      SizedBox(height: 60.h),
-                    ],),
+                          ),
+                        ),
+                        SizedBox(height: 60.h),
+                      ],
+                    ),
                   ),
                 ),
-              )
-          
-          
+              ),
             ],
           ),
         ),

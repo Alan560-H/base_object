@@ -47,13 +47,13 @@ class CuNavBarController extends GetxController {
   }
   /// 一级页面索引
   RxInt currentPageIndex = 0.obs;
-  RxDouble height = 60.h.obs;
+  RxDouble height = 110.h.obs;
   void onTabChange(int index) {
     try{
       currentPageIndex.value = index;
       switch(index){
         case 0:
-          Get.offNamed(AppRoutes.home);
+          Get.offAllNamed(AppRoutes.home);
           break;
         // case 1:
         //   Get.offNamed(AppRoutes.shortVideo);
@@ -186,6 +186,9 @@ class CuNavBarController extends GetxController {
   final bool _hasShow = false;
   /// 订阅 ListenerTool 的开屏广告事件
   void _bannerEvent() async {
+    if(!Get.isRegistered<ListenerTool>()){
+      Get.put(ListenerTool());
+    }
     // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
     ever(ListenerTool.to.bannerEvent, (event) async {
       if (event == null || _hasShow) return; // 过滤空事件或重复跳转
@@ -193,17 +196,20 @@ class CuNavBarController extends GetxController {
       // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
       String eventType = event["eventType"] ?? "";
       String placementID = event["placementID"] ?? "";
-
+      height.value = 110.h;
       Utils.logError("收到banner广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
       // 根据事件类型执行业务逻辑
       switch (eventType) {
       // banner广告加载失败
         case "BannerStatus.bannerAdFailToLoadAD":
           Utils.logError("banner广告加载失败");
-          height.value = 60.h;
+          height.value = 110.h;
           break;
       // banner广告加载完成
         case "BannerStatus.bannerAdDidFinishLoading":
+          if(!Get.isRegistered<BannerTool>()){
+            Get.put(BannerTool());
+          }
           bool a = await BannerTool.to.bannerAdReady();
           Utils.logError("banner广告加载完成,$a");
           height.value=110.h;
@@ -221,6 +227,7 @@ class CuNavBarController extends GetxController {
           break;
       /// 横幅广告被点击
         case "BannerStatus.bannerAdDidClick":
+          height.value = 110.h;
           Utils.logError("横幅广告被点击");
           break;
       /// 横幅广告触发深度链接（跳转至指定页面/内容）
@@ -234,26 +241,32 @@ class CuNavBarController extends GetxController {
       /// 横幅广告展示成功
         case "BannerStatus.bannerAdDidShowSucceed":
           Utils.logError("${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告展示成功$event，增加进度");
+          height.value = 110.h;
           break;
       /// 横幅广告点击关闭按钮
         case "BannerStatus.bannerAdTapCloseButton":
           Utils.logError("横幅广告点击关闭按钮");
-          height.value = 60.h;
+          height.value = 110.h;
           break;
       /// 横幅广告自动刷新失败
         case "BannerStatus.bannerAdAutoRefreshFail":
           Utils.logError("横幅广告自动刷新失败");
+          height.value = 60.h;
           break;
       /// 横幅广告未知状态
         case "BannerStatus.bannerAdUnknown":
           Utils.logError("横幅广告未知状态");
+          height.value = 60.h;
           break;
       }
     });
   }
   @override
   void onInit() async {
-    Utils.logError("onInit");
+    Utils.logError("banner：${Get.isRegistered<BannerTool>()}");
+    if(!Get.isRegistered<BannerTool>()){
+      Get.put(BannerTool());
+    }
     // TODO: implement onReady
     super.onInit();
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）

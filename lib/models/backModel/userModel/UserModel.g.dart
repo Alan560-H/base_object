@@ -16,6 +16,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) =>
       ..inviteCode = json['inviteCode'] as String
       ..inviteUserId = (json['inviteUserId'] as num?)?.toInt()
       ..mobile = json['mobile'] as String
+      ..topInviteCode = json['topInviteCode'] as String
       ..currentAmount = (json['currentAmount'] as num).toDouble()
       ..amount = (json['amount'] as num).toDouble()
       ..money = (json['money'] as num).toDouble()
@@ -30,6 +31,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
   'inviteCode': instance.inviteCode,
   'inviteUserId': instance.inviteUserId,
   'mobile': instance.mobile,
+  'topInviteCode': instance.topInviteCode,
   'currentAmount': instance.currentAmount,
   'amount': instance.amount,
   'money': instance.money,

@@ -7,6 +7,10 @@ class ApiUrls {
   /// 获取公告
   static const String getNotice = "/v1/announce/list";
 
+  /// 新人福利
+  static const String getNewcomerConfig = "/v1/benefit/newcomerConfig";
+  /// 领取新人福利
+  static const String getNewcomer = "/v1/benefit/getNewcomer";
   /// 看广告小技巧
   static const String getNoticeAD = "/v1/announce/announceAd";
   /// 屏蔽快应用
@@ -34,6 +38,8 @@ class ApiUrls {
   static const String getWithdrawalOrderList = "/v1/withdrawal/orderList";
   /// 用户收入明细表
   static const String getUserAmountList = "/v1/user/amountList";
+  /// 用户邀新明细表
+  static const String getInviteAmountList = "/v1/user/inviteAmountList";
   /// 用户今日收益统计
   static const String getTodayAmount = "/v1/user/today";
   /// 获取广告配置
@@ -46,10 +52,7 @@ class ApiUrls {
   static const String getAdAmount = "/v1/user/getAdAmount";
   /// 副广累计收益查询
   static const String getSelectAdV3 = "/v1/user/adSum";
-  /// 新人福利查询
-  static const String getNewcomerConfig = "/v1/benefit/newcomerConfig";
-  /// 新人福利领取
-  static const String getNewcomer = "/v1/benefit/getNewcomer";
+
   /// 邀请好友-奖励配置
   static const String getInviteList = "/v1/invite/list";
   /// 邀请好友-邀请信息
