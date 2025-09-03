@@ -226,7 +226,6 @@ class HomeController extends GetxController {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: TextConfig.grey, width: 1),
       ),
       child: Text(
         content,

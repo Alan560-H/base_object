@@ -14,6 +14,8 @@ class UserInviteInfoModel {
   int yesterdayNum = 0;
   /// 今日邀请人数
   int todayNum = 0;
+  /// 邀请新奖励
+  double? inviteAmount= 0;
   /// 我的推广信息
   UserInviteInfoModel();
   //不同的类使用不同的mixin即可

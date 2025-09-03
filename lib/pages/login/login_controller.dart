@@ -143,6 +143,9 @@ class LoginController extends GetxController {
         Get.put<InitTool>(InitTool());
         Get.put<RewarderTool>(RewarderTool());
         await Future.delayed(const Duration(milliseconds: 20));
+        if(!Get.isRegistered<InitTool>()){
+          Get.put<InitTool>(InitTool());
+        }
         bool isInitAd = await InitTool.to.initTopon();
         InitTool.to.setCustomDataDic({
           "user_id":"${UserInfo.instance.userModel.id}",

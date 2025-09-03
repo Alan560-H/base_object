@@ -38,6 +38,8 @@ class ApiUrls {
   static const String getWithdrawalOrderList = "/v1/withdrawal/orderList";
   /// 用户收入明细表
   static const String getUserAmountList = "/v1/user/amountList";
+  /// 用户邀新明细表
+  static const String getInviteAmountList = "/v1/user/inviteAmountList";
   /// 用户今日收益统计
   static const String getTodayAmount = "/v1/user/today";
   /// 获取广告配置

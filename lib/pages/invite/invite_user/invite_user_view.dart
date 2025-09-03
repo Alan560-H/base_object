@@ -4,6 +4,7 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/localModels/BannerVo.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class InviteUserView extends GetView<InviteUserController> {
                                     child: Center(
                                       child: QrImageView(
                                         data:
-                                            "https://www.pgyer.com/chuanjiabao-android",
+                                        Store.instance.getAppUpLoadModel.downUrl,
                                         version: QrVersions.auto,
                                         size: 140.r,
                                       ),
@@ -157,7 +158,7 @@ class InviteUserView extends GetView<InviteUserController> {
                           child: InkWell(
                             onTap: () async {
                               bool success = await Utils.copyText(
-                                "https://www.pgyer.com/chuanjiabao-android",
+                                Store.instance.getAppUpLoadModel.downUrl,
                               );
                               if (success) {
                                 CuToast.success(msg: "复制成功");

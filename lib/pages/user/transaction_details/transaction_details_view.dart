@@ -5,6 +5,7 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/pages/user/transaction_details/transaction_details_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,7 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("如意盒子"),
+            title: Text(Store.instance.getAppUpLoadModel.appName),
             subtitle: Text(item.createTime),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -56,7 +57,7 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("如意盒子"),
+            title: Text(Store.instance.getAppUpLoadModel.appName),
             subtitle: Text(item.payTime),
             trailing: Text("${item.payMoney}￥",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
           ),

@@ -22,6 +22,8 @@ class UserModel {
   int? inviteUserId =0;
   /// 手机号
   String mobile = "";
+  /// 上级邀请码
+  String topInviteCode = "";
   /// 当前收益
   double currentAmount = 0;
   /// 累计收益

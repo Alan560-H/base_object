@@ -342,6 +342,25 @@ class Api extends GetxController{
       return <UserAmountListModel>[];
     }
   }
+  /// 用户邀新明细表
+  Future<List<UserAmountListModel>> getInviteAmountList() async {
+    try{
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteAmountList,
+        FormModel(),
+        "post",
+      );
+      if (backModel.data == null) {
+        return <UserAmountListModel>[];
+      }
+      final List<UserAmountListModel> userAmountListModel = UserAmountListModel.fromJsonList(backModel.data);
+      return userAmountListModel;
+    }catch(e){
+      Utils.logError("getInviteAmountList: $e");
+      return <UserAmountListModel>[];
+    }
+  }
+
   /// 获取用户支出明细
   Future<List<UserWithdrawalModel>> getWithdrawalOrderList() async {
     try{

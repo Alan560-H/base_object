@@ -11,7 +11,8 @@ UserInviteInfoModel _$UserInviteInfoModelFromJson(Map<String, dynamic> json) =>
       ..inviteNum = (json['inviteNum'] as num).toInt()
       ..todayAmount = (json['todayAmount'] as num).toDouble()
       ..yesterdayNum = (json['yesterdayNum'] as num).toInt()
-      ..todayNum = (json['todayNum'] as num).toInt();
+      ..todayNum = (json['todayNum'] as num).toInt()
+      ..inviteAmount = (json['inviteAmount'] as num?)?.toDouble();
 
 Map<String, dynamic> _$UserInviteInfoModelToJson(
   UserInviteInfoModel instance,
@@ -20,4 +21,5 @@ Map<String, dynamic> _$UserInviteInfoModelToJson(
   'todayAmount': instance.todayAmount,
   'yesterdayNum': instance.yesterdayNum,
   'todayNum': instance.todayNum,
+  'inviteAmount': instance.inviteAmount,
 };

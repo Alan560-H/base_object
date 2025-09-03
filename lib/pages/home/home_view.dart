@@ -4,7 +4,6 @@ import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_view.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
-import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/KgxjqDialog.dart';
 import 'package:base_object/core/components/dialogs/PbkyyDialog.dart';
 import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
@@ -47,17 +46,6 @@ class HomeView extends GetView<HomeController> {
     return Container(
       padding: EdgeInsets.all(10.h),
       margin: EdgeInsets.only(bottom: 8.r), // 消息间距
-      decoration: BoxDecoration(
-        color: Colors.grey[50], // 消息背景色
-        borderRadius: BorderRadius.circular(10.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey[200]!,
-            blurRadius: 2.r,
-            offset: const Offset(0, 1),
-          )
-        ],
-      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -74,9 +62,9 @@ class HomeView extends GetView<HomeController> {
                 Text(
                   message.user.name,
                   style: TextStyle(
-                    fontSize: TextConfig.textSize_14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: TextConfig.grey,
+                    fontSize: TextConfig.textSize_14,
+                    fontWeight: FontWeight.bold,
+                    color: TextConfig.black333,
                   ),
                 ),
                 SizedBox(height: 5.h), // 用户名与内容间距

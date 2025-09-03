@@ -84,7 +84,7 @@ class UserEditInfoView extends GetView<UserEditInfoController> {
                     /// 修改邀请码
                     Expanded(
                       child: CustomInputField(
-                        defaultValue: controller.userInfo.userModel.inviteUserId!=null?controller.userInfo.userModel.inviteUserId.toString():"",
+                        defaultValue: controller.userInfo.userModel.inviteUserId!=null?controller.userInfo.userModel.topInviteCode.toString():"",
                         key: GlobalKey(),
                         height: 30.h,
                         textColor:TextConfig.black333,

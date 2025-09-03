@@ -31,6 +31,18 @@ class UserEarningsController extends GetxController {
     if (i == 0) {
       getUserAmountList();
     } else {
+      getInviteAmountList();
+    }
+  }
+  // 邀新奖励
+  final RxList<UserAmountListModel> inviteAmountNewList = <UserAmountListModel>[].obs;
+  // 获取邀新奖励表
+  Future<void> getInviteAmountList() async {
+    try{
+      inviteAmountNewList.clear();
+      inviteAmountNewList.value = await Api.to.getInviteAmountList();
+    }catch(e){
+      Utils.logError("获取邀新奖励表报错：$e");
     }
   }
   // 收入表

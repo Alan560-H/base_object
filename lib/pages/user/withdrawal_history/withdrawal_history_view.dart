@@ -2,6 +2,8 @@ import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
+import 'package:base_object/store/store.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -25,7 +27,7 @@ class WithdrawalHistoryView extends GetView<WithdrawalHistoryController> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
-            title: Text("如意盒子"),
+            title: Text(Store.instance.getAppUpLoadModel.appName),
             subtitle: Text(item.payTime),
             trailing: Text("${item.payMoney}￥",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
           ),
@@ -55,7 +57,7 @@ class WithdrawalHistoryView extends GetView<WithdrawalHistoryController> {
                 children: [
                   Text("累计成功提现:"),
                   Spacer(),
-                  Text("¥ ${controller.userBagController.userBayModel.value.amount}",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500),),
+                  Text("¥ ${UserInfo.instance.userModel.money}",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500),),
                 ],
               ),
             ),

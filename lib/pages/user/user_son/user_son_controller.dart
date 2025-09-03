@@ -15,7 +15,7 @@ class UserSonController extends GetxController {
       EasyLoading.show(status: "获取数据中...");
       userSonModel.value.userList.clear();
       userSonModel.value = await Api.to.getInviteMyInvite();
-      Utils.logError("我的徒弟列表${userSonModel.value.userList}");
+      Utils.logError("我的徒弟数据${userSonModel.value.toJson()}");
     }catch(e){
       Utils.logError("我的徒弟列表报错：$e");
     }finally{
