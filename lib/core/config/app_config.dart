@@ -15,8 +15,9 @@ class AppConfig extends GetxController{
   /// 获取app 53客服
   Uri get serviceUri => Uri.parse("https://tb.53kf.com/code/client/0336539cc38692d6e967984a52d8a6ed9/1");
   /// 获取app qq群链接
-  Uri get qQUrl => Uri.parse("http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=oQa4YkADFXhPbT3FJ0nkvXlhlJ6rb54-&authKey=td6mejWblP%2FX%2BgB231w1oj2KQsxM3NH%2BtwLRUAQT1UEEhox5VO%2B9M9Ep2yyS7ex%2F&noverify=0&group_code=1006103675");
+  String get qQUrl => "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=oQa4YkADFXhPbT3FJ0nkvXlhlJ6rb54-&authKey=td6mejWblP%2FX%2BgB231w1oj2KQsxM3NH%2BtwLRUAQT1UEEhox5VO%2B9M9Ep2yyS7ex%2F&noverify=0&group_code=1006103675";
   /// 私有变量，存储URL配置
+
   String _baseUrl = '';
   // String _socketUrl = '';
   /// 公开访问的getter

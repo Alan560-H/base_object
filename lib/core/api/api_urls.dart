@@ -63,5 +63,7 @@ class ApiUrls {
   static const String getInviteMyBag = "/v1/invite/myBag";
   /// 邀请-我的邀请人
   static const String getInviteMyInvite = "/v1/invite/myInvite";
+  /// 获取联系方式
+  static const String getServerConfig = "/v1/api/chatConfig";
 
 }

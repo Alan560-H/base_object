@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
+import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
+import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
-
-import '../manager/native_tool.dart';
 
 class Store extends GetxController{
   /// 获取单例
@@ -117,4 +118,20 @@ class Store extends GetxController{
   }
   bool get getIsOpenClaim => _isOpenClaim.value;
 
+
+  /// 获取客服配置
+  /// 客服配置
+  final RxList<ServiceModel> _serviceList = <ServiceModel>[].obs;
+  Future getServerConfig() async {
+    AppUpLoadForm form = AppUpLoadForm();
+    form.channelPackage = getAppUpLoadModel.channelPackage;
+    List<ServiceModel> list = await Api.to.getServerConfig(form);
+    _serviceList.value = list;
+  }
+  // 获取q群链接
+  ServiceModel? get getQUrl => _serviceList.isNotEmpty ? _serviceList.first : null;
+  // 获取q群二维码
+  ServiceModel? get getQCode => _serviceList.length >= 2 ? _serviceList[1] : null;
+  // 获取客服电话
+  ServiceModel? get getServiceTel => _serviceList.length >= 3 ? _serviceList[2] : null;
 }

@@ -86,6 +86,7 @@ class SplashController extends GetxController {
       debug: true,
     );
   }
+
   Future<void> initAll()async{
     DependencyInjection.adInit();
     InitTool.to.setCustomDataDic({
