@@ -6,6 +6,7 @@ import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dar
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
@@ -18,6 +19,8 @@ import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
+import 'package:base_object/pages/home/home_binding.dart';
+import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -154,43 +157,9 @@ class LoginController extends GetxController {
         RewarderTool.to.loadRewardedVideo(
             userID: UserInfo.instance.userModel.id,
             extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs");
-
-        // 此时检查，返回 false（旧实例已被移除）
-        // Utils.logError("banner是否注册：${Get.isRegistered<BannerTool>()}");
-        // Get.put<BannerTool>(BannerTool());
-        // Utils.logError("banner是否注册2：${Get.isRegistered<BannerTool>()}");
-
-        // BannerTool.to.loadBannerWith(
-        //     {
-        //       Common.getUserIdKey(): UserInfo.instance.userModel.id,
-        //       Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
-        //       ATCommon.isNativeShow() : true,
-        //       ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
-        //           Get.width, Get.width * (50 / 320)),
-        //       ATBannerManager.getAdaptiveWidthKey(): Get.width,
-        //       ATBannerManager.getAdaptiveOrientationKey(): ATBannerManager.adaptiveOrientationCurrent(),
-        //     }
-        // );
-        // InterstitialTool.to.loadInterstitialAd({
-        //   Common.getUserIdKey(): UserInfo.instance.userModel.id,
-        //   Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
-        // });
-        // NativeTool.to.loadNativeWith(
-        //     {
-        //       Common.getUserIdKey(): UserInfo.instance.userModel.id,
-        //       Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
-        //       ATCommon.isNativeShow() : true,
-        //       ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-        //         Get.width,
-        //         340.w,
-        //       ),
-        //       ATNativeManager.isAdaptiveHeight(): true
-        //     }
-        // );
-
-        cuNavBarController.onTabChange(0);
         swicthLoginType();
         isChecked.value =false;
+        Get.offNamed(AppRoutes.home);
         Utils.logError("是否显示弹窗：${UserInfo.instance.userModel.inviteUserId==null||UserInfo.instance.userModel.inviteUserId==0}");
         if(UserInfo.instance.userModel.inviteUserId==null||UserInfo.instance.userModel.inviteUserId==0){
           Dialogs.showCommonDialog(dialogType: "BindViteCodeDialog",dialogTitle: "绑定上级邀请人");

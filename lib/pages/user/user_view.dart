@@ -6,6 +6,7 @@ import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/pages/invite/invite_controller.dart';
 import 'package:base_object/pages/user/user_controller.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -64,12 +65,12 @@ class UserView extends GetView<UserController> {
                /// 当前可提现金币，去提现按钮
                Container(
                  width: Get.width,
-                 height: 130.h,
+                 constraints: BoxConstraints(minHeight: 130.h,maxHeight: 150.h),
                  padding: EdgeInsets.symmetric(horizontal: 0.h,vertical: 10.h),
                  decoration: BoxDecoration(
                    image: DecorationImage(
                      alignment: Alignment.center,
-                     fit: BoxFit.contain,
+                     fit: BoxFit.fill,
                      image: CachedNetworkImageProvider(ImageConfig.userMenoyCardBg),
                    ),
                  ),
@@ -79,7 +80,7 @@ class UserView extends GetView<UserController> {
                        children: [
                          //
                          Expanded(child: getCom(value:"${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount/10000)} 元",title:"可提现金额")),
-                         Expanded(child: getCom(value:controller.inviteController.userInviteInfoModel.value.todayAmount.toString(),title:"今日已赚金币")),
+                         Expanded(child: getCom(value:InviteController.to.userInviteInfoModel.value.todayAmount.toString(),title:"今日已赚金币")),
                          Expanded(child: Center(child: CuButton(text: "",width:90.w,height: 50.h,bgImage: ImageConfig.goTiXian, onPressed: (){
                            Get.toNamed(AppRoutes.userTixian);
                          }))),

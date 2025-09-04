@@ -6,6 +6,7 @@ import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
@@ -64,6 +65,11 @@ class Store extends GetxController{
     Utils.logError("准备状态：${isReady}}");
     if(!isReady){
       CuToast.error(msg: "广告还没准备好，请稍后再试");
+      RewarderTool.to.loadRewardedVideo(
+        userID: "${UserInfo.instance.userModel.id}",
+        extra:
+        "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+      );
       return false;
     }
     /// 如果今日观看主广次数已达最大次数
@@ -105,4 +111,10 @@ class Store extends GetxController{
       await LocalStorage.setString(AppKeys.countKey, _currentCount.value);
     }
   }
+  RxBool _isOpenClaim = false.obs;
+  void setIsOpenClaim(bool value){
+    _isOpenClaim.value = value;
+  }
+  bool get getIsOpenClaim => _isOpenClaim.value;
+
 }

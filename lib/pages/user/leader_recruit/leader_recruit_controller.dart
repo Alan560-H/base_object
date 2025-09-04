@@ -23,6 +23,9 @@ class LeaderRecruitController extends GetxController {
   void onInit() {
     Utils.logError("团长招募界面初始化");
     // TODO: implement onInit
+    if(!Get.isRegistered<BannerTool>()){
+      Get.put(BannerTool());
+    }
     bannerTool.hideBannerAd();
     super.onInit();
   }

@@ -8,6 +8,7 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/components/dialogs/commonDialog/ClaimAdDialog.dart';
 import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
@@ -33,6 +34,7 @@ import '../../models/backModel/BackModel.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
+
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
     try {
@@ -122,9 +124,21 @@ class HomeController extends GetxController {
           break;
         case "RewardedStatus.rewardedVideoDidClose":
           Utils.logError("激励广告被关闭，广告位ID：$placementID");
+          if(!Get.isRegistered<RewarderTool>()){
+            Get.put(RewarderTool());
+          }
+          RewarderTool.to.loadRewardedVideo(
+            userID: "${UserInfo.instance.userModel.id}",
+            extra:
+            "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+          );
           redBagOpen.value = false;
           if (Get.isRegistered<UserInfo>()) {
             upDataADFn(event);
+          }
+          Utils.logError("${Store.instance.getIsOpenClaim}，hhhh",);
+          if(Store.instance.getIsOpenClaim){
+            ClaimAdDialog.checkClaim();
           }
           break;
       }
@@ -299,7 +313,7 @@ class HomeController extends GetxController {
 
       // 4. 添加消息并限制列表长度（最多20条）
       messages.add(newMessage);
-      if (messages.length > 20) {
+      if (messages.length > 10) {
         if (messages.first.isHasNative) {
           await NativeTool.to.removeNativeAd();
           Utils.logError("先删除广告");
@@ -331,10 +345,7 @@ class HomeController extends GetxController {
     }
   }
   // ------------------- 生命周期 -------------------
-
-  @override
-  void onInit() {
-    super.onInit();
+  void allInit()async{
     // 初始化广告监听和加载
     rewarderEvent();
     // 初始化用户信息
@@ -348,9 +359,17 @@ class HomeController extends GetxController {
     // 启动定时器
     _startAutoMessageTimer();
   }
+  @override
+  void onInit() {
+    Utils.logError("首页页面onInit");
+
+    super.onInit();
+    allInit();
+  }
 
   @override
   void onClose() {
+    Utils.logError("首页页面关闭");
     super.onClose();
     // 取消定时器，防止内存泄漏
     _autoMessageTimer?.cancel();
@@ -359,6 +378,8 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
+
+    Utils.logError("首页页面onReady");
     // TODO: implement onReady
     super.onReady();
   }

@@ -134,7 +134,7 @@ class UserEarningsView extends GetView<UserEarningsController> {
                     Spacer(),
                     Row(
                       children: [
-                        Expanded(child: getCom(value: controller.inviteController.userInviteInfoModel.value.todayAmount.toString(),title: "推广奖励")),
+                        Expanded(child: getCom(value: controller.inviteController.userInviteInfoModel.value.todayAmount.toString(),title: "今日奖励")),
                         Expanded(child: getCom(value: controller.userBagController.userBayModel.value.currentAmount.toString(),title: "待提现")),
                         Expanded(child: getCom(value: "${controller.inviteController.userInviteInfoModel.value.inviteAmount??0}",title: "邀新收益")),
                       ],

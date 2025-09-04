@@ -11,7 +11,6 @@ class UserController extends GetxController {
   RxString appbarTitle = "我的页面标题".obs;
   final UserInfo userInfo = Get.find<UserInfo>();
   final CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
-  final InviteController inviteController = Get.find<InviteController>();
   List<MenuModel> menuList = [
     MenuModel(
       id: 0,

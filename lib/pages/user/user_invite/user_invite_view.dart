@@ -187,7 +187,7 @@ class UserInviteView extends GetView<UserInviteController> {
                           Row(
                             children: [
                               Expanded(child: getCom(value: "${controller.userInviteCountModel.value.inviteNum}人",title:"已邀人数")),
-                              Expanded(child: getCom(value:"${controller.userInviteCountModel.value.inviteAmount}元",title:"已赚金币")),
+                              Expanded(child: getCom(value:"${controller.userInviteCountModel.value.inviteAmount}",title:"已赚金币")),
                               Expanded(child: getCom(value:"${Utils.floorToTwoDecimal(controller.userInviteCountModel.value.currentAmount/10000)}元",title:"可提现金额")),
                             ],
                           ),
