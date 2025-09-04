@@ -47,9 +47,8 @@ class HomeUtils {
     return md5Hash.toString();
   }
 
-  // 检查是否为广告消息
-  static   // 获取App升级信息
-  Future<void> getAppUpdata() async {
+  // 检查是否为广告消息  // 获取App升级信息
+  static Future<void> getAppUpdata() async {
     String channel = await getAppChannel();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AppUpLoadForm appUpLoadForm = AppUpLoadForm();
@@ -78,6 +77,8 @@ class HomeUtils {
 
     // 存储升级信息
     Store.instance.updateAppUpLoadModel(appUpLoadModel);
+    // 获取客服配置
+     Store.instance.getServerConfig();
     // 校验版本并弹窗
     if (appUpLoadModel.packageName.isEmpty) return;
     String input = "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";

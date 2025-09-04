@@ -3,6 +3,7 @@ import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,11 +44,7 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: QrImageView(
-                          data: '1234567890',
-                          version: QrVersions.auto,
-                          size: 140.r,
-                        ),
+                        child: CachedNetworkImage(imageUrl: Store.instance.getQCode?.image??"18942693171"),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,

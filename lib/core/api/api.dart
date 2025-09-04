@@ -12,6 +12,7 @@ import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/newUserModel/NewUserModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserBayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserInviteCountModel.dart';
@@ -90,6 +91,23 @@ class Api extends GetxController{
       return [];
     }
     return NoticeModel.fromJsonList(backModel.data);
+  }
+  /// 获取客服配置{"channelPackage":"com.ruyimh.maingf"}
+  /// index-0 Q群链接
+  /// index-1 客服二维码
+  /// index-2 客服联系方式
+  Future<List<ServiceModel>> getServerConfig(AppUpLoadForm form) async {
+   try{
+     BackModel backModel = await _sendRequest(ApiUrls.getServerConfig, form, "post");
+     if (backModel.data == null) {
+       Utils.logError("获取客服配置为空");
+       return [];
+     }
+     return ServiceModel.fromJsonList(backModel.data);
+   }catch(e){
+     Utils.logError("getServerConfig请求出错: $e");
+     return [];
+   }
   }
   /// 获取看广告小技巧
   Future<List<NoticeModel>> getNoticeAD() async {
@@ -452,6 +470,7 @@ class Api extends GetxController{
       return UserInviteInfoModel();
     }
   }
+
   /// 邀请-我的钱包
   Future<UserBayModel> getInviteMyBag() async {
     try{

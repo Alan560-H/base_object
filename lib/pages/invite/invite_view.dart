@@ -7,6 +7,7 @@ import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +163,7 @@ class InviteView extends GetView<InviteController> {
                                 CuButton(
                                     radius: 10.r,
                                     text: "加入玩家群",width:100.w,height: 20.h,bgColor: TextConfig.primary, onPressed: (){
-                                  Utils.openUrl(AppConfig.instance.qQUrl);
+                                  Utils.openUrl(Uri.parse(Store.instance.getQUrl?.data??AppConfig.instance.qQUrl));
                                 })
                               ],
                             ),

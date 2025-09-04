@@ -39,13 +39,15 @@ class ClaimAdDialog extends StatelessWidget {
       checkClaim();
     }
   }
-  checkClaim()async{
+  static checkClaim()async{
     if(Get.isRegistered<Api>()){
       BackModel backModel = await Api.to.getAdAmount();
       Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
       if(backModel.code == CuErrorConfig.success){
         CuToast.success(msg: "存钱罐领取成功");
         UserInfo.instance.getUserInfoFn();
+       Store.instance.setIsOpenClaim(false);
+
         Utils.logError("是否有进度条${Get.isRegistered<CuCircularProgressController>()}");
         if(Get.isRegistered<CuCircularProgressController>()){
           CuCircularProgressController.to.setProgress(0);
@@ -61,6 +63,7 @@ class ClaimAdDialog extends StatelessWidget {
   upDataADFn(dynamic event) async {
     debugger();
     try {
+      checkClaim();
      if(Get.isRegistered<HomeController>()){
        HomeController().upDataADFn(event);
      }
@@ -71,53 +74,7 @@ class ClaimAdDialog extends StatelessWidget {
       checkClaim();
     }
   }
-  /// 订阅激励广告事件
-  void rewarderEvent() async {
-    if(!Get.isRegistered<ListenerTool>()){
-      Get.put<ListenerTool>(ListenerTool());
-    }
-    ever(ListenerTool.to.rewarderEvent, (event) {
-      if (event == null ) return;
-      String eventType = event["eventType"] ?? "";
-      String placementID = event["placementID"] ?? "";
 
-      Utils.logError("储钱罐激励广告事件：$eventType，广告位ID：$placementID，参数：$event");
-
-      switch (eventType) {
-        case "RewardedStatus.rewardedVideoDidFailToLoad":
-          Utils.logError("储钱罐激励广告加载失败，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidFinishLoading":
-          Utils.logError("储钱罐激励广告加载完成，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidStartPlaying":
-          Utils.logError("储钱罐激励广告开始播放，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidEndPlaying":
-          Utils.logError("储钱罐激励广告结束播放，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidFailToPlay":
-          Utils.logError("储钱罐激励广告播放失败，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidRewardSuccess":
-          Utils.logError("储钱罐激励广告奖励成功，广告位ID：$placementID");
-
-          break;
-        case "RewardedStatus.rewardedVideoDidClick":
-          Utils.logError("储钱罐激励广告被点击，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidDeepLink":
-          Utils.logError("储钱罐激励广告深度链接，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidClose":
-          Utils.logError("储钱罐激励广告被关闭，广告位ID：$placementID");
-          if (Get.isRegistered<UserInfo>()) {
-            upDataADFn(event);
-          }
-          break;
-      }
-    });
-  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -154,7 +111,6 @@ class ClaimAdDialog extends StatelessWidget {
                       Text("温馨提示：建议累计到2000以上再领取哦",style: TextStyle(fontSize: TextConfig.textSize_12,color: Colors.white),),
                       SizedBox(height: 10.h,),
                       CuButton(text: "立即领取",width: 120.w,height: 40.h,radius: 10.r,bgColor: TextConfig.primary, onPressed: ()async{
-                        rewarderEvent();
                         showRewarder();
                       })
                     ],

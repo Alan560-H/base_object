@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class InviteController extends GetxController {
+  static InviteController get to => Get.find<InviteController>();
   UserInfo userInfo = Get.find<UserInfo>();
   RxString appbarTitle = "邀请好友/领取现金".obs;
   //  我的推广信息

@@ -74,6 +74,7 @@ class SplashController extends GetxController {
     print("phone 权限状态 $status");
 
   }
+
   Future<void> initAll()async{
     DependencyInjection.adInit();
     InitTool.to.setCustomDataDic({

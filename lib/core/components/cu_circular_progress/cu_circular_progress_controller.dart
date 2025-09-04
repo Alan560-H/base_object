@@ -6,8 +6,10 @@ import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -74,12 +76,16 @@ class CuCircularProgressController extends GetxController {
       if(!Get.isRegistered<Api>()){
         Get.put(Api());
       }
+
       if(Get.isRegistered<NativeTool>()){
         NativeTool.to.showNative();
       }
       RewarderModel rewarderModel = await Get.find<Api>().getSelectAdV3();
       currentValue.value = rewarderModel.amount;
+      Store.instance.setIsOpenClaim(true);
+      Utils.logError("打开的值:${Store.instance.getIsOpenClaim}");
       Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.currentValue);
+
       Utils.logError("存钱罐初始化余额: ${currentValue.value}");
     } catch (e) {
       Utils.logError("存钱罐初始化余额失败: $e");

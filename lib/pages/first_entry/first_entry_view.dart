@@ -75,7 +75,7 @@ class FirstEntryView extends GetView<FirstEntryController> {
         // color:Colors.red,
         image: DecorationImage(
 
-          fit: BoxFit.fitHeight,
+          fit: BoxFit.fill,
           image: CachedNetworkImageProvider(ImageConfig.loginBg2),
         ),
       ),
