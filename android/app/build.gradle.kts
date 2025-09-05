@@ -47,6 +47,10 @@ android {
             dimension = "channel"
             manifestPlaceholders["channel"] = "huawei"
         }
+        create("pugongying") {
+            dimension = "channel"
+            manifestPlaceholders["channel"] = "pugongying"
+        }
         create("cjbao") {
             dimension = "channel"
             manifestPlaceholders["channel"] = "cjbao"
