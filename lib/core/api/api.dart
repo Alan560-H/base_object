@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
@@ -314,6 +316,7 @@ class Api extends GetxController{
         FormModel(),
         "post",
       );
+
       if (backModel.data == null) {
         return UserModel();
       }

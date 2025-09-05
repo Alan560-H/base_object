@@ -176,7 +176,7 @@ class CuNavBarController extends GetxController {
       // if (backModel.code == CuErrorConfig.success) {
       //   CuToast.success(msg: "上报副广成功");
       // }else{
-      //   CuToast.error(msg: "上传banner广告失败${backModel.msg}");
+      //   CuToast.error(msg: "上传横幅广告失败${backModel.msg}");
       // }
     } catch (e) {
       Utils.logError("上报副广失败：$e");
@@ -197,21 +197,21 @@ class CuNavBarController extends GetxController {
       String eventType = event["eventType"] ?? "";
       String placementID = event["placementID"] ?? "";
       height.value = 110.h;
-      Utils.logError("收到banner广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
+      Utils.logError("收到横幅广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
       // 根据事件类型执行业务逻辑
       switch (eventType) {
-      // banner广告加载失败
+      // 横幅广告加载失败
         case "BannerStatus.bannerAdFailToLoadAD":
-          Utils.logError("banner广告加载失败");
-          height.value = 110.h;
+          Utils.logError("横幅广告加载失败");
+          height.value = 60.h;
           break;
-      // banner广告加载完成
+      // 横幅广告加载完成
         case "BannerStatus.bannerAdDidFinishLoading":
           if(!Get.isRegistered<BannerTool>()){
             Get.put(BannerTool());
           }
           bool a = await BannerTool.to.bannerAdReady();
-          Utils.logError("banner广告加载完成,$a");
+          Utils.logError("横幅广告加载完成,$a");
           height.value=110.h;
           BannerTool.to.showAdInPosition();
           break;

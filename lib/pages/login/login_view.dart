@@ -193,7 +193,7 @@ class LoginView extends GetView<LoginController> {
         controller: controller.phoneController,
       ),
 
-      controller.verifyCodeImgModel.verifyId != '0'
+      controller.verifyCodeImgModel.value.verifyId != '0'
           ? SizedBox(
         width: double.infinity,
         child: Stack(
@@ -220,12 +220,12 @@ class LoginView extends GetView<LoginController> {
                     child: SizedBox(
                       width: 60.w,
                       height: 50.h,
-                      child: controller.verifyCodeImgModel.img != null ? Image.memory(
+                      child: controller.verifyCodeImgModel.value.img != null ? Obx(()=>Image.memory(
                         base64.decode(
-                          controller.verifyCodeImgModel.img!.split(',').last,
+                          controller.verifyCodeImgModel.value.img!.split(',').last,
                         ),
                         fit: BoxFit.fill,
-                      ):Text('点击刷新'),
+                      )):Text('点击刷新'),
                     ),
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
@@ -21,6 +22,7 @@ import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/pages/home/home_binding.dart';
 import 'package:base_object/pages/home/home_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +58,7 @@ class LoginController extends GetxController {
   /// 倒计时
   Timer? timers;
   /// 图片验证
-  late VerifyCodeImgModel verifyCodeImgModel = VerifyCodeImgModel();
+  Rx<VerifyCodeImgModel> verifyCodeImgModel = VerifyCodeImgModel().obs;
   /// 手机号输入框控制器
   final phoneController = TextEditingController();
   /// 图片验证码控制器
@@ -72,7 +74,7 @@ class LoginController extends GetxController {
   Future<void> getVerifyCodeImg() async {
     try{
       VerifyCodeImgModel verifyCodeImgModel1 = await Api.to.postVerifyCodeImg();
-      verifyCodeImgModel = verifyCodeImgModel1;
+      verifyCodeImgModel.value = verifyCodeImgModel1;
       Utils.logError("图片验证码${verifyCodeImgModel.toJson()}");
     }catch(e){
       Utils.logError("getVerifyCodeImg请求出错: $e");
@@ -83,7 +85,7 @@ class LoginController extends GetxController {
     if (countdown.value > 0) return;
     SendMobileCodeModel sendMobileCodeModel = SendMobileCodeModel(
       mobile: phoneController.text,
-      verifyId: verifyCodeImgModel.verifyId!,
+      verifyId: verifyCodeImgModel.value.verifyId!,
       verifyCode: verifyImgController.text,
     );
     sendMobileCodeModel.type = 0;
@@ -124,7 +126,9 @@ class LoginController extends GetxController {
         return;
       }
       EasyLoading.show(status: "登录中...");
-      Utils.logError(loginForm.value.toJson());
+      Utils.logError("登录参数：${loginForm.value.toJson()}");
+
+      loginForm.value.channelPackage = Store.instance.getAppUpLoadModel.channelPackage;
       loginModel.value = await Api.to.login(loginForm.value);
       if (loginModel.value.tokenValue.isEmpty) return;
       UserInfo.instance.setToken(value: loginModel.value.tokenValue,key: loginModel.value.tokenValue);

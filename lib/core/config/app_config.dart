@@ -30,7 +30,8 @@ class AppConfig extends GetxController{
   void init() {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // 生产环境（release模式）
-      _baseUrl = 'http://129.211.211.100:39300';
+      // _baseUrl = 'http://129.211.211.100:39300';
+      _baseUrl = 'https://prd.ruyigx.com/';
       // _socketUrl = 'ws://129.211.211.100:39301/wss';
     } else {
       // 开发环境（debug模式）
