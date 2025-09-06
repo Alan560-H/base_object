@@ -34,7 +34,7 @@ android {
         ndk {
             abiFilters.add("arm64-v8a")
         }
-        manifestPlaceholders.put("APPLOG_SCHEME", "rangersapplog.dc6f26f3112ee022".toLowerCase())
+        manifestPlaceholders.put("APPLOG_SCHEME", "rangersapplog.dc6f26f3112ee022".lowercase())
     }
     flavorDimensions("channel") // 配置渠道维度，这里使用括号的形式
 
@@ -140,36 +140,36 @@ android {
 }
 // 在这里添加子项目的依赖配置
 dependencies {
-    api("com.anythink.sdk:core-taku:6.5.10")
-    api("com.anythink.sdk:core-china-taku:6.5.10")
-    api("com.anythink.sdk:nativead-taku:6.5.10")
-    api("com.anythink.sdk:banner-taku:6.5.10")
-    api("com.anythink.sdk:interstitial-taku:6.5.10")
-    api("com.anythink.sdk:rewardedvideo-taku:6.5.10")
-    api("com.anythink.sdk:splash-taku:6.5.10")
-    api("com.android.support:appcompat-v7:28.0.0")
-    //Baidu
-    api("com.anythink.sdk:adapter-taku-baidu:6.5.10.1")
-    api("mobi.baidu.sdk:mobads:9.400")
-    //Kuaishou
-    api("com.anythink.sdk:adapter-taku-kuaishou:6.5.10")
-    api("com.anythink.sdk:sdk-ads-kuaishou:4.6.30.1")
-    api("com.android.support:design:28.0.0")
-    //Sigmob
-    api("com.anythink.sdk:adapter-taku-sigmob:6.5.10")
-    api("com.anythink.sdk:sdk-ads-sigmob:4.24.0")
-    //Csj
-    api("com.anythink.sdk:adapter-taku-csj:6.5.10")
-    api("com.pangle.cn:ads-sdk-pro:6.9.2.3")
-    //GDT
-    api("com.anythink.sdk:adapter-taku-gdt:6.5.10")
-    api("com.qq.e.union:union:4.642.1512")
+//    api("com.anythink.sdk:core-taku:6.5.10")
+//    api("com.anythink.sdk:core-china-taku:6.5.10")
+//    api("com.anythink.sdk:nativead-taku:6.5.10")
+//    api("com.anythink.sdk:banner-taku:6.5.10")
+//    api("com.anythink.sdk:interstitial-taku:6.5.10")
+//    api("com.anythink.sdk:rewardedvideo-taku:6.5.10")
+//    api("com.anythink.sdk:splash-taku:6.5.10")
+//    api("com.android.support:appcompat-v7:28.0.0")
+//    //Baidu
+//    api("com.anythink.sdk:adapter-taku-baidu:6.5.10.1")
+//    api("mobi.baidu.sdk:mobads:9.400")
+//    //Kuaishou
+//    api("com.anythink.sdk:adapter-taku-kuaishou:6.5.10")
+//    api("com.anythink.sdk:sdk-ads-kuaishou:4.6.30.1")
+//    api("com.android.support:design:28.0.0")
+//    //Sigmob
+//    api("com.anythink.sdk:adapter-taku-sigmob:6.5.10")
+//    api("com.anythink.sdk:sdk-ads-sigmob:4.24.0")
+//    //Csj
+//    api("com.anythink.sdk:adapter-taku-csj:6.5.10")
+//    api("com.pangle.cn:ads-sdk-pro:6.9.2.3")
+//    //GDT
+//    api("com.anythink.sdk:adapter-taku-gdt:6.5.10")
+//    api("com.qq.e.union:union:4.642.1512")
     // 本地 aar/jar 依赖
-//    api(fileTree(mapOf(
-//        "dir" to "../../libs",
-//        "include" to listOf("*.aar", "*.jar"),
-////        "exclude" to listOf("**/AndroidManifest.xml") // 排除可能冲突的清单文件
-//    )))
+    api(fileTree(mapOf(
+        "dir" to "libs", // 指向 app 模块内的 libs 目录（相对路径）
+        "include" to listOf("*.aar", "*.jar"), // 包含 libs 下所有 .aar 和 .jar 文件
+        // 若需要排除清单文件冲突，可取消下面这行的注释
+    )))
 }
 flutter {
     source = "../.."
