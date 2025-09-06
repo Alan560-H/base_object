@@ -126,9 +126,12 @@ class LoginController extends GetxController {
         return;
       }
       EasyLoading.show(status: "登录中...");
-      Utils.logError("登录参数：${loginForm.value.toJson()}");
 
       loginForm.value.channelPackage = Store.instance.getAppUpLoadModel.channelPackage;
+      loginForm.value.oaid = Store.instance.getAppUpLoadModel.oaid;
+      loginForm.value.ua = Store.instance.getAppUpLoadModel.ua;
+      Utils.logError("登录参数：${loginForm.value.toJson()}");
+
       loginModel.value = await Api.to.login(loginForm.value);
       if (loginModel.value.tokenValue.isEmpty) return;
       UserInfo.instance.setToken(value: loginModel.value.tokenValue,key: loginModel.value.tokenValue);

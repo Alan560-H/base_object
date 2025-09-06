@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
@@ -50,7 +52,7 @@ class SplashController extends GetxController {
       checkDeviceForm.type = 1;
       BackModel data = await Api.to.getVer(checkDeviceForm);
       Utils.logError("设备检查情况${data.data}");
-      if(!data.data){
+      if(data.data){
         Get.offAllNamed(AppRoutes.userError);
         NativeTool.to.removeNativeAd();
         BannerTool.to.removeBannerAd();

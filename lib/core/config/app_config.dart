@@ -35,7 +35,10 @@ class AppConfig extends GetxController{
       // _socketUrl = 'ws://129.211.211.100:39301/wss';
     } else {
       // 开发环境（debug模式）
-      _baseUrl = 'http://129.211.211.100:39300';
+      // _baseUrl = 'http://129.211.211.100:39300';
+      _baseUrl = 'https://prd.ruyigx.com/';
+
+
       // _socketUrl = 'ws://129.211.211.100:39301/wss';
     }
   }

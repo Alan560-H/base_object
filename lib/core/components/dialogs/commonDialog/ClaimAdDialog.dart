@@ -61,7 +61,6 @@ class ClaimAdDialog extends StatelessWidget {
   }
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
-    debugger();
     try {
       checkClaim();
      if(Get.isRegistered<HomeController>()){
