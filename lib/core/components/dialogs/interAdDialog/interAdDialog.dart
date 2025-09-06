@@ -86,7 +86,7 @@ class InterAdDialog extends GetxService {
       String eventType = event["eventType"] ?? "";
       String placementID = event["placementID"] ?? "";
 
-      Utils.logError("插屏广告收到激励视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
+      Utils.logError("插屏广告收到插屏视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
       // 根据事件类型执行业务逻辑
       switch (eventType) {
       // 插屏广告加载失败

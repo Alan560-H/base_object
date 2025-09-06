@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 唤醒锁权限 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- 读取图片权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 访问精确位置权限 -->
+    <uses-permission android:name="${applicationId}.openadsdk.permission.TT_PANGOLIN" />
 
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
@@ -32,30 +33,32 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+        <!-- sigmob文件提供者 -->
         <provider
             android:name="com.sigmob.sdk.SigmobFileV4Provider"
             android:authorities="${applicationId}.sigprovider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            android:initOrder="200">
+            android:initOrder="200"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/anythink_bk_sigmob_file_path" />
+                android:resource="@xml/anythink_bk_sigmob_file_path"/>
         </provider>
         <!-- source file: china_jcenter/network_sdk/csj/6.9.2.3/AndroidManifest.xml -->
         <provider
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
             android:authorities="${applicationId}.TTMultiProvider"
             android:exported="false" />
-        <!--<provider
-            android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
-            android:authorities="${applicationId}.TTFileProvider"
+        <!-- 美数文件提供者 -->
+        <provider
+            android:name="com.meishu.sdk.core.service.MeishuFileProvider"
+            android:authorities="${applicationId}.MeishuFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/anythink_bk_tt_file_path" />
-        </provider>-->
+                android:resource="@xml/anythink_bk_meishu_file_path" />
+        </provider>
         <provider
             android:name="com.qq.e.comm.GDTFileProvider"
             android:authorities="${applicationId}.gdt.fileprovider"
@@ -65,6 +68,18 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_gdt_file_path" />
         </provider>
+        <provider
+            android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
+            android:authorities="${applicationId}.TTFileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false"
+            >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/anythink_bk_tt_file_path"
+                tools:replace="android:resource"/>
+        </provider>
+
 
 
         <!-- 添加渠道信息的 meta-data -->
@@ -78,6 +93,16 @@
             android:name="hw_ads_sdk_type"
             android:value="6"
         tools:replace="android:value" />
+        <!-- 解决 ZEUS_PLUGIN_PANGLE 的 meta-data 冲突 -->
+        <meta-data
+            android:name="ZEUS_PLUGIN_PANGLE"
+            android:value="({
+                             apiVersionCode:7029,
+                             packageName:com.byted.pangle,
+                             minPluginVersion:7029,
+                             internalPath:'',
+                             internalVersionCode:7029})"
+            tools:replace="android:value" /> <!-- 强制覆盖冲突的 android:value -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

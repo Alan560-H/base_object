@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
@@ -127,6 +128,7 @@ class Store extends GetxController{
     form.channelPackage = getAppUpLoadModel.channelPackage;
     List<ServiceModel> list = await Api.to.getServerConfig(form);
     _serviceList.value = list;
+    Utils.logError("客服配置是：${_serviceList.length}");
   }
   // 获取q群链接
   ServiceModel? get getQUrl => _serviceList.isNotEmpty ? _serviceList.first : null;

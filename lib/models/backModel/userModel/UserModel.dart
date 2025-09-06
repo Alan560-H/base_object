@@ -23,7 +23,7 @@ class UserModel {
   /// 手机号
   String mobile = "";
   /// 上级邀请码
-  String topInviteCode = "";
+  String? topInviteCode;
   /// 当前收益
   double currentAmount = 0;
   /// 累计收益
