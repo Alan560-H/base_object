@@ -19,6 +19,7 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -109,7 +110,12 @@ class ClaimAdDialog extends StatelessWidget {
                       Text("温馨提示：建议累计到2000以上再领取哦",style: TextStyle(fontSize: TextConfig.textSize_12,color: Colors.white),),
                       SizedBox(height: 10.h,),
                       CuButton(text: "立即领取",width: 120.w,height: 40.h,radius: 10.r,bgColor: TextConfig.primary, onPressed: ()async{
-                        showRewarder();
+                        if(data.value>=2000){
+                          showRewarder();
+                        }else{
+                          EasyLoading.showInfo("金额太少，请耐心等待");
+                          // CuToast.error(msg: "请累计到2000以上再领取");
+                        }
                       })
                     ],
                   ),

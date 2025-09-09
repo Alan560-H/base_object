@@ -39,17 +39,14 @@ class CuCircularProgressController extends GetxController {
   RxBool timeEnd = false.obs; // 倒计时是否结束
   // 启动发财树进度条
   void startAutoSetProgressTimer() {
-    Utils.logError("开始倒计时");
     setStepTimer = Timer.periodic(
       const Duration(seconds: 1),
           (Timer timer){
-        Utils.logError("疫苗了吗？,${_progress.value<maxProgress},$_seconds");
         if(_progress.value<maxProgress&&_seconds>0){
           _progress.value += 100;
           _seconds--;
           timeEnd.value = false;
         }else{
-          Utils.logError("进度条满了");
           timeEnd.value = true;
           timer.cancel();
         }
