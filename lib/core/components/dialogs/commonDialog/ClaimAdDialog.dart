@@ -50,7 +50,6 @@ class ClaimAdDialog extends StatelessWidget {
 
         Utils.logError("是否有进度条${Get.isRegistered<CuCircularProgressController>()}");
         if(Get.isRegistered<CuCircularProgressController>()){
-          CuCircularProgressController.to.setProgress(0);
           CuCircularProgressController.to.resetProgressTimer();
           NativeTool.to.removeNativeAd();
           NativeTool.to.loadNativeWith();
