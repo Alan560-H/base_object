@@ -47,22 +47,18 @@ class SplashController extends GetxController {
 
   Future<void> getVer()async {
     try{
-      CheckDeviceForm checkDeviceForm = CheckDeviceForm();
-      checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
-      checkDeviceForm.type = 1;
-      BackModel data = await Api.to.getVer(checkDeviceForm);
-      Utils.logError("设备检查情况${data.data}");
-      if(data.data){
-        Get.offAllNamed(AppRoutes.userError);
-        NativeTool.to.removeNativeAd();
-        BannerTool.to.removeBannerAd();
-        Get.delete<NativeTool>();
-        Get.delete<RewarderTool>();
-        Get.delete<InitTool>();
-        Get.delete<SplashTool>();
-      }
+     await Store.instance.getVer();
+     if(Store.instance.isLimit) {
+       Get.offAllNamed(AppRoutes.userError);
+       NativeTool.to.removeNativeAd();
+       BannerTool.to.removeBannerAd();
+       Get.delete<NativeTool>();
+       Get.delete<RewarderTool>();
+       Get.delete<InitTool>();
+       Get.delete<SplashTool>();
+     }
     }catch(e){
-      Utils.logError("获取风控配置失败$e");
+      Utils.logError("检查设备封禁失败$e");
     }
   }
   Future<void> getFkConfig()async {
@@ -103,8 +99,9 @@ class SplashController extends GetxController {
   @override
   void onInit() async {
     Utils.logError("开屏页面init初始化");
-    await initAll();
     await getVer();
+    await initAll();
+
     await getFkConfig();
     super.onInit();
     ///同意隐私政策之后调用
@@ -184,12 +181,7 @@ class SplashController extends GetxController {
     _hasJumped = true; // 标记为已跳转
 
     Get.offAllNamed(AppRoutes.home);
-    // // 延迟 300ms 跳转，避免页面切换过于生硬
-    // Future.delayed(const Duration(milliseconds: 300), () {
-    //   if (Get.currentRoute != AppRoutes.home) {
-    //     Get.offAllNamed(AppRoutes.home);
-    //   }
-    // });
+
   }
 
   // 页面销毁时取消订阅（避免内存泄漏）

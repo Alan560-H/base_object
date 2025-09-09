@@ -97,12 +97,7 @@ class InterAdDialog extends GetxService {
         case "InterstitialStatus.interstitialAdDidFinishLoading":
           Utils.logError("插屏广告加载完成，广告位ID：$placementID，事件参数：$event");
           Utils.logError("当前路由：${Get.currentRoute}");
-          /// 展示插屏广告
-          if(Get.currentRoute.isNotEmpty&&Get.currentRoute!=AppRoutes.splashPage){
-            interstitialTool.showInterstitialAd();
-          }else{
-            _startTimer();
-          }
+          _startTimer();
 
           break;
       // 插屏广告深度链接
@@ -155,11 +150,11 @@ class InterAdDialog extends GetxService {
     if(!Get.isRegistered<Store>()){
       Get.put(Store());
     }
-    // 关键修改：用 Timer() 替代 Timer.periodic()，仅延迟6秒后执行一次
     _timer = Timer(Duration(seconds: Store.instance.getFkConfig.adv1Time), () async {
       bool isInterReady = await interstitialTool.hasInterstitialAdReady();
       if (isInterReady) {
-        Utils.logError("60秒后检查到广告就绪，尝试展示一次");
+        Utils.logError("60秒后检查到广告就绪，尝试展示一次 ${Store.instance.isLimit}");
+        if(Store.instance.isLimit)return;
         await interstitialTool.showInterstitialAd();
       } else {
         Utils.logError("60秒后检查到广告未就绪，不展示");

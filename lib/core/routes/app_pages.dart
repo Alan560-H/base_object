@@ -189,7 +189,7 @@ class AppPages {
       binding: WithdrawalHistoryBinding(),// 我的提现记录的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
-    /// 我的提现记录
+    /// 设备封禁页面
     GetPage(
       name: AppRoutes.userError,
       page: () => UserErrorView(),
