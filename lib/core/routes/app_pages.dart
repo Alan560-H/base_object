@@ -16,7 +16,6 @@ import 'package:base_object/pages/login/login_binding.dart';
 import 'package:base_object/pages/login/login_view.dart';
 import 'package:base_object/pages/short_video/short_video_binding.dart';
 import 'package:base_object/pages/short_video/short_video_view.dart';
-import 'package:base_object/pages/short_video/short_video_view2.dart';
 import 'package:base_object/pages/splash_page/splash_binding.dart';
 import 'package:base_object/pages/splash_page/splash_view.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_binding.dart';
@@ -78,7 +77,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.shortVideo,
-      page: () => ShortVideoView2(),
+      page: () => ShortVideoView(),
       binding: ShortVideoBinding(), // 短视频的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),

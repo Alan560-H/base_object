@@ -70,20 +70,7 @@ class SplashController extends GetxController {
      Utils.logError("获取风控配置失败$e");
    }
   }
-  Future _pangrowthInit() async {
-    final status = await Permission.phone.request();
-    print("phone 权限状态 $status");
-    await PangrowthVideo.registerVideo(
-      appName: "",
-      ////appid 必填
-      ///demo 使用
-      // andoridAppId: "5713596",
-      andoridAppId: "5670418",
-      appLogAppId :"751081",
-      iosAppId: "",
-      debug: true,
-    );
-  }
+
 
   Future<void> initAll()async{
     DependencyInjection.adInit();
@@ -104,8 +91,7 @@ class SplashController extends GetxController {
 
     await getFkConfig();
     super.onInit();
-    ///同意隐私政策之后调用
-    await _pangrowthInit();
+
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
     _subscribeSplashEvent();
 

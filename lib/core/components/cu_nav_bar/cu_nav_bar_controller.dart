@@ -53,19 +53,19 @@ class CuNavBarController extends GetxController {
       currentPageIndex.value = index;
       switch(index){
         case 0:
-          Get.offAllNamed(AppRoutes.home);
+          Get.toNamed(AppRoutes.home);
           break;
         case 1:
-          Get.offAllNamed(AppRoutes.shortVideo);
+          Get.toNamed(AppRoutes.shortVideo);
           break;
         case 2:
-          Get.offAllNamed(AppRoutes.djVideo);
+          Get.toNamed(AppRoutes.djVideo);
           break;
         case 3:
-          Get.offAllNamed(AppRoutes.invite);
+          Get.toNamed(AppRoutes.invite);
           break;
         case 4:
-          Get.offAllNamed(AppRoutes.user);
+          Get.toNamed(AppRoutes.user);
           break;
       }
     }catch(e){
@@ -82,7 +82,7 @@ class CuNavBarController extends GetxController {
         0,
         "红包群",
         false,
-        ImageConfig.redBagActive,
+        ImageConfig.redBagDefatult,
         ImageConfig.redBagActive,
 
       ),
@@ -90,7 +90,7 @@ class CuNavBarController extends GetxController {
         1,
         "短视频",
         true,
-        ImageConfig.videoActive,
+        ImageConfig.videoDefault,
         ImageConfig.videoActive,
 
       ),
@@ -98,7 +98,8 @@ class CuNavBarController extends GetxController {
         2,
         "短剧",
         true,
-        ImageConfig.shortVideoActive,
+        ImageConfig.shortVideoDefault,
+
         ImageConfig.shortVideoActive,
 
       ),
@@ -106,7 +107,7 @@ class CuNavBarController extends GetxController {
         3,
         "邀请",
         false,
-        ImageConfig.inviteActive,
+        ImageConfig.inviteDefault,
         ImageConfig.inviteActive,
 
       ),
@@ -114,7 +115,7 @@ class CuNavBarController extends GetxController {
         4,
         "我的",
         false,
-        ImageConfig.myActive,
+        ImageConfig.myDefatult,
         ImageConfig.myActive,
       ),
     ];
@@ -158,7 +159,6 @@ class CuNavBarController extends GetxController {
       Utils.logError("横幅广告凑成的字符串${upDataADForm.toJson()}");
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
       int pross = amount.toInt();
-      Utils.logError("横幅广告金额$pross");
       if(pross>Store.instance.getFkConfig.wactchMaxAmountV1){
         CheckDeviceForm checkDeviceForm = CheckDeviceForm();
         checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
@@ -167,17 +167,6 @@ class CuNavBarController extends GetxController {
         BackModel data = await Api.to.getVer(checkDeviceForm);
         Get.offAllNamed(AppRoutes.userError);
       }
-
-      // CuCircularProgressController.to.addCurrentValue(pross);
-
-
-      // BackModel backModel = await Api.to.getSelectAdV2(upDataADForm);
-      // Utils.logError("横幅广告返回的数据${ backModel.toJson() }");
-      // if (backModel.code == CuErrorConfig.success) {
-      //   CuToast.success(msg: "上报副广成功");
-      // }else{
-      //   CuToast.error(msg: "上传横幅广告失败${backModel.msg}");
-      // }
     } catch (e) {
       Utils.logError("上报副广失败：$e");
     }
@@ -192,7 +181,6 @@ class CuNavBarController extends GetxController {
     // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
     ever(ListenerTool.to.bannerEvent, (event) async {
       if (event == null || _hasShow) return; // 过滤空事件或重复跳转
-
       // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
       String eventType = event["eventType"] ?? "";
       String placementID = event["placementID"] ?? "";

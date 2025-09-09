@@ -6,6 +6,7 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -16,75 +17,11 @@ class ShortVideoView extends GetView<ShortVideoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(
-            () => Container(
-          width: Get.width,
-          height: Get.height,
-          decoration: BoxDecoration(
-            color: TextConfig.fensePageColor,
-            image: DecorationImage(
-              alignment: Alignment.topCenter,
-              fit: BoxFit.contain,
-              image: CachedNetworkImageProvider(ImageConfig.userInviteBg),
-            ),
-          ),
-          child: Column(
-            children: [
-              CuAppBar(
-                title: controller.appbarTitle.value,
-                showBackArrow: true,
-                backgroundColor: Colors.transparent,
-                textColor: Colors.white,
-              ),
-              // 顶部小容器
-              Container(
-                height: 115.h,
-                width: Get.width,
-                margin: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "邀请好友赚现金",
-                      style: TextStyle(
-                        fontSize: TextConfig.textSize_30,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "最高 99元",
-                          style: TextStyle(
-                            fontSize: TextConfig.textSize_24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Tada(
-                          infinite: true,
-                          duration: const Duration(milliseconds: 1000),
-                          child: CuButton(
-                            text: "",
-                            bgImage: ImageConfig.inviteBtn,
-                            width: 120.w,
-                            height: 50.h,
-                            onPressed: () {},
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-            ],
-          ),
-        ),
-      ),
+      body: Center(child: Text("短视频页面")),
+      // body: PangrowthVideo.videoSingleCardView(
+      //   viewWidth: 10.sw,
+      //   viewHeight: 1.sh - ScreenUtil().statusBarHeight,
+      // ),
       bottomNavigationBar: CuNavBarView(),
     );
   }
