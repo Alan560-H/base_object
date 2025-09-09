@@ -246,7 +246,7 @@ class HomeController extends GetxController {
         content,
         style: TextStyle(
           fontSize: TextConfig.textSize_16.sp,
-          color: TextConfig.grey,
+          color: TextConfig.black333,
         ),
         maxLines: 2, // 限制2行，超出显示省略号
         overflow: TextOverflow.ellipsis,

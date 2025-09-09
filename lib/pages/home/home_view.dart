@@ -12,6 +12,7 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -44,13 +45,13 @@ class HomeView extends GetView<HomeController> {
   // 构建单条消息项（优先级：广告 > 红包 > 普通消息）
   Widget _buildMessageItem(ChatMessage message) {
     return Container(
-      padding: EdgeInsets.all(10.h),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       margin: EdgeInsets.only(bottom: 8.r), // 消息间距
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. 用户头像
-          Avatar(headImage: message.user.avatarUrl,size: 20.h,),
+          Avatar(headImage: message.user.avatarUrl,size: 20.h,isCircle:false,),
           SizedBox(width: 10.w), // 头像与内容间距
 
           // 2. 消息内容区域
@@ -63,8 +64,7 @@ class HomeView extends GetView<HomeController> {
                   message.user.name,
                   style: TextStyle(
                     fontSize: TextConfig.textSize_14,
-                    fontWeight: FontWeight.bold,
-                    color: TextConfig.black333,
+                    color: Utils.fromHex("#888888"),
                   ),
                 ),
                 SizedBox(height: 5.h), // 用户名与内容间距
