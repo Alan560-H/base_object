@@ -7,12 +7,15 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
+import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -136,4 +139,26 @@ class Store extends GetxController{
   ServiceModel? get getQCode => _serviceList.length >= 2 ? _serviceList[1] : null;
   // 获取客服电话
   ServiceModel? get getServiceTel => _serviceList.length >= 3 ? _serviceList[2] : null;
+
+  RxBool _isLimit = false.obs; /// 是否被封禁
+  void setIsLimit(bool value){
+    _isLimit.value = value;
+  }
+  get isLimit => _isLimit.value;
+  Future<void> getVer()async {
+    try{
+      CheckDeviceForm checkDeviceForm = CheckDeviceForm();
+      checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+      checkDeviceForm.type = 1;
+      if(checkDeviceForm.userId == 0){
+        checkDeviceForm.userId = null;
+      }
+      BackModel data = await Api.to.getVer(checkDeviceForm);
+      Utils.logError("设备封禁情况${data.data}");
+      setIsLimit(data.data);
+
+    }catch(e){
+      Utils.logError("获取风控配置失败$e");
+    }
+  }
 }
