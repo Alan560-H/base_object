@@ -14,7 +14,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- 读取图片权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 访问精确位置权限 -->
     <uses-permission android:name="${applicationId}.openadsdk.permission.TT_PANGOLIN" />
-
+    <uses-permission
+        android:name="android.permission.CALL_PHONE"
+        tools:node="remove" /> <!-- 强制移除该权限 -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
