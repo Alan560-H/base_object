@@ -17,11 +17,9 @@ class ShortVideoView extends GetView<ShortVideoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(
-            () =>PangrowthVideo.videoSingleCardView(
-              viewWidth: 10.sw,
-              viewHeight: 1.sh - ScreenUtil().statusBarHeight,
-            ),
+      body: PangrowthVideo.videoSingleCardView(
+        viewWidth: 10.sw,
+        viewHeight: 1.sh - ScreenUtil().statusBarHeight,
       ),
       bottomNavigationBar: CuNavBarView(),
     );
