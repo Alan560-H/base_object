@@ -111,7 +111,9 @@ class SplashController extends GetxController {
     await _pangrowthInit();
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
     _subscribeSplashEvent();
-
+    if(!Get.isRegistered<SplashTool>()){
+      Get.put(SplashTool());
+    }
     // 2. 加载并展示广告（若 main 中未提前加载，这里触发加载）
     await SplashTool.to.loadSplash();
     await _init();
@@ -120,6 +122,10 @@ class SplashController extends GetxController {
   /// 订阅 ListenerTool 的开屏广告事件
   void _subscribeSplashEvent() {
     // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
+    if(!Get.isRegistered<ListenerTool>()){
+      Get.put(ListenerTool());
+      return;
+    }
     ever(ListenerTool.to.splashEvent, (event) {
       if (event == null || _hasJumped) return; // 过滤空事件或重复跳转
 

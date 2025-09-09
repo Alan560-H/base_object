@@ -53,19 +53,19 @@ class CuNavBarController extends GetxController {
       currentPageIndex.value = index;
       switch(index){
         case 0:
-          Get.offAllNamed(AppRoutes.home);
+          Get.toNamed(AppRoutes.home);
           break;
         case 1:
           Get.offAllNamed(AppRoutes.shortVideo);
           break;
         case 2:
-          Get.offAllNamed(AppRoutes.djVideo);
+          Get.toNamed(AppRoutes.djVideo);
           break;
         case 3:
-          Get.offAllNamed(AppRoutes.invite);
+          Get.toNamed(AppRoutes.invite);
           break;
         case 4:
-          Get.offAllNamed(AppRoutes.user);
+          Get.toNamed(AppRoutes.user);
           break;
       }
     }catch(e){
