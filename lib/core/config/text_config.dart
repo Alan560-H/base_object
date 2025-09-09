@@ -25,7 +25,8 @@ class TextConfig {
   static Color dialogColor = Utils.fromHex("#806b53");
   // 灰色
   static Color grey = Utils.fromHex('#999999');
-
+  // 灰色页面背景色
+  static Color comPageGrey = Utils.fromHex('#ededed');
   // 灰色
   static Color inputBgcolor = Utils.fromHex('#4f4738');
 
