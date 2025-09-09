@@ -24,6 +24,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
+import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -344,14 +345,30 @@ class HomeController extends GetxController {
       Dialogs.noticeDialog();
     }
   }
+  Future _pangrowthInit() async {
+    // final status = await Permission.phone.request();
+    // print("phone 权限状态 $status");
+    // 这里的appid  和logappid 填写穿山甲的sdkjson文件李的值
+    await PangrowthVideo.registerVideo(
+      appName: "",
+      andoridAppId: "5670418",
+      appLogAppId :"751081",
+      iosAppId: "",
+      debug: true,
+    );
+  }
   // ------------------- 生命周期 -------------------
   void allInit()async{
+
     // 初始化广告监听和加载
     rewarderEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
     isShowNewUser();
     isShow();
+    ///同意隐私政策之后调用
+    await _pangrowthInit();
+
     // 初始化消息（5条普通消息）
     for (int i = 0; i < 5; i++) {
       _addRandomChatMessage();

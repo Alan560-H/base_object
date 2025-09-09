@@ -93,7 +93,7 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.white,
                 actions: [
-                  if(controller.isShowNew.value)
+                  if(controller.isShowNew.value&&UserInfo.instance.isLoginIn)
                   Tada(
                     infinite: true,
                     duration: const Duration(milliseconds: 1000),

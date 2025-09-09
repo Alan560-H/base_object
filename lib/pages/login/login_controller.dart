@@ -168,6 +168,8 @@ class LoginController extends GetxController {
         isChecked.value =false;
         Get.offNamed(AppRoutes.home);
         Utils.logError("是否显示弹窗：${UserInfo.instance.userModel.inviteUserId==null||UserInfo.instance.userModel.inviteUserId==0}");
+        HomeController homeController = Get.find<HomeController>();
+        homeController.isShowNewUser();
         if(UserInfo.instance.userModel.inviteUserId==null||UserInfo.instance.userModel.inviteUserId==0){
           Dialogs.showCommonDialog(dialogType: "BindViteCodeDialog",dialogTitle: "绑定上级邀请人");
         }
