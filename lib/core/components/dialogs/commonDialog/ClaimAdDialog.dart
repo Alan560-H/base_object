@@ -110,7 +110,8 @@ class ClaimAdDialog extends StatelessWidget {
                       Text("温馨提示：建议累计到2000以上再领取哦",style: TextStyle(fontSize: TextConfig.textSize_12,color: Colors.white),),
                       SizedBox(height: 10.h,),
                       CuButton(text: "立即领取",width: 120.w,height: 40.h,radius: 10.r,bgColor: TextConfig.primary, onPressed: ()async{
-                        if(data.value>=2000){
+                        /// 如果金额未达到最低领取限度，提示用户累计金额
+                        if(data.value>=Store.instance.getFkConfig.amountMin){
                           showRewarder();
                         }else{
                           EasyLoading.showInfo("金额太少，请耐心等待");
