@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 
 import 'user_pay_list_controller.dart';
 
-class TemplateView extends GetView<UserPayListController> {
-  const TemplateView({super.key});
+class UserPayListView extends GetView<UserPayListController> {
+  const UserPayListView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

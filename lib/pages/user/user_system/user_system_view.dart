@@ -1,6 +1,7 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,9 @@ class UserSystemView extends GetView<UserSystemController> {
                               controller.packageInfo.value.version.toString(),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Get.toNamed(AppRoutes.userPayList);
+                          },
                           child: rowContainer(title: "绑定支付宝", value: "点击绑定支付宝"),
                         ),
                       ],
