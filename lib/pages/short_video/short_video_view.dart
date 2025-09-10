@@ -17,13 +17,12 @@ class ShortVideoView extends GetView<ShortVideoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text("短视频页面")),
-      // body: PangrowthVideo.videoSingleCardView(
-      //   viewWidth: 10.sw,
-      //   viewHeight: 1.sh - ScreenUtil().statusBarHeight,
-      // ),
+      // body: Center(child: Text("短视频页面")),
+      body: PangrowthVideo.videoSingleCardView(
+        viewWidth: 10.sw,
+        viewHeight: 1.sh - ScreenUtil().statusBarHeight,
+      ),
       bottomNavigationBar: CuNavBarView(),
     );
   }
-
 }
