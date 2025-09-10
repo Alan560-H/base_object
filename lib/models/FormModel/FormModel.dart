@@ -16,6 +16,9 @@ class FormModel {
 
   ///sid
   int sid = 1100;
+
+  ///通道名字
+  String? channelPackage;
   // 任意类型type
   dynamic type;
 

@@ -11,6 +11,7 @@ WithdrawalForm _$WithdrawalFormFromJson(Map<String, dynamic> json) =>
       ..locale = json['locale'] as String
       ..playform = (json['playform'] as num).toInt()
       ..sid = (json['sid'] as num).toInt()
+      ..channelPackage = json['channelPackage'] as String?
       ..type = json['type']
       ..payAccount = json['payAccount'] as String
       ..payName = json['payName'] as String
@@ -21,6 +22,7 @@ Map<String, dynamic> _$WithdrawalFormToJson(WithdrawalForm instance) =>
       'locale': instance.locale,
       'playform': instance.playform,
       'sid': instance.sid,
+      'channelPackage': instance.channelPackage,
       'type': instance.type,
       'payAccount': instance.payAccount,
       'payName': instance.payName,
