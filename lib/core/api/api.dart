@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:base_object/models/FormModel/FormModel.dart';
@@ -26,21 +25,22 @@ import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import '../net/cu_http_client.dart';
 import 'api_urls.dart';
 
-class Api extends GetxController{
+class Api extends GetxController {
   // GetX单例获取方式
   static Api get to => Get.find<Api>();
   // 发起请求的通用方法
   Future<BackModel> _sendRequest(
-      String url,
-      FormModel data,
-      String requestType,
-      ) async {
+    String url,
+    FormModel data,
+    String requestType,
+  ) async {
     try {
       BackModel backModel = await CuHttpClient.instance.request(
         url,
@@ -53,6 +53,7 @@ class Api extends GetxController{
       rethrow;
     }
   }
+
   /// 获取服务器版本信息
   Future<AppUpLoadModel> postUpApp(AppUpLoadForm data) async {
     try {
@@ -62,7 +63,7 @@ class Api extends GetxController{
         "post",
       );
       if (backModel.data == null) {
-        throw Exception('版本为空,无法解析${backModel.toJson()}',);
+        throw Exception('版本为空,无法解析${backModel.toJson()}');
       }
       AppUpLoadModel appUpLoadModel = AppUpLoadModel.fromJson(backModel.data);
       return appUpLoadModel;
@@ -72,66 +73,93 @@ class Api extends GetxController{
       return appUpLoadModel;
     }
   }
+
   /// 获取新人是否领取过福利
   Future<NewUserModel> getNewcomerConfig() async {
-    BackModel backModel = await _sendRequest(ApiUrls.getNewcomerConfig, FormModel(), "post");
+    BackModel backModel = await _sendRequest(
+      ApiUrls.getNewcomerConfig,
+      FormModel(),
+      "post",
+    );
     if (backModel.data == null) {
       Utils.logError("新人福利返回为空");
       return NewUserModel();
     }
     return NewUserModel.fromJson(backModel.data);
   }
+
   /// 领取新人福利
   Future<BackModel> getNewcomer() async {
     return await _sendRequest(ApiUrls.getNewcomer, FormModel(), "post");
   }
+
   /// 获取首页公告列表
   Future<List<NoticeModel>> postNotice() async {
-    BackModel backModel = await _sendRequest(ApiUrls.getNotice, FormModel(), "post");
+    BackModel backModel = await _sendRequest(
+      ApiUrls.getNotice,
+      FormModel(),
+      "post",
+    );
     if (backModel.data == null) {
       Utils.logError("公告列表返回为空");
       return [];
     }
     return NoticeModel.fromJsonList(backModel.data);
   }
+
   /// 获取客服配置{"channelPackage":"com.ruyimh.maingf"}
   /// index-0 Q群链接
   /// index-1 客服二维码
   /// index-2 客服联系方式
   Future<List<ServiceModel>> getServerConfig(AppUpLoadForm form) async {
-   try{
-     BackModel backModel = await _sendRequest(ApiUrls.getServerConfig, form, "post");
-     if (backModel.data == null) {
-       Utils.logError("获取客服配置为空");
-       return [];
-     }
-     return ServiceModel.fromJsonList(backModel.data);
-   }catch(e){
-     Utils.logError("getServerConfig请求出错: $e");
-     return [];
-   }
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getServerConfig,
+        form,
+        "post",
+      );
+      if (backModel.data == null) {
+        Utils.logError("获取客服配置为空");
+        return [];
+      }
+      return ServiceModel.fromJsonList(backModel.data);
+    } catch (e) {
+      Utils.logError("getServerConfig请求出错: $e");
+      return [];
+    }
   }
+
   /// 获取看广告小技巧
   Future<List<NoticeModel>> getNoticeAD() async {
-    BackModel backModel = await _sendRequest(ApiUrls.getNoticeAD, FormModel(), "post");
+    BackModel backModel = await _sendRequest(
+      ApiUrls.getNoticeAD,
+      FormModel(),
+      "post",
+    );
     if (backModel.data == null) {
       Utils.logError("公告列表返回为空");
       return [];
     }
     return NoticeModel.fromJsonList(backModel.data);
   }
+
   /// 获取屏蔽快应用
   Future<List<NoticeModel>> getNoticeAPP() async {
-    BackModel backModel = await _sendRequest(ApiUrls.getNoticeAPP, FormModel(), "post");
+    BackModel backModel = await _sendRequest(
+      ApiUrls.getNoticeAPP,
+      FormModel(),
+      "post",
+    );
     if (backModel.data == null) {
       Utils.logError("公告列表返回为空");
       return [];
     }
     return NoticeModel.fromJsonList(backModel.data);
   }
+
   /// 获取图片验证码
   Future<VerifyCodeImgModel> postVerifyCodeImg() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getImgCode,
         FormModel(),
@@ -141,11 +169,12 @@ class Api extends GetxController{
         return VerifyCodeImgModel();
       }
       return VerifyCodeImgModel.fromJson(backModel.data);
-    }catch(e){
+    } catch (e) {
       Utils.logError("postVerifyCodeImg请求出错: $e");
       return VerifyCodeImgModel();
     }
   }
+
   /// 发送手机验证码
   Future<BackModel> postSendMobileCode(SendMobileCodeModel data) async {
     try {
@@ -160,20 +189,17 @@ class Api extends GetxController{
       return BackModel();
     }
   }
+
   /// 获取设备是否被风控
   Future<BackModel> getVer(CheckDeviceForm checkDeviceForm) async {
     try {
-      return await _sendRequest(
-        ApiUrls.getVer,
-        checkDeviceForm,
-        "post",
-      );
-
+      return await _sendRequest(ApiUrls.getVer, checkDeviceForm, "post");
     } catch (e) {
       Utils.logError("getVer请求出错: $e");
       return BackModel();
     }
   }
+
   /// 获取风控配置
   Future<FKConfigVo> getFkConfig() async {
     try {
@@ -182,7 +208,7 @@ class Api extends GetxController{
         FormModel(),
         "post",
       );
-      if(backModel.data ==null){
+      if (backModel.data == null) {
         return FKConfigVo();
       }
       return FKConfigVo.fromJson(backModel.data);
@@ -191,6 +217,7 @@ class Api extends GetxController{
       return FKConfigVo();
     }
   }
+
   /// 提现方法
   Future<BackModel> getWithdrawalMoney(WithdrawalForm data) async {
     try {
@@ -205,6 +232,7 @@ class Api extends GetxController{
       return BackModel();
     }
   }
+
   /// 设置密码
   Future<BackModel> getSetUser(LoginForm data) async {
     try {
@@ -219,6 +247,7 @@ class Api extends GetxController{
       return BackModel();
     }
   }
+
   /// 副广告上报
   // Future<BackModel> getSelectAdV2(UpDataADForm data) async {
   //   try {
@@ -248,6 +277,7 @@ class Api extends GetxController{
       return RewarderModel();
     }
   }
+
   /// 副广告奖励领取
   Future<BackModel> getAdAmount() async {
     try {
@@ -308,9 +338,10 @@ class Api extends GetxController{
       return LoginModel();
     }
   }
+
   /// 获取用户信息
   Future<UserModel> getUserInfo() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getUserInfo,
         FormModel(),
@@ -322,14 +353,15 @@ class Api extends GetxController{
       }
       final UserModel userModel = UserModel.fromJson(backModel.data);
       return userModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getUserInfo请求出错: $e");
       return UserModel();
     }
   }
+
   /// 获取用户今日收益
   Future<UserTodayModel> getTodayAmount() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getTodayAmount,
         FormModel(),
@@ -338,16 +370,19 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return UserTodayModel();
       }
-      final UserTodayModel userTodayModel = UserTodayModel.fromJson(backModel.data);
+      final UserTodayModel userTodayModel = UserTodayModel.fromJson(
+        backModel.data,
+      );
       return userTodayModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getTodayAmount请求出错: $e");
       return UserTodayModel();
     }
   }
+
   /// 获取用户收入明细
   Future<List<UserAmountListModel>> getUserAmountList() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getUserAmountList,
         FormModel(),
@@ -356,16 +391,18 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return <UserAmountListModel>[];
       }
-      final List<UserAmountListModel> userAmountListModel = UserAmountListModel.fromJsonList(backModel.data);
+      final List<UserAmountListModel> userAmountListModel =
+          UserAmountListModel.fromJsonList(backModel.data);
       return userAmountListModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getUserAmountList: $e");
       return <UserAmountListModel>[];
     }
   }
+
   /// 用户邀新明细表
   Future<List<UserAmountListModel>> getInviteAmountList() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getInviteAmountList,
         FormModel(),
@@ -374,9 +411,10 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return <UserAmountListModel>[];
       }
-      final List<UserAmountListModel> userAmountListModel = UserAmountListModel.fromJsonList(backModel.data);
+      final List<UserAmountListModel> userAmountListModel =
+          UserAmountListModel.fromJsonList(backModel.data);
       return userAmountListModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getInviteAmountList: $e");
       return <UserAmountListModel>[];
     }
@@ -384,7 +422,7 @@ class Api extends GetxController{
 
   /// 获取用户支出明细
   Future<List<UserWithdrawalModel>> getWithdrawalOrderList() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getWithdrawalOrderList,
         FormModel(),
@@ -393,16 +431,18 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return <UserWithdrawalModel>[];
       }
-      final List<UserWithdrawalModel> userWithdrawalModel = UserWithdrawalModel.fromJsonList(backModel.data);
+      final List<UserWithdrawalModel> userWithdrawalModel =
+          UserWithdrawalModel.fromJsonList(backModel.data);
       return userWithdrawalModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getUserAmountList: $e");
       return <UserWithdrawalModel>[];
     }
   }
+
   /// 邀请好友-邀请信息
   Future<UserInviteCountModel> getInviteInfo() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getInviteInfo,
         FormModel(),
@@ -411,9 +451,10 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return UserInviteCountModel();
       }
-      final UserInviteCountModel userInviteCountModel = UserInviteCountModel.fromJson(backModel.data);
+      final UserInviteCountModel userInviteCountModel =
+          UserInviteCountModel.fromJson(backModel.data);
       return userInviteCountModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getInviteInfo: $e");
       return UserInviteCountModel();
     }
@@ -421,25 +462,29 @@ class Api extends GetxController{
 
   /// 我要提现-可选择的提现列表
   Future<List<WithdrawalModel>> getWithdrawalList() async {
-    try{
+    try {
+      AppUpLoadForm form = AppUpLoadForm();
+      form.channelPackage = Store.instance.getAppUpLoadModel.channelPackage;
       BackModel backModel = await _sendRequest(
         ApiUrls.getWithdrawalList,
-        FormModel(),
+        form,
         "post",
       );
       if (backModel.data == null) {
         return <WithdrawalModel>[];
       }
-      final List<WithdrawalModel> withdrawalModel = WithdrawalModel.fromJsonList(backModel.data);
+      final List<WithdrawalModel> withdrawalModel =
+          WithdrawalModel.fromJsonList(backModel.data);
       return withdrawalModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getWithdrawalList: $e");
       return <WithdrawalModel>[];
     }
   }
+
   /// 邀请好友-邀请任务
   Future<List<UserInviteModel>> getInviteList() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getInviteList,
         FormModel(),
@@ -448,16 +493,18 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return <UserInviteModel>[];
       }
-      final List<UserInviteModel> userInviteModel = UserInviteModel.fromJsonList(backModel.data);
+      final List<UserInviteModel> userInviteModel =
+          UserInviteModel.fromJsonList(backModel.data);
       return userInviteModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getInviteList: $e");
       return <UserInviteModel>[];
     }
   }
+
   /// 邀请-我的推广信息
   Future<UserInviteInfoModel> getMyInviteInfo() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getMyInviteInfo,
         FormModel(),
@@ -466,9 +513,10 @@ class Api extends GetxController{
       if (backModel.data == null) {
         return UserInviteInfoModel();
       }
-      final UserInviteInfoModel userInviteInfoModel = UserInviteInfoModel.fromJson(backModel.data);
+      final UserInviteInfoModel userInviteInfoModel =
+          UserInviteInfoModel.fromJson(backModel.data);
       return userInviteInfoModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getMyInviteInfo: $e");
       return UserInviteInfoModel();
     }
@@ -476,7 +524,7 @@ class Api extends GetxController{
 
   /// 邀请-我的钱包
   Future<UserBayModel> getInviteMyBag() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getInviteMyBag,
         FormModel(),
@@ -487,14 +535,15 @@ class Api extends GetxController{
       }
       final UserBayModel userBayModel = UserBayModel.fromJson(backModel.data);
       return userBayModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getMyInviteInfo: $e");
       return UserBayModel();
     }
   }
+
   /// 邀请-我的粉丝列表
   Future<UserSonModel> getInviteMyInvite() async {
-    try{
+    try {
       BackModel backModel = await _sendRequest(
         ApiUrls.getInviteMyInvite,
         FormModel(),
@@ -505,10 +554,9 @@ class Api extends GetxController{
       }
       final UserSonModel userSonModel = UserSonModel.fromJson(backModel.data);
       return userSonModel;
-    }catch(e){
+    } catch (e) {
       Utils.logError("getMyInviteInfo: $e");
       return UserSonModel();
     }
   }
-
 }
