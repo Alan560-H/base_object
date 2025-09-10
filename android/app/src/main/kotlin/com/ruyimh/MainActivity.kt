@@ -30,7 +30,7 @@ class MainActivity : FlutterFragmentActivity() {
         Log.d(TAG, "=== configureFlutterEngine 开始执行 ===")
 
         // 关键修复：移除 finish()，避免阻断通道注册
-        if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !== 0) {
+        if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             Log.d(TAG, "检测到页面复用标记，不销毁 Activity")
             return // 仅跳过后续初始化，不销毁 Activity
         }
