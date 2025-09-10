@@ -194,7 +194,12 @@ class Api extends GetxController {
   /// 获取设备是否被风控
   Future<BackModel> getVer(CheckDeviceForm checkDeviceForm) async {
     try {
-      return await _sendRequest(ApiUrls.getVer, checkDeviceForm, "post");
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getVer,
+        checkDeviceForm,
+        "post",
+      );
+      return backModel;
     } catch (e) {
       Utils.logError("getVer请求出错: $e");
       return BackModel();

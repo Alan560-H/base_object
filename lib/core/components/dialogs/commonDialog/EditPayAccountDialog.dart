@@ -42,7 +42,7 @@ class _EditPayAccountDialogState extends State<EditPayAccountDialog> {
     super.initState();
     commitForm.value.payName = widget.userPayLModel.payName;
     commitForm.value.payAccount = widget.userPayLModel.payAccount;
-    commitForm.value.amountId = widget.userPayLModel.id;
+    commitForm.value.id = widget.userPayLModel.id;
     commitForm.value.channelPackage =
         Store.instance.getAppUpLoadModel.channelPackage;
   }
@@ -60,7 +60,8 @@ class _EditPayAccountDialogState extends State<EditPayAccountDialog> {
       }
       EasyLoading.show();
       BackModel backModel = BackModel();
-      if (commitForm.value.amountId != 0) {
+
+      if (commitForm.value.id != 0) {
         backModel = await Api.to.getUpdateBindPay(commitForm.value);
       } else {
         backModel = await Api.to.getBindAlipay(commitForm.value);
@@ -107,7 +108,9 @@ class _EditPayAccountDialogState extends State<EditPayAccountDialog> {
                   textSize: TextConfig.textSize_12,
                   height: 40.h,
                   hintText: '输入支付宝真实姓名',
-                  onChanged: (value) async {},
+                  onChanged: (value) async {
+                    commitForm.value.payName = value;
+                  },
                   validator: (value) {
                     return null;
                   },
@@ -127,7 +130,9 @@ class _EditPayAccountDialogState extends State<EditPayAccountDialog> {
                   textSize: TextConfig.textSize_12,
                   height: 40.h,
                   hintText: '输入支付宝账号',
-                  onChanged: (value) async {},
+                  onChanged: (value) async {
+                    commitForm.value.payAccount = value;
+                  },
                   validator: (value) {
                     return null;
                   },

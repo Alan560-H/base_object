@@ -16,8 +16,11 @@ class WithdrawalForm extends FormModel {
   /// 名字
   String payName = "";
 
-  /// 验证码id
-  int? amountId = 0;
+  /// 金额id
+  int? amountId;
+
+  /// id
+  int? id;
 
   /// 发送验证码 type = 0
   WithdrawalForm();
