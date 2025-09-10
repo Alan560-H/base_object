@@ -20,6 +20,7 @@ import 'package:base_object/models/backModel/userModel/UserInviteCountModel.dart
 import 'package:base_object/models/backModel/userModel/UserInviteInfoModel.dart';
 import 'package:base_object/models/backModel/userModel/UserInviteModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/models/backModel/userModel/UserPayLModel.dart';
 import 'package:base_object/models/backModel/userModel/UserSonModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserWithdrawalModel.dart';
@@ -437,6 +438,57 @@ class Api extends GetxController {
     } catch (e) {
       Utils.logError("getUserAmountList: $e");
       return <UserWithdrawalModel>[];
+    }
+  }
+
+  /// 修改用户绑定的支付宝
+  Future<BackModel> getUpdateBindPay(WithdrawalForm data) async {
+    try {
+      return await _sendRequest(ApiUrls.getUpdateBindPay, data, "post");
+    } catch (e) {
+      Utils.logError("getUpdateBindPay: $e");
+      return BackModel();
+    }
+  }
+
+  /// 删除用户绑定的支付宝
+  Future<BackModel> getRemoveBindPay(WithdrawalForm data) async {
+    try {
+      return await _sendRequest(ApiUrls.getRemoveBindPay, data, "post");
+    } catch (e) {
+      Utils.logError("getRemoveBindPay: $e");
+      return BackModel();
+    }
+  }
+
+  /// 新增用户绑定的支付宝
+  Future<BackModel> getBindAlipay(WithdrawalForm data) async {
+    try {
+      return await _sendRequest(ApiUrls.getBindAlipay, data, "post");
+    } catch (e) {
+      Utils.logError("getBindAlipay: $e");
+      return BackModel();
+    }
+  }
+
+  /// 获取用户绑定的支付包列表
+  Future<List<UserPayLModel>> getPayList(FormModel data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getPayList,
+        data,
+        "post",
+      );
+      if (backModel.data == null) {
+        return <UserPayLModel>[];
+      }
+      final List<UserPayLModel> userPayLModel = UserPayLModel.fromJsonList(
+        backModel.data,
+      );
+      return userPayLModel;
+    } catch (e) {
+      Utils.logError("getUserAmountList: $e");
+      return <UserPayLModel>[];
     }
   }
 

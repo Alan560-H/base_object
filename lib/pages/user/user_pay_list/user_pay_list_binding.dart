@@ -6,8 +6,6 @@ import 'user_pay_list_controller.dart';
 class UserPayListBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(Api());
-
     Get.lazyPut(() => UserPayListController());
   }
 }

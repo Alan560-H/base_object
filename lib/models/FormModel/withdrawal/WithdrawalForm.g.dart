@@ -15,7 +15,7 @@ WithdrawalForm _$WithdrawalFormFromJson(Map<String, dynamic> json) =>
       ..type = json['type']
       ..payAccount = json['payAccount'] as String
       ..payName = json['payName'] as String
-      ..amountId = (json['amountId'] as num).toInt();
+      ..amountId = (json['amountId'] as num?)?.toInt();
 
 Map<String, dynamic> _$WithdrawalFormToJson(WithdrawalForm instance) =>
     <String, dynamic>{
