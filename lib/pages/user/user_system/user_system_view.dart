@@ -1,7 +1,9 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/store/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -50,6 +52,21 @@ class UserSystemView extends GetView<UserSystemController> {
                           value:
                               controller.packageInfo.value.version.toString(),
                         ),
+                        if (Store.instance.getAppUpLoadModel.needUpdate == true)
+                          InkWell(
+                            onTap: () {
+                              Dialogs.showCommonDialog(
+                                barrierDismissible: false,
+                                dialogType: "AppUpLoadDialog",
+                                data: Store.instance.getAppUpLoadModel,
+                                dialogTitle: "升级提示",
+                              );
+                            },
+                            child: rowContainer(
+                              title: "最新版本（点击进行更新）",
+                              value: Store.instance.getAppUpLoadModel.version,
+                            ),
+                          ),
                         InkWell(
                           onTap: () {
                             Get.toNamed(AppRoutes.userPayList);

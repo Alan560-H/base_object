@@ -172,15 +172,19 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                           // 按钮文字：倒计时中显示“立即领取(6s)”，结束后显示“立即领取”
                           text:
                               _countdown.value > 0
-                                  ? "立即领取(${_countdown.value}s)"
+                                  ? "${_countdown.value}秒后可以领取"
                                   : "立即领取",
                           width: 120.w,
                           height: 40.h,
                           radius: 10.r,
+                          textColor:
+                              _countdown.value > 0
+                                  ? TextConfig.primary
+                                  : Colors.white,
                           // 按钮颜色：倒计时中灰色（禁用），结束后用原主题色
                           bgColor:
                               _countdown.value > 0
-                                  ? Colors.grey[300]!
+                                  ? Colors.white
                                   : TextConfig.primary,
                           // 关键：倒计时未结束时，onPressed为null（禁用点击）
                           onPressed:

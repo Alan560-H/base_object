@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
@@ -39,7 +41,7 @@ class TixianController extends GetxController {
         withdrawalForm.value,
       );
       if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: backModel.data);
+        CuToast.success(msg: backModel.msg);
         nameController.clear();
         accountController.clear();
         withdrawalForm.value.payName = "";

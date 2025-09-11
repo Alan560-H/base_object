@@ -427,19 +427,23 @@ class TixianView extends GetView<TixianController> {
                                 ),
                               ),
                               Text(
-                                "1、提现金额一般24小时内到账，如遇节假日和特殊情况会适当延迟到账",
+                                "1、提现金额一般24小时内到账，如遇节假日和特殊情况会适当延迟到账。",
                                 style: TextStyle(color: TextConfig.black333),
                               ),
                               Text(
-                                "2、支付宝未实名认证会导致提现无法到账，请确认支付宝已完成实名认证",
+                                "2、支付宝未实名认证会导致提现无法到账，请确认支付宝已完成实名认证。",
                                 style: TextStyle(color: TextConfig.black333),
                               ),
                               Text(
-                                "3、由于支付宝提现机制原因，每日提现有次数限制，如有余额，可次日申请",
+                                "3、由于支付宝提现机制原因，每日提现有次数限制，如有余额，可次日申请。",
                                 style: TextStyle(color: TextConfig.black333),
                               ),
                               Text(
-                                "4、如果提现遇到问题，请即使联系客服解决",
+                                "4、如果提现遇到问题，请即使联系客服解决。",
+                                style: TextStyle(color: TextConfig.black333),
+                              ),
+                              Text(
+                                "5、绑定的支付宝账号仅用作于提现使用，本App不做留存。",
                                 style: TextStyle(color: TextConfig.black333),
                               ),
                             ],
