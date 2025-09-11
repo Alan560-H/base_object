@@ -12,11 +12,18 @@ part 'WithdrawalForm.g.dart';
 class WithdrawalForm extends FormModel {
   /// 手机号
   String payAccount = "";
+
   /// 名字
   String payName = "";
 
-  /// 验证码id
-  int amountId = 0;
+  /// 金额id
+  int? amountId;
+
+  /// id
+  int? id;
+
+  int? userPayAccountId;
+
   /// 发送验证码 type = 0
   WithdrawalForm();
   //不同的类使用不同的mixin即可

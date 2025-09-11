@@ -60,14 +60,14 @@ class Store extends GetxController{
   }
   setRemainingSeconds(){
     _remainingSeconds = _fkConfig.value.adTime;
-    Utils.logError("当前间隔时间${_remainingSeconds}");
+    Utils.logError("当前间隔时间$_remainingSeconds");
   }
   int _remainingSeconds = 0;
 
   /// 是否可以观看激励广告,true 是可以，false不可以
   Future<bool> canLookReward()async{
     bool isReady = await RewarderTool.to.rewardedVideoReady();
-    Utils.logError("准备状态：${isReady}}");
+    Utils.logError("准备状态：$isReady}");
     if(!isReady){
       CuToast.error(msg: "广告还没准备好，请稍后再试");
       RewarderTool.to.loadRewardedVideo(
@@ -83,7 +83,7 @@ class Store extends GetxController{
       return false;
     }
     if(_remainingSeconds>0){
-      CuToast.error(msg: "距离下一次广告时间$_remainingSeconds秒");
+      CuToast.error(msg: "红包被抢完了");
       return false;
     }
     return true;

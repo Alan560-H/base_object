@@ -10,6 +10,7 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/models/backModel/newUserModel/NewUserModel.dart';
+import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
@@ -91,7 +92,11 @@ class _NewUserDialogState extends State<NewUserDialog> {
                           if(Get.isRegistered<Api>()){
                             BackModel backModel = await Api.to.getNewcomer();
                             if(backModel.code == CuErrorConfig.success){
+                              HomeController homeController = Get.find<HomeController>();
+                              await homeController.isShowNewUser();
+                              await UserInfo.instance.getUserInfoFn();
                               CuToast.success(msg: backModel.data);
+                              Get.back();
                             }
                           }
                         }catch(e){

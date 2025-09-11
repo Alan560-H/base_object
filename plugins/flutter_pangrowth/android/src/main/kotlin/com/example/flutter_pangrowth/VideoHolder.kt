@@ -43,7 +43,7 @@ object VideoHolder : CoroutineScope by MainScope() {
 
         val build = TTAdConfig.Builder()
             .appId(androidAppId) //穿山甲媒体id
-            .appName("传家宝")
+            .appName("如意开盒")
             .titleBarTheme(TTAdConstant.TITLE_BAR_THEME_DARK)
             .allowShowNotify(true)
             .supportMultiProcess(true)

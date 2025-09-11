@@ -11,11 +11,13 @@ FormModel _$FormModelFromJson(Map<String, dynamic> json) =>
       ..locale = json['locale'] as String
       ..playform = (json['playform'] as num).toInt()
       ..sid = (json['sid'] as num).toInt()
+      ..channelPackage = json['channelPackage'] as String?
       ..type = json['type'];
 
 Map<String, dynamic> _$FormModelToJson(FormModel instance) => <String, dynamic>{
   'locale': instance.locale,
   'playform': instance.playform,
   'sid': instance.sid,
+  'channelPackage': instance.channelPackage,
   'type': instance.type,
 };

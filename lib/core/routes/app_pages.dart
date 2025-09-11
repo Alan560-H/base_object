@@ -35,6 +35,8 @@ import 'package:base_object/pages/user/user_error/user_error_binding.dart';
 import 'package:base_object/pages/user/user_error/user_error_view.dart';
 import 'package:base_object/pages/user/user_invite/user_invite_binding.dart';
 import 'package:base_object/pages/user/user_invite/user_invite_view.dart';
+import 'package:base_object/pages/user/user_pay_list/user_pay_list_binding.dart';
+import 'package:base_object/pages/user/user_pay_list/user_pay_list_view.dart';
 import 'package:base_object/pages/user/user_service/user_service_binding.dart';
 import 'package:base_object/pages/user/user_service/user_service_view.dart';
 import 'package:base_object/pages/user/user_son/user_son_binding.dart';
@@ -153,46 +155,60 @@ class AppPages {
       binding: UserInviteBinding(), // 团长招募的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+
     /// 我的钱包
     GetPage(
       name: AppRoutes.userWallet,
       page: () => UserBagView(),
-      binding: UserBagBinding(),// 我的钱包的依赖注入
+      binding: UserBagBinding(), // 我的钱包的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+
     /// 我的收益
     GetPage(
       name: AppRoutes.userEarnings,
       page: () => UserEarningsView(),
-      binding: UserEarningsBinding(),// 我的收益的依赖注入
+      binding: UserEarningsBinding(), // 我的收益的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+
     /// 我的徒弟
     GetPage(
       name: AppRoutes.userSon,
       page: () => UserSonView(),
-      binding: UserSonBinding(),// 我的收益的依赖注入
+      binding: UserSonBinding(), // 我的收益的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+
     /// 我的资料
     GetPage(
       name: AppRoutes.userEditInfo,
       page: () => UserEditInfoView(),
-      binding: UserEditInfoBinding(),// 我的资料的依赖注入
+      binding: UserEditInfoBinding(), // 我的资料的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+
+    /// 我的支付列表
+    GetPage(
+      name: AppRoutes.userPayList,
+      page: () => UserPayListView(),
+      binding: UserPayListBinding(), // 我的支付列表的依赖注入
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+
     /// 我的提现记录
     GetPage(
       name: AppRoutes.userWithdrawalHistory,
       page: () => WithdrawalHistoryView(),
-      binding: WithdrawalHistoryBinding(),// 我的提现记录的依赖注入
+      binding: WithdrawalHistoryBinding(), // 我的提现记录的依赖注入
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
+
     /// 设备封禁页面
     GetPage(
       name: AppRoutes.userError,
       page: () => UserErrorView(),
-      binding: UserErrorBinding(),// 我的提现记录的依赖注入
+      binding: UserErrorBinding(), // 我的提现记录的依赖注入
     ),
   ];
 }
