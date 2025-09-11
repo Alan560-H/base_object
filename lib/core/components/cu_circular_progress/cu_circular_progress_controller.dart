@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/listener_tool.dart';
@@ -31,20 +32,23 @@ class CuCircularProgressController extends GetxController {
   void resetProgressTimer(){
     setStepTimer?.cancel();
     setStepTimer = null;
+    _seconds = Store.instance.getFkConfig.adv1Time;
+    resetProgress();
     startAutoSetProgressTimer();
   }
+  RxBool timeEnd = false.obs; // 倒计时是否结束
   // 启动发财树进度条
   void startAutoSetProgressTimer() {
-    Utils.logError("开始倒计时");
     setStepTimer = Timer.periodic(
       const Duration(seconds: 1),
           (Timer timer){
         if(_progress.value<maxProgress&&_seconds>0){
           _progress.value += 100;
           _seconds--;
+          timeEnd.value = false;
         }else{
-          Utils.logError("进度条满了");
-          setStepTimer?.cancel();
+          timeEnd.value = true;
+          timer.cancel();
         }
           }
     );
@@ -67,10 +71,16 @@ class CuCircularProgressController extends GetxController {
   void resetProgress() {
     _progress.value = 0.0;
   }
+  // 打开存钱罐
   void showDialog() async {
     try {
       if(!UserInfo.instance.isLoginIn){
         Get.toNamed(AppRoutes.login);
+        return;
+      }
+
+      if(!timeEnd.value){
+        CuToast.error(msg: "奖励还未准备好");
         return;
       }
       if(!Get.isRegistered<Api>()){
@@ -95,7 +105,6 @@ class CuCircularProgressController extends GetxController {
 
   @override
   void onInit() {
-    // initCurrentValue();
     _seconds = Store.instance.getFkConfig.adv1Time;
     if(_seconds== 0){
       _seconds = 60;

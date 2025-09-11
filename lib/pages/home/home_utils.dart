@@ -4,9 +4,11 @@ import 'dart:math';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:crypto/crypto.dart';
@@ -17,7 +19,6 @@ import 'package:jiffy/jiffy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeUtils {
-
   // 获取UserAgent
   static Future<String?> getUserAgent() async {
     const platform = MethodChannel('ua_channel');
@@ -29,6 +30,7 @@ class HomeUtils {
     }
     return null;
   }
+
   // 获取渠道标识
   static Future<String> getAppChannel() async {
     try {
@@ -40,6 +42,7 @@ class HomeUtils {
       return 'unknown';
     }
   }
+
   // 生成MD5
   static String generateMD5(String input) {
     final bytes = utf8.encode(input);
@@ -73,15 +76,16 @@ class HomeUtils {
     appUpLoadModel.ua = await getUserAgent();
     appUpLoadModel.fingerprint = androidInfo.fingerprint;
     appUpLoadModel.channel = channel;
-    appUpLoadModel.channelPackage = appUpLoadForm.channelPackage;
+    appUpLoadModel.channelPackage = appUpLoadForm.channelPackage ?? "";
 
     // 存储升级信息
     Store.instance.updateAppUpLoadModel(appUpLoadModel);
     // 获取客服配置
-     Store.instance.getServerConfig();
+    Store.instance.getServerConfig();
     // 校验版本并弹窗
     if (appUpLoadModel.packageName.isEmpty) return;
-    String input = "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";
+    String input =
+        "channelPackage=${appUpLoadForm.channelPackage}&version=${packageInfo.version}";
     String sign = generateMD5(input);
 
     if (sign == appUpLoadModel.sign) return;
@@ -109,16 +113,45 @@ class HomeUtils {
       }
     }
   }
+
   static final Random random = Random(); // 全局随机数生成器
   // 生成随机昵称
   static String generateRandomNickname() {
     final List<String> surnames = [
-      "张", "李", "王", "刘", "陈", "杨", "赵", "黄", "周", "吴",
-      "徐", "孙", "胡", "朱", "高", "林", "何", "郭", "马", "罗"
+      "张",
+      "李",
+      "王",
+      "刘",
+      "陈",
+      "杨",
+      "赵",
+      "黄",
+      "周",
+      "吴",
+      "徐",
+      "孙",
+      "胡",
+      "朱",
+      "高",
+      "林",
+      "何",
+      "郭",
+      "马",
+      "罗",
     ];
     final List<String> givenNames = [
-      "抢包快", "红包控", "手慢无", "必中君", "好运来", "财气旺",
-      "秒抢王", "幸运星", "红包侠", "发财猫", "福气多", "抢不停"
+      "抢包快",
+      "红包控",
+      "手慢无",
+      "必中君",
+      "好运来",
+      "财气旺",
+      "秒抢王",
+      "幸运星",
+      "红包侠",
+      "发财猫",
+      "福气多",
+      "抢不停",
     ];
     final List<String> suffixes = ["", "呀", "啦", "～", "！", "✨"];
 
@@ -126,7 +159,8 @@ class HomeUtils {
         "${givenNames[random.nextInt(givenNames.length)]}"
         "${suffixes[random.nextInt(suffixes.length)]}";
   }
-// 生成随机抢红包语录
+
+  // 生成随机抢红包语录
   static String getRandomRedPacketQuote() {
     final List<String> redPacketQuotes = [
       "谁发的红包？我火速赶来！",
@@ -158,9 +192,8 @@ class HomeUtils {
       "红包提醒太及时了，差点就错过了！",
       "有没有大红包？我已经准备好冲刺了！",
       "谢谢老板，祝您天天开心！",
-      "抢红包太快乐了，根本停不下来！"
+      "抢红包太快乐了，根本停不下来！",
     ];
     return redPacketQuotes[random.nextInt(redPacketQuotes.length)];
   }
-
 }

@@ -38,7 +38,10 @@ class InviteUserView extends GetView<InviteUserController> {
               BannerVo item = banner.value;
               int index = banner.key;
               return RepaintBoundary(
-                key: controller.bannerKeys.length > index ? controller.bannerKeys[index] : null,
+                key:
+                    controller.bannerKeys.length > index
+                        ? controller.bannerKeys[index]
+                        : null,
                 child: Builder(
                   builder: (BuildContext context) {
                     return Container(
@@ -65,8 +68,7 @@ class InviteUserView extends GetView<InviteUserController> {
                                   Expanded(
                                     child: Center(
                                       child: QrImageView(
-                                        data:
-                                        Store.instance.getAppUpLoadModel.downUrl,
+                                        data: controller.inviteUrl,
                                         version: QrVersions.auto,
                                         size: 140.r,
                                       ),
@@ -158,7 +160,7 @@ class InviteUserView extends GetView<InviteUserController> {
                           child: InkWell(
                             onTap: () async {
                               bool success = await Utils.copyText(
-                                Store.instance.getAppUpLoadModel.downUrl,
+                                controller.inviteUrl,
                               );
                               if (success) {
                                 CuToast.success(msg: "复制成功");

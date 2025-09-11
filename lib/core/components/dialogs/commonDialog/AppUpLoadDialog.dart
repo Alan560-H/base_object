@@ -16,7 +16,6 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 ///指数盲盒下注确认框
 class AppUpLoadDialog extends StatefulWidget {
   final AppUpLoadModel appUpLoadModel;
@@ -35,7 +34,7 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
   bool isChecked = false;
 
   Future<void> requestPermissions() async {
-    try{
+    try {
       if (Platform.isAndroid) {
         final androidInfo = await DeviceInfoPlugin().androidInfo;
         final sdkInt = androidInfo.version.sdkInt;
@@ -50,22 +49,32 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
         }
         permissionsToRequest.add(Permission.requestInstallPackages);
 
-        Map<Permission, PermissionStatus> statuses = await permissionsToRequest.request();
+        Map<Permission, PermissionStatus> statuses =
+            await permissionsToRequest.request();
         Utils.logError('权限请求状态: $statuses');
-        if (statuses.values.any((status) => status != PermissionStatus.granted)) {
+        if (statuses.values.any(
+          (status) => status != PermissionStatus.granted,
+        )) {
           throw Exception('权限不足，无法下载或安装应用');
         }
       }
-    }catch(e){
+    } catch (e) {
       Utils.logError(e);
     }
   }
+
   /// 服务协议和隐私协议
   Widget checkedUpApp() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Checkbox(
+          side: BorderSide(
+            color: Colors.white, // 边框颜色
+            width: 1.w, // 边框粗细（用 ScreenUtil 适配）
+            style: BorderStyle.solid,
+          ),
+          checkColor: Colors.white,
           activeColor: TextConfig.primary,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           value: isChecked,
@@ -79,14 +88,14 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
           onTap: () {
             setState(() {
               isChecked = !isChecked;
-
             });
           },
-          child: Text("一天内不在弹出"),
+          child: Text("一天内不在弹出", style: TextStyle(color: Colors.white)),
         ),
       ],
     );
   }
+
   Future<void> downloadAPK() async {
     try {
       await requestPermissions();
@@ -174,8 +183,16 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Store.instance.getAppUpLoadModel.must=="1"?Text("您必须更新才可以继续使用该 app"):Text("app有更新，你可以更新应用以获得更好得体验"),
-              checkedUpApp()
+              Store.instance.getAppUpLoadModel.must == "1"
+                  ? Text(
+                    "您必须更新才可以继续使用该 app",
+                    style: TextStyle(color: Colors.white),
+                  )
+                  : Text(
+                    "app有更新，你可以更新应用以获得更好得体验",
+                    style: TextStyle(color: Colors.white),
+                  ),
+              checkedUpApp(),
             ],
           ),
         ),
@@ -187,20 +204,26 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10.w,
           children: [
-            Store.instance.getAppUpLoadModel.must!="1"? CuButton(
-              height: 40.h,
-              width: 100.w,
-              text: "取消",
-              onPressed: () async {
-                // 在这里设置时间戳。
-               if(isChecked){
-                 await LocalStorage.setString("isUpApp",Jiffy.now().format());
-               }
-                Get.back();
-              },
-              radius: 20.r,
-              bgColor: TextConfig.grey,
-            ):Container(),
+            Store.instance.getAppUpLoadModel.must != "1"
+                ? CuButton(
+                  height: 40.h,
+                  width: 100.w,
+                  text: "取消",
+                  onPressed: () async {
+                    // 在这里设置时间戳。
+                    if (isChecked) {
+                      await LocalStorage.setString(
+                        "isUpApp",
+                        Jiffy.now().format(),
+                      );
+                    }
+                    Get.back();
+                  },
+                  radius: 20.r,
+                  textColor: TextConfig.black333,
+                  bgColor: TextConfig.comPageGrey,
+                )
+                : Container(),
             CuButton(
               height: 40.h,
               width: 100.w,
@@ -210,7 +233,7 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
               bgColor: TextConfig.primary,
             ),
           ],
-        )
+        ),
       ],
     );
   }
