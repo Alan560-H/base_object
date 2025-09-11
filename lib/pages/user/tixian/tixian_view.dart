@@ -4,6 +4,7 @@ import 'package:base_object/core/components/custom_input_field.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/models/backModel/userModel/UserPayLModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
 import 'package:base_object/pages/user/tixian/tixian_controller.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -96,71 +97,138 @@ class TixianView extends GetView<TixianController> {
       ),
       // height: Get.height,
       width: Get.width,
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10.h,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Text("支付宝账号："),
-
-              /// 账号登录
-              Expanded(
-                child: CustomInputField(
-                  key: GlobalKey(),
-                  height: 30.h,
-                  textColor: TextConfig.black333,
-                  textSize: TextConfig.textSize_12,
-                  bgColor: Colors.white,
-                  hintText: "请输入账号",
-                  onChanged: (value) {
-                    controller.withdrawalForm.value.payAccount = value;
-                  },
-                  controller: controller.accountController,
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text("姓名："),
-
-              /// 实名
-              Expanded(
-                child: CustomInputField(
-                  textColor: TextConfig.black333,
-                  textSize: TextConfig.textSize_12,
-                  key: GlobalKey(),
-                  height: 30.h,
-                  bgColor: Colors.white,
-                  hintText: "请输入姓名",
-                  onChanged: (value) {
-                    controller.withdrawalForm.value.payName = value;
-                  },
-                  controller: controller.nameController,
-                ),
-              ),
-            ],
-          ),
           Text(
-            "输入的账号和姓名仅用作于提现，不做保存",
+            "提现到指定账户",
             style: TextStyle(
+              fontSize: TextConfig.textSize_16,
               color: TextConfig.primary,
-              fontSize: TextConfig.textSize_12,
             ),
           ),
-          Text(
-            "名下多个支付账号，请填支付宝账号，不要填手机号，否则无法到账。",
-            style: TextStyle(
-              color: TextConfig.primary,
-              fontSize: TextConfig.textSize_12,
-            ),
-          ),
+          controller.userPayLModelList.isNotEmpty
+              ? DropdownButton<UserPayLModel>(
+                style: TextStyle(color: TextConfig.primary),
+                borderRadius: BorderRadius.circular(10.r),
+                isExpanded: true,
+                alignment: AlignmentDirectional.centerEnd,
+                value: controller.selectPay.value,
+                hint: const Text('请选择一个选项'),
+                onChanged: (UserPayLModel? newValue) {
+                  controller.selectPay.value = newValue!;
+                  controller.withdrawalForm.value.userPayAccountId =
+                      newValue.id;
+                },
+                // 正确返回 DropdownMenuItem 列表
+                items:
+                    controller.userPayLModelList
+                        .map<DropdownMenuItem<UserPayLModel>>((
+                          UserPayLModel value,
+                        ) {
+                          return DropdownMenuItem<UserPayLModel>(
+                            value: value,
+                            child: Text(
+                              "${value.payName}(${value.payAccount})",
+                              style: TextStyle(
+                                color:
+                                    controller.selectPay.value == value
+                                        ? TextConfig
+                                            .primary // 选中项在下拉列表中的颜色
+                                        : TextConfig.black333, // 未选中项的颜色
+                              ),
+                            ), // 直接显示选项文本
+                          );
+                        })
+                        .toList(),
+              )
+              : CuButton(
+                radius: 10.r,
+                text: "去绑定支付宝账号",
+                width: Get.width,
+                bgColor: TextConfig.primary,
+                onPressed: () {
+                  Get.toNamed(AppRoutes.userPayList);
+                },
+              ),
         ],
       ),
     );
+    // return Container(
+    //   decoration: BoxDecoration(
+    //     borderRadius: BorderRadius.circular(10.r),
+    //     color: TextConfig.commonYellowPageColor,
+    //   ),
+    //   // height: Get.height,
+    //   width: Get.width,
+    //   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+    //   child: Column(
+    //     spacing: 10.h,
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     children: [
+    //       Row(
+    //         children: [
+    //           Text("支付宝账号："),
+    //
+    //           /// 账号登录
+    //           Expanded(
+    //             child: CustomInputField(
+    //               key: GlobalKey(),
+    //               height: 30.h,
+    //               textColor: TextConfig.black333,
+    //               textSize: TextConfig.textSize_12,
+    //               bgColor: Colors.white,
+    //               hintText: "请输入账号",
+    //               onChanged: (value) {
+    //                 controller.withdrawalForm.value.payAccount = value;
+    //               },
+    //               controller: controller.accountController,
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       Row(
+    //         children: [
+    //           Text("姓名："),
+    //
+    //           /// 实名
+    //           Expanded(
+    //             child: CustomInputField(
+    //               textColor: TextConfig.black333,
+    //               textSize: TextConfig.textSize_12,
+    //               key: GlobalKey(),
+    //               height: 30.h,
+    //               bgColor: Colors.white,
+    //               hintText: "请输入姓名",
+    //               onChanged: (value) {
+    //                 controller.withdrawalForm.value.payName = value;
+    //               },
+    //               controller: controller.nameController,
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       Text(
+    //         "输入的账号和姓名仅用作于提现，不做保存",
+    //         style: TextStyle(
+    //           color: TextConfig.primary,
+    //           fontSize: TextConfig.textSize_12,
+    //         ),
+    //       ),
+    //       Text(
+    //         "名下多个支付账号，请填支付宝账号，不要填手机号，否则无法到账。",
+    //         style: TextStyle(
+    //           color: TextConfig.primary,
+    //           fontSize: TextConfig.textSize_12,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget get tixianLiebiao {

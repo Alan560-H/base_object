@@ -22,6 +22,8 @@ class WithdrawalForm extends FormModel {
   /// id
   int? id;
 
+  int? userPayAccountId;
+
   /// 发送验证码 type = 0
   WithdrawalForm();
   //不同的类使用不同的mixin即可
