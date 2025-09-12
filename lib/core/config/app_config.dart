@@ -34,19 +34,21 @@ class AppConfig extends GetxController {
   /// 公开访问的getter
   String get getBaseUrl => _baseUrl;
   // String get socketUrl => _socketUrl;
+  /// 注册中间页地址
+  String get registerUrl => "https://ysxy.ruyigx.com/invite_register.html";
 
   // 初始化配置
   void init() {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // 生产环境（release模式）
       // _baseUrl = 'http://129.211.211.100:39300';
-      _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
-      // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
+      // _baseUrl = 'https://prd.ruyigx.com/';// 如意盒子
+      _baseUrl = 'https://ruyikh.ruyigx.com'; // 如意开盒
     } else {
       // 开发环境（debug模式）
       // _baseUrl = 'http://129.211.211.100:39300';
-      _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
-      // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
+      // _baseUrl = 'https://prd.ruyigx.com/';// 如意盒子
+      _baseUrl = 'https://ruyikh.ruyigx.com'; // 如意开盒
     }
   }
 }
