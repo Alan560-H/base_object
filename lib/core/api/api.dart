@@ -95,12 +95,8 @@ class Api extends GetxController {
   }
 
   /// 获取首页公告列表
-  Future<List<NoticeModel>> postNotice() async {
-    BackModel backModel = await _sendRequest(
-      ApiUrls.getNotice,
-      FormModel(),
-      "post",
-    );
+  Future<List<NoticeModel>> postNotice(FormModel data) async {
+    BackModel backModel = await _sendRequest(ApiUrls.getNotice, data, "post");
     if (backModel.data == null) {
       Utils.logError("公告列表返回为空");
       return [];

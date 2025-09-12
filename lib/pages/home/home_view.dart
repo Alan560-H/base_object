@@ -51,9 +51,12 @@ class HomeView extends GetView<HomeController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. 用户头像
-          Avatar(headImage: message.user.avatarUrl,size: 20.h,isCircle:false,),
+          Avatar(
+            headImage: message.user.avatarUrl,
+            size: 20.h,
+            isCircle: false,
+          ),
           SizedBox(width: 10.w), // 头像与内容间距
-
           // 2. 消息内容区域
           Expanded(
             child: Column(
@@ -84,100 +87,123 @@ class HomeView extends GetView<HomeController> {
     });
 
     return Scaffold(
-      body: Obx(()=>
-          Container(
-            color: TextConfig.comPageGrey,
-            child: Column(
-              children: [
-                CuAppBar(
-                  alignment: Alignment.centerLeft,
-                  showBackArrow: false,
-                  title: controller.appbarTitle.value,
-                  backgroundColor: Colors.transparent,
-                  actions: [
-                    if(controller.isShowNew.value&&UserInfo.instance.isLoginIn)
+      body: Obx(
+        () => Container(
+          color: TextConfig.comPageGrey,
+          child: Column(
+            children: [
+              CuAppBar(
+                alignment: Alignment.centerLeft,
+                showBackArrow: false,
+                title: controller.appbarTitle.value,
+                backgroundColor: Colors.transparent,
+                actions: [
+                  if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
                     Tada(
                       infinite: true,
                       duration: const Duration(milliseconds: 1000),
-                      child: CuButton(bgColor: TextConfig.primary,radius: 10.r, text: "新人福利", width: 80.w, onPressed:() {
-                        Get.dialog(NewUserDialog());
-                      }),
+                      child: CuButton(
+                        bgColor: TextConfig.primary,
+                        radius: 10.r,
+                        text: "新人福利",
+                        width: 80.w,
+                        onPressed: () {
+                          Get.dialog(NewUserDialog());
+                        },
+                      ),
                     ),
-                    SizedBox(width: 40.w,),
-                    CuButton(bgColor: TextConfig.primary,radius: 15.r, text: UserInfo.instance.isLoginIn?"${UserInfo.instance.userModel.currentAmount} 提现":"登录", width: 130.w, onPressed:() {
+                  SizedBox(width: 40.w),
+                  CuButton(
+                    bgColor: TextConfig.primary,
+                    radius: 15.r,
+                    text:
+                        UserInfo.instance.isLoginIn
+                            ? "${UserInfo.instance.userModel.currentAmount} 提现"
+                            : "登录",
+                    width: 130.w,
+                    onPressed: () {
                       Get.toNamed(AppRoutes.userTixian);
-                    })
+                    },
+                  ),
+                ],
+              ),
+              // 聊天列表
+              Expanded(
+                child: Stack(
+                  children: [
+                    _buildChatList(),
+                    // 新人福利
+                    // controller.isShowNew.value?Positioned(
+                    //   top: Get.height/2,
+                    //   left: 0,
+                    //   child: InkWell(
+                    //     onTap: ()=>Get.dialog(NewUserDialog()),
+                    //     child: Tada(
+                    //       infinite: true,
+                    //       duration: const Duration(milliseconds: 1000),
+                    //       child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
+                    //     ),
+                    //   ),
+                    //  ):Center(),
+                    // 存钱罐
+                    Positioned(
+                      top: Get.height / 2 - 100.h,
+                      left: 0,
+                      child: CuCircularProgressView(
+                        imagePath: ImageConfig.progressBg,
+                        size: 60.h, // 自定义进度条大小
+                        strokeWidth: 5.h, // 自定义进度条宽度
+                        progressColor: TextConfig.primary, // 自定义进度色（橙色）
+                        backgroundColor: TextConfig.black333, // 自定义背景色
+                      ),
+                    ),
+                    // 看广小技巧
+                    Positioned(
+                      top: Get.height / 2 - 100.h,
+                      right: 0,
+                      child: InkWell(
+                        onTap: () {
+                          Get.dialog(KgxjqDialog());
+                        },
+                        child: Container(
+                          height: 100.h,
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent,
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+
+                          child: CachedNetworkImage(
+                            imageUrl: ImageConfig.kgxjq,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 屏蔽快应用
+                    Positioned(
+                      top: Get.height / 2 - 210.h,
+                      right: 0,
+                      child: InkWell(
+                        onTap: () {
+                          Get.dialog(PbkyyDialog());
+                        },
+                        child: Container(
+                          height: 100.h,
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent,
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: ImageConfig.pbkyy,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                // 聊天列表
-                Expanded(child: Stack(children:
-                [
-                  _buildChatList(),
-                  // 新人福利
-                  // controller.isShowNew.value?Positioned(
-                  //   top: Get.height/2,
-                  //   left: 0,
-                  //   child: InkWell(
-                  //     onTap: ()=>Get.dialog(NewUserDialog()),
-                  //     child: Tada(
-                  //       infinite: true,
-                  //       duration: const Duration(milliseconds: 1000),
-                  //       child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
-                  //     ),
-                  //   ),
-                  //  ):Center(),
-                  // 存钱罐
-                  Positioned(
-                    top: Get.height/2-100.h,
-                    left: 0,
-                    child: CuCircularProgressView(
-                      imagePath: ImageConfig.progressBg,
-                      size: 60.h, // 自定义进度条大小
-                      strokeWidth: 5.h, // 自定义进度条宽度
-                      progressColor: TextConfig.primary, // 自定义进度色（橙色）
-                      backgroundColor: TextConfig.black333, // 自定义背景色
-                    ),),
-                  // 看广小技巧
-                  Positioned(
-                    top: Get.height/2-100.h,
-                    right: 0,
-                    child: InkWell(
-                      onTap: (){
-                        Get.dialog(KgxjqDialog());
-                      },
-                      child:Container(
-                        height: 100.h,
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent,
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-
-                        child: CachedNetworkImage(imageUrl: ImageConfig.kgxjq),
-                      ),
-                    ),),
-                  // 屏蔽快应用
-                  Positioned(
-                    top: Get.height/2-210.h,
-                    right: 0,
-                    child: InkWell(
-                      onTap: (){
-                        Get.dialog(PbkyyDialog());
-                      },
-                      child:Container(
-                        height: 100.h,
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent,
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: CachedNetworkImage(imageUrl: ImageConfig.pbkyy),
-                      ),
-                    ),),
-                ]
-
-                )),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: CuNavBarView(),
     );

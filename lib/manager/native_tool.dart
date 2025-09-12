@@ -129,7 +129,7 @@ class NativeTool extends GetxService {
       extraMap: {
         ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
           Get.width,
-          170,
+          120,
           x: 0,
           y: 30,
           backgroundColorStr: '#FFFFFF',
