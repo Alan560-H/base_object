@@ -28,7 +28,7 @@ class AppConfig extends GetxController {
       "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=oQa4YkADFXhPbT3FJ0nkvXlhlJ6rb54-&authKey=td6mejWblP%2FX%2BgB231w1oj2KQsxM3NH%2BtwLRUAQT1UEEhox5VO%2B9M9Ep2yyS7ex%2F&noverify=0&group_code=1006103675";
 
   /// 注册中间页地址
-  String get registerUrl => "http://192.168.0.136:8080/invite_register.html";
+  String get registerUrl => "https://ysxy.ruyigx.com/invite_register.html";
 
   /// 私有变量，存储URL配置
 
@@ -42,12 +42,15 @@ class AppConfig extends GetxController {
   void init() {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // 生产环境（release模式）
-      _baseUrl = 'http://129.211.211.100:39300';
+
+      // _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
+      // _baseUrl = 'http://129.211.211.100:39300';
       _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
       // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
     } else {
       // 开发环境（debug模式）
-      _baseUrl = 'http://129.211.211.100:39300';
+      // _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
+      // _baseUrl = 'http://129.211.211.100:39300';
       _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
       // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
     }
