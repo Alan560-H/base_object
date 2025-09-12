@@ -6,10 +6,12 @@ import 'dart:math';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/commonDialog/ClaimAdDialog.dart';
 import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/listener_tool.dart';
@@ -24,6 +26,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
+import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -34,7 +37,6 @@ import '../../models/backModel/BackModel.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
-
   // 激励广告奖励提交方法
   upDataADFn(dynamic event) async {
     try {
@@ -48,7 +50,7 @@ class HomeController extends GetxController {
       dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
       double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
       int pross = amount?.toInt() ?? 0;
-      if(pross>Store.instance.getFkConfig.wactchMaxAmountV1){
+      if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
         CheckDeviceForm checkDeviceForm = CheckDeviceForm();
         checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
         checkDeviceForm.userId = UserInfo.instance.userModel.id;
@@ -124,37 +126,62 @@ class HomeController extends GetxController {
           break;
         case "RewardedStatus.rewardedVideoDidClose":
           Utils.logError("激励广告被关闭，广告位ID：$placementID");
-          if(!Get.isRegistered<RewarderTool>()){
+          if (!Get.isRegistered<RewarderTool>()) {
             Get.put(RewarderTool());
           }
           RewarderTool.to.loadRewardedVideo(
             userID: "${UserInfo.instance.userModel.id}",
             extra:
-            "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+                "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
           );
           redBagOpen.value = false;
           if (Get.isRegistered<UserInfo>()) {
             upDataADFn(event);
           }
-          Utils.logError("${Store.instance.getIsOpenClaim}，hhhh",);
-          if(Store.instance.getIsOpenClaim){
-            ClaimAdDialog.checkClaim();
+          Utils.logError("${Store.instance.getIsOpenClaim}，hhhh");
+          if (Store.instance.getIsOpenClaim) {
+            checkClaim();
           }
           break;
       }
     });
   }
 
+  // 5. 改为实例方法（原static去掉，避免无法访问State内属性）
+  Future<void> checkClaim() async {
+    if (Get.isRegistered<Api>()) {
+      BackModel backModel = await Api.to.getAdAmount();
+      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
+      if (backModel.code == CuErrorConfig.success) {
+        CuToast.success(msg: "存钱罐领取成功");
+        UserInfo.instance.getUserInfoFn();
+        Store.instance.setIsOpenClaim(false);
+
+        Utils.logError(
+          "是否有进度条${Get.isRegistered<CuCircularProgressController>()}",
+        );
+        if (Get.isRegistered<CuCircularProgressController>()) {
+          CuCircularProgressController.to.resetProgressTimer();
+          NativeTool.to.removeNativeAd();
+          NativeTool.to.loadNativeWith();
+          Get.back();
+        }
+      }
+    }
+  }
+
   // 显示激励广告
   showRewarder() async {
-
-    if(await Store.instance.canLookReward()){
+    if (await Store.instance.canLookReward()) {
       if (Get.isRegistered<NativeTool>()) {
         NativeTool.to.showNative();
       }
       Get.dialog(
         Container(
-          constraints: BoxConstraints(maxWidth: Get.width, maxHeight: Get.height),
+          constraints: BoxConstraints(
+            maxWidth: Get.width,
+            maxHeight: Get.height,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,7 +193,7 @@ class HomeController extends GetxController {
                     InkWell(
                       onTap: () async {
                         bool isRewReady =
-                        await RewarderTool.to.rewardedVideoReady();
+                            await RewarderTool.to.rewardedVideoReady();
                         if (isRewReady) {
                           redBagOpen.value = true;
                           await RewarderTool.to.showRewardedVideo();
@@ -220,7 +247,6 @@ class HomeController extends GetxController {
         ),
       );
     }
-
   }
 
   int timeCount = 0;
@@ -245,7 +271,7 @@ class HomeController extends GetxController {
         content,
         style: TextStyle(
           fontSize: TextConfig.textSize_16.sp,
-          color: TextConfig.grey,
+          color: TextConfig.black333,
         ),
         maxLines: 2, // 限制2行，超出显示省略号
         overflow: TextOverflow.ellipsis,
@@ -271,7 +297,7 @@ class HomeController extends GetxController {
         HomeUtils.getRandomRedPacketQuote(),
       );
       bool isHasNative = false;
-      if(!Get.isRegistered<RewarderTool>()){
+      if (!Get.isRegistered<RewarderTool>()) {
         Get.put<RewarderTool>(RewarderTool());
       }
       bool isRewardReady =
@@ -329,29 +355,49 @@ class HomeController extends GetxController {
   }
 
   // 获取App升级信息
-  getAppUpdata() async {
-    await HomeUtils.getAppUpdata();
+  Future<void> getAppUpdata({bool isReturn = false}) async {
+    await HomeUtils.getAppUpdata(isReturn: isReturn);
   }
 
   RxBool isShowNew = false.obs;
-  isShowNewUser()async{
+  isShowNewUser() async {
     Utils.logError("登录？？${UserInfo.instance.isLoginIn}");
-    if(!UserInfo.instance.isLoginIn)return false;
-    isShowNew.value =  await UserInfo.instance.isNewUser();
+    if (!UserInfo.instance.isLoginIn) return false;
+    isShowNew.value = await UserInfo.instance.isNewUser();
   }
+
   isShow() async {
     if (await NoticeDialog.shouldShow()) {
       Dialogs.noticeDialog();
     }
   }
+
+  Future _pangrowthInit() async {
+    // final status = await Permission.phone.request();
+    // print("phone 权限状态 $status");
+    // 这里的appid  和logappid 填写穿山甲的sdkjson文件李的值
+    await PangrowthVideo.registerVideo(
+      appName: "",
+      andoridAppId: "5670418",
+      appLogAppId: "751081",
+      iosAppId: "",
+      debug: true,
+    );
+  }
+
   // ------------------- 生命周期 -------------------
-  void allInit()async{
+  void allInit() async {
     // 初始化广告监听和加载
     rewarderEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
     isShowNewUser();
+    await getAppUpdata(isReturn: true);
     isShow();
+
+    ///同意隐私政策之后调用
+    await _pangrowthInit();
+
     // 初始化消息（5条普通消息）
     for (int i = 0; i < 5; i++) {
       _addRandomChatMessage();
@@ -359,6 +405,7 @@ class HomeController extends GetxController {
     // 启动定时器
     _startAutoMessageTimer();
   }
+
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
@@ -378,7 +425,6 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
-
     Utils.logError("首页页面onReady");
     // TODO: implement onReady
     super.onReady();

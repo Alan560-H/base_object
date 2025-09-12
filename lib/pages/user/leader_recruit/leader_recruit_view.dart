@@ -44,7 +44,11 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: CachedNetworkImage(imageUrl: Store.instance.getQCode?.image??"18942693171"),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              Store.instance.getQCode?.image ??
+                              ImageConfig.inviteDefault,
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -69,7 +73,6 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
                             textColor: Colors.white,
                             onPressed: () {
                               Get.snackbar("提示", "成为团长请联系客服");
-
                             },
                           ),
                         ],

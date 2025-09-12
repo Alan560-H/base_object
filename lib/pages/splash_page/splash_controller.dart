@@ -22,7 +22,6 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SplashController extends GetxController {
-
   // 用于标记是否已处理跳转（避免重复跳转）
   bool _hasJumped = false;
 
@@ -45,47 +44,34 @@ class SplashController extends GetxController {
     }
   }
 
-  Future<void> getVer()async {
-    try{
-     await Store.instance.getVer();
-     if(Store.instance.isLimit) {
-       Get.offAllNamed(AppRoutes.userError);
-       NativeTool.to.removeNativeAd();
-       BannerTool.to.removeBannerAd();
-       Get.delete<NativeTool>();
-       Get.delete<RewarderTool>();
-       Get.delete<InitTool>();
-       Get.delete<SplashTool>();
-     }
-    }catch(e){
+  Future<void> getVer() async {
+    try {
+      await Store.instance.getVer();
+      if (Store.instance.isLimit) {
+        Get.offAllNamed(AppRoutes.userError);
+        NativeTool.to.removeNativeAd();
+        BannerTool.to.removeBannerAd();
+        Get.delete<NativeTool>();
+        Get.delete<RewarderTool>();
+        Get.delete<InitTool>();
+        Get.delete<SplashTool>();
+      }
+    } catch (e) {
       Utils.logError("检查设备封禁失败$e");
     }
   }
-  Future<void> getFkConfig()async {
-   try{
-     FKConfigVo data = await Api.to.getFkConfig();
-     Store.instance.setFKConfigVo(data);
-     Utils.logError("风控设置：${Store.instance.getFkConfig.toJson()}");
-   }catch(e){
-     Utils.logError("获取风控配置失败$e");
-   }
-  }
-  Future _pangrowthInit() async {
-    final status = await Permission.phone.request();
-    print("phone 权限状态 $status");
-    await PangrowthVideo.registerVideo(
-      appName: "",
-      ////appid 必填
-      ///demo 使用
-      // andoridAppId: "5713596",
-      andoridAppId: "5670418",
-      appLogAppId :"751081",
-      iosAppId: "",
-      debug: true,
-    );
+
+  Future<void> getFkConfig() async {
+    try {
+      FKConfigVo data = await Api.to.getFkConfig();
+      Store.instance.setFKConfigVo(data);
+      Utils.logError("风控设置：${Store.instance.getFkConfig.toJson()}");
+    } catch (e) {
+      Utils.logError("获取风控配置失败$e");
+    }
   }
 
-  Future<void> initAll()async{
+  Future<void> initAll() async {
     DependencyInjection.adInit();
     InitTool.to.setCustomDataDic({
       "user_id": 0,
@@ -96,16 +82,17 @@ class SplashController extends GetxController {
     bool isInitAd = await InitTool.to.initTopon();
     Utils.logError("广告初始化完成 $isInitAd ");
   }
+
   @override
   void onInit() async {
     Utils.logError("开屏页面init初始化");
+
     await getVer();
     await initAll();
 
     await getFkConfig();
     super.onInit();
-    ///同意隐私政策之后调用
-    await _pangrowthInit();
+
     // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
     _subscribeSplashEvent();
 
@@ -127,44 +114,48 @@ class SplashController extends GetxController {
       Utils.logError("收到开屏广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
       // 根据事件类型执行业务逻辑
       switch (eventType) {
-      // 开屏广告加载完成
+        // 开屏广告加载完成
         case "SplashStatus.splashDidFinishLoading":
           Utils.logError("开屏广告加载成功，展示广告");
           SplashTool.to.showSplash();
           break;
-      // 开屏广告加载失败
+        // 开屏广告加载失败
         case "SplashStatus.splashDidFailToLoad":
           Utils.logError("开屏广告失败，跳转首页");
           _jumpToHome();
           break;
 
-      // 广告加载超时：跳转首页
+        // 广告加载超时：跳转首页
         case "SplashStatus.splashDidTimeout":
           Utils.logError("开屏广告加载超时，跳转首页");
           _jumpToHome();
           break;
-      // 展示成功
+        // 展示成功
         case "SplashStatus.splashDidShowSuccess":
           Utils.logError("开屏广告展示成功");
           break;
-      // 展示失败
+        // 展示失败
         case "SplashStatus.splashDidShowFailed":
           Utils.logError("开屏广告展示失败");
           break;
-          /// 点击
+
+        /// 点击
         case "SplashStatus.splashDidClick":
           Utils.logError("开屏广告点击");
           break;
-      /// 关闭
+
+        /// 关闭
         case "SplashStatus.splashDidClose":
           Utils.logError("开屏广告关闭");
           _jumpToHome();
           break;
-      /// 即将关闭
+
+        /// 即将关闭
         case "SplashStatus.splashWillClose":
           Utils.logError("开屏广告即将关闭");
           break;
-      /// 深度链接呗触发
+
+        /// 深度链接呗触发
         case "SplashStatus.splashDidDeepLink":
           Utils.logError("开屏广告深度链接呗触发");
           break;
@@ -181,7 +172,6 @@ class SplashController extends GetxController {
     _hasJumped = true; // 标记为已跳转
 
     Get.offAllNamed(AppRoutes.home);
-
   }
 
   // 页面销毁时取消订阅（避免内存泄漏）
