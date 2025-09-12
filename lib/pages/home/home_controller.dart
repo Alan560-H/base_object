@@ -354,8 +354,8 @@ class HomeController extends GetxController {
   }
 
   // 获取App升级信息
-  getAppUpdata() async {
-    await HomeUtils.getAppUpdata();
+  Future<void> getAppUpdata({bool isReturn = false}) async {
+    await HomeUtils.getAppUpdata(isReturn: isReturn);
   }
 
   RxBool isShowNew = false.obs;
@@ -391,6 +391,7 @@ class HomeController extends GetxController {
     // 初始化用户信息
     UserInfo.instance.initialize();
     isShowNewUser();
+    await getAppUpdata(isReturn: true);
     isShow();
 
     ///同意隐私政策之后调用
