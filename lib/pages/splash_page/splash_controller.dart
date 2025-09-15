@@ -40,17 +40,11 @@ class SplashController extends GetxController {
     }
   }
 
+  /// 检查设备封禁
   Future<void> getVer() async {
     try {
-      await Store.instance.getVer();
       if (Store.instance.isLimit) {
         Get.offAllNamed(AppRoutes.userError);
-        NativeTool.to.removeNativeAd();
-        BannerTool.to.removeBannerAd();
-        Get.delete<NativeTool>();
-        Get.delete<RewarderTool>();
-        Get.delete<InitTool>();
-        Get.delete<SplashTool>();
       }
     } catch (e) {
       Utils.logError("检查设备封禁失败$e");
@@ -83,83 +77,22 @@ class SplashController extends GetxController {
   void onInit() async {
     Utils.logError("开屏页面init初始化");
 
-    await getVer();
-    await initAll();
-
-    await getFkConfig();
-    super.onInit();
-
-    // 1. 先订阅开屏广告事件（关键：确保事件监听在广告展示前生效）
-    _subscribeSplashEvent();
-
-    // 2. 加载并展示广告（若 main 中未提前加载，这里触发加载）
-    await SplashTool.to.loadSplash();
-    await _init();
-  }
-
-  /// 订阅 ListenerTool 的开屏广告事件
-  void _subscribeSplashEvent() {
-    // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
-    ever(ListenerTool.to.splashEvent, (event) {
-      if (event == null || _hasJumped) return; // 过滤空事件或重复跳转
-
-      // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
-      String eventType = event["eventType"] ?? "";
-      String placementID = event["placementID"] ?? "";
-
-      Utils.logError("收到开屏广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
-      // 根据事件类型执行业务逻辑
-      switch (eventType) {
-        // 开屏广告加载完成
-        case "SplashStatus.splashDidFinishLoading":
-          Utils.logError("开屏广告加载成功，展示广告");
-          SplashTool.to.showSplash();
-          break;
-        // 开屏广告加载失败
-        case "SplashStatus.splashDidFailToLoad":
-          Utils.logError("开屏广告失败，跳转首页");
-          _jumpToHome();
-          break;
-
-        // 广告加载超时：跳转首页
-        case "SplashStatus.splashDidTimeout":
-          Utils.logError("开屏广告加载超时，跳转首页");
-          _jumpToHome();
-          break;
-        // 展示成功
-        case "SplashStatus.splashDidShowSuccess":
-          Utils.logError("开屏广告展示成功");
-          break;
-        // 展示失败
-        case "SplashStatus.splashDidShowFailed":
-          Utils.logError("开屏广告展示失败");
-          break;
-
-        /// 点击
-        case "SplashStatus.splashDidClick":
-          Utils.logError("开屏广告点击");
-          break;
-
-        /// 关闭
-        case "SplashStatus.splashDidClose":
-          Utils.logError("开屏广告关闭");
-          _jumpToHome();
-          break;
-
-        /// 即将关闭
-        case "SplashStatus.splashWillClose":
-          Utils.logError("开屏广告即将关闭");
-          break;
-
-        /// 深度链接呗触发
-        case "SplashStatus.splashDidDeepLink":
-          Utils.logError("开屏广告深度链接呗触发");
-          break;
-        case "SplashStatus.splashUnknown":
-          Utils.logError("开屏广告状态未知");
-          break;
-      }
+    Store.instance.getVer().then((value) {
+      Utils.logError("返回的数值：$value");
+      // 如果被封了，就去错误页面
+      if (!value) {
+        Get.offAllNamed(AppRoutes.userError);
+      } else {}
     });
+    // Utils.logError("封禁情况${Store.instance.isLimit}");
+    // await initAll();
+    //
+    // await getFkConfig();
+    // super.onInit();
+    //
+    // // 2. 加载并展示广告（若 main 中未提前加载，这里触发加载）
+    // await SplashTool.to.loadSplash();
+    // await _init();
   }
 
   /// 跳转首页（封装兜底逻辑，避免重复跳转）

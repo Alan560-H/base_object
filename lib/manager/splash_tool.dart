@@ -1,6 +1,7 @@
 import 'package:anythink_sdk/at_index.dart';
 import 'package:anythink_sdk/at_splash.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 class SplashTool extends GetxController {
@@ -11,7 +12,7 @@ class SplashTool extends GetxController {
     await ATSplashManager.loadSplash(
       placementID: AppAdConfig.splashID,
       extraMap: {},
-    );
+    ).then((value) => {Utils.logError("开屏广告加载完成$value")});
   }
 
   /// 开屏是否准备好（修正后）
