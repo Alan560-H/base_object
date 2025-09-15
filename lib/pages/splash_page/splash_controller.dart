@@ -15,11 +15,7 @@ import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/store/di.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
-import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class SplashController extends GetxController {
   // 用于标记是否已处理跳转（避免重复跳转）
