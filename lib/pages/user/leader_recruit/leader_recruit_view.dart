@@ -20,7 +20,6 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
           height: Get.height,
           width: Get.width,
           decoration: BoxDecoration(
-            color: Colors.red,
             image: DecorationImage(
               image: CachedNetworkImageProvider(ImageConfig.leaderRecruit),
               fit: BoxFit.fill,
@@ -35,7 +34,7 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
               ),
               Positioned(
                 left: 45.w,
-                top: 290.h,
+                top: 310.h,
                 child: SizedBox(
                   height: 190.h,
                   width: 270.w,
