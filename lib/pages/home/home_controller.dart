@@ -26,6 +26,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -172,10 +173,15 @@ class HomeController extends GetxController {
 
   // 显示激励广告
   showRewarder() async {
-    if (await Store.instance.canLookReward()) {
-      if (Get.isRegistered<NativeTool>()) {
+    if (Get.isRegistered<NativeTool>()) {
+      NativeTool.to.loadNativeWith();
+      Utils.logError(NativeTool.to.checkNativeLoadStatus());
+      if (await NativeTool.to.nativeAdReady()) {
         NativeTool.to.showNative();
       }
+    }
+
+    if (await Store.instance.canLookReward()) {
       Get.dialog(
         Container(
           constraints: BoxConstraints(
@@ -192,6 +198,15 @@ class HomeController extends GetxController {
                   children: [
                     InkWell(
                       onTap: () async {
+                        if (!UserInfo.instance.isLoginIn) {
+                          Get.toNamed(AppRoutes.login);
+                          return;
+                        }
+                        if (Store.instance.isTimeOver) {
+                          // CuToast.error(msg: "红包被抢完了");
+                          EasyLoading.showError("稍等片刻，红包正在准备准备中");
+                          return;
+                        }
                         bool isRewReady =
                             await RewarderTool.to.rewardedVideoReady();
                         if (isRewReady) {

@@ -102,10 +102,10 @@ class UserInfo extends GetxController {
         Get.put<RewarderTool>(RewarderTool());
 
         await Future.delayed(const Duration(milliseconds: 20));
-        if(!Get.isRegistered<InitTool>()){
+        if (!Get.isRegistered<InitTool>()) {
           Get.put<InitTool>(InitTool());
         }
-        if(!Get.isRegistered<RewarderTool>()){
+        if (!Get.isRegistered<RewarderTool>()) {
           Get.put<RewarderTool>(RewarderTool());
         }
         bool isInitAd = await InitTool.to.initTopon();
@@ -139,12 +139,12 @@ class UserInfo extends GetxController {
   Future<bool> isNewUser() async {
     try {
       EasyLoading.show();
-      if(!isLoginIn){
+      if (!isLoginIn) {
         return false;
       }
       newUserModel.value = await Api.to.getNewcomerConfig();
       Utils.logError("新人福利状态${newUserModel.value.toJson()}");
-      return newUserModel.value.status==0;
+      return newUserModel.value.status == 0;
     } catch (e) {
       Utils.logError("请求用户是否是新人失败$e");
       return false;
