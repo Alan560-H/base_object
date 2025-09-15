@@ -53,7 +53,7 @@ class AppPages {
     GetPage(
       name: AppRoutes.splashPage,
       page: () => SplashView(),
-      binding: SplashBinding(), // 首页的依赖注入
+      binding: SplashBinding(),
     ),
     GetPage(
       name: AppRoutes.firstPage,

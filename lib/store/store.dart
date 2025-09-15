@@ -40,15 +40,25 @@ class Store extends GetxController {
   final Rx<FKConfigVo> _fkConfig = FKConfigVo().obs;
   void setFKConfigVo(FKConfigVo data) {
     _fkConfig.value = data;
-    Utils.logError("当前配置是：${_fkConfig.toJson()}");
+  }
+
+  /// 获取风控配置
+  Future<void> getFkConfigFn() async {
+    try {
+      FKConfigVo data = await Api.to.getFkConfig();
+      setFKConfigVo(data);
+      Utils.logError("风控设置：${getFkConfig.toJson()}");
+    } catch (e) {
+      Utils.logError("获取风控配置失败$e");
+    }
   }
 
   FKConfigVo get getFkConfig => _fkConfig.value;
 
-  /// 当日计数
+  /// 当日领取红包次数
   final Rx<CurrentCountVo> _currentCount = CurrentCountVo().obs;
 
-  /// 当日计数
+  /// 当日领取红包次数
   CurrentCountVo get getCurrentCount => _currentCount.value;
   Timer? _timer;
 
