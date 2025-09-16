@@ -21,6 +21,7 @@ import 'package:get/get.dart';
 class InterAdDialog extends GetxService {
   // GetX 单例获取方式
   static InterAdDialog get to => Get.find<InterAdDialog>();
+
   /// 插屏广告定时器
   final InterstitialTool interstitialTool = Get.find<InterstitialTool>();
 
@@ -32,14 +33,16 @@ class InterAdDialog extends GetxService {
     // 初始化插屏广告
     interstitialTool.loadInterstitialAd({
       Common.getUserIdKey(): UserInfo.instance.userModel.id,
-      Common.getExtraKey(): "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_0",
+      Common.getExtraKey():
+          "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_0",
     });
     // 初始化逻辑
   }
-  upDataADFn(dynamic event)async{
-    try{
+
+  upDataADFn(dynamic event) async {
+    try {
       UserInfo userInfo = UserInfo.instance;
-      if(userInfo.isLoginIn){
+      if (userInfo.isLoginIn) {
         UpDataADForm upDataADForm = UpDataADForm();
 
         // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
@@ -51,28 +54,40 @@ class InterAdDialog extends GetxService {
         String adsourceId = event?['extraMap']?['adsource_id'];
         // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
         String userId = UserInfo.instance.userModel.id.toString();
-        upDataADForm.extra = "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
+        upDataADForm.extra =
+            "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
         upDataADForm.transId = event?['extraMap']?['id'];
-        upDataADForm.amount = (amount!/1000);
+        upDataADForm.amount = (amount! / 1000);
         upDataADForm.adsourceId = adsourceId;
         upDataADForm.reqId = reqId;
-        upDataADForm.sign=Utils.generateEncryptedString(userId: userId,reqId:reqId,adsourceId: adsourceId);
+        upDataADForm.sign = Utils.generateEncryptedString(
+          userId: userId,
+          reqId: reqId,
+          adsourceId: adsourceId,
+        );
         Utils.logError("插屏广告凑成的字符串${upDataADForm.toJson()}");
         int pross = amount.toInt();
         Utils.logError("插屏广告金额$pross");
-        if(pross>Store.instance.getFkConfig.wactchMaxAmountV1){
+        if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
           CheckDeviceForm checkDeviceForm = CheckDeviceForm();
           checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
           checkDeviceForm.userId = UserInfo.instance.userModel.id;
+          checkDeviceForm.address = Store.instance.locationData?.address;
+          checkDeviceForm.latitude = Store.instance.locationData?.latitude;
+          checkDeviceForm.longitude = Store.instance.locationData?.longitude;
+          checkDeviceForm.msg = "插屏广告金额超出限制";
           checkDeviceForm.type = 2;
           BackModel data = await Api.to.getVer(checkDeviceForm);
-          Get.offAllNamed(AppRoutes.userError);
+          if (data.data) {
+            Get.offAllNamed(AppRoutes.userError);
+          }
         }
       }
-    }catch(e){
+    } catch (e) {
       Utils.logError("上报副广失败：$e");
     }
   }
+
   // 用于标记是否已处理跳转（避免重复跳转）
   bool _hasShow = false;
 
@@ -86,88 +101,92 @@ class InterAdDialog extends GetxService {
       String eventType = event["eventType"] ?? "";
       String placementID = event["placementID"] ?? "";
 
-      Utils.logError("插屏广告收到插屏视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event");
+      Utils.logError(
+        "插屏广告收到插屏视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event",
+      );
       // 根据事件类型执行业务逻辑
       switch (eventType) {
-      // 插屏广告加载失败
+        // 插屏广告加载失败
         case "InterstitialStatus.interstitialAdFailToLoadAD":
           Utils.logError("插屏广告加载失败，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告加载成功
+        // 插屏广告加载成功
         case "InterstitialStatus.interstitialAdDidFinishLoading":
           Utils.logError("插屏广告加载完成，广告位ID：$placementID，事件参数：$event");
           Utils.logError("当前路由：${Get.currentRoute}");
           _startTimer();
 
           break;
-      // 插屏广告深度链接
+        // 插屏广告深度链接
         case "InterstitialStatus.interstitialAdDidDeepLink":
           Utils.logError("插屏广告深度链接，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告被点击
+        // 插屏广告被点击
         case "InterstitialStatus.interstitialAdDidClick":
           Utils.logError("插屏广告被点击，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告被关闭
+        // 插屏广告被关闭
         case "InterstitialStatus.interstitialAdDidClose":
           Utils.logError("插屏广告被关闭，广告位ID：$placementID，事件参数：$event");
           upDataADFn(event);
           _startTimer();
           break;
-      // 插屏广告开始播放
+        // 插屏广告开始播放
         case "InterstitialStatus.interstitialAdDidStartPlaying":
           Utils.logError("插屏广告开始播放，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告结束播放
+        // 插屏广告结束播放
         case "InterstitialStatus.interstitialAdDidEndPlaying":
           Utils.logError("插屏广告结束播放，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告播放失败
+        // 插屏广告播放失败
         case "InterstitialStatus.interstitialDidFailToPlayVideo":
           Utils.logError("插屏广告播放失败，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告展示成功
+        // 插屏广告展示成功
         case "InterstitialStatus.interstitialDidShowSucceed":
           Utils.logError("插屏广告展示成功，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告展示失败
+        // 插屏广告展示失败
         case "InterstitialStatus.interstitialFailedToShow":
           Utils.logError("插屏广告展示失败，广告位ID：$placementID，事件参数：$event");
           break;
-      // 插屏广告未知状态
+        // 插屏广告未知状态
         case "InterstitialStatus.interstitialUnknown":
           Utils.logError("插屏广告未知状态，广告位ID：$placementID，事件参数：$event");
           break;
       }
     });
   }
+
   // 定时器对象
   Timer? _timer;
   // 启动定时器
   void _startTimer() {
     // 先取消可能存在的定时器，避免重复
     _timer?.cancel();
-    if(!Get.isRegistered<Store>()){
+    if (!Get.isRegistered<Store>()) {
       Get.put(Store());
     }
-    _timer = Timer(Duration(seconds: Store.instance.getFkConfig.adv1Time), () async {
-      bool isInterReady = await interstitialTool.hasInterstitialAdReady();
-      if (isInterReady) {
-        Utils.logError("60秒后检查到广告就绪，尝试展示一次 ${Store.instance.isLimit}");
-        if(Store.instance.isLimit)return;
-        await interstitialTool.showInterstitialAd();
-      } else {
-        Utils.logError("60秒后检查到广告未就绪，不展示");
-        // 可选：只提示一次“加载失败”，避免频繁弹窗骚扰用户
-        Get.snackbar("提示", "插屏广告加载失败");
-        // CuToast.error(msg: "插屏广告加载失败");
-      }
+    _timer = Timer(
+      Duration(seconds: Store.instance.getFkConfig.adv1Time),
+      () async {
+        bool isInterReady = await interstitialTool.hasInterstitialAdReady();
+        if (isInterReady) {
+          Utils.logError("60秒后检查到广告就绪，尝试展示一次 ${Store.instance.isLimit}");
+          if (Store.instance.isLimit) return;
+          await interstitialTool.showInterstitialAd();
+        } else {
+          Utils.logError("60秒后检查到广告未就绪，不展示");
+          // 可选：只提示一次“加载失败”，避免频繁弹窗骚扰用户
+          Get.snackbar("提示", "插屏广告加载失败");
+          // CuToast.error(msg: "插屏广告加载失败");
+        }
 
-      // 单次触发后，定时器自动失效（无需手动取消，也不会重复执行）
-    });
+        // 单次触发后，定时器自动失效（无需手动取消，也不会重复执行）
+      },
+    );
   }
-
-
 
   // 取消定时器（可选方法，用于手动控制）
   void cancelTimer() {

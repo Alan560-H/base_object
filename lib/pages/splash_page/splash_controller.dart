@@ -12,13 +12,19 @@ import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
+import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/store/di.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/DeviceChecker.dart';
+import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:amap_flutter_location/amap_flutter_location.dart';
+import 'package:amap_flutter_location/amap_location_option.dart';
 
 class SplashController extends GetxController {
   /// 初始化广告
@@ -35,24 +41,43 @@ class SplashController extends GetxController {
   @override
   void onInit() async {
     EasyLoading.show(status: "检测设备中..");
+
+    /// 初始化广告
+    initAd();
+    SplashTool.to.loadSplash();
+
+    /// 初始化开屏广告
+    SplashTool.to.splashListen();
     bool isPermission = await PermissionManager.requestAllPermissions();
     Utils.logError(isPermission);
     bool isAllCheck = await DeviceChecker.isAllCheckr();
     if (isAllCheck) {
+      await LocationUtil().getCurrentLocation((Map result) async {
+        Utils.logError("定位结果：$result");
+        LocationData locationData = LocationData(
+          address: result["address"],
+          latitude: result["latitude"],
+          longitude: result["longitude"],
+        );
+        Store.instance.setLocationData(locationData);
+      });
       Store.instance.getVer().then((value) async {
         Utils.logError("返回的数值：$value");
         // 如果被封了，就去错误页面
         if (value) {
           Get.offAllNamed(AppRoutes.userError);
         } else {
+          /// 上传地址
+          await Store.instance.upAddress();
+
           /// 获取风控配置
           Store.instance.getFkConfigFn();
 
           /// 获取今日领取了多少个红包
           Store.instance.initCurrentCount();
-
-          /// 初始化广告
-          await initAd();
+          if (await SplashTool.to.splashReady()) {
+            SplashTool.to.showSplash();
+          }
         }
       });
     }

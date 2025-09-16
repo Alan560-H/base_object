@@ -144,6 +144,8 @@ android {
 // 在这里添加子项目的依赖配置
 dependencies {
     //Support (Necessary)
+    api("com.amap.api:location:latest.integration")
+
 //    api("com.anythink.sdk:core-taku:6.5.15")
 //    api("com.anythink.sdk:core-china-taku:6.5.15")
 //    api("com.anythink.sdk:nativead-taku:6.5.15")

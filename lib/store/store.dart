@@ -13,6 +13,7 @@ import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
+import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
@@ -174,12 +175,33 @@ class Store extends GetxController {
   }
 
   get isLimit => _isLimit.value;
+  Future<void> upAddress() async {
+    if (Store.instance.locationData == null) {
+      return;
+    }
+    CheckDeviceForm checkDeviceForm = CheckDeviceForm();
+    checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+    checkDeviceForm.userId = UserInfo.instance.userModel.id;
+    checkDeviceForm.address = Store.instance.locationData?.address;
+    checkDeviceForm.latitude = Store.instance.locationData?.latitude;
+    checkDeviceForm.longitude = Store.instance.locationData?.longitude;
+    checkDeviceForm.type = 3;
+    if (checkDeviceForm.userId == 0) {
+      checkDeviceForm.userId = null;
+    }
+    BackModel data = await Api.to.getVer(checkDeviceForm);
+    setIsLimit(data.data);
+  }
 
   /// 检查设备封禁
   Future<bool> getVer() async {
     try {
       CheckDeviceForm checkDeviceForm = CheckDeviceForm();
       checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+      checkDeviceForm.userId = UserInfo.instance.userModel.id;
+      checkDeviceForm.address = Store.instance.locationData?.address;
+      checkDeviceForm.latitude = Store.instance.locationData?.latitude;
+      checkDeviceForm.longitude = Store.instance.locationData?.longitude;
       checkDeviceForm.type = 1;
       if (checkDeviceForm.userId == 0) {
         checkDeviceForm.userId = null;
@@ -191,5 +213,16 @@ class Store extends GetxController {
       Utils.logError("获取风控配置失败$e");
       return false;
     }
+  }
+
+  /// 位置信息
+  LocationData? _locationData;
+
+  /// 获取位置信息
+  LocationData? get locationData => _locationData;
+
+  /// 设置位置信息
+  void setLocationData(LocationData? value) {
+    _locationData = value;
   }
 }

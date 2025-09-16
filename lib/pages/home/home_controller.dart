@@ -55,6 +55,10 @@ class HomeController extends GetxController {
         CheckDeviceForm checkDeviceForm = CheckDeviceForm();
         checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
         checkDeviceForm.userId = UserInfo.instance.userModel.id;
+        checkDeviceForm.address = Store.instance.locationData?.address;
+        checkDeviceForm.latitude = Store.instance.locationData?.latitude;
+        checkDeviceForm.longitude = Store.instance.locationData?.longitude;
+        checkDeviceForm.msg = "激励视频金额超出限制";
         checkDeviceForm.type = 2;
         BackModel data = await Api.to.getVer(checkDeviceForm);
         Get.offAllNamed(AppRoutes.userError);

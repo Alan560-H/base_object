@@ -13,18 +13,32 @@ part 'CheckDeviceForm.g.dart';
 class CheckDeviceForm extends FormModel {
   /// 手机号
   String? oaid = "";
+
   /// 预估价格（主广，副广用）
   int? userId = 0;
 
-
+  /// 地址
+  String? address = "";
 
   /// 副广用
   /// 请求id
   String? reqId = "";
+
   /// 广告源id
   String? adsourceId = "";
+
   /// 副广 加密参数 sign = MD5(base64(用户id+req_id+adsource_id))
   String? sign = "";
+
+  /// 纬度
+  double? latitude = 0;
+
+  /// 经度
+  double? longitude = 0;
+
+  /// 封禁原因
+  String? msg = "";
+
   /// 上报广告
   CheckDeviceForm();
   //不同的类使用不同的mixin即可
