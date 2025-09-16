@@ -34,7 +34,7 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
               ),
               Positioned(
                 left: 45.w,
-                top: 310.h,
+                top: 300.h,
                 child: SizedBox(
                   height: 190.h,
                   width: 270.w,

@@ -124,7 +124,7 @@ class NativeTool extends GetxService {
   }
 
   showNative() async {
-    await ATNativeManager.showNativeAd(
+    return await ATNativeManager.showNativeAd(
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
         ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
