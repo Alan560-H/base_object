@@ -81,6 +81,9 @@ class Store extends GetxController {
 
   int _remainingSeconds = 0;
 
+  /// 如果 间隔时间大于0，则表示时间还没到，不可领取
+  bool get isTimeOver => _remainingSeconds > 0;
+
   /// 是否可以观看激励广告,true 是可以，false不可以
   Future<bool> canLookReward() async {
     bool isReady = await RewarderTool.to.rewardedVideoReady();
@@ -100,10 +103,7 @@ class Store extends GetxController {
       CuToast.error(msg: "今日领取次数已达上限，请明日再来");
       return false;
     }
-    if (_remainingSeconds > 0) {
-      CuToast.error(msg: "红包被抢完了");
-      return false;
-    }
+
     return true;
   }
 
