@@ -14,7 +14,10 @@ import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/store/di.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/utils/DeviceChecker.dart';
+import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
@@ -30,23 +33,30 @@ class SplashController extends GetxController {
   }
 
   @override
-  void onInit() {
-    Store.instance.getVer().then((value) async {
-      Utils.logError("返回的数值：$value");
-      // 如果被封了，就去错误页面
-      if (value) {
-        Get.offAllNamed(AppRoutes.userError);
-      } else {
-        /// 获取风控配置
-        Store.instance.getFkConfigFn();
+  void onInit() async {
+    EasyLoading.show(status: "检测设备中..");
+    bool isPermission = await PermissionManager.requestAllPermissions();
+    Utils.logError(isPermission);
+    bool isAllCheck = await DeviceChecker.isAllCheckr();
+    if (isAllCheck) {
+      Store.instance.getVer().then((value) async {
+        Utils.logError("返回的数值：$value");
+        // 如果被封了，就去错误页面
+        if (value) {
+          Get.offAllNamed(AppRoutes.userError);
+        } else {
+          /// 获取风控配置
+          Store.instance.getFkConfigFn();
 
-        /// 获取今日领取了多少个红包
-        Store.instance.initCurrentCount();
+          /// 获取今日领取了多少个红包
+          Store.instance.initCurrentCount();
 
-        /// 初始化广告
-        await initAd();
-      }
-    });
+          /// 初始化广告
+          await initAd();
+        }
+      });
+    }
+
     super.onInit();
   }
 }
