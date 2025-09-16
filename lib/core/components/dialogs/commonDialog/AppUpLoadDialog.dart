@@ -103,6 +103,20 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
       String url = widget.appUpLoadModel.downUrl;
       String savePath = await getSavePath();
       Utils.logError("保存地址：$savePath");
+      File oldApkFile = File(savePath);
+      // 1. 检查旧文件是否存在
+      if (oldApkFile.existsSync()) {
+        Utils.logError('发现旧APK文件，开始清理');
+        try {
+          // 2. 尝试删除旧文件
+          await oldApkFile.delete();
+          Utils.logError('旧APK文件清理成功');
+        } catch (deleteE) {
+          // 3. 若删除失败（如文件被占用），抛出异常终止下载（避免新文件覆盖失败）
+          Utils.logError('旧APK文件清理失败：$deleteE');
+          throw Exception('旧安装包删除失败，请关闭占用该文件的程序后重试');
+        }
+      }
       // 检查文件是否已存在
       File file = File(savePath);
       if (file.existsSync()) {
