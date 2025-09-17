@@ -55,57 +55,57 @@ class SplashTool extends GetxController {
         //广告加载失败
         case SplashStatus.splashDidFailToLoad:
           Utils.logError(
-            "flutter splash--splashDidFailToLoad ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "开屏广告 splash--splashDidFailToLoad ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
           Get.offAllNamed(AppRoutes.home);
           break;
         //广告加载成功
         case SplashStatus.splashDidFinishLoading:
           Utils.logError(
-            "flutter splash--splashDidFinishLoading ---- placementID: ${value.placementID} ---- isTimeout：${value.isTimeout}",
+            "开屏广告 splash--splashDidFinishLoading ---- placementID: ${value.placementID} ---- isTimeout：${value.isTimeout}",
           );
           break;
         //广告加载超时
         case SplashStatus.splashDidTimeout:
           Utils.logError(
-            "flutter splash--splashDidTimeout ---- placementID: ${value.placementID}",
+            "开屏广告 splash--splashDidTimeout ---- placementID: ${value.placementID}",
           );
           Get.offAllNamed(AppRoutes.home);
           break;
         //广告展示成功
         case SplashStatus.splashDidShowSuccess:
           Utils.logError(
-            "flutter splash--splashDidShowSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "开屏广告 splash--splashDidShowSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告加载失败
         case SplashStatus.splashDidShowFailed:
           Utils.logError(
-            "flutter splash--splashDidShowFailed ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "开屏广告 splash--splashDidShowFailed ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
           break;
         //广告被点击
         case SplashStatus.splashDidClick:
           Utils.logError(
-            "flutter splash--splashDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "开屏广告 splash--splashDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //DeepLink
         case SplashStatus.splashDidDeepLink:
           Utils.logError(
-            "flutter splash--splashDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
+            "开屏广告 splash--splashDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
           );
           break;
         //广告被关闭
         case SplashStatus.splashDidClose:
           Utils.logError(
-            "flutter splash--splashDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "开屏广告 splash--splashDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           Get.offAllNamed(AppRoutes.home);
           break;
 
         case SplashStatus.splashUnknown:
-          Utils.logError("flutter splash--splashUnknown");
+          Utils.logError("开屏广告 splash--splashUnknown");
           break;
         case SplashStatus.splashWillClose:
           // TODO: Handle this case.

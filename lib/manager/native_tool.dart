@@ -9,6 +9,7 @@ class NativeTool extends GetxService {
       Get.isRegistered<NativeTool>()
           ? Get.find<NativeTool>()
           : Get.put(NativeTool());
+  // 加载广告
   loadNativeWith() async {
     await ATNativeManager.loadNativeAd(
       placementID: AppAdConfig.nativePlacementID,

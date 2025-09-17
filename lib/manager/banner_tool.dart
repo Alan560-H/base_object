@@ -31,7 +31,7 @@ class BannerTool extends GetxController {
     await ATBannerManager.getBannerValidAds(
       placementID: AppAdConfig.bannerPlacementID,
     ).then((value) {
-      Utils.logError('flutter getBannerValidAds: $value');
+      Utils.logError('横幅广告 getBannerValidAds: $value');
     });
   }
 
@@ -39,7 +39,7 @@ class BannerTool extends GetxController {
     await ATBannerManager.checkBannerLoadStatus(
       placementID: AppAdConfig.bannerPlacementID,
     ).then((value) {
-      Utils.logError('flutter checkBannerLoadStatus: $value');
+      Utils.logError('横幅广告 checkBannerLoadStatus: $value');
     });
   }
 
@@ -123,14 +123,14 @@ class BannerTool extends GetxController {
         //广告加载失败
         case BannerStatus.bannerAdFailToLoadAD:
           Utils.logError(
-            "flutter bannerAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "横幅广告 bannerAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
           cuNavBarController.setHeight(60.h);
           break;
         //广告加载成功
         case BannerStatus.bannerAdDidFinishLoading:
           Utils.logError(
-            "flutter bannerAdDidFinishLoading ---- placementID: ${value.placementID}",
+            "横幅广告 bannerAdDidFinishLoading ---- placementID: ${value.placementID}",
           );
           showAdInPosition();
 
@@ -139,43 +139,43 @@ class BannerTool extends GetxController {
         //广告自动刷新成功
         case BannerStatus.bannerAdAutoRefreshSucceed:
           Utils.logError(
-            "flutter bannerAdAutoRefreshSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "横幅广告 bannerAdAutoRefreshSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           cuNavBarController.upDataADFn(value);
           break;
         //广告被点击
         case BannerStatus.bannerAdDidClick:
           Utils.logError(
-            "flutter bannerAdDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "横幅广告 bannerAdDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //Deeplink
         case BannerStatus.bannerAdDidDeepLink:
           Utils.logError(
-            "flutter bannerAdDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
+            "横幅广告 bannerAdDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
           );
           break;
         //广告展示成功
         case BannerStatus.bannerAdDidShowSucceed:
           Utils.logError(
-            "flutter bannerAdDidShowSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "横幅广告 bannerAdDidShowSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告关闭按钮被点击
         case BannerStatus.bannerAdTapCloseButton:
           Utils.logError(
-            "flutter bannerAdTapCloseButton ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "横幅广告 bannerAdTapCloseButton ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告自动刷新失败
         case BannerStatus.bannerAdAutoRefreshFail:
           Utils.logError(
-            "flutter bannerAdAutoRefreshFail ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "横幅广告 bannerAdAutoRefreshFail ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
           cuNavBarController.setHeight(60.h);
           break;
         case BannerStatus.bannerAdUnknown:
-          Utils.logError("flutter bannerAdUnknown");
+          Utils.logError("横幅广告 bannerAdUnknown");
           break;
       }
     });

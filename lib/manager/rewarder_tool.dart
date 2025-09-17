@@ -54,7 +54,7 @@ class RewarderTool extends GetxController {
       placementID: AppAdConfig.rewarderPlacementID,
     ).then((value) {
       Utils.logError(
-        'flutter：激励视频加载状态：$value',
+        '激励广告：激励视频加载状态：$value',
       ); // 原"checkRewardedVideoLoadStatus"→"激励视频加载状态"
     });
   }
@@ -64,7 +64,7 @@ class RewarderTool extends GetxController {
       placementID: AppAdConfig.rewarderPlacementID,
     ).then((value) {
       Utils.logError(
-        'flutter：激励视频有效广告数量：$value',
+        '激励广告：激励视频有效广告数量：$value',
       ); // 原"getRewardedVideoValidAds"→"激励视频有效广告数量"
     });
   }
@@ -161,55 +161,55 @@ class RewarderTool extends GetxController {
         //广告加载失败
         case RewardedStatus.rewardedVideoDidFailToLoad:
           Utils.logError(
-            "flutter rewardedVideoDidFailToLoad ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "激励广告 rewardedVideoDidFailToLoad ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
           break;
         //广告加载成功
         case RewardedStatus.rewardedVideoDidFinishLoading:
           Utils.logError(
-            "flutter rewardedVideoDidFinishLoading ---- placementID: ${value.placementID}",
+            "激励广告 rewardedVideoDidFinishLoading ---- placementID: ${value.placementID}",
           );
           break;
         //广告开始播放
         case RewardedStatus.rewardedVideoDidStartPlaying:
           Utils.logError(
-            "flutter rewardedVideoDidStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告结束播放
         case RewardedStatus.rewardedVideoDidEndPlaying:
           Utils.logError(
-            "flutter rewardedVideoDidEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告播放失败
         case RewardedStatus.rewardedVideoDidFailToPlay:
           Utils.logError(
-            "flutter rewardedVideoDidFailToPlay ---- placementID: ${value.placementID} ---- errStr:${value.extraMap}",
+            "激励广告 rewardedVideoDidFailToPlay ---- placementID: ${value.placementID} ---- errStr:${value.extraMap}",
           );
           break;
         //激励成功，建议在此回调中下发奖励
         case RewardedStatus.rewardedVideoDidRewardSuccess:
           Utils.logError(
-            "flutter rewardedVideoDidRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告被点击
         case RewardedStatus.rewardedVideoDidClick:
           Utils.logError(
-            "flutter rewardedVideoDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //Deeplink
         case RewardedStatus.rewardedVideoDidDeepLink:
           Utils.logError(
-            "flutter rewardedVideoDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
+            "激励广告 rewardedVideoDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
           );
           break;
         //广告被关闭
         case RewardedStatus.rewardedVideoDidClose:
           Utils.logError(
-            "flutter rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           loadRewardedVideo(
             userID: "${UserInfo.instance.userModel.id}",
@@ -224,35 +224,35 @@ class RewarderTool extends GetxController {
         //广告开始播放（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainStartPlaying:
           Utils.logError(
-            "flutter rewardedVideoDidAgainStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidAgainStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告结束播放（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainEndPlaying:
           Utils.logError(
-            "flutter rewardedVideoDidAgainEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidAgainEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告播放失败（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainFailToPlay:
           Utils.logError(
-            "flutter rewardedVideoDidAgainFailToPlay ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidAgainFailToPlay ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //激励成功（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainRewardSuccess:
           Utils.logError(
-            "flutter rewardedVideoDidAgainRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidAgainRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
         //广告被点击（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainClick:
           Utils.logError(
-            "flutter rewardedVideoDidAgainClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 rewardedVideoDidAgainClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
 
         case RewardedStatus.rewardedVideoUnknown:
-          Utils.logError("flutter rewardedVideoUnknown");
+          Utils.logError("激励广告 rewardedVideoUnknown");
           break;
       }
     });
