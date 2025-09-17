@@ -1,21 +1,19 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:flutter_html/flutter_html.dart';
-
-import '../../../utils/local_storage.dart';
-import '../../config/text_config.dart';
 
 class NoticeDialog extends StatefulWidget {
   /// 公告弹窗

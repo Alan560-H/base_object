@@ -1,40 +1,20 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:math';
-
-import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
-import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
-import 'package:base_object/core/components/dialogs/commonDialog/ClaimAdDialog.dart';
-import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.dart';
-import 'package:base_object/core/config/cu_error_config.dart';
+import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
-import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
-import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../core/components/dialogs/NoticeDialog.dart';
-import '../../core/routes/app_routes.dart';
-import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
-import '../../models/backModel/BackModel.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
@@ -96,7 +76,7 @@ class HomeController extends GetxController {
       bool isRewardReady =
           await RewarderTool.to.rewardedVideoReady(); // 激励视频是否准备好
       bool isShowRedBag = HomeUtils.random.nextDouble() < 0.2; // 是否展示红包
-      bool isNativeReady = await NativeTool.to.nativeAdReady(); // 原生广告是否准备好
+      // bool isNativeReady = await NativeTool.to.nativeAdReady(); // 原生广告是否准备好
       // 如果激励视频准备好，且概率已经小于0.2，则填充红包图片
 
       // Utils.logError("原生广告加载状态$isNativeReady,");

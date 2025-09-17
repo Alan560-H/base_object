@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';

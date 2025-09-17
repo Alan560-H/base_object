@@ -1,19 +1,10 @@
-import 'dart:developer';
-import 'dart:ffi';
-
-import 'package:anythink_sdk/at_common.dart';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
-import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
 import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/store.dart';
@@ -180,7 +171,7 @@ class CuNavBarController extends GetxController {
         checkDeviceForm.longitude = Store.instance.locationData?.longitude;
         checkDeviceForm.msg = "横幅广告金额超出限制";
         checkDeviceForm.type = 2;
-        BackModel data = await Api.to.getVer(checkDeviceForm);
+        await Api.to.getVer(checkDeviceForm);
         Get.offAllNamed(AppRoutes.userError);
       }
     } catch (e) {

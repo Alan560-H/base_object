@@ -8,14 +8,9 @@ import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import 'manager/Init_tool.dart';
 import 'utils/ChineseLocalizationsDelegate.dart';
-import 'utils/Utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

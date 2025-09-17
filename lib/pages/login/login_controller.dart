@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
-import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
@@ -9,9 +6,6 @@ import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
-import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/manager/interstitial_tool.dart';
-import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/sendMobileCode/SendMobileCodeModel.dart';
@@ -20,14 +14,12 @@ import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
-import 'package:base_object/pages/home/home_binding.dart';
 import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class Common {
@@ -170,7 +162,7 @@ class LoginController extends GetxController {
         if (!Get.isRegistered<InitTool>()) {
           Get.put<InitTool>(InitTool());
         }
-        bool isInitAd = await InitTool.to.initTopon();
+        await InitTool.to.initTopon();
         InitTool.to.setCustomDataDic({
           "user_id": "${UserInfo.instance.userModel.id}",
           "extra":

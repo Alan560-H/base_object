@@ -1,30 +1,14 @@
-import 'dart:developer';
-
-import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
-import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/manager/interstitial_tool.dart';
-import 'package:base_object/manager/listener_tool.dart'; // 导入 ListenerTool
-import 'package:base_object/manager/native_tool.dart';
-import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/manager/splash_tool.dart';
-import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
-import 'package:base_object/models/backModel/BackModel.dart';
-import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/localModels/LocationData.dart';
-import 'package:base_object/store/di.dart';
 import 'package:base_object/store/store.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/DeviceChecker.dart';
 import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
 
 class SplashController extends GetxController {
   /// 初始化广告

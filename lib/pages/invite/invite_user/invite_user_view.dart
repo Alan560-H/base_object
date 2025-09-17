@@ -4,7 +4,6 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/localModels/BannerVo.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

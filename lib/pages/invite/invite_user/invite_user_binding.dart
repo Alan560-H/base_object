@@ -1,4 +1,3 @@
-import 'package:base_object/manager/banner_tool.dart';
 import 'package:get/get.dart';
 
 import 'invite_user_controller.dart';

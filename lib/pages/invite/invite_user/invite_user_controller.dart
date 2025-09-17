@@ -1,7 +1,7 @@
-import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/manager/banner_tool.dart';
@@ -15,9 +15,6 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import '../../../core/components/cu_toast.dart';
 
 class InviteUserController extends GetxController {
   RxString appbarTitle = "邀请好友页面标题".obs;

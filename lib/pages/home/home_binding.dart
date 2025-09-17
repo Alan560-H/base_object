@@ -1,8 +1,5 @@
-import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
-import 'package:base_object/manager/native_tool.dart';
-import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:get/get.dart';
 
 import 'home_controller.dart';

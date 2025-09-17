@@ -63,7 +63,6 @@ class DeviceChecker {
   static Future<bool> isDeveloperModeEnabled() async {
     try {
       if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
         // 需要通过MethodChannel调用原生方法获取开发者模式状态
         const platform = MethodChannel('com.example/riskcontrol');
         bool isDeveloperMode = await platform.invokeMethod(

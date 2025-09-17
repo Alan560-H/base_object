@@ -1,4 +1,3 @@
-import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/pages/user/user_bag/user_bag_binding.dart';
 import 'package:get/get.dart';
 

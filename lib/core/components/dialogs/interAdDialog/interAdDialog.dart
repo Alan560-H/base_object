@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
-import 'package:base_object/manager/listener_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
@@ -28,7 +23,6 @@ class InterAdDialog extends GetxService {
   @override
   void onInit() {
     Utils.logError("插屏广告初始化触发");
-    rewarderEvent();
     super.onInit();
     // 初始化插屏广告
     interstitialTool.loadInterstitialAd({
@@ -88,76 +82,73 @@ class InterAdDialog extends GetxService {
     }
   }
 
-  // 用于标记是否已处理跳转（避免重复跳转）
-  bool _hasShow = false;
-
   /// 订阅 ListenerTool 的开屏广告事件
-  void rewarderEvent() async {
-    // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
-    ever(ListenerTool.to.interEvent, (event) {
-      if (event == null || _hasShow) return; // 过滤空事件或重复跳转
-
-      // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
-      String eventType = event["eventType"] ?? "";
-      String placementID = event["placementID"] ?? "";
-
-      Utils.logError(
-        "插屏广告收到插屏视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event",
-      );
-      // 根据事件类型执行业务逻辑
-      switch (eventType) {
-        // 插屏广告加载失败
-        case "InterstitialStatus.interstitialAdFailToLoadAD":
-          Utils.logError("插屏广告加载失败，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告加载成功
-        case "InterstitialStatus.interstitialAdDidFinishLoading":
-          Utils.logError("插屏广告加载完成，广告位ID：$placementID，事件参数：$event");
-          Utils.logError("当前路由：${Get.currentRoute}");
-          _startTimer();
-
-          break;
-        // 插屏广告深度链接
-        case "InterstitialStatus.interstitialAdDidDeepLink":
-          Utils.logError("插屏广告深度链接，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告被点击
-        case "InterstitialStatus.interstitialAdDidClick":
-          Utils.logError("插屏广告被点击，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告被关闭
-        case "InterstitialStatus.interstitialAdDidClose":
-          Utils.logError("插屏广告被关闭，广告位ID：$placementID，事件参数：$event");
-          upDataADFn(event);
-          _startTimer();
-          break;
-        // 插屏广告开始播放
-        case "InterstitialStatus.interstitialAdDidStartPlaying":
-          Utils.logError("插屏广告开始播放，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告结束播放
-        case "InterstitialStatus.interstitialAdDidEndPlaying":
-          Utils.logError("插屏广告结束播放，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告播放失败
-        case "InterstitialStatus.interstitialDidFailToPlayVideo":
-          Utils.logError("插屏广告播放失败，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告展示成功
-        case "InterstitialStatus.interstitialDidShowSucceed":
-          Utils.logError("插屏广告展示成功，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告展示失败
-        case "InterstitialStatus.interstitialFailedToShow":
-          Utils.logError("插屏广告展示失败，广告位ID：$placementID，事件参数：$event");
-          break;
-        // 插屏广告未知状态
-        case "InterstitialStatus.interstitialUnknown":
-          Utils.logError("插屏广告未知状态，广告位ID：$placementID，事件参数：$event");
-          break;
-      }
-    });
-  }
+  // void rewarderEvent() async {
+  //   // ever：持续监听 splashEvent 的变化（广告状态更新时触发）
+  //   ever(ListenerTool.to.interEvent, (event) {
+  //     if (event == null || _hasShow) return; // 过滤空事件或重复跳转
+  //
+  //     // 获取事件类型（从 event 中解析，与 ListenerTool 中转发的格式对应）
+  //     String eventType = event["eventType"] ?? "";
+  //     String placementID = event["placementID"] ?? "";
+  //
+  //     Utils.logError(
+  //       "插屏广告收到插屏视频广告事件：$eventType，广告位ID：$placementID，事件参数：$event",
+  //     );
+  //     // 根据事件类型执行业务逻辑
+  //     switch (eventType) {
+  //       // 插屏广告加载失败
+  //       case "InterstitialStatus.interstitialAdFailToLoadAD":
+  //         Utils.logError("插屏广告加载失败，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告加载成功
+  //       case "InterstitialStatus.interstitialAdDidFinishLoading":
+  //         Utils.logError("插屏广告加载完成，广告位ID：$placementID，事件参数：$event");
+  //         Utils.logError("当前路由：${Get.currentRoute}");
+  //         _startTimer();
+  //
+  //         break;
+  //       // 插屏广告深度链接
+  //       case "InterstitialStatus.interstitialAdDidDeepLink":
+  //         Utils.logError("插屏广告深度链接，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告被点击
+  //       case "InterstitialStatus.interstitialAdDidClick":
+  //         Utils.logError("插屏广告被点击，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告被关闭
+  //       case "InterstitialStatus.interstitialAdDidClose":
+  //         Utils.logError("插屏广告被关闭，广告位ID：$placementID，事件参数：$event");
+  //         upDataADFn(event);
+  //         _startTimer();
+  //         break;
+  //       // 插屏广告开始播放
+  //       case "InterstitialStatus.interstitialAdDidStartPlaying":
+  //         Utils.logError("插屏广告开始播放，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告结束播放
+  //       case "InterstitialStatus.interstitialAdDidEndPlaying":
+  //         Utils.logError("插屏广告结束播放，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告播放失败
+  //       case "InterstitialStatus.interstitialDidFailToPlayVideo":
+  //         Utils.logError("插屏广告播放失败，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告展示成功
+  //       case "InterstitialStatus.interstitialDidShowSucceed":
+  //         Utils.logError("插屏广告展示成功，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告展示失败
+  //       case "InterstitialStatus.interstitialFailedToShow":
+  //         Utils.logError("插屏广告展示失败，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //       // 插屏广告未知状态
+  //       case "InterstitialStatus.interstitialUnknown":
+  //         Utils.logError("插屏广告未知状态，广告位ID：$placementID，事件参数：$event");
+  //         break;
+  //     }
+  //   });
+  // }
 
   // 定时器对象
   Timer? _timer;
