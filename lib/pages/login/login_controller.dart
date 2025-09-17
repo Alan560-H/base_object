@@ -150,18 +150,7 @@ class LoginController extends GetxController {
         Utils.logError("用户今日收益：${userTodayModel.toJson()}");
         DateTime now = DateTime.now();
         int timestampMs = now.millisecondsSinceEpoch;
-        Get.delete<InitTool>();
-        Get.delete<RewarderTool>();
-        // 等待当前帧结束（约16ms），让GetX完成实际销毁
-        await Future.delayed(const Duration(milliseconds: 20));
-        // 此时检查，返回 false（旧实例已被移除）
-        Utils.logError("是否注册：${Get.isRegistered<InitTool>()}");
-        Get.put<InitTool>(InitTool());
-        Get.put<RewarderTool>(RewarderTool());
-        await Future.delayed(const Duration(milliseconds: 20));
-        if (!Get.isRegistered<InitTool>()) {
-          Get.put<InitTool>(InitTool());
-        }
+
         await InitTool.to.initTopon();
         InitTool.to.setCustomDataDic({
           "user_id": "${UserInfo.instance.userModel.id}",

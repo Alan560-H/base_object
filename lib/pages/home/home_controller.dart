@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
+import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/native_tool.dart';
@@ -194,6 +195,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
+    InterAdDialog.to.restartTimer();
     super.onInit();
     allInit();
   }
