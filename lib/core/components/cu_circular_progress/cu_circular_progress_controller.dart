@@ -21,38 +21,40 @@ import 'package:get/get.dart';
 /// 内置控制器：管理进度状态（对外隐藏实现，仅暴露操作方法）
 class CuCircularProgressController extends GetxController {
   // GetX单例获取方式
-  static CuCircularProgressController get to => Get.find<CuCircularProgressController>();
+  static CuCircularProgressController get to =>
+      Get.isRegistered<CuCircularProgressController>()
+          ? Get.find<CuCircularProgressController>()
+          : Get.put(CuCircularProgressController());
   // 进度值（响应式）
   final RxDouble _progress = 0.0.obs;
   int _seconds = 65;
   // 最大进度值（固定100，与原逻辑一致）
-   double maxProgress = 6000.0;
+  double maxProgress = 6000.0;
   final RxDouble currentValue = (0.0).obs;
   Timer? setStepTimer;
-  void resetProgressTimer(){
+  void resetProgressTimer() {
     setStepTimer?.cancel();
     setStepTimer = null;
     _seconds = Store.instance.getFkConfig.adv1Time;
     resetProgress();
     startAutoSetProgressTimer();
   }
+
   RxBool timeEnd = false.obs; // 倒计时是否结束
   // 启动发财树进度条
   void startAutoSetProgressTimer() {
-    setStepTimer = Timer.periodic(
-      const Duration(seconds: 1),
-          (Timer timer){
-        if(_progress.value<maxProgress&&_seconds>0){
-          _progress.value += 100;
-          _seconds--;
-          timeEnd.value = false;
-        }else{
-          timeEnd.value = true;
-          timer.cancel();
-        }
-          }
-    );
+    setStepTimer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (_progress.value < maxProgress && _seconds > 0) {
+        _progress.value += 100;
+        _seconds--;
+        timeEnd.value = false;
+      } else {
+        timeEnd.value = true;
+        timer.cancel();
+      }
+    });
   }
+
   // 获取当前进度（只读）
   double get progress => _progress.value;
   // 获取进度百分比（用于绘制进度条）
@@ -62,40 +64,40 @@ class CuCircularProgressController extends GetxController {
   void setProgress(double value) {
     _progress.value = value.clamp(0.0, maxProgress);
   }
+
   /// 增加进度（对外核心操作方法）
   void incrementProgress(double step) {
     if (step <= 0) return; // 步长不能为负
     setProgress(_progress.value + step);
   }
+
   /// 重置进度到0
   void resetProgress() {
     _progress.value = 0.0;
   }
+
   // 打开存钱罐
-  void showDialog() async {
+  void showDialog({isShowRedBag = true}) async {
     try {
-      if(!UserInfo.instance.isLoginIn){
+      if (!UserInfo.instance.isLoginIn) {
         Get.toNamed(AppRoutes.login);
         return;
       }
-
-      if(!timeEnd.value){
+      if (!timeEnd.value && isShowRedBag) {
         CuToast.error(msg: "奖励还未准备好");
         return;
       }
-      if(!Get.isRegistered<Api>()){
-        Get.put(Api());
-      }
 
-      if(Get.isRegistered<NativeTool>()){
+      if (Get.isRegistered<NativeTool>()) {
         NativeTool.to.showNative();
       }
-      RewarderModel rewarderModel = await Get.find<Api>().getSelectAdV3();
+      RewarderModel rewarderModel = await Api.to.getSelectAdV3();
       currentValue.value = rewarderModel.amount;
       Store.instance.setIsOpenClaim(true);
       Utils.logError("打开的值:${Store.instance.getIsOpenClaim}");
-      Dialogs.ClaimAdDialogs(data:CuCircularProgressController.to.currentValue);
-
+      Dialogs.ClaimAdDialogs(
+        data: CuCircularProgressController.to.currentValue,
+      );
       Utils.logError("存钱罐初始化余额: ${currentValue.value}");
     } catch (e) {
       Utils.logError("存钱罐初始化余额失败: $e");
@@ -106,22 +108,22 @@ class CuCircularProgressController extends GetxController {
   @override
   void onInit() {
     _seconds = Store.instance.getFkConfig.adv1Time;
-    if(_seconds== 0){
+    if (_seconds == 0) {
       _seconds = 60;
       maxProgress = 6000.0;
-    }else{
-      maxProgress = (_seconds*100).toDouble();
-      if(!Get.isRegistered<NativeTool>()){
+    } else {
+      maxProgress = (_seconds * 100).toDouble();
+      if (!Get.isRegistered<NativeTool>()) {
         Get.put(NativeTool());
       }
       NativeTool.to.loadNativeWith();
-
     }
 
     startAutoSetProgressTimer();
     // TODO: implement onInit
     super.onInit();
   }
+
   @override
   void onClose() {
     // TODO: implement onClose

@@ -1,11 +1,25 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
+import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/pages/home/home_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:get/get.dart';
+
+import 'native_tool.dart';
 
 class RewarderTool extends GetxController {
   // GetX单例获取方式
@@ -67,6 +81,73 @@ class RewarderTool extends GetxController {
       sceneID: AppAdConfig.rewarderSceneID,
       placementID: AppAdConfig.rewarderPlacementID,
     );
+  }
+
+  /// 领取存钱罐奖励
+  Future<void> checkClaim() async {
+    if (Get.isRegistered<Api>()) {
+      BackModel backModel = await Api.to.getAdAmount();
+      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
+      if (backModel.code == CuErrorConfig.success) {
+        CuToast.success(msg: "存钱罐领取成功");
+        UserInfo.instance.getUserInfoFn();
+        Store.instance.setIsOpenClaim(false);
+        CuCircularProgressController.to.resetProgressTimer();
+        NativeTool.to.removeNativeAd();
+        NativeTool.to.loadNativeWith();
+        Get.back();
+      }
+    }
+  }
+
+  // 查询激励广告奖励
+  checkRewarderAd(dynamic event) async {
+    try {
+      UpDataADForm upDataADForm = UpDataADForm();
+      upDataADForm.extra =
+          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event.extraMap['adsource_price']}_time_0";
+      upDataADForm.transId = event.extraMap?['id'];
+      Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
+      // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
+      // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
+      dynamic adSourcePrice = event.extraMap?['adsource_price'];
+      double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
+      int pross = amount?.toInt() ?? 0;
+      // 如果金额超出限制，上报异常
+      if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
+        CheckDeviceForm checkDeviceForm = CheckDeviceForm();
+        checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
+        checkDeviceForm.userId = UserInfo.instance.userModel.id;
+        checkDeviceForm.address = Store.instance.locationData?.address;
+        checkDeviceForm.latitude = Store.instance.locationData?.latitude;
+        checkDeviceForm.longitude = Store.instance.locationData?.longitude;
+        checkDeviceForm.msg = "激励视频金额超出限制";
+        checkDeviceForm.type = 2;
+        await Api.to.getVer(checkDeviceForm);
+        Get.offAllNamed(AppRoutes.userError);
+      }
+
+      /// 查询奖励
+      RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
+      if (rewarderModel.amount > 0) {
+        Utils.debounce(() async {
+          await checkClaim();
+          UserInfo.instance.getUserInfoFn();
+          // 增加次数
+          Store.instance.addCurrentCount(1);
+          // 重置间隔时间
+          Store.instance.setRemainingSeconds();
+          // 开始倒计时
+          Store.instance.countDown();
+        }, duration: Duration(seconds: 1));
+      }
+    } catch (e) {
+      Utils.logError("领取激励视频奖励失败：$e");
+    } finally {
+      NativeTool.to.removeNativeAd();
+      NativeTool.to.loadNativeWith();
+      Get.back();
+    }
   }
 
   StreamSubscription<ATRewardResponse>? _rewardedSubscription;
@@ -136,7 +217,9 @@ class RewarderTool extends GetxController {
             extra:
                 "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
           );
+          checkRewarderAd(value);
           homeController.redBagOpen.value = false;
+
           break;
 
         //广告开始播放（只针对穿山甲的再看一个广告）

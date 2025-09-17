@@ -38,233 +38,9 @@ import '../../models/backModel/BackModel.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
-  // 激励广告奖励提交方法
-  upDataADFn(dynamic event) async {
-    try {
-      UpDataADForm upDataADForm = UpDataADForm();
-      upDataADForm.extra =
-          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event['extraMap']['adsource_price']}_time_0";
-      upDataADForm.transId = event?['extraMap']?['id'];
-      Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
-      // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
-      // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
-      dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
-      double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
-      int pross = amount?.toInt() ?? 0;
-      if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
-        CheckDeviceForm checkDeviceForm = CheckDeviceForm();
-        checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
-        checkDeviceForm.userId = UserInfo.instance.userModel.id;
-        checkDeviceForm.address = Store.instance.locationData?.address;
-        checkDeviceForm.latitude = Store.instance.locationData?.latitude;
-        checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-        checkDeviceForm.msg = "激励视频金额超出限制";
-        checkDeviceForm.type = 2;
-        BackModel data = await Api.to.getVer(checkDeviceForm);
-        Get.offAllNamed(AppRoutes.userError);
-      }
-      RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
-      if (rewarderModel.amount > 0) {
-        Utils.debounce(() {
-          UserInfo.instance.getUserInfoFn();
-          CuToast.success(
-            msg: "恭喜获得${(rewarderModel.amount * 10000).toStringAsFixed(2)} 金币",
-          );
-          // 增加次数
-          Store.instance.addCurrentCount(1);
-          // 重置间隔时间
-          Store.instance.setRemainingSeconds();
-          // 开始倒计时
-          Store.instance.countDown();
-        }, duration: Duration(seconds: 1));
-      }
-    } catch (e) {
-      Utils.logError("领取激励视频奖励失败：$e");
-    } finally {
-      NativeTool.to.removeNativeAd();
-      NativeTool.to.loadNativeWith();
-      Get.back();
-    }
-  }
-
   // 定时器相关
   Timer? _autoMessageTimer; // 普通消息定时器（3秒/条）
   Timer? _placeholderTimer; // 广告消息定时器（6秒/条）
-
-  /// 订阅激励广告事件
-  // void rewarderEvent() async {
-  //   ever(ListenerTool.to.rewarderEvent, (event) {
-  //     String eventType = event["eventType"] ?? "";
-  //     String placementID = event["placementID"] ?? "";
-  //
-  //     Utils.logError("激励广告事件：$eventType，广告位ID：$placementID，参数：$event");
-  //
-  //     switch (eventType) {
-  //       case "RewardedStatus.rewardedVideoDidFailToLoad":
-  //         Utils.logError("激励广告加载失败，广告位ID：$placementID");
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidFinishLoading":
-  //         Utils.logError("激励广告加载完成，广告位ID：$placementID");
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidStartPlaying":
-  //         Utils.logError("激励广告开始播放，广告位ID：$placementID");
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidEndPlaying":
-  //         Utils.logError("激励广告结束播放，广告位ID：$placementID");
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidFailToPlay":
-  //         Utils.logError("激励广告播放失败，广告位ID：$placementID");
-  //         NativeTool.to.removeNativeAd();
-  //         NativeTool.to.loadNativeWith();
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidRewardSuccess":
-  //         Utils.logError("激励广告奖励成功，广告位ID：$placementID");
-  //
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidClick":
-  //         Utils.logError("激励广告被点击，广告位ID：$placementID");
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidDeepLink":
-  //         Utils.logError("激励广告深度链接，广告位ID：$placementID");
-  //         break;
-  //       case "RewardedStatus.rewardedVideoDidClose":
-  //         Utils.logError("激励广告被关闭，广告位ID：$placementID");
-  //         if (!Get.isRegistered<RewarderTool>()) {
-  //           Get.put(RewarderTool());
-  //         }
-  //         RewarderTool.to.loadRewardedVideo(
-  //           userID: "${UserInfo.instance.userModel.id}",
-  //           extra:
-  //               "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
-  //         );
-  //         redBagOpen.value = false;
-  //         if (Get.isRegistered<UserInfo>()) {
-  //           upDataADFn(event);
-  //         }
-  //         Utils.logError("${Store.instance.getIsOpenClaim}，hhhh");
-  //         if (Store.instance.getIsOpenClaim) {
-  //           checkClaim();
-  //         }
-  //         break;
-  //     }
-  //   });
-  // }
-
-  // 5. 改为实例方法（原static去掉，避免无法访问State内属性）
-  Future<void> checkClaim() async {
-    if (Get.isRegistered<Api>()) {
-      BackModel backModel = await Api.to.getAdAmount();
-      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "存钱罐领取成功");
-        UserInfo.instance.getUserInfoFn();
-        Store.instance.setIsOpenClaim(false);
-
-        Utils.logError(
-          "是否有进度条${Get.isRegistered<CuCircularProgressController>()}",
-        );
-        if (Get.isRegistered<CuCircularProgressController>()) {
-          CuCircularProgressController.to.resetProgressTimer();
-          NativeTool.to.removeNativeAd();
-          NativeTool.to.loadNativeWith();
-          Get.back();
-        }
-      }
-    }
-  }
-
-  // 显示激励广告
-  showRewarder() async {
-    if (Get.isRegistered<NativeTool>()) {
-      NativeTool.to.loadNativeWith();
-      Utils.logError(NativeTool.to.checkNativeLoadStatus());
-      if (await NativeTool.to.nativeAdReady()) {
-        NativeTool.to.showNative();
-      }
-    }
-
-    if (await Store.instance.canLookReward()) {
-      Get.dialog(
-        Container(
-          constraints: BoxConstraints(
-            maxWidth: Get.width,
-            maxHeight: Get.height,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 300.h,
-                child: Stack(
-                  children: [
-                    InkWell(
-                      onTap: () async {
-                        if (!UserInfo.instance.isLoginIn) {
-                          Get.toNamed(AppRoutes.login);
-                          return;
-                        }
-                        if (Store.instance.isTimeOver) {
-                          // CuToast.error(msg: "红包被抢完了");
-                          EasyLoading.showError("稍等片刻，红包正在准备准备中");
-                          return;
-                        }
-                        bool isRewReady =
-                            await RewarderTool.to.rewardedVideoReady();
-                        if (isRewReady) {
-                          redBagOpen.value = true;
-                          await RewarderTool.to.showRewardedVideo();
-                        } else {
-                          redBagOpen.value = false;
-                          CuToast.error(msg: "激励广告加载失败，请稍后重试");
-                        }
-                      },
-                      child: Center(
-                        child: CachedNetworkImage(
-                          imageUrl: ImageConfig.hongbaoCover,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0.h,
-                      right: 50.w,
-                      child: CuButton(
-                        text: "",
-                        icons: Icons.close,
-                        fontSize: TextConfig.textSize_24,
-                        onPressed: () {
-                          NativeTool.to.removeNativeAd();
-                          NativeTool.to.loadNativeWith();
-                          Get.back();
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      top: 80.h,
-                      left: 0,
-                      child: Container(
-                        width: Get.width,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "今日已领取红包${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
-                          style: TextStyle(
-                            fontSize: TextConfig.textSize_20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.yellowAccent,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 110.h),
-            ],
-          ),
-        ),
-      );
-    }
-  }
 
   int timeCount = 0;
   // 启动普通消息定时器（3秒/条）
@@ -336,7 +112,10 @@ class HomeController extends GetxController {
       if (isRewardReady && isShowRedBag) {
         redBagOpen.value = false;
         content = InkWell(
-          onTap: showRewarder,
+          onTap:
+              () => CuCircularProgressController.to.showDialog(
+                isShowRedBag: false,
+              ),
           child: CachedNetworkImage(
             imageUrl:
                 redBagOpen.value
@@ -393,8 +172,6 @@ class HomeController extends GetxController {
   }
 
   Future _pangrowthInit() async {
-    // final status = await Permission.phone.request();
-    // print("phone 权限状态 $status");
     // 这里的appid  和logappid 填写穿山甲的sdkjson文件李的值
     await PangrowthVideo.registerVideo(
       appName: "",
@@ -437,7 +214,6 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-
     super.onInit();
     allInit();
   }
@@ -462,3 +238,96 @@ class HomeController extends GetxController {
   final RxString appbarTitle = "红包群".obs; // 导航栏标题
   final RxList<ChatMessage> messages = <ChatMessage>[].obs; // 聊天消息列表
 }
+
+// 显示激励广告
+// showRewarder() async {
+//   if (Get.isRegistered<NativeTool>()) {
+//     NativeTool.to.loadNativeWith();
+//     Utils.logError(NativeTool.to.checkNativeLoadStatus());
+//     if (await NativeTool.to.nativeAdReady()) {
+//       NativeTool.to.showNative();
+//     }
+//   }
+//
+//   if (await Store.instance.canLookReward()) {
+//     Get.dialog(
+//       Container(
+//         constraints: BoxConstraints(
+//           maxWidth: Get.width,
+//           maxHeight: Get.height,
+//         ),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.end,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             SizedBox(
+//               height: 300.h,
+//               child: Stack(
+//                 children: [
+//                   InkWell(
+//                     onTap: () async {
+//                       if (!UserInfo.instance.isLoginIn) {
+//                         Get.toNamed(AppRoutes.login);
+//                         return;
+//                       }
+//                       if (Store.instance.isTimeOver) {
+//                         // CuToast.error(msg: "红包被抢完了");
+//                         EasyLoading.showError("稍等片刻，红包正在准备准备中");
+//                         return;
+//                       }
+//                       bool isRewReady =
+//                           await RewarderTool.to.rewardedVideoReady();
+//                       if (isRewReady) {
+//                         redBagOpen.value = true;
+//                         await RewarderTool.to.showRewardedVideo();
+//                       } else {
+//                         redBagOpen.value = false;
+//                         CuToast.error(msg: "激励广告加载失败，请稍后重试");
+//                       }
+//                     },
+//                     child: Center(
+//                       child: CachedNetworkImage(
+//                         imageUrl: ImageConfig.hongbaoCover,
+//                       ),
+//                     ),
+//                   ),
+//                   Positioned(
+//                     top: 0.h,
+//                     right: 50.w,
+//                     child: CuButton(
+//                       text: "",
+//                       icons: Icons.close,
+//                       fontSize: TextConfig.textSize_24,
+//                       onPressed: () {
+//                         NativeTool.to.removeNativeAd();
+//                         NativeTool.to.loadNativeWith();
+//                         Get.back();
+//                       },
+//                     ),
+//                   ),
+//                   Positioned(
+//                     top: 80.h,
+//                     left: 0,
+//                     child: Container(
+//                       width: Get.width,
+//                       alignment: Alignment.center,
+//                       child: Text(
+//                         "今日已领取红包${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
+//                         style: TextStyle(
+//                           fontSize: TextConfig.textSize_20,
+//                           fontWeight: FontWeight.bold,
+//                           color: Colors.yellowAccent,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             SizedBox(height: 110.h),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

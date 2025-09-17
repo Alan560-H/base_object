@@ -132,19 +132,6 @@ class HomeView extends GetView<HomeController> {
                 child: Stack(
                   children: [
                     _buildChatList(),
-                    // 新人福利
-                    // controller.isShowNew.value?Positioned(
-                    //   top: Get.height/2,
-                    //   left: 0,
-                    //   child: InkWell(
-                    //     onTap: ()=>Get.dialog(NewUserDialog()),
-                    //     child: Tada(
-                    //       infinite: true,
-                    //       duration: const Duration(milliseconds: 1000),
-                    //       child:CachedNetworkImage(imageUrl: ImageConfig.newUser1,height: 60.h,),
-                    //     ),
-                    //   ),
-                    //  ):Center(),
                     // 存钱罐
                     Positioned(
                       top: Get.height / 2 - 100.h,

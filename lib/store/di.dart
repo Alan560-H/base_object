@@ -19,32 +19,6 @@ import 'user_info.dart';
 
 /// 统一注入
 class DependencyInjection {
-  /// 广告注入
-  static Future<void> adInit() async {
-    // // 注入广告工具
-    // Get.put<InitTool>(InitTool());
-    // // 注入banner工具
-    // Get.put<BannerTool>(BannerTool());
-    // // 注入开屏广告工具
-    // Get.put<SplashTool>(SplashTool());
-    //
-    // // 注入监听工具
-    // Get.put<InterstitialTool>(InterstitialTool());
-    // // 注入信息流工具
-    // Get.put<NativeTool>(NativeTool());
-
-    // 异步注入 ListenerTool（执行其 init() 方法）
-    // await Get.putAsync<ListenerTool>(() => ListenerTool().init());
-    // 3. 最后注册 InterAdDialog（它依赖上面两个服务）
-    // await Get.putAsync<InterAdDialog>(() async => InterAdDialog());
-    // Utils.logError("注入广告工具：${Get.isRegistered<InitTool>()}");
-    // Utils.logError("注入开屏广告工具：${Get.isRegistered<SplashTool>()}");
-    // Utils.logError("注入插屏广告工具：${Get.isRegistered<InterstitialTool>()}");
-    // Utils.logError("注入信息流广告工具：${Get.isRegistered<NativeTool>()}");
-    // Utils.logError("注入广告监听工具：${Get.isRegistered<ListenerTool>()}");
-    // Utils.logError("注入进度条工具：${Get.isRegistered<CuCircularProgressController>()}");
-  }
-
   /// 依赖注入
   static Future<void> mainInit() async {
     // 注册 UserInfo 依赖

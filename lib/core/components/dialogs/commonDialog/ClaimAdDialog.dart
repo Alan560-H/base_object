@@ -72,53 +72,6 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
     );
   }
 
-  // 显示激励广告（修改：调用实例方法checkClaim）
-  showRewarder() async {
-    if (await Store.instance.canLookReward()) {
-      await RewarderTool.to.showRewardedVideo();
-    } else {
-      checkClaim();
-    }
-  }
-
-  // 5. 改为实例方法（原static去掉，避免无法访问State内属性）
-  Future<void> checkClaim() async {
-    if (Get.isRegistered<Api>()) {
-      BackModel backModel = await Api.to.getAdAmount();
-      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "存钱罐领取成功");
-        UserInfo.instance.getUserInfoFn();
-        Store.instance.setIsOpenClaim(false);
-
-        Utils.logError(
-          "是否有进度条${Get.isRegistered<CuCircularProgressController>()}",
-        );
-        if (Get.isRegistered<CuCircularProgressController>()) {
-          CuCircularProgressController.to.resetProgressTimer();
-          NativeTool.to.removeNativeAd();
-          NativeTool.to.loadNativeWith();
-          Get.back();
-        }
-      }
-    }
-  }
-
-  // 激励广告奖励提交方法（修改：用Get.find获取控制器，而非new）
-  upDataADFn(dynamic event) async {
-    try {
-      checkClaim();
-      if (Get.isRegistered<HomeController>()) {
-        // 规范：用Get.find获取已注册的控制器，避免重复创建
-        Get.find<HomeController>().upDataADFn(event);
-      }
-    } catch (e) {
-      Utils.logError("领取激励视频奖励失败：$e");
-    } finally {
-      checkClaim();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -157,7 +110,14 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 30.h),
+                      SizedBox(height: 20.h),
+                      Text(
+                        "今日已领取${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
+                        style: TextStyle(
+                          fontSize: TextConfig.textSize_20,
+                          color: Colors.white,
+                        ),
+                      ),
                       Text(
                         "温馨提示：建议累计到2000以上再领取哦",
                         style: TextStyle(
@@ -169,7 +129,6 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                       // 6. 核心：倒计时按钮（Obx监听倒计时状态）
                       Obx(
                         () => CuButton(
-                          // 按钮文字：倒计时中显示“立即领取(6s)”，结束后显示“立即领取”
                           text:
                               _countdown.value > 0
                                   ? "${_countdown.value}秒后可以领取"
@@ -193,7 +152,12 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                                     // 原点击逻辑保留（加widget.前缀）
                                     if (widget.data.value >=
                                         Store.instance.getFkConfig.amountMin) {
-                                      showRewarder();
+                                      if (await Store.instance
+                                          .canLookReward()) {
+                                        RewarderTool.to.rewardedAdListen();
+                                        await RewarderTool.to
+                                            .showRewardedVideo();
+                                      }
                                     } else {
                                       EasyLoading.showInfo("金额太少，请耐心等待");
                                     }
