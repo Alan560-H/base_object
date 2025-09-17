@@ -21,7 +21,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class HomeUtils {
   // 获取UserAgent
   static Future<String?> getUserAgent() async {
-    const platform = MethodChannel('ua_channel');
+    const platform = MethodChannel('uaChannel');
     try {
       final String? ua = await platform.invokeMethod('getUA');
       return ua;
