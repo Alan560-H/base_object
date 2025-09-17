@@ -7,6 +7,6 @@ class ApiBinding extends Bindings {
   @override
   void dependencies() {
     HttpClientBinding().dependencies();
-    Get.lazyPut(() => Api());
+    Get.put<Api>(Api());
   }
 }

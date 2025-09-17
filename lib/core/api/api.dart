@@ -33,7 +33,7 @@ import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import '../net/cu_http_client.dart';
 import 'api_urls.dart';
 
-class Api extends GetxController {
+class Api extends GetxService {
   // GetX单例获取方式
   static Api get to => Get.find<Api>();
   // 发起请求的通用方法

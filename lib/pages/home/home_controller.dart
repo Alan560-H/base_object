@@ -90,67 +90,65 @@ class HomeController extends GetxController {
   // 定时器相关
   Timer? _autoMessageTimer; // 普通消息定时器（3秒/条）
   Timer? _placeholderTimer; // 广告消息定时器（6秒/条）
-  bool _hasShow = false; // 防止重复跳转标记
 
   /// 订阅激励广告事件
-  void rewarderEvent() async {
-    ever(ListenerTool.to.rewarderEvent, (event) {
-      if (event == null || _hasShow) return;
-      String eventType = event["eventType"] ?? "";
-      String placementID = event["placementID"] ?? "";
-
-      Utils.logError("激励广告事件：$eventType，广告位ID：$placementID，参数：$event");
-
-      switch (eventType) {
-        case "RewardedStatus.rewardedVideoDidFailToLoad":
-          Utils.logError("激励广告加载失败，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidFinishLoading":
-          Utils.logError("激励广告加载完成，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidStartPlaying":
-          Utils.logError("激励广告开始播放，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidEndPlaying":
-          Utils.logError("激励广告结束播放，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidFailToPlay":
-          Utils.logError("激励广告播放失败，广告位ID：$placementID");
-          NativeTool.to.removeNativeAd();
-          NativeTool.to.loadNativeWith();
-          break;
-        case "RewardedStatus.rewardedVideoDidRewardSuccess":
-          Utils.logError("激励广告奖励成功，广告位ID：$placementID");
-
-          break;
-        case "RewardedStatus.rewardedVideoDidClick":
-          Utils.logError("激励广告被点击，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidDeepLink":
-          Utils.logError("激励广告深度链接，广告位ID：$placementID");
-          break;
-        case "RewardedStatus.rewardedVideoDidClose":
-          Utils.logError("激励广告被关闭，广告位ID：$placementID");
-          if (!Get.isRegistered<RewarderTool>()) {
-            Get.put(RewarderTool());
-          }
-          RewarderTool.to.loadRewardedVideo(
-            userID: "${UserInfo.instance.userModel.id}",
-            extra:
-                "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
-          );
-          redBagOpen.value = false;
-          if (Get.isRegistered<UserInfo>()) {
-            upDataADFn(event);
-          }
-          Utils.logError("${Store.instance.getIsOpenClaim}，hhhh");
-          if (Store.instance.getIsOpenClaim) {
-            checkClaim();
-          }
-          break;
-      }
-    });
-  }
+  // void rewarderEvent() async {
+  //   ever(ListenerTool.to.rewarderEvent, (event) {
+  //     String eventType = event["eventType"] ?? "";
+  //     String placementID = event["placementID"] ?? "";
+  //
+  //     Utils.logError("激励广告事件：$eventType，广告位ID：$placementID，参数：$event");
+  //
+  //     switch (eventType) {
+  //       case "RewardedStatus.rewardedVideoDidFailToLoad":
+  //         Utils.logError("激励广告加载失败，广告位ID：$placementID");
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidFinishLoading":
+  //         Utils.logError("激励广告加载完成，广告位ID：$placementID");
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidStartPlaying":
+  //         Utils.logError("激励广告开始播放，广告位ID：$placementID");
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidEndPlaying":
+  //         Utils.logError("激励广告结束播放，广告位ID：$placementID");
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidFailToPlay":
+  //         Utils.logError("激励广告播放失败，广告位ID：$placementID");
+  //         NativeTool.to.removeNativeAd();
+  //         NativeTool.to.loadNativeWith();
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidRewardSuccess":
+  //         Utils.logError("激励广告奖励成功，广告位ID：$placementID");
+  //
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidClick":
+  //         Utils.logError("激励广告被点击，广告位ID：$placementID");
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidDeepLink":
+  //         Utils.logError("激励广告深度链接，广告位ID：$placementID");
+  //         break;
+  //       case "RewardedStatus.rewardedVideoDidClose":
+  //         Utils.logError("激励广告被关闭，广告位ID：$placementID");
+  //         if (!Get.isRegistered<RewarderTool>()) {
+  //           Get.put(RewarderTool());
+  //         }
+  //         RewarderTool.to.loadRewardedVideo(
+  //           userID: "${UserInfo.instance.userModel.id}",
+  //           extra:
+  //               "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+  //         );
+  //         redBagOpen.value = false;
+  //         if (Get.isRegistered<UserInfo>()) {
+  //           upDataADFn(event);
+  //         }
+  //         Utils.logError("${Store.instance.getIsOpenClaim}，hhhh");
+  //         if (Store.instance.getIsOpenClaim) {
+  //           checkClaim();
+  //         }
+  //         break;
+  //     }
+  //   });
+  // }
 
   // 5. 改为实例方法（原static去掉，避免无法访问State内属性）
   Future<void> checkClaim() async {
@@ -379,12 +377,15 @@ class HomeController extends GetxController {
   }
 
   RxBool isShowNew = false.obs;
+
+  /// 是否显示新人奖励
   isShowNewUser() async {
     Utils.logError("登录？？${UserInfo.instance.isLoginIn}");
     if (!UserInfo.instance.isLoginIn) return false;
     isShowNew.value = await UserInfo.instance.isNewUser();
   }
 
+  /// 显示公告框
   isShow() async {
     if (await NoticeDialog.shouldShow()) {
       Dialogs.noticeDialog();
@@ -410,8 +411,16 @@ class HomeController extends GetxController {
     // rewarderEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
+
+    RewarderTool.to.loadRewardedVideo(
+      userID: "${UserInfo.instance.userModel.id}",
+      extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+    );
     isShowNewUser();
+    // 初始化app升级信息
     await getAppUpdata(isReturn: true);
+
+    /// 是否显示公告狂
     isShow();
 
     ///同意隐私政策之后调用

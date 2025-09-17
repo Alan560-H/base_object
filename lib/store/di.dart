@@ -53,6 +53,7 @@ class DependencyInjection {
     Get.put<AppConfig>(AppConfig());
     // 注册广告配置
     Get.put<AppAdConfig>(AppAdConfig());
+
     // 注入api
     ApiBinding().dependencies();
     // 注入

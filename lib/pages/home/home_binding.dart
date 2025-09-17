@@ -10,11 +10,8 @@ import 'home_controller.dart';
 class HomeBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(RewarderTool());
-    Get.put(Api());
-    Get.put(NativeTool());
     // 注入进度条控制器
-    Get.put<CuCircularProgressController>(CuCircularProgressController(),);
+    Get.put<CuCircularProgressController>(CuCircularProgressController());
     CuNavBarBinding().dependencies();
     Get.lazyPut(() => HomeController());
     // 可以在这里注入首页需要的其他服务

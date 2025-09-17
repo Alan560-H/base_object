@@ -7,10 +7,6 @@ import 'cu_http_client.dart';
 class HttpClientBinding extends Bindings {
   @override
   void dependencies() {
-    // 注入app配置
-    Get.put<AppAdConfig>(AppAdConfig());
-    /// 注入用户配置
-    Get.put<UserInfo>(UserInfo());
     Get.put<CuHttpClient>(CuHttpClient());
   }
 }
