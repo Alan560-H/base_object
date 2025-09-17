@@ -222,12 +222,12 @@ class HomeController extends GetxController {
 }
 
 // 显示激励广告
-// showRewarder() async {
+// () async {
 //   if (Get.isRegistered<NativeTool>()) {
 //     NativeTool.to.loadNativeWith();
 //     Utils.logError(NativeTool.to.checkNativeLoadStatus());
 //     if (await NativeTool.to.nativeAdReady()) {
-//       NativeTool.to.showNative();
+//       NativeTool.to.();
 //     }
 //   }
 //

@@ -81,6 +81,7 @@ class CuCircularProgressController extends GetxController {
       }
 
       if (Get.isRegistered<NativeTool>()) {
+        NativeTool.to.nativeLisListen();
         NativeTool.to.showNative();
       }
       RewarderModel rewarderModel = await Api.to.getSelectAdV3();

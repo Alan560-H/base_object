@@ -116,7 +116,9 @@ class BannerTool extends GetxController {
 
   /// 横幅广告监听
   bannerListen() {
-    _bannerSubscription?.cancel();
+    if (_bannerSubscription != null) {
+      return;
+    }
     _bannerSubscription = ATListenerManager.bannerEventHandler.listen((value) {
       CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
       switch (value.bannerStatus) {

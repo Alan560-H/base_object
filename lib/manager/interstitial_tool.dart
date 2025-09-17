@@ -73,7 +73,9 @@ class InterstitialTool extends GetxController {
 
   StreamSubscription<ATInterstitialResponse>? _intertStreamSubscription;
   interstitialListen() {
-    _intertStreamSubscription?.cancel();
+    if (_intertStreamSubscription != null) {
+      return;
+    }
     _intertStreamSubscription = ATListenerManager.interstitialEventHandler.listen((
       value,
     ) {

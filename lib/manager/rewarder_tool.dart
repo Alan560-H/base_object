@@ -152,7 +152,9 @@ class RewarderTool extends GetxController {
   StreamSubscription<ATRewardResponse>? _rewardedSubscription;
   // 激励广告监听
   rewardedAdListen() {
-    _rewardedSubscription?.cancel();
+    if (_rewardedSubscription != null) {
+      return;
+    }
     _rewardedSubscription = ATListenerManager.rewardedVideoEventHandler.listen((
       value,
     ) {
