@@ -143,22 +143,22 @@ class CuNavBarController extends GetxController {
   upDataADFn(dynamic event) async {
     try {
       Utils.logError(
-        "${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告${event['extraMap']}",
+        "${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告upDataADFn${event.extraMap}",
       );
       UpDataADForm upDataADForm = UpDataADForm();
 
       // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
-      dynamic adSourcePrice = event?['extraMap']?['adsource_price'];
+      dynamic adSourcePrice = event.extraMap?['adsource_price'];
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
       double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
-      String reqId = event?['extraMap']?['req_id'];
-      String adsourceId = event?['extraMap']?['adsource_id'];
+      String reqId = event.extraMap?['req_id'];
+      String adsourceId = event.extraMap?['adsource_id'];
       // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
       String userId = UserInfo.instance.userModel.id.toString();
       upDataADForm.extra =
           "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
-      upDataADForm.transId = event?['extraMap']?['id'];
+      upDataADForm.transId = event.extraMap?['id'];
       upDataADForm.amount = (amount! / 1000);
       upDataADForm.adsourceId = adsourceId;
       upDataADForm.reqId = reqId;
