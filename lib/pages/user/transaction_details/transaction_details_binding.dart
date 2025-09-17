@@ -5,12 +5,10 @@ import 'package:get/get.dart';
 
 import 'transaction_details_controller.dart';
 
-
 class TransactionDetailsBinding implements Bindings {
   @override
   void dependencies() {
     Get.put(Api());
-    Get.put(BannerTool());
     UserBinding().dependencies();
     Get.lazyPut(() => TransactionDetailsController());
   }

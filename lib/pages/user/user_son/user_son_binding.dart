@@ -7,7 +7,6 @@ import 'user_son_controller.dart';
 class UserSonBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(BannerTool());
     Get.put(Api());
     Get.lazyPut(() => UserSonController());
   }

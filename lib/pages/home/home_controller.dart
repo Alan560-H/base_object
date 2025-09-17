@@ -407,7 +407,7 @@ class HomeController extends GetxController {
   // ------------------- 生命周期 -------------------
   void allInit() async {
     // 初始化广告监听和加载
-    rewarderEvent();
+    // rewarderEvent();
     // 初始化用户信息
     UserInfo.instance.initialize();
     isShowNewUser();

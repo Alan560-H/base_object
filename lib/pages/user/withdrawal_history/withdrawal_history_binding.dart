@@ -7,7 +7,6 @@ import 'withdrawal_history_controller.dart';
 class WithdrawalHistoryBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(BannerTool());
     UserBagBinding().dependencies();
     Get.lazyPut(() => WithdrawalHistoryController());
   }

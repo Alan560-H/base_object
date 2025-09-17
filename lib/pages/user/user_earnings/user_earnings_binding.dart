@@ -11,7 +11,6 @@ class UserEarningsBinding implements Bindings {
   void dependencies() {
     UserBagBinding().dependencies();
     InviteBinding().dependencies();
-    Get.put(BannerTool());
     Get.put(Api());
     Get.lazyPut(() => UserEarningsController());
   }

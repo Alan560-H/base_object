@@ -6,7 +6,6 @@ import 'invite_user_controller.dart';
 class InviteUserBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(BannerTool());
     Get.lazyPut(() => InviteUserController());
   }
 }

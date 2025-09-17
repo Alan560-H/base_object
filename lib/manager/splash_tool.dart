@@ -45,6 +45,7 @@ class SplashTool extends GetxController {
   }
 
   StreamSubscription<ATSplashResponse>? _splashSubscription;
+  // 开屏监听器
   splashListen() {
     _splashSubscription?.cancel();
     _splashSubscription = ATListenerManager.splashEventHandler.listen((value) {

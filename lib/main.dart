@@ -24,13 +24,8 @@ void main() async {
   await DependencyInjection.mainInit();
   AppConfig.instance.init();
   UserInfo.instance.initialize();
-
-
-
   runApp(const MyApp());
 }
-
-
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
