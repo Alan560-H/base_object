@@ -10,12 +10,12 @@ class TemplateView extends GetView<TemplateController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(()=>
-        Column(
+      body: Obx(
+        () => Column(
           children: [
-            CuAppBar(title: controller.appbarTitle.value,showBackArrow: false,),
+            CuAppBar(title: controller.appbarTitle.value, showBackArrow: false),
           ],
-        )
+        ),
       ),
       bottomNavigationBar: CuNavBarView(),
     );

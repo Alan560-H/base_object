@@ -14,7 +14,7 @@ class ShortVideoView extends GetView<ShortVideoController> {
       //   viewWidth: 10.sw,
       //   viewHeight: 1.sh - ScreenUtil().statusBarHeight,
       // ),
-      bottomNavigationBar: CuNavBarView(),
+      // bottomNavigationBar: CuNavBarView(),
     );
   }
 }

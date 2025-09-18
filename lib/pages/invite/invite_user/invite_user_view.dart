@@ -211,7 +211,6 @@ class InviteUserView extends GetView<InviteUserController> {
           ),
         ),
       ),
-      // bottomNavigationBar: CuNavBarView(),
     );
   }
 }

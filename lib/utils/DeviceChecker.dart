@@ -18,7 +18,8 @@ class DeviceChecker {
     assert(isDebug = true);
     Utils.logError("是否开启调试模式：$isDebug");
     EasyLoading.show(status: "是否开启调试模式：$isDebug");
-    if (!isDebug) {
+    return false;
+    if (isDebug) {
       CuToast.error(msg: "请关闭调试模式后再重新打开本程序");
       EasyLoading.dismiss();
       throw Exception("开启了调试模式");
@@ -47,6 +48,7 @@ class DeviceChecker {
       bool hasSim = simCards?.isNotEmpty ?? false;
       Utils.logError("是否插卡：$hasSim");
       EasyLoading.show(status: "是否插卡：$hasSim");
+      return true;
       if (!hasSim) {
         CuToast.error(msg: "请插卡后再重新打开本程序");
         throw Exception("没有插卡");
@@ -192,7 +194,7 @@ class DeviceChecker {
       await Future.delayed(const Duration(milliseconds: 100));
 
       bool res =
-          isDebug &&
+          !isDebug &&
           !isVpn &&
           hasSim &&
           !isDev &&

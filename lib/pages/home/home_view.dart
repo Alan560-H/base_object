@@ -11,6 +11,7 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -98,6 +99,7 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.transparent,
                 actions: [
+                  Text(Store.instance.getInviteCode()),
                   if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
                     Tada(
                       infinite: true,

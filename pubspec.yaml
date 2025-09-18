@@ -100,6 +100,10 @@ dependencies:
   amap_flutter_location: ^3.0.0
   # 安全存储
   flutter_secure_storage: ^9.2.4
+  # 深度链接
+  app_links: ^6.4.1
+  # 微信sdk
+  fluwx: ^5.7.2
   #穿山甲
   flutter_pangrowth:
     path: ./plugins/flutter_pangrowth

@@ -80,7 +80,7 @@ class InviteUserController extends GetxController {
 
   String get inviteUrl {
     String res =
-        "${AppConfig.instance.registerUrl}?inviteCode=${userInfo.userModel.inviteCode}&downloadUrl=${Store.instance.getAppUpLoadModel.downUrl}&channelPackage=${Store.instance.getAppUpLoadModel.channelPackage}&logoUrl=${ImageConfig.logo}";
+        "${AppConfig.instance.registerUrl}?inviteCode=${userInfo.userModel.inviteCode}&downloadUrl=${Store.instance.getAppUpLoadModel.downUrl}?invite=${userInfo.userModel.inviteCode}&channelPackage=${Store.instance.getAppUpLoadModel.channelPackage}&logoUrl=${ImageConfig.logo}";
     Utils.logError("注册地址：$res");
     return res;
   }

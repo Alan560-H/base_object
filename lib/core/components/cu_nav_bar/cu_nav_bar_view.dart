@@ -8,23 +8,22 @@ class CuNavBarView extends GetView<CuNavBarController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=>Container(
-      height: controller.height.value,
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Obx(
+      () => Container(
+        height: controller.height.value,
+        decoration: BoxDecoration(color: Colors.white),
+        child: Column(
+          children: [
+            BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              showUnselectedLabels: true,
+              items: controller.getNavigationItems(),
+              currentIndex: controller.currentPageIndex.value,
+              onTap: controller.onTabChange,
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        children: [
-          BottomNavigationBar(
-            // key: Global.bottomNavigationBarState,
-            type: BottomNavigationBarType.fixed,
-            showUnselectedLabels: true,
-            items: controller.getNavigationItems(),
-            currentIndex: controller.currentPageIndex.value,
-            onTap: controller.onTabChange,
-          ),
-        ],
-      ),
-    ));
+    );
   }
 }
