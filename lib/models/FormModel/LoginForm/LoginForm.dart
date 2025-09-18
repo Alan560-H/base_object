@@ -10,33 +10,40 @@ part 'LoginForm.g.dart';
  * 自动构建:  flutter packages pub run build_runner watch
  */
 
-
-
 /// 账号登录
 @JsonSerializable()
 class LoginForm extends FormModel {
   /// 密码
-  String? oaid ="";
+  String? oaid = "";
+
   /// ua
-  String? ua="";
+  String? ua = "";
+
   /// 返回url
-  String? trenchUrl ="";
-  /// 渠道包名
-  String? channelPackage = "";
+  String? trenchUrl = "";
+
   /// ?
   String? bdId = "";
   String? qhId = "";
   String? inviteCode = "";
+
   /// 手机号
   String? mobile = "";
+
   /// 手机号验证码
   String? mobileCode = "";
+
   /// 账号
   String? account = "";
+
   /// 密码
   String? password = "";
+
   /// 一键登录/注册accessToken
   String? accessToken = "";
+
+  /// 微信code
+  String? wxCode = "";
 
   /// 密码
   /// //loginType是1的情况下 账号密码登录,account, password 是必传
@@ -44,8 +51,6 @@ class LoginForm extends FormModel {
   // //loginType是3的情况下 一键登录/注册accessToken 是必传的
   // //loginType是4的情况下 落地页手机号验证码注册,mobile,mobileCode 是必传
   int loginType = 1;
-
-
 
   /// 账号登录
   LoginForm();

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
@@ -20,6 +22,7 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 
 class Common {
@@ -41,6 +44,8 @@ class LoginController extends GetxController {
 
   /// 是否同意用户隐私协议
   RxBool isChecked = false.obs;
+
+  RxBool isWechatLogin = true.obs;
 
   /// 倒计时
   RxInt countdown = 0.obs;
@@ -120,13 +125,57 @@ class LoginController extends GetxController {
     loginForm = LoginForm().obs;
   }
 
-  /// 登录按钮
+  // 声明并初始化监听实例（不再是null，避免空安全问题）
+  WeChatResponseSubscriber? _weChatResponseSubscriber;
+
+  /// 微信登录
+  void wxLogin() async {
+    if (!isChecked.value) {
+      Get.snackbar("提示", "请先同意相关协议再登录");
+      return;
+    }
+    EasyLoading.show(status: "登录中...");
+    fluwx
+        .authBy(which: NormalAuth(scope: 'snsapi_userinfo', state: 'app_login'))
+        .then((data) {
+          // Utils.logError("微信登录返回数据：$data");
+          fluwx.addSubscriber(
+            _weChatResponseSubscriber = (event) {
+              EasyLoading.dismiss();
+              if (event is WeChatAuthResponse) {
+                Utils.logError("微信登录返回数据：${event.toRecord()}");
+                Utils.logError('event.errorCode: ${event.errCode}');
+                Utils.logError('event.errStr: ${event.errStr}');
+                Utils.logError('event.code: ${event.code}');
+                Utils.logError('event.isSuccessful: ${event.isSuccessful}');
+                Utils.logError('event.country: ${event.country}');
+                Utils.logError('event.state: ${event.state}');
+                // 获取微信code失败
+                if (event.code == null || event.code!.isEmpty) {
+                  Utils.logError("登录失败：${event.errStr}");
+                } else {
+                  loginForm.value.wxCode = event.code;
+                  fluwx.removeSubscriber(_weChatResponseSubscriber!);
+                  loginEd();
+                }
+              }
+              if (event is WeChatAuthGotQRCodeResponse) {
+                // TODO 二维码登录
+              }
+              if (event is WeChatAuthByQRCodeFinishedResponse) {
+                // TODO 二维码登录成功
+              }
+            },
+          );
+        })
+        .catchError((e) {
+          Utils.logError("微信登录出错: $e");
+        });
+  }
+
+  /// 账号密码手机号登录按钮
   void submitForm() async {
     try {
-      if (!isChecked.value) {
-        Get.snackbar("提示", "请先同意相关协议再登录");
-        return;
-      }
       EasyLoading.show(status: "登录中...");
 
       loginForm.value.channelPackage =
@@ -134,54 +183,74 @@ class LoginController extends GetxController {
       loginForm.value.oaid = Store.instance.getAppUpLoadModel.oaid;
       loginForm.value.ua = Store.instance.getAppUpLoadModel.ua;
       Utils.logError("登录参数：${loginForm.value.toJson()}");
-
-      loginModel.value = await Api.to.login(loginForm.value);
-      if (loginModel.value.tokenValue.isEmpty) return;
-      UserInfo.instance.setToken(
-        value: loginModel.value.tokenValue,
-        key: loginModel.value.tokenValue,
-      );
-      UserModel userModel = await Api.to.getUserInfo();
-      if (userModel.id != 0) {
-        CuToast.success(msg: "登录成功");
-        UserInfo.instance.updateUserModel(userModel);
-        UserTodayModel userTodayModel = await Api.to.getTodayAmount();
-        UserInfo.instance.updateUserTodayModel(userTodayModel);
-        Utils.logError("用户今日收益：${userTodayModel.toJson()}");
-        DateTime now = DateTime.now();
-        int timestampMs = now.millisecondsSinceEpoch;
-
-        await InitTool.to.initTopon();
-        InitTool.to.setCustomDataDic({
-          "user_id": "${UserInfo.instance.userModel.id}",
-          "extra":
-              "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
-        });
-        RewarderTool.to.loadRewardedVideo(
-          userID: UserInfo.instance.userModel.id,
-          extra:
-              "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
-        );
-        swicthLoginType();
-        isChecked.value = false;
-        Get.offNamed(AppRoutes.home);
-        Utils.logError(
-          "是否显示弹窗：${UserInfo.instance.userModel.inviteUserId == null || UserInfo.instance.userModel.inviteUserId == 0}",
-        );
-        HomeController homeController = Get.find<HomeController>();
-        homeController.isShowNewUser();
-        if (UserInfo.instance.userModel.inviteUserId == null ||
-            UserInfo.instance.userModel.inviteUserId == 0) {
-          Dialogs.showCommonDialog(
-            dialogType: "BindViteCodeDialog",
-            dialogTitle: "绑定上级邀请人",
-          );
-        }
-      }
+      loginEd();
     } catch (e) {
       Utils.logError("登录出错: $e");
     } finally {
       EasyLoading.dismiss();
     }
+  }
+
+  /// 微信登录后或者账号密码手机号登录后走此方法
+  void loginEd() async {
+    loginModel.value = await Api.to.login(loginForm.value);
+    if (loginModel.value.tokenValue.isEmpty) return;
+    UserInfo.instance.setToken(
+      value: loginModel.value.tokenValue,
+      key: loginModel.value.tokenValue,
+    );
+    UserModel userModel = await Api.to.getUserInfo();
+    if (userModel.id != 0) {
+      CuToast.success(msg: "登录成功");
+      loginForm.value = LoginForm();
+      UserInfo.instance.updateUserModel(userModel);
+      UserTodayModel userTodayModel = await Api.to.getTodayAmount();
+      UserInfo.instance.updateUserTodayModel(userTodayModel);
+      Utils.logError("用户今日收益：${userTodayModel.toJson()}");
+      DateTime now = DateTime.now();
+      int timestampMs = now.millisecondsSinceEpoch;
+
+      await InitTool.to.initTopon();
+      InitTool.to.setCustomDataDic({
+        "user_id": "${UserInfo.instance.userModel.id}",
+        "extra":
+            "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
+      });
+      RewarderTool.to.loadRewardedVideo(
+        userID: UserInfo.instance.userModel.id,
+        extra:
+            "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
+      );
+      swicthLoginType();
+      isChecked.value = false;
+      Get.offNamed(AppRoutes.home);
+      Utils.logError(
+        "是否显示弹窗：${UserInfo.instance.userModel.inviteUserId == null || UserInfo.instance.userModel.inviteUserId == 0}",
+      );
+      HomeController homeController = Get.find<HomeController>();
+      homeController.isShowNewUser();
+      if (UserInfo.instance.userModel.inviteUserId == null ||
+          UserInfo.instance.userModel.inviteUserId == 0) {
+        Dialogs.showCommonDialog(
+          dialogType: "BindViteCodeDialog",
+          dialogTitle: "绑定上级邀请人",
+        );
+      }
+    }
+  }
+
+  Fluwx fluwx = Fluwx();
+  initWx() async {
+    bool isRegister = await fluwx.registerApi(
+      appId: AppConfig.instance.wxAppId,
+    );
+    Utils.logError("微信是否注册成功：$isRegister");
+  }
+
+  @override
+  void onInit() {
+    initWx();
+    // TODO: implement onInit
+    super.onInit();
   }
 }
