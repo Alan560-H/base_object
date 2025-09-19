@@ -73,7 +73,7 @@ class HomeUtils {
     appUpLoadModel.fingerprint = androidInfo.fingerprint;
     appUpLoadModel.channel = channel;
     appUpLoadModel.channelPackage = appUpLoadForm.channelPackage ?? "";
-
+    Utils.logError("通道参数是：${appUpLoadModel.channel}");
     // 存储升级信息
     Store.instance.updateAppUpLoadModel(appUpLoadModel);
     if (isReturn) return;

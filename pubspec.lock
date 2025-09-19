@@ -903,6 +903,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.0.3"
+  openinstall_flutter_plugin:
+    dependency: "direct main"
+    description:
+      name: openinstall_flutter_plugin
+      sha256: a07acd4a3c9c3175527512b6de2ca52644be46ff44a382ea0224635d6355ae76
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.5.4"
   package_config:
     dependency: transitive
     description:

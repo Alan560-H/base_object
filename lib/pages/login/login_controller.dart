@@ -19,6 +19,7 @@ import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgMod
 import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/OpenInstallUtils.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -159,6 +160,7 @@ class LoginController extends GetxController {
                   loginForm.value.oaid = Store.instance.getAppUpLoadModel.oaid;
                   loginForm.value.ua = Store.instance.getAppUpLoadModel.ua;
                   loginForm.value.wxCode = event.code;
+                  Utils.logError("微信code:${event.code}");
                   loginForm.value.loginType = 6;
                   fluwx.removeSubscriber(_weChatResponseSubscriber!);
                   loginEd();
@@ -198,6 +200,9 @@ class LoginController extends GetxController {
 
   /// 微信登录后或者账号密码手机号登录后走此方法
   void loginEd() async {
+    if (Store.instance.getInviteCode().isNotEmpty) {
+      loginForm.value.inviteCode = Store.instance.getInviteCode();
+    }
     loginModel.value = await Api.to.login(loginForm.value);
     if (loginModel.value.tokenValue.isEmpty) return;
     UserInfo.instance.setToken(
@@ -255,6 +260,7 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     initWx();
+    OpenInstallUtils.initInstallHandler();
     // TODO: implement onInit
     super.onInit();
   }

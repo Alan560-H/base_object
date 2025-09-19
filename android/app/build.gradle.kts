@@ -28,6 +28,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders.put("OPENINSTALL_APPKEY", "kl25pf")
         // 添加默认的渠道信息
         manifestPlaceholders["channel"] = "default"
         // 新增：限制 APK 只包含 arm64-v8a 架构

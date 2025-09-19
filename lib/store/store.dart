@@ -27,7 +27,7 @@ class Store extends GetxController {
     _currentIndex.value = index;
   }
 
-  final RxString _inviteCode = '123'.obs;
+  final RxString _inviteCode = ''.obs;
   void setInviteCode(String code) {
     _inviteCode.value = code;
   }

@@ -102,6 +102,8 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   # 深度链接
   app_links: ^6.4.1
+  # openInstall
+  openinstall_flutter_plugin: ^2.5.2
   # 微信sdk
   fluwx: ^5.7.2
   #穿山甲

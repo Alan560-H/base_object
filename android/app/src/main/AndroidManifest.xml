@@ -83,7 +83,9 @@
                 android:resource="@xml/anythink_bk_tt_file_path"
                 tools:replace="android:resource"/>
         </provider>
-
+        <meta-data
+            android:name="com.openinstall.APP_KEY"
+            android:value="kl25pf"/>
         <!-- 添加渠道信息的 meta-data -->
         <meta-data
             android:name="CHANNEL"
@@ -110,7 +112,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
@@ -129,8 +131,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="ruyimh"/>
-                <!-- <data android:scheme="myapp" android:host="pay"/> -->
+                <data android:scheme="kl25pf"/>
             </intent-filter>
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
