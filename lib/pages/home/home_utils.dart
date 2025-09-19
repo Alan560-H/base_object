@@ -69,6 +69,7 @@ class HomeUtils {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     appUpLoadModel.ua = await getUserAgent();
+    Utils.logError("app 的浏览器Ua是：${appUpLoadModel.ua}");
     appUpLoadModel.fingerprint = androidInfo.fingerprint;
     appUpLoadModel.channel = channel;
     appUpLoadModel.channelPackage = appUpLoadForm.channelPackage ?? "";

@@ -154,7 +154,12 @@ class LoginController extends GetxController {
                 if (event.code == null || event.code!.isEmpty) {
                   Utils.logError("登录失败：${event.errStr}");
                 } else {
+                  loginForm.value.channelPackage =
+                      Store.instance.getAppUpLoadModel.channelPackage;
+                  loginForm.value.oaid = Store.instance.getAppUpLoadModel.oaid;
+                  loginForm.value.ua = Store.instance.getAppUpLoadModel.ua;
                   loginForm.value.wxCode = event.code;
+                  loginForm.value.loginType = 6;
                   fluwx.removeSubscriber(_weChatResponseSubscriber!);
                   loginEd();
                 }

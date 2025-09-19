@@ -43,15 +43,15 @@ class AppConfig extends GetxController {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // 生产环境（release模式）
 
-      // _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
-      _baseUrl = 'http://129.211.211.100:39300';
-      _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
+      _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
+      // _baseUrl = 'http://129.211.211.100:39300';
+      // _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
       // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
     } else {
       // 开发环境（debug模式）
-      // _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
-      _baseUrl = 'http://129.211.211.100:39300';
-      _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
+      _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
+      // _baseUrl = 'http://129.211.211.100:39300';
+      // _baseUrl = 'https://prd.ruyigx.com/'; // 如意盒子
       // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
     }
   }
