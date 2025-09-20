@@ -99,7 +99,6 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.transparent,
                 actions: [
-                  Text(Store.instance.getInviteCode()),
                   if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
                     Tada(
                       infinite: true,

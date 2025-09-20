@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
@@ -19,7 +18,6 @@ import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgMod
 import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
-import 'package:base_object/utils/OpenInstallUtils.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -142,7 +140,6 @@ class LoginController extends GetxController {
           // Utils.logError("微信登录返回数据：$data");
           fluwx.addSubscriber(
             _weChatResponseSubscriber = (event) {
-              EasyLoading.dismiss();
               if (event is WeChatAuthResponse) {
                 Utils.logError("微信登录返回数据：${event.toRecord()}");
                 Utils.logError('event.errorCode: ${event.errCode}');
@@ -154,6 +151,8 @@ class LoginController extends GetxController {
                 // 获取微信code失败
                 if (event.code == null || event.code!.isEmpty) {
                   Utils.logError("登录失败：${event.errStr}");
+                  CuToast.error(msg: "登录失败，请重试");
+                  EasyLoading.dismiss();
                 } else {
                   loginForm.value.channelPackage =
                       Store.instance.getAppUpLoadModel.channelPackage;
@@ -184,7 +183,6 @@ class LoginController extends GetxController {
   void submitForm() async {
     try {
       EasyLoading.show(status: "登录中...");
-
       loginForm.value.channelPackage =
           Store.instance.getAppUpLoadModel.channelPackage;
       loginForm.value.oaid = Store.instance.getAppUpLoadModel.oaid;
@@ -200,52 +198,55 @@ class LoginController extends GetxController {
 
   /// 微信登录后或者账号密码手机号登录后走此方法
   void loginEd() async {
-    if (Store.instance.getInviteCode().isNotEmpty) {
-      loginForm.value.inviteCode = Store.instance.getInviteCode();
-    }
-    loginModel.value = await Api.to.login(loginForm.value);
-    if (loginModel.value.tokenValue.isEmpty) return;
-    UserInfo.instance.setToken(
-      value: loginModel.value.tokenValue,
-      key: loginModel.value.tokenValue,
-    );
-    UserModel userModel = await Api.to.getUserInfo();
-    if (userModel.id != 0) {
-      CuToast.success(msg: "登录成功");
-      loginForm.value = LoginForm();
-      UserInfo.instance.updateUserModel(userModel);
-      UserTodayModel userTodayModel = await Api.to.getTodayAmount();
-      UserInfo.instance.updateUserTodayModel(userTodayModel);
-      Utils.logError("用户今日收益：${userTodayModel.toJson()}");
-      DateTime now = DateTime.now();
-      int timestampMs = now.millisecondsSinceEpoch;
+    try {
+      loginModel.value = await Api.to.login(loginForm.value);
+      if (loginModel.value.tokenValue.isEmpty) return;
+      UserInfo.instance.setToken(
+        value: loginModel.value.tokenValue,
+        key: loginModel.value.tokenValue,
+      );
+      UserModel userModel = await Api.to.getUserInfo();
+      if (userModel.id != 0) {
+        CuToast.success(msg: "登录成功");
+        loginForm.value = LoginForm();
+        UserInfo.instance.updateUserModel(userModel);
+        UserTodayModel userTodayModel = await Api.to.getTodayAmount();
+        UserInfo.instance.updateUserTodayModel(userTodayModel);
+        Utils.logError("用户今日收益：${userTodayModel.toJson()}");
+        DateTime now = DateTime.now();
+        int timestampMs = now.millisecondsSinceEpoch;
 
-      await InitTool.to.initTopon();
-      InitTool.to.setCustomDataDic({
-        "user_id": "${UserInfo.instance.userModel.id}",
-        "extra":
-            "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
-      });
-      RewarderTool.to.loadRewardedVideo(
-        userID: UserInfo.instance.userModel.id,
-        extra:
-            "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
-      );
-      swicthLoginType();
-      isChecked.value = false;
-      Get.offNamed(AppRoutes.home);
-      Utils.logError(
-        "是否显示弹窗：${UserInfo.instance.userModel.inviteUserId == null || UserInfo.instance.userModel.inviteUserId == 0}",
-      );
-      HomeController homeController = Get.find<HomeController>();
-      homeController.isShowNewUser();
-      if (UserInfo.instance.userModel.inviteUserId == null ||
-          UserInfo.instance.userModel.inviteUserId == 0) {
-        Dialogs.showCommonDialog(
-          dialogType: "BindViteCodeDialog",
-          dialogTitle: "绑定上级邀请人",
+        await InitTool.to.initTopon();
+        InitTool.to.setCustomDataDic({
+          "user_id": "${UserInfo.instance.userModel.id}",
+          "extra":
+              "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
+        });
+        RewarderTool.to.loadRewardedVideo(
+          userID: UserInfo.instance.userModel.id,
+          extra:
+              "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_$timestampMs",
         );
+        swicthLoginType();
+        isChecked.value = false;
+        Get.offNamed(AppRoutes.home);
+        Utils.logError(
+          "是否显示弹窗：${UserInfo.instance.userModel.inviteUserId == null || UserInfo.instance.userModel.inviteUserId == 0}",
+        );
+        HomeController homeController = Get.find<HomeController>();
+        homeController.isShowNewUser();
+        if (UserInfo.instance.userModel.inviteUserId == null ||
+            UserInfo.instance.userModel.inviteUserId == 0) {
+          Dialogs.showCommonDialog(
+            dialogType: "BindViteCodeDialog",
+            dialogTitle: "绑定上级邀请人",
+          );
+        }
       }
+    } catch (e) {
+      Utils.logError("登录报错");
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 
@@ -257,10 +258,21 @@ class LoginController extends GetxController {
     Utils.logError("微信是否注册成功：$isRegister");
   }
 
+  getInviteCode() async {
+    loginForm.value.ua = Store.instance.getAppUpLoadModel.ua;
+    BackModel backModel = await Api.to.getInviteCode(loginForm.value);
+
+    if (backModel.data != null) {
+      loginForm.value.inviteCode = backModel.data ?? "";
+      Utils.logError("获取到的邀请码：${loginForm.value.inviteCode}");
+      Store.instance.setInviteCode(loginForm.value.inviteCode ?? "");
+    }
+  }
+
   @override
   void onInit() {
     initWx();
-    OpenInstallUtils.initInstallHandler();
+    getInviteCode();
     // TODO: implement onInit
     super.onInit();
   }

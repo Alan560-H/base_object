@@ -1,4 +1,3 @@
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

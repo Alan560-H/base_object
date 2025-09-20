@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/config/app_ad_config.dart';

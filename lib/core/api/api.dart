@@ -339,6 +339,22 @@ class Api extends GetxService {
     }
   }
 
+  /// 登录
+  Future<BackModel> getInviteCode(FormModel data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteCode,
+        data,
+        "post",
+      );
+
+      return backModel;
+    } catch (e) {
+      Utils.logError("login请求出错: $e");
+      return BackModel();
+    }
+  }
+
   /// 获取用户信息
   Future<UserModel> getUserInfo() async {
     try {
