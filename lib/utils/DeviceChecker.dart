@@ -18,6 +18,7 @@ class DeviceChecker {
     assert(isDebug = true);
     Utils.logError("是否开启调试模式：$isDebug");
     EasyLoading.show(status: "是否开启调试模式：$isDebug");
+    return false;
     if (isDebug) {
       CuToast.error(msg: "请关闭调试模式后再重新打开本程序");
       EasyLoading.dismiss();
