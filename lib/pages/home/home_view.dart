@@ -11,7 +11,6 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -92,6 +91,7 @@ class HomeView extends GetView<HomeController> {
         () => Container(
           color: TextConfig.comPageGrey,
           child: Column(
+            spacing: 5.h,
             children: [
               CuAppBar(
                 alignment: Alignment.centerLeft,
@@ -128,6 +128,8 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ],
               ),
+              if (controller.isNativeReady.value)
+                controller.nativeAdContainer(),
               // 聊天列表
               Expanded(
                 child: Stack(

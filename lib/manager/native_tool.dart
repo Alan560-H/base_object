@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -15,13 +17,14 @@ class NativeTool extends GetxService {
 
   /// 加载广告
   loadNativeWith() async {
+    Utils.logError("加载原生广告咯");
     await ATNativeManager.loadNativeAd(
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
         ATCommon.isNativeShow(): true,
         ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
           Get.width,
-          340.h,
+          140.h,
         ),
         ATNativeManager.isAdaptiveHeight(): true,
       },
@@ -40,89 +43,21 @@ class NativeTool extends GetxService {
   }
 
   getNativeValidAds() async {
-    await ATNativeManager.getNativeValidAds(
+    return await ATNativeManager.getNativeValidAds(
       placementID: AppAdConfig.nativePlacementID,
-    ).then((value) {
-      Utils.logError('原生广告：原生有效广告数量：$value'); // 原"getNativeValidAds"→"原生有效广告数量"
-    });
+    );
   }
 
-  checkNativeLoadStatus() async {
-    await ATNativeManager.checkNativeAdLoadStatus(
+  /// 获取广告状态
+  Future<Map<dynamic, dynamic>> checkNativeLoadStatus() async {
+    return await ATNativeManager.checkNativeAdLoadStatus(
       placementID: AppAdConfig.nativePlacementID,
-    ).then((value) {
-      Utils.logError(
-        '原生广告：原生广告加载状态：$value',
-      ); // 原"checkNativeAdLoadStatus"→"原生广告加载状态"
-    });
+    );
   }
 
   readyStatus() async {
     await nativeAdReady();
     await checkNativeLoadStatus();
-  }
-
-  showSceneNativeAd() async {
-    await ATNativeManager.showSceneNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
-      sceneID: AppAdConfig.nativeSceneID,
-      extraMap: {
-        ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width,
-          Get.height,
-          x: 0,
-          y: 100,
-        ),
-        ATNativeManager.appIcon(): ATNativeManager.createNativeSubViewAttribute(
-          50,
-          50,
-          x: 20,
-          y: 70,
-          backgroundColorStr: 'clearColor',
-        ),
-        ATNativeManager.mainTitle():
-            ATNativeManager.createNativeSubViewAttribute(
-              Get.width - 100,
-              40,
-              x: 90,
-              y: 70,
-              textSize: 15,
-            ),
-        ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width - 100,
-          40,
-          x: 90,
-          y: 120,
-          textSize: 15,
-        ),
-        ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
-          50,
-          50,
-          x: 90,
-          y: 170,
-          textSize: 15,
-        ),
-        ATNativeManager.mainImage():
-            ATNativeManager.createNativeSubViewAttribute(
-              Get.width - 40,
-              Get.height - 200,
-              x: 20,
-              y: 220,
-            ),
-        ATNativeManager.adLogo(): ATNativeManager.createNativeSubViewAttribute(
-          100,
-          50,
-          x: Get.width - 100,
-          y: Get.height - 70,
-        ),
-        ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
-          80,
-          80,
-          x: 20,
-          y: 0,
-        ),
-      },
-    );
   }
 
   showNative() async {
@@ -215,12 +150,19 @@ class NativeTool extends GetxService {
           Utils.logError(
             "原生广告 nativeAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
+          loadNativeWith();
           break;
         //广告加载成功
         case NativeStatus.nativeAdDidFinishLoading:
           Utils.logError(
             "原生广告 nativeAdDidFinishLoading ---- placementID: ${value.placementID}",
           );
+          // &&UserInfo.instance.isLoginIn
+          if (Get.currentRoute == AppRoutes.home) {
+            HomeController homeController = Get.find<HomeController>();
+            homeController.setIsNativeReady(true);
+          }
+
           break;
         //广告被点击
         case NativeStatus.nativeAdDidClick:
@@ -239,6 +181,7 @@ class NativeTool extends GetxService {
           Utils.logError(
             "原生广告 nativeAdDidEndPlayingVideo ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          loadNativeWith();
           break;
         //广告进入全屏播放，仅iOS有此回调
         case NativeStatus.nativeAdEnterFullScreenVideo:
@@ -257,6 +200,7 @@ class NativeTool extends GetxService {
           Utils.logError(
             "原生广告 nativeAdDidShowNativeAd ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          loadNativeWith();
           break;
         //广告视频开始播放，部分广告平台有此回调
         case NativeStatus.nativeAdDidStartPlayingVideo:
