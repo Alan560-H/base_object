@@ -5,11 +5,13 @@ class ChatMessage {
   final VirtualUser user;
   final Widget content; // 消息小部件
   final DateTime timestamp;
+  final bool isHasNative; // 是否有信息流广告
   ChatMessage({
     required this.id,
     required this.user,
     required this.content,
     required this.timestamp,
+    required this.isHasNative,
   });
 }
 

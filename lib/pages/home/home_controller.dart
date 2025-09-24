@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
@@ -23,6 +24,26 @@ import 'home_utils.dart';
 class HomeController extends GetxController {
   // 定时器相关
   Timer? _autoMessageTimer; // 普通消息定时器（5秒/条）
+  // 1. 声明定时器变量，用于管理定时任务（初始为null）
+  Timer? _addAdTimer;
+  bool isAddNative = false;
+  int indexNative = -1;
+  // 2. 新增：启动「每6秒添加广告」的定时任务
+  Future<void> startPeriodicAddAd() async {
+    // 先取消已有的定时器（防止重复启动，比如多次点击按钮）
+    if (_addAdTimer != null && _addAdTimer!.isActive) {
+      _addAdTimer!.cancel();
+    }
+    // 启动定时任务：每6秒执行一次回调
+    _addAdTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
+      // 判断广告是否准备好，避免添加无效容器
+      bool isADReady = await NativeTool.to.nativeAdReady();
+      if (isADReady) {
+        Utils.logError("6秒定时添加广告容器");
+        isAddNative = true; // 添加新的广告容器
+      }
+    });
+  } // NativeTool.to.getNativeView()
 
   // 启动普通消息定时器（5秒/条）
   void _startAutoMessageTimer() {
@@ -50,6 +71,7 @@ class HomeController extends GetxController {
       bool isRewardReady =
           await RewarderTool.to.rewardedVideoReady(); // 激励视频是否准备好
       bool isShowRedBag = HomeUtils.random.nextDouble() < 0.2; // 是否展示红包
+
       // 生成红包
       if (isRewardReady && isShowRedBag) {
         redBagOpen.value = false;
@@ -66,11 +88,35 @@ class HomeController extends GetxController {
           ),
         );
       }
+      bool isHasNative = false;
+      if (isAddNative) {
+        bool ms = await NativeTool.to.nativeAdReady();
+        bool ma = NativeTool.to.isViewCreated.value;
+        String isHasAd = await NativeTool.to.getNativeValidAds();
+        Utils.logError("home获取当前广告位下所有可用广告的信息$isHasAd");
+        // CuToast.success(msg: "我可以添加原生广告吗$ms,$ma");
+        if (ma && ms && isHasAd.isNotEmpty) {
+          // CuToast.success(msg: "我要添加了哦");
+          content = SizedBox(
+            height: NativeTool.to.adHeight,
+            child: NativeTool.to.getNativeView(), //  安全地获取全局唯一的广告 Widget
+          );
+
+          /// 如果有信息流广告了，那么就删除他
+          indexNative = messages.indexWhere((message) => message.isHasNative);
+          if (indexNative != -1) {
+            messages.removeAt(indexNative);
+          }
+          isAddNative = false;
+          isHasNative = true;
+        }
+      }
       // 3. 创建消息对象
       final ChatMessage newMessage = ChatMessage(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
         user: randomUser,
         content: content,
+        isHasNative: isHasNative,
         timestamp: DateTime.now(),
       );
 
@@ -108,18 +154,6 @@ class HomeController extends GetxController {
   RxBool isNativeReady = false.obs;
   setIsNativeReady(bool val) {
     isNativeReady.value = val;
-  }
-
-  Widget nativeAdContainer() {
-    return Container(
-      key: ValueKey(DateTime.now().microsecondsSinceEpoch.toString()),
-      height: 120.h,
-      width: Get.width,
-      color: Colors.transparent,
-      child: PlatformNativeWidget(AppAdConfig.nativeSceneID, {
-        ATNativeManager.isAdaptiveHeight(): true,
-      }),
-    );
   }
 
   RxBool redBagOpen = false.obs;
@@ -182,6 +216,7 @@ class HomeController extends GetxController {
     }
     // 启动定时器
     _startAutoMessageTimer();
+    startPeriodicAddAd();
   }
 
   @override

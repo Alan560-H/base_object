@@ -51,16 +51,16 @@ class CuNavBarController extends GetxController {
         case 0:
           Get.toNamed(AppRoutes.home);
           break;
+        // case 1:
+        //   Get.toNamed(AppRoutes.shortVideo);
+        //   break;
         case 1:
-          Get.toNamed(AppRoutes.shortVideo);
-          break;
-        case 2:
           Get.toNamed(AppRoutes.djVideo);
           break;
-        case 3:
+        case 2:
           Get.toNamed(AppRoutes.invite);
           break;
-        case 4:
+        case 3:
           Get.toNamed(AppRoutes.user);
           break;
       }
@@ -82,13 +82,14 @@ class CuNavBarController extends GetxController {
         ImageConfig.redBagDefatult,
         ImageConfig.redBagActive,
       ),
-      _createMenuModel(
-        1,
-        "短视频",
-        true,
-        ImageConfig.videoDefault,
-        ImageConfig.videoActive,
-      ),
+      // _createMenuModel(
+      //   1,
+      //   "短视频",
+      //   true,
+      //   ImageConfig.videoDefault,
+      //   ImageConfig.videoActive,
+      //
+      // ),
       _createMenuModel(
         2,
         "短剧",

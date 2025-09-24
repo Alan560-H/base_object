@@ -106,10 +106,6 @@ class CuCircularProgressController extends GetxController {
       maxProgress = 6000.0;
     } else {
       maxProgress = (_seconds * 100).toDouble();
-      if (!Get.isRegistered<NativeTool>()) {
-        Get.put(NativeTool());
-      }
-      NativeTool.to.loadNativeWith();
     }
 
     startAutoSetProgressTimer();

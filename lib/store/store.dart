@@ -161,7 +161,6 @@ class Store extends GetxController {
     form.channelPackage = getAppUpLoadModel.channelPackage;
     List<ServiceModel> list = await Api.to.getServerConfig(form);
     _serviceList.value = list;
-    Utils.logError("客服配置是：${_serviceList.length}");
   }
 
   // 获取q群链接
