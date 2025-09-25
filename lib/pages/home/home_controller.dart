@@ -93,14 +93,13 @@ class HomeController extends GetxController {
         bool ms = await NativeTool.to.nativeAdReady();
         bool ma = NativeTool.to.isViewCreated.value;
         String isHasAd = await NativeTool.to.getNativeValidAds();
+        bool isLoading = await NativeTool.to.checkNativeAdLoadStatus();
+        Utils.logError("黄忠胜信息流广告加载状态？$isLoading");
         Utils.logError("home获取当前广告位下所有可用广告的信息$isHasAd");
         // CuToast.success(msg: "我可以添加原生广告吗$ms,$ma");
         if (ma && ms && isHasAd.isNotEmpty) {
           // CuToast.success(msg: "我要添加了哦");
-          content = SizedBox(
-            height: NativeTool.to.adHeight,
-            child: NativeTool.to.getNativeView(), //  安全地获取全局唯一的广告 Widget
-          );
+          content = NativeTool.to.getNativeView();
 
           /// 如果有信息流广告了，那么就删除他
           indexNative = messages.indexWhere((message) => message.isHasNative);

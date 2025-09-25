@@ -68,7 +68,7 @@ class NativeTool extends GetxService {
   }
 
   // 统一广告高度，与文档和加载配置保持一致
-  final double adHeight = 320.h;
+  final double adHeight = 250.h;
   Widget? _cachedAdWidget;
 
   // 构建广告占位容器（承载原生广告）
@@ -78,9 +78,10 @@ class NativeTool extends GetxService {
       // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
       key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
       width: double.infinity,
-      height: adHeight,
+      // height: adHeight,
       constraints: BoxConstraints(maxHeight: adHeight),
       decoration: BoxDecoration(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(color: Colors.grey[200]!, width: 1),
       ),
@@ -196,6 +197,7 @@ class NativeTool extends GetxService {
   Future<void> triggerShowNativeAd() async {
     bool isReady = await nativeAdReady();
     String isHasAd = await getNativeValidAds();
+    // bool isLoading = await checkNativeAdLoadStatus();
     // Utils.logError()
     if (isReady && isHasAd.isNotEmpty) {
       // 如果 View 已创建过，说明非常安全，可以直接使用
@@ -238,7 +240,7 @@ class NativeTool extends GetxService {
           Utils.logError("信息流广告展示成功: ${value.placementID}");
           // ✅ 关键：广告成功展示，设置安全标志位
 
-          await Future.delayed(const Duration(seconds: 5));
+          await Future.delayed(const Duration(seconds: 2));
           Utils.logError("开始放下一个");
           // isViewCreated.value = false; // 使用 .value 更新响应式变量
           loadNativeWith();
