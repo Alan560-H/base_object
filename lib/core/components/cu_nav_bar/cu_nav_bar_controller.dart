@@ -37,7 +37,7 @@ class CuNavBarController extends GetxController {
 
   /// 一级页面索引
   RxInt currentPageIndex = 0.obs;
-  RxDouble height = 60.h.obs;
+  RxDouble height = 110.h.obs;
 
   /// 设置高度
   void setHeight(double h) {

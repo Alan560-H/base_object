@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_view.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/components/dialogs/KgxjqDialog.dart';
@@ -145,6 +146,16 @@ class HomeView extends GetView<HomeController> {
                 child: Stack(
                   children: [
                     _buildChatList(),
+                    if (CuCircularProgressController.to.timeEnd.value)
+                      Positioned(
+                        top: Get.height / 2 - 140.h,
+                        left: 0,
+                        child: CachedNetworkImage(
+                          imageUrl: ImageConfig.re,
+                          width: 60.w,
+                          height: 40.h,
+                        ),
+                      ),
                     // 存钱罐
                     Positioned(
                       top: Get.height / 2 - 100.h,

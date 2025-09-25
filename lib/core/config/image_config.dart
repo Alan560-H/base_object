@@ -74,6 +74,9 @@ class ImageConfig {
   static String userSon =
       "${AppConfig.instance.getImgUrl}/AdObject/common/user_son.png";
 
+  /// 立即领取
+  static String re = "${AppConfig.instance.getImgUrl}/AdObject/common/re.png";
+
   /// 红包封面
   static String hongbaoCover =
       "${AppConfig.instance.getImgUrl}/AdObject/common/hongbao_cover.png";
