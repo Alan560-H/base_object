@@ -47,7 +47,7 @@ class HomeUtils {
     return md5Hash.toString();
   }
 
-  // 检查是否为广告消息  // 获取App升级信息
+  // 获取App升级信息
   static Future<void> getAppUpdata({bool isReturn = false}) async {
     String channel = await getAppChannel();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
