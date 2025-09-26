@@ -174,7 +174,7 @@ class BannerTool extends GetxController {
           Utils.logError(
             "横幅广告 bannerAdAutoRefreshFail ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
-          cuNavBarController.setHeight(60.h);
+          cuNavBarController.setHeight(110.h);
           break;
         case BannerStatus.bannerAdUnknown:
           Utils.logError("横幅广告 bannerAdUnknown");

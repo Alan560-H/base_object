@@ -240,7 +240,7 @@ class NativeTool extends GetxService {
           Utils.logError("信息流广告展示成功: ${value.placementID}");
           // ✅ 关键：广告成功展示，设置安全标志位
 
-          await Future.delayed(const Duration(seconds: 2));
+          await Future.delayed(const Duration(seconds: 6));
           Utils.logError("开始放下一个");
           // isViewCreated.value = false; // 使用 .value 更新响应式变量
           loadNativeWith();

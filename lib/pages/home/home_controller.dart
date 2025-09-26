@@ -35,20 +35,38 @@ class HomeController extends GetxController {
       _addAdTimer!.cancel();
     }
     // 启动定时任务：每6秒执行一次回调
-    _addAdTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
+    _addAdTimer = Timer.periodic(const Duration(seconds: 15), (timer) async {
       // 判断广告是否准备好，避免添加无效容器
       bool isADReady = await NativeTool.to.nativeAdReady();
       if (isADReady) {
-        Utils.logError("6秒定时添加广告容器");
+        Utils.logError("15秒定时添加广告容器");
         isAddNative = true; // 添加新的广告容器
       }
     });
   } // NativeTool.to.getNativeView()
 
+  // 1. 添加滚动控制器（响应式，确保 View 能拿到同一实例）
+  ScrollController scrollController = ScrollController();
+  // 2. 封装“滚动到最底部”的方法（关键：等列表构建完成后再滚动）
+  void scrollToBottom() {
+    // 延迟到当前帧构建完成后执行，避免获取不到最新滚动位置
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 确保控制器已绑定到 ListView，且有可滚动空间
+      if (scrollController.hasClients) {
+        // 平滑滚动到最底部（也可用 controller.jumpTo 实现瞬时滚动）
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300), // 滚动动画时长
+          curve: Curves.easeInOut, // 滚动曲线
+        );
+      }
+    });
+  }
+
   // 启动普通消息定时器（5秒/条）
   void _startAutoMessageTimer() {
     _autoMessageTimer = Timer.periodic(
-      const Duration(seconds: 5),
+      const Duration(seconds: 6),
       (Timer timer) => _addRandomChatMessage(),
     );
   }
@@ -71,7 +89,6 @@ class HomeController extends GetxController {
       bool isRewardReady =
           await RewarderTool.to.rewardedVideoReady(); // 激励视频是否准备好
       bool isShowRedBag = HomeUtils.random.nextDouble() < 0.2; // 是否展示红包
-
       // 生成红包
       if (isRewardReady && isShowRedBag) {
         redBagOpen.value = false;
@@ -99,13 +116,14 @@ class HomeController extends GetxController {
         // CuToast.success(msg: "我可以添加原生广告吗$ms,$ma");
         if (ma && ms && isHasAd.isNotEmpty) {
           // CuToast.success(msg: "我要添加了哦");
-          content = NativeTool.to.getNativeView();
 
           /// 如果有信息流广告了，那么就删除他
           indexNative = messages.indexWhere((message) => message.isHasNative);
           if (indexNative != -1) {
+            // 2. 从原位置移除（临时移除，用于调整位置）
             messages.removeAt(indexNative);
           }
+          content = NativeTool.to.getNativeView();
           isAddNative = false;
           isHasNative = true;
         }
@@ -126,6 +144,10 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       Utils.logError("添加消息失败$e");
+    } finally {
+      if (messages.length > 5) {
+        scrollToBottom();
+      }
     }
   }
 
@@ -191,6 +213,7 @@ class HomeController extends GetxController {
 
   // ------------------- 生命周期 -------------------
   void allInit() async {
+    scrollController = ScrollController();
     // 初始化用户信息
     UserInfo.instance.initialize();
     RewarderTool.to.loadRewardedVideo(
@@ -234,6 +257,8 @@ class HomeController extends GetxController {
     super.onClose();
     // 取消定时器，防止内存泄漏
     _autoMessageTimer?.cancel();
+
+    _addAdTimer?.cancel();
   }
 
   @override

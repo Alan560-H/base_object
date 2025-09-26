@@ -33,6 +33,7 @@ class HomeView extends GetView<HomeController> {
         return true;
       },
       child: ListView.builder(
+        controller: controller.scrollController,
         padding: EdgeInsets.all(10.sp),
         itemCount: controller.messages.length,
         reverse: false, // 最新消息在底部（需向下滚动查看）
