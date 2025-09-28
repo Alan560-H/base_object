@@ -11,7 +11,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
 /// 内置控制器：管理进度状态（对外隐藏实现，仅暴露操作方法）
-class CuCircularProgressController extends GetxController {
+class CuCircularProgressController extends GetxService {
   // GetX单例获取方式
   static CuCircularProgressController get to =>
       Get.isRegistered<CuCircularProgressController>()
@@ -25,6 +25,7 @@ class CuCircularProgressController extends GetxController {
   final RxDouble currentValue = (0.0).obs;
   Timer? setStepTimer;
   void resetProgressTimer() {
+    Utils.logError("触发了重置方法");
     setStepTimer?.cancel();
     setStepTimer = null;
     _seconds = Store.instance.getFkConfig.adv1Time;
@@ -35,6 +36,8 @@ class CuCircularProgressController extends GetxController {
   RxBool timeEnd = false.obs; // 倒计时是否结束
   // 启动发财树进度条
   void startAutoSetProgressTimer() {
+    Utils.logError("启动发财树进度条$setStepTimer $_seconds");
+    if (setStepTimer != null) return;
     setStepTimer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (_progress.value < maxProgress && _seconds > 0) {
         _progress.value += 100;
@@ -100,6 +103,7 @@ class CuCircularProgressController extends GetxController {
 
   @override
   void onInit() {
+    Utils.logError("初始化倒计时时间: $_seconds");
     _seconds = Store.instance.getFkConfig.adv1Time;
     if (_seconds == 0) {
       _seconds = 60;
@@ -115,8 +119,8 @@ class CuCircularProgressController extends GetxController {
 
   @override
   void onClose() {
+    Utils.logError("关闭了");
     // TODO: implement onClose
-    setStepTimer?.cancel();
     super.onClose();
   }
 }

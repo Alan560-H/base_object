@@ -17,7 +17,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
-class CuNavBarController extends GetxController {
+class CuNavBarController extends GetxService {
+  // GetX单例获取方式
+  static CuNavBarController get to =>
+      Get.isRegistered<CuNavBarController>()
+          ? Get.find<CuNavBarController>()
+          : Get.put(CuNavBarController());
+
   // 创建一个菜单对象
   MenuModel _createMenuModel(
     int id,
@@ -49,24 +55,24 @@ class CuNavBarController extends GetxController {
       currentPageIndex.value = index;
       switch (index) {
         case 0:
-          Get.toNamed(AppRoutes.home);
+          Get.offNamed(AppRoutes.home);
           break;
         // case 1:
         //   Get.toNamed(AppRoutes.shortVideo);
         //   break;
         case 1:
-          Get.toNamed(AppRoutes.djVideo);
+          Get.offNamed(AppRoutes.djVideo);
           break;
         case 2:
-          Get.toNamed(AppRoutes.invite);
+          Get.offNamed(AppRoutes.invite);
           break;
         case 3:
-          Get.toNamed(AppRoutes.user);
+          Get.offNamed(AppRoutes.user);
           break;
       }
     } catch (e) {
       Utils.logError("切换一级页面失败：$e");
-      Get.toNamed(AppRoutes.home);
+      Get.offNamed(AppRoutes.home);
       currentPageIndex.value = 0;
     }
   }

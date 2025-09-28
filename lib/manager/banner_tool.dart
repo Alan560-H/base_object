@@ -7,7 +7,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class BannerTool extends GetxController {
+class BannerTool extends GetxService {
   static BannerTool get to =>
       Get.isRegistered<BannerTool>()
           ? Get.find<BannerTool>()
@@ -116,11 +116,15 @@ class BannerTool extends GetxController {
 
   /// 横幅广告监听
   bannerListen() {
+    // Utils.logError("监听哦：$_bannerSubscription");
     if (_bannerSubscription != null) {
       return;
     }
     _bannerSubscription = ATListenerManager.bannerEventHandler.listen((value) {
-      CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
+      CuNavBarController cuNavBarController =
+          Get.isRegistered<CuNavBarController>()
+              ? Get.find<CuNavBarController>()
+              : Get.put(CuNavBarController());
       switch (value.bannerStatus) {
         //广告加载失败
         case BannerStatus.bannerAdFailToLoadAD:

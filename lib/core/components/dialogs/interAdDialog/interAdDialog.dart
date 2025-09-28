@@ -15,7 +15,10 @@ import 'package:get/get.dart';
 
 class InterAdDialog extends GetxService {
   // GetX 单例获取方式
-  static InterAdDialog get to => Get.find<InterAdDialog>();
+  static InterAdDialog get to =>
+      Get.isRegistered<InterAdDialog>()
+          ? Get.find<InterAdDialog>()
+          : Get.put(InterAdDialog());
 
   @override
   void onInit() {
@@ -84,9 +87,10 @@ class InterAdDialog extends GetxService {
   Timer? _timer;
   // 启动定时器
   void _startTimer() {
-    // 先取消可能存在的定时器，避免重复
-    _timer?.cancel();
-
+    Utils.logError("插屏广告计时器有吗：${_timer?.isActive}");
+    if (_timer != null) {
+      return;
+    }
     _timer = Timer(
       Duration(seconds: Store.instance.getFkConfig.adv1Time),
       () async {

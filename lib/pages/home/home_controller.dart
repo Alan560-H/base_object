@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
-import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
-import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/native_tool.dart';
@@ -213,6 +210,7 @@ class HomeController extends GetxController {
 
   // ------------------- 生命周期 -------------------
   void allInit() async {
+    await getAppUpdata();
     scrollController = ScrollController();
     // 初始化用户信息
     UserInfo.instance.initialize();

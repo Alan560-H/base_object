@@ -11,7 +11,6 @@ import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -85,9 +84,10 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      controller.getAppUpdata();
-    });
+    final HomeController controller =
+        Get.isRegistered<HomeController>()
+            ? Get.find<HomeController>()
+            : Get.put(HomeController());
 
     return Scaffold(
       body: Obx(

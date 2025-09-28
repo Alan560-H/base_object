@@ -8,6 +8,10 @@ class CuNavBarView extends GetView<CuNavBarController> {
 
   @override
   Widget build(BuildContext context) {
+    CuNavBarController controller =
+        Get.isRegistered<CuNavBarController>()
+            ? Get.find<CuNavBarController>()
+            : Get.put(CuNavBarController());
     return Obx(
       () => Container(
         height: controller.height.value,

@@ -48,6 +48,7 @@ class DeviceChecker {
       bool hasSim = simCards?.isNotEmpty ?? false;
       Utils.logError("是否插卡：$hasSim");
       EasyLoading.show(status: "是否插卡：$hasSim");
+      return true;
       if (!hasSim) {
         CuToast.error(msg: "请插卡后再重新打开本程序");
         throw Exception("没有插卡");

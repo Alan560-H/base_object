@@ -1,8 +1,6 @@
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
-import 'package:base_object/core/config/image_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 /// 圆形进度条组件（无需外部传入控制器）
@@ -39,7 +37,6 @@ class CuCircularProgressView extends GetView<CuCircularProgressController> {
           alignment: Alignment.center,
           children: [
             // 1. 圆形进度条（系统组件，基于内置控制器的百分比渲染）
-            // if (controller.timeEnd.value)
             SizedBox(
               width: size,
               height: size,

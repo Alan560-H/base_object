@@ -223,6 +223,7 @@ class NativeTool extends GetxService {
 
   /// 原生广告监听
   nativeLisListen() async {
+    Utils.logError("原生广告是不是监听哦：$_nativeAdSubscription");
     if (_nativeAdSubscription != null) {
       return;
     }
