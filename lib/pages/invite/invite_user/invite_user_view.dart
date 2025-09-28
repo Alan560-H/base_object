@@ -131,6 +131,7 @@ class InviteUserView extends GetView<InviteUserController> {
           decoration: BoxDecoration(
             color: TextConfig.fensePageColor,
             image: DecorationImage(
+              fit: BoxFit.fill,
               image: CachedNetworkImageProvider(ImageConfig.commonBg),
             ),
           ),
@@ -139,7 +140,7 @@ class InviteUserView extends GetView<InviteUserController> {
             children: [
               swiperWidget,
               Container(
-                height: 170.h,
+                height: 160.h,
                 width: Get.width,
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(

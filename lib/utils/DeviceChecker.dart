@@ -17,12 +17,12 @@ class DeviceChecker {
     bool isDebug = false;
     assert(isDebug = true);
     Utils.logError("是否开启调试模式：$isDebug");
+    print("是否开启调试模式：$isDebug");
     EasyLoading.show(status: "是否开启调试模式：$isDebug");
-    return false;
     if (isDebug) {
       CuToast.error(msg: "请关闭调试模式后再重新打开本程序");
-      EasyLoading.dismiss();
-      throw Exception("开启了调试模式");
+      await Future.delayed(const Duration(seconds: 2));
+      SystemNavigator.pop();
     }
     return isDebug;
   }
@@ -32,10 +32,12 @@ class DeviceChecker {
     final connectivityResult = await (Connectivity().checkConnectivity());
     bool isVpn = connectivityResult == ConnectivityResult.vpn;
     Utils.logError("是否使用VPN：$isVpn");
+    print("是否使用VPN：$isVpn");
     EasyLoading.show(status: "是否使用VPN：$isVpn");
     if (isVpn) {
       CuToast.error(msg: "请关闭VPN再重新打开本程序");
-      throw Exception("使用了VPN");
+      await Future.delayed(const Duration(seconds: 2));
+      SystemNavigator.pop();
     }
 
     return isVpn;
@@ -48,10 +50,12 @@ class DeviceChecker {
       bool hasSim = simCards?.isNotEmpty ?? false;
       Utils.logError("是否插卡：$hasSim");
       EasyLoading.show(status: "是否插卡：$hasSim");
-      return true;
+      print("是否插卡：$hasSim");
+
       if (!hasSim) {
         CuToast.error(msg: "请插卡后再重新打开本程序");
-        throw Exception("没有插卡");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
       }
 
       return hasSim;
@@ -71,10 +75,13 @@ class DeviceChecker {
           'isDeveloperModeEnabled',
         );
         Utils.logError("是否开启开发者模式：$isDeveloperMode");
+        print("是否开启开发者模式：$isDeveloperMode");
+
         EasyLoading.show(status: "是否开启开发者模式：$isDeveloperMode");
         if (isDeveloperMode) {
           CuToast.error(msg: "请关闭开发者模式后再重新打开本程序");
-          throw Exception("开启了开发者模式");
+          await Future.delayed(const Duration(seconds: 2));
+          SystemNavigator.pop();
         }
         return isDeveloperMode;
       }
@@ -92,10 +99,13 @@ class DeviceChecker {
 
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否为模拟器：$isEmu");
+      print("是否为模拟器：$isEmu");
+
       EasyLoading.show(status: "是否为模拟器：$isEmu");
       if (isEmu) {
         CuToast.error(msg: "不允许在模拟器上运行");
-        throw Exception("是模拟器");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
       }
       return isEmu;
     }
@@ -118,10 +128,12 @@ class DeviceChecker {
       );
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否为云机：$isCloud");
+      print("是否为云机：$isCloud");
       EasyLoading.show(status: "是否为云机：$isCloud");
       if (isCloud) {
         CuToast.error(msg: "不允许在云机上运行");
-        throw Exception("是云机");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
       }
       return isCloud;
     }
@@ -135,10 +147,12 @@ class DeviceChecker {
       bool isAccess = await platform.invokeMethod('isAccessibilityModeEnabled');
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍模式：$isAccess");
+      print("是否开启无障碍模式：$isAccess");
       EasyLoading.show(status: "是否开启无障碍模式：$isAccess");
       if (isAccess) {
         CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
-        throw Exception("开启了无障碍模式");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
       }
       return isAccess;
     } catch (e) {
@@ -156,10 +170,12 @@ class DeviceChecker {
       List<String> enabledServices = services.cast<String>();
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍软件：${enabledServices.isEmpty}");
+      print("是否开启无障碍软件：${enabledServices.isEmpty}");
       EasyLoading.show(status: "是否开启无障碍软件：${enabledServices.isEmpty}");
       if (enabledServices.isNotEmpty) {
         CuToast.error(msg: "请关闭无障碍软件后再重新打开本程序");
-        throw Exception("开启了无障碍软件");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
       }
       return enabledServices;
     } catch (e) {

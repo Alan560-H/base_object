@@ -12,6 +12,7 @@ import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/pages/home/home_controller.dart';
+import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -158,7 +159,6 @@ class RewarderTool extends GetxController {
     _rewardedSubscription = ATListenerManager.rewardedVideoEventHandler.listen((
       value,
     ) {
-      HomeController homeController = Get.find<HomeController>();
       switch (value.rewardStatus) {
         //广告加载失败
         case RewardedStatus.rewardedVideoDidFailToLoad:
@@ -219,7 +219,7 @@ class RewarderTool extends GetxController {
                 "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
           );
           checkRewarderAd(value);
-          homeController.redBagOpen.value = false;
+          HomeGroupChat.to.redBagOpen.value = false;
 
           break;
 

@@ -12,6 +12,7 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
+import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,71 +25,15 @@ import 'home_controller.dart';
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  // 构建聊天列表（支持滚动）
-  Widget _buildChatList() {
-    return NotificationListener<ScrollEndNotification>(
-      onNotification: (notification) {
-        // 可添加滚动监听逻辑（如加载更多历史消息）
-        return true;
-      },
-      child: ListView.builder(
-        controller: controller.scrollController,
-        padding: EdgeInsets.all(10.sp),
-        itemCount: controller.messages.length,
-        reverse: false, // 最新消息在底部（需向下滚动查看）
-        itemBuilder: (context, index) {
-          final message = controller.messages[index];
-          return _buildMessageItem(message);
-        },
-      ),
-    );
-  }
-
-  // 构建单条消息项（优先级：广告 > 红包 > 普通消息）
-  Widget _buildMessageItem(ChatMessage message) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.h),
-      margin: EdgeInsets.only(bottom: 8.r), // 消息间距
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. 用户头像
-          Avatar(
-            headImage: message.user.avatarUrl,
-            size: 20.h,
-            isCircle: false,
-          ),
-          SizedBox(width: 10.w), // 头像与内容间距
-          // 2. 消息内容区域
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 2.1 用户名
-                Text(
-                  message.user.name,
-                  style: TextStyle(
-                    fontSize: TextConfig.textSize_14,
-                    color: Utils.fromHex("#888888"),
-                  ),
-                ),
-                SizedBox(height: 5.h), // 用户名与内容间距
-                message.content,
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final HomeController controller =
         Get.isRegistered<HomeController>()
             ? Get.find<HomeController>()
             : Get.put(HomeController());
-
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      controller.getAppUpdata();
+    });
     return Scaffold(
       body: Obx(
         () => Container(
@@ -131,22 +76,12 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ],
               ),
-              // 广告容器
-              // Obx(() {
-              //   if (NativeTool.to.isViewCreated.value) {
-              //     return SizedBox(
-              //       height: NativeTool.to.adHeight,
-              //       child:
-              //           NativeTool.to.getNativeView(), //  安全地获取全局唯一的广告 Widget
-              //     );
-              //   }
-              //   return Text("加载中");
-              // }),
+
               // 聊天列表
               Expanded(
                 child: Stack(
                   children: [
-                    _buildChatList(),
+                    HomeGroupChat.to.buildChatList(),
                     if (CuCircularProgressController.to.timeEnd.value)
                       Positioned(
                         top: Get.height / 2 - 140.h,
