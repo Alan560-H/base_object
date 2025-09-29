@@ -16,6 +16,7 @@ import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/models/backModel/verifyCodeImgModel/VerifyCodeImgModel.dart';
 import 'package:base_object/pages/home/home_controller.dart';
+import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -229,7 +230,7 @@ class LoginController extends GetxController {
         );
         swicthLoginType();
         isChecked.value = false;
-        Get.offNamed(AppRoutes.home);
+        Get.offAllNamed(AppRoutes.home);
         Utils.logError(
           "是否显示弹窗：${UserInfo.instance.userModel.inviteUserId == null || UserInfo.instance.userModel.inviteUserId == 0}",
         );

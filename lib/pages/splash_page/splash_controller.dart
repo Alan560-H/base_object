@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
+import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/store/store.dart';
@@ -50,9 +51,11 @@ class SplashController extends GetxController {
         Store.instance.setLocationData(locationData);
       });
       Store.instance.getVer().then((value) async {
-        Utils.logError("返回的数值：$value");
+        Utils.logError("是否封禁返回的数值：$value");
         // 如果被封了，就去错误页面
         if (value) {
+          BannerTool.to.removeBannerAd();
+          await Store.instance.getServerConfig();
           Get.offAllNamed(AppRoutes.userError);
         } else {
           /// 上传地址

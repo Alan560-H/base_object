@@ -21,7 +21,7 @@ import 'package:get/get.dart';
 
 import 'native_tool.dart';
 
-class RewarderTool extends GetxController {
+class RewarderTool extends GetxService {
   // GetX单例获取方式
   static RewarderTool get to =>
       Get.isRegistered<RewarderTool>()

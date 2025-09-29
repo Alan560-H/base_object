@@ -18,6 +18,8 @@ class NativeTool extends GetxService {
   // 加载原生广告
   loadNativeWith() async {
     Utils.logError("加载原生广告");
+
+    await getNativeValidAds();
     await ATNativeManager.loadNativeAd(
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
@@ -43,13 +45,13 @@ class NativeTool extends GetxService {
     }
   }
 
-  // 获取当前广告位下所有可用广告的信息
-  Future<String> getNativeValidAds() async {
+  // 获取当前广告位下所有可用广告的信息,返回true则代表有广告缓存，false，则没有
+  Future<bool> getNativeValidAds() async {
     String res = await ATNativeManager.getNativeValidAds(
       placementID: AppAdConfig.nativePlacementID,
     );
-    Utils.logError("获取当前广告位下所有可用广告的信息$res");
-    return res;
+    Utils.logError("获取当前广告位下所有可用广告的信息${res.isNotEmpty},广告信息：$res");
+    return res.isNotEmpty;
   }
 
   // 检查加载状态
@@ -69,30 +71,11 @@ class NativeTool extends GetxService {
 
   // 统一广告高度，与文档和加载配置保持一致
   final double adHeight = 250.h;
-  Widget? _cachedAdWidget;
-
-  // 构建广告占位容器（承载原生广告）
-  // 修复：返回一个稳定的、可复用的 Widget
-  Widget getNativeView() {
-    _cachedAdWidget ??= Container(
-      // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
-      key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
-      width: double.infinity,
-      // height: adHeight,
-      constraints: BoxConstraints(maxHeight: adHeight),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: Colors.grey[200]!, width: 1),
-      ),
-      child: PlatformNativeWidget(
-        AppAdConfig.nativePlacementID,
-        _getAdConfig(),
-        isAdaptiveHeight: true, // 启用自适应高度
-      ),
-    );
-    return _cachedAdWidget!;
-  }
+  Widget cachedAdWidget = Container(
+    width: Get.width,
+    height: 250.h,
+    color: Colors.blue,
+  );
 
   // 原生广告控件配置
   Map<String, dynamic> _getAdConfig() {
@@ -190,35 +173,33 @@ class NativeTool extends GetxService {
     };
   }
 
-  final isViewCreated = false.obs; // 广告的原生 View 是否已成功创建（最安全的标志）
-  // 展示广告
-  // 不再返回 Future<Widget>，改为一个“触发”方法
-  // UI 层应通过 Obx 监听 isViewCreated 状态来决定是否显示广告
-  Future<void> triggerShowNativeAd() async {
-    bool isReady = await nativeAdReady();
-    String isHasAd = await getNativeValidAds();
-    // bool isLoading = await checkNativeAdLoadStatus();
-    // Utils.logError()
-    if (isReady && isHasAd.isNotEmpty) {
-      // 如果 View 已创建过，说明非常安全，可以直接使用
-      if (isViewCreated.value) {
-        Utils.logError("信息流广告View已创建，可安全展示");
-        isViewCreated.value = true;
-      } else {
-        // 如果是首次展示，加入延迟，确保 View 初始化完成
-        Utils.logError("信息流广告首次展示，等待150ms");
-        await Future.delayed(const Duration(milliseconds: 150));
-        isViewCreated.value = true;
-      }
-    } else {
-      bool isLoading = await checkNativeAdLoadStatus();
-      Utils.logError("信息流广告加载状态？$isLoading");
-      if (!isLoading) {
-        Utils.logError('信息流广告正在加载中... + ${AppAdConfig.nativePlacementID}');
-      } else {
-        Utils.logError('信息流广告还没加载，发起加载 + ${AppAdConfig.nativePlacementID}');
-      }
+  final isViewCreated = false.obs; // true有广告缓存，false没有
+  // 构建广告占位容器（承载原生广告）
+  // 修复：返回一个稳定的、可复用的 Widget
+  Future<Widget> getNativeView() async {
+    bool isHasAdStr = await getNativeValidAds();
+    Utils.logError("获取原生广告占位容器是否有广告缓存$isHasAdStr");
+    if (!isHasAdStr) {
+      return Container(width: Get.width, height: adHeight, color: Colors.red);
     }
+    cachedAdWidget = Container(
+      // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
+      key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
+      width: double.infinity,
+      // height: adHeight,
+      constraints: BoxConstraints(maxHeight: adHeight),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: Colors.grey[200]!, width: 1),
+      ),
+      child: PlatformNativeWidget(
+        AppAdConfig.nativePlacementID,
+        _getAdConfig(),
+        isAdaptiveHeight: true, // 启用自适应高度
+      ),
+    );
+    return cachedAdWidget;
   }
 
   /// 原生广告监听
@@ -232,32 +213,27 @@ class NativeTool extends GetxService {
     ) async {
       switch (value.nativeStatus) {
         case NativeStatus.nativeAdDidFinishLoading:
+          isViewCreated.value = true;
           Utils.logError("信息流广告加载完成: ${value.placementID}");
-          // 可以在这里调用 triggerShowNativeAd 尝试展示
-          triggerShowNativeAd();
           break;
 
         case NativeStatus.nativeAdDidShowNativeAd:
-          Utils.logError("信息流广告展示成功: ${value.placementID}");
-          // ✅ 关键：广告成功展示，设置安全标志位
-
-          await Future.delayed(const Duration(seconds: 6));
-          Utils.logError("开始放下一个");
-          // isViewCreated.value = false; // 使用 .value 更新响应式变量
+          isViewCreated.value = await getNativeValidAds();
+          Utils.logError(
+            "信息流广告展示成功: ${value.placementID},是否有缓存${isViewCreated.value}",
+          );
           loadNativeWith();
           break;
 
         case NativeStatus.nativeAdDidTapCloseButton:
           Utils.logError("信息流广告被关闭: ${value.placementID}");
-          // 通常我们不重置 isViewCreated，因为 View 实例可能仍可复用
-          // isViewCreated.value = false;
           break;
 
         case NativeStatus.nativeAdFailToLoadAD:
+          isViewCreated.value = await getNativeValidAds();
           Utils.logError("信息流广告加载失败: ${value.requestMessage}");
-          // 如果需要，可以在这里重试加载
-          await Future.delayed(const Duration(seconds: 5));
-          CuToast.error(msg: "信息流广告加载失败: ${value.requestMessage}");
+
+          await Future.delayed(const Duration(seconds: 2));
           loadNativeWith();
           break;
 
@@ -269,6 +245,12 @@ class NativeTool extends GetxService {
           break;
       }
     });
+  }
+
+  removeNativeAd() async {
+    await ATNativeManager.removeNativeAd(
+      placementID: AppAdConfig.nativePlacementID,
+    );
   }
 
   showNative() async {
@@ -336,12 +318,6 @@ class NativeTool extends GetxService {
         ),
       },
       isAdaptiveHeight: true,
-    );
-  }
-
-  removeNativeAd() async {
-    await ATNativeManager.removeNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
     );
   }
 

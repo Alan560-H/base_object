@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -67,13 +69,6 @@ class HomeGroupChat extends GetxService {
         return _buildMessageItem(message);
       },
     );
-    // return NotificationListener<ScrollEndNotification>(
-    //   onNotification: (notification) {
-    //     // 可添加滚动监听逻辑（如加载更多历史消息）
-    //     return true;
-    //   },
-    //   child:
-    // );
   }
 
   // 构建单条消息项（优先级：广告 > 红包 > 普通消息）
@@ -122,12 +117,13 @@ class HomeGroupChat extends GetxService {
     Utils.logError("启动定时器2");
 
     // 启动定时任务：每6秒执行一次回调
-    _addAdTimer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+    _addAdTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       // 判断广告是否准备好，避免添加无效容器
       bool isADReady = await NativeTool.to.nativeAdReady();
       if (isADReady) {
-        Utils.logError("15秒定时添加广告容器");
+        Utils.logError("5秒定时添加广告容器");
         isAddNative = true; // 添加新的广告容器
+        //
       }
     });
   } // NativeTool.to.getNativeView()
@@ -139,7 +135,7 @@ class HomeGroupChat extends GetxService {
     }
     Utils.logError("启动定时器1");
     _autoMessageTimer = Timer.periodic(
-      const Duration(seconds: 6),
+      const Duration(seconds: 3),
       (Timer timer) => _addRandomChatMessage(),
     );
   }
@@ -166,10 +162,12 @@ class HomeGroupChat extends GetxService {
       if (isRewardReady && isShowRedBag) {
         redBagOpen.value = false;
         content = InkWell(
-          onTap:
-              () => CuCircularProgressController.to.showDialog(
-                isShowRedBag: false,
-              ),
+          onTap: () {
+            if (!UserInfo.instance.isLoginIn) {
+              HomeGroupChat.to.removeAdContainer();
+            }
+            CuCircularProgressController.to.showDialog(isShowRedBag: false);
+          },
           child: CachedNetworkImage(
             imageUrl:
                 redBagOpen.value
@@ -179,27 +177,24 @@ class HomeGroupChat extends GetxService {
         );
       }
       bool isHasNative = false;
-      if (isAddNative) {
-        bool ms = await NativeTool.to.nativeAdReady();
-        bool ma = NativeTool.to.isViewCreated.value;
-        String isHasAd = await NativeTool.to.getNativeValidAds();
-        bool isLoading = await NativeTool.to.checkNativeAdLoadStatus();
-        Utils.logError("黄忠胜信息流广告加载状态？$isLoading");
-        Utils.logError("home获取当前广告位下所有可用广告的信息$isHasAd");
-        // CuToast.success(msg: "我可以添加原生广告吗$ms,$ma");
-        if (ma && ms && isHasAd.isNotEmpty) {
-          // CuToast.success(msg: "我要添加了哦");
 
-          /// 如果有信息流广告了，那么就删除他
-          indexNative = messages.indexWhere((message) => message.isHasNative);
-          if (indexNative != -1) {
-            // 2. 从原位置移除（临时移除，用于调整位置）
-            messages.removeAt(indexNative);
-          }
-          content = NativeTool.to.getNativeView();
-          isAddNative = false;
-          isHasNative = true;
+      if (isAddNative) {
+        // 如果有缓存，则添加
+        if (NativeTool.to.isViewCreated.value) {
+          Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
+          content = await NativeTool.to.getNativeView();
+          _autoMessageTimer?.cancel();
+          _autoMessageTimer = null;
+          // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
+          Future.delayed(const Duration(seconds: 20), () {
+            removeAdContainer();
+            Utils.logError("又开始启动啦定时器1");
+
+            _startAutoMessageTimer();
+          });
         }
+        isAddNative = false;
+        isHasNative = true;
       }
       // 3. 创建消息对象
       final ChatMessage newMessage = ChatMessage(
@@ -222,6 +217,22 @@ class HomeGroupChat extends GetxService {
         scrollToBottom();
       }
     }
+  }
+
+  void removeAdContainer() {
+    /// 如果有信息流广告了，那么就删除他
+    indexNative = messages.indexWhere((message) => message.isHasNative);
+    if (indexNative != -1) {
+      Utils.logError("删除广告位置：$indexNative");
+      // 2. 从原位置移除（临时移除，用于调整位置）
+      messages.removeAt(indexNative);
+    }
+    NativeTool.to.removeNativeAd();
+    NativeTool.to.cachedAdWidget = Container(
+      width: Get.width,
+      height: NativeTool.to.adHeight,
+      color: Colors.yellow,
+    );
   }
 
   // 构建普通消息项

@@ -71,6 +71,9 @@ class HomeView extends GetView<HomeController> {
                             : "登录",
                     width: 130.w,
                     onPressed: () {
+                      if (!UserInfo.instance.isLoginIn) {
+                        HomeGroupChat.to.removeAdContainer();
+                      }
                       Get.toNamed(AppRoutes.userTixian);
                     },
                   ),

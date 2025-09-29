@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
-    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <!-- Show a splash screen on the activity. Automatically removed when
-             the Flutter engine draws its first frame -->
-        <item name="android:windowBackground">@drawable/launch_background</item>
+    <!-- 1. 定义全局基础主题：无 ActionBar 的 AppCompat 主题（核心） -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- 可选：全局基础样式（如主色调、状态栏颜色，后续所有页面会继承） -->
+        <item name="colorPrimary">@color/colorPrimary</item> <!-- 主色调（如后续手动加 ToolBar 时用） -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item> <!-- 状态栏颜色（Android 5.0+） -->
+        <item name="colorAccent">@color/colorAccent</item> <!-- 强调色（如按钮、输入框高亮） -->
+        <item name="android:windowBackground">@android:color/white</item> <!-- 全局窗口背景色 -->
     </style>
-    <!-- Theme applied to the Android Window as soon as the process has started.
-         This theme determines the color of the Android Window while your
-         Flutter UI initializes, as well as behind your Flutter UI while its
-         running.
 
-         This Theme is only used starting with V2 of Flutter's Android embedding. -->
-    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+    <!-- 2. 启动页主题：继承全局 AppTheme（确保无 ActionBar） -->
+    <style name="LaunchTheme" parent="AppTheme">
+        <!-- 保留你原有的启动页背景（闪屏图），不改变原有效果 -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <!-- 可选：启动页全屏（若需要隐藏状态栏，可添加） -->
+        <!-- <item name="android:windowFullscreen">true</item> -->
+    </style>
+
+    <!-- 3. 正常页面主题：继承全局 AppTheme（确保无 ActionBar） -->
+    <style name="NormalTheme" parent="AppTheme">
+        <!-- 保留你原有的正常页面背景配置 -->
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+
+    <!-- 可选：定义颜色值（若项目中没有 color.xml，需补充） -->
+    <color name="colorPrimary">#3F51B5</color> <!-- 示例：蓝色主色调 -->
+    <color name="colorPrimaryDark">#303F9F</color> <!-- 示例：深色状态栏 -->
+    <color name="colorAccent">#FF4081</color> <!-- 示例：粉色强调色 -->
 </resources>
