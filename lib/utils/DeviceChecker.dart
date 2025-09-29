@@ -177,20 +177,14 @@ class DeviceChecker {
       bool isEmu = await isEmulator();
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bool isAccess = await isAccessibilityModeEnabled();
-      await Future.delayed(const Duration(milliseconds: 100));
+      // bool isAccess = await isAccessibilityModeEnabled();
+      // await Future.delayed(const Duration(milliseconds: 100));
+      //
+      // List<String> enabledServices = await getEnabledAccessibilityServices();
+      // await Future.delayed(const Duration(milliseconds: 100));
 
-      List<String> enabledServices = await getEnabledAccessibilityServices();
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      // bool res =
-      //     !isVpn &&
-      //     hasSim &&
-      //     !isDev &&
-      //     !isEmu &&
-      //     !isAccess &&
-      //     enabledServices.isEmpty;
-      bool res = true;
+      bool res = !isVpn && hasSim && !isDev && !isEmu;
+      // bool res = true;
       if (res) {
         EasyLoading.showSuccess("检测通过");
       } else {
@@ -202,10 +196,6 @@ class DeviceChecker {
           CuToast.error(msg: "不允许在开发者模式下运行");
         } else if (isEmu) {
           CuToast.error(msg: "不允许在模拟器上运行");
-        } else if (isAccess) {
-          CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
-        } else if (enabledServices.isNotEmpty) {
-          CuToast.error(msg: "请关闭无障碍软件后再重新打开本程序");
         }
         // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
         Future.delayed(const Duration(seconds: 2), () {
