@@ -3,7 +3,6 @@ import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/custom_input_field.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
-import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';

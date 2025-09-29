@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_binding.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/manager/Init_tool.dart';
@@ -102,13 +101,13 @@ class UserInfo extends GetxController {
         Get.put<RewarderTool>(RewarderTool());
 
         await Future.delayed(const Duration(milliseconds: 20));
-        if(!Get.isRegistered<InitTool>()){
+        if (!Get.isRegistered<InitTool>()) {
           Get.put<InitTool>(InitTool());
         }
-        if(!Get.isRegistered<RewarderTool>()){
+        if (!Get.isRegistered<RewarderTool>()) {
           Get.put<RewarderTool>(RewarderTool());
         }
-        bool isInitAd = await InitTool.to.initTopon();
+        await InitTool.to.initTopon();
         Utils.logError(
           "初始化触发的广告userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
         );
@@ -139,12 +138,12 @@ class UserInfo extends GetxController {
   Future<bool> isNewUser() async {
     try {
       EasyLoading.show();
-      if(!isLoginIn){
+      if (!isLoginIn) {
         return false;
       }
       newUserModel.value = await Api.to.getNewcomerConfig();
       Utils.logError("新人福利状态${newUserModel.value.toJson()}");
-      return newUserModel.value.status==0;
+      return newUserModel.value.status == 0;
     } catch (e) {
       Utils.logError("请求用户是否是新人失败$e");
       return false;
@@ -199,7 +198,7 @@ class UserInfo extends GetxController {
     initUserInfo();
     await LocalStorage.removeString(AppKeys.userKey);
     setToken(value: '');
-    bool isRegistered = Get.isRegistered<CuNavBarController>();
+    Get.isRegistered<CuNavBarController>();
 
     Get.find<CuNavBarController>().onTabChange(0);
   }

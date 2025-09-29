@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
@@ -103,10 +101,6 @@ class TixianController extends GetxController {
 
   @override
   void onClose() {
-    if (!Get.isRegistered<BannerTool>()) {
-      Get.put(BannerTool());
-      return;
-    }
     BannerTool.to.removeBannerAd();
     // TODO: implement onClose
     Utils.logError("提现界面onClose");
@@ -116,11 +110,7 @@ class TixianController extends GetxController {
   @override
   void onInit() {
     Utils.logError("提现界面初始化");
-    // TODO: implement onInit
-    if (!Get.isRegistered<BannerTool>()) {
-      Get.put(BannerTool());
-      return;
-    }
+
     withdrawalForm.value.channelPackage =
         Store.instance.getAppUpLoadModel.channelPackage;
     BannerTool.to.hideBannerAd();

@@ -26,6 +26,9 @@ class ApiUrls {
   /// 登录
   static const String login = "/v1/login";
 
+  /// 获取邀请码
+  static const String getInviteCode = "/v1/api/getInviteCode";
+
   /// 获取图片验证码
   static const String getImgCode = "/v1/getImgCode";
 

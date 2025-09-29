@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -10,14 +14,18 @@ class NativeTool extends GetxService {
       Get.isRegistered<NativeTool>()
           ? Get.find<NativeTool>()
           : Get.put(NativeTool());
+
+  // 加载原生广告
   loadNativeWith() async {
+    Utils.logError("加载原生广告");
+
+    await getNativeValidAds();
     await ATNativeManager.loadNativeAd(
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
-        ATCommon.isNativeShow(): true,
-        ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width,
-          340,
+        ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
+          Get.width - 20.w, // 与 _getAdConfig 中的宽度一致
+          adHeight, // 与 adHeight 一致
         ),
         ATNativeManager.isAdaptiveHeight(): true,
       },
@@ -26,105 +34,227 @@ class NativeTool extends GetxService {
 
   Future<bool> nativeAdReady() async {
     try {
-      return await ATNativeManager.nativeAdReady(
+      bool isReady = await ATNativeManager.nativeAdReady(
         placementID: AppAdConfig.nativePlacementID,
       );
+      Utils.logError('原生广告：原生广告是否就绪：$isReady');
+      return isReady;
     } catch (e) {
-      Utils.logError('flutter：原生广告是否就绪：$e'); // 原"nativeAdReady"→"原生广告是否就绪"
+      Utils.logError('原生广告：原生广告是否就绪：$e');
       return false;
     }
   }
 
-  getNativeValidAds() async {
-    await ATNativeManager.getNativeValidAds(
+  // 获取当前广告位下所有可用广告的信息,返回true则代表有广告缓存，false，则没有
+  Future<bool> getNativeValidAds() async {
+    String res = await ATNativeManager.getNativeValidAds(
       placementID: AppAdConfig.nativePlacementID,
-    ).then((value) {
-      Utils.logError(
-        'flutter：原生有效广告数量：$value',
-      ); // 原"getNativeValidAds"→"原生有效广告数量"
+    );
+    Utils.logError("获取当前广告位下所有可用广告的信息${res.isNotEmpty},广告信息：$res");
+    return res.isNotEmpty;
+  }
+
+  // 检查加载状态
+  Future<bool> checkNativeAdLoadStatus() async {
+    try {
+      final value = await ATNativeManager.checkNativeAdLoadStatus(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+      Utils.logError("检查加载状态$value");
+      final isLoading = value['isLoading'] ?? 0;
+      return isLoading;
+    } catch (error) {
+      Utils.logError('检查原生广告状态失败: $error');
+      return false;
+    }
+  }
+
+  // 统一广告高度，与文档和加载配置保持一致
+  final double adHeight = 250.h;
+  Widget cachedAdWidget = Container(
+    width: Get.width,
+    height: 250.h,
+    color: Colors.blue,
+  );
+
+  // 原生广告控件配置
+  Map<String, dynamic> _getAdConfig() {
+    return {
+      // 广告父容器（整体尺寸）
+      ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
+        Get.width - 20.w, // 宽度=屏幕宽-20（适配左右边距）
+        adHeight,
+        // 白色
+        backgroundColorStr: '#FFFFFF',
+      ),
+      // App图标
+      ATNativeManager.appIcon(): ATNativeManager.createNativeSubViewAttribute(
+        50.sp,
+        50.sp,
+        x: 10.w,
+        y: 40.h,
+        // 紫色
+        backgroundColorStr: '#736bba',
+      ),
+      // 广告标题
+      ATNativeManager.mainTitle(): ATNativeManager.createNativeSubViewAttribute(
+        Get.width - 190.w,
+        20.h,
+        x: 0.w,
+        y: 0.h,
+        textSize: 8.sp,
+        textColorStr: '#f31e17',
+      ),
+      // 广告描述
+      ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
+        Get.width - 190.w,
+        20.h,
+        x: 70.w,
+        y: 70.h,
+        textSize: 13.sp,
+        // 紫色
+        textColorStr: '#736bba',
+      ),
+      // 行动按钮（立即下载）
+      ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
+        100.w,
+        35.h,
+        x: Get.width - 110.w,
+        y: 40.h,
+        textSize: 14.sp,
+        textColorStr: '#FFFFFF',
+        // 黄色
+        backgroundColorStr: '#faa683',
+        cornerRadius: 4,
+      ),
+      // 广告主图
+      ATNativeManager.mainImage(): ATNativeManager.createNativeSubViewAttribute(
+        Get.width,
+        180.h,
+        x: 20.w,
+        y: 0.h,
+        // 红色
+        backgroundColorStr: '#b54747',
+        cornerRadius: 4,
+      ),
+      // 广告标签（广告二字）
+      ATNativeManager.adLogo(): ATNativeManager.createNativeSubViewAttribute(
+        40.w,
+        18.h,
+        x: 10.w,
+        y: 10.h,
+        textSize: 12.sp,
+        textColorStr: '#FFFFFF',
+        // 蓝色
+        backgroundColorStr: '#3574f0',
+        cornerRadius: 2,
+      ),
+      // 关闭按钮
+      ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
+        20.sp,
+        20.sp,
+        x: Get.width - 30.w,
+        y: 10.h,
+        // 绿色
+        backgroundColorStr: '#139343',
+      ),
+      // 广告合规六要素（Android中国区必需）
+      ATNativeManager.elementsView():
+          ATNativeManager.createNativeSubViewAttribute(
+            Get.width - 20.w,
+            25.h,
+            x: 10.w,
+            y: adHeight - 25.h,
+            textSize: 10.sp,
+            textColorStr: '#FFFFFF',
+            // 黑色区域
+            backgroundColorStr: '#1e1f22',
+          ),
+    };
+  }
+
+  final isViewCreated = false.obs; // true有广告缓存，false没有
+  // 构建广告占位容器（承载原生广告）
+  // 修复：返回一个稳定的、可复用的 Widget
+  Future<Widget> getNativeView() async {
+    bool isHasAdStr = await getNativeValidAds();
+    Utils.logError("获取原生广告占位容器是否有广告缓存$isHasAdStr");
+    if (!isHasAdStr) {
+      return Container(width: Get.width, height: adHeight, color: Colors.red);
+    }
+    cachedAdWidget = Container(
+      // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
+      key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
+      width: double.infinity,
+      // height: adHeight,
+      constraints: BoxConstraints(maxHeight: adHeight),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: Colors.grey[200]!, width: 1),
+      ),
+      child: PlatformNativeWidget(
+        AppAdConfig.nativePlacementID,
+        _getAdConfig(),
+        isAdaptiveHeight: true, // 启用自适应高度
+      ),
+    );
+    return cachedAdWidget;
+  }
+
+  /// 原生广告监听
+  nativeLisListen() async {
+    Utils.logError("原生广告是不是监听哦：$_nativeAdSubscription");
+    if (_nativeAdSubscription != null) {
+      return;
+    }
+    _nativeAdSubscription = ATListenerManager.nativeEventHandler.listen((
+      value,
+    ) async {
+      switch (value.nativeStatus) {
+        case NativeStatus.nativeAdDidFinishLoading:
+          isViewCreated.value = true;
+          Utils.logError("信息流广告加载完成: ${value.placementID}");
+          break;
+
+        case NativeStatus.nativeAdDidShowNativeAd:
+          isViewCreated.value = await getNativeValidAds();
+          Utils.logError(
+            "信息流广告展示成功: ${value.placementID},是否有缓存${isViewCreated.value}",
+          );
+          loadNativeWith();
+          break;
+
+        case NativeStatus.nativeAdDidTapCloseButton:
+          Utils.logError("信息流广告被关闭: ${value.placementID}");
+          break;
+
+        case NativeStatus.nativeAdFailToLoadAD:
+          isViewCreated.value = await getNativeValidAds();
+          Utils.logError("信息流广告加载失败: ${value.requestMessage}");
+
+          await Future.delayed(const Duration(seconds: 2));
+          loadNativeWith();
+          break;
+
+        // ... 其他事件可根据需要处理
+        default:
+          Utils.logError(
+            "信息流广告事件: ${value.nativeStatus}, 参数: ${value.extraMap}",
+          );
+          break;
+      }
     });
   }
 
-  checkNativeLoadStatus() async {
-    await ATNativeManager.checkNativeAdLoadStatus(
+  removeNativeAd() async {
+    await ATNativeManager.removeNativeAd(
       placementID: AppAdConfig.nativePlacementID,
-    ).then((value) {
-      Utils.logError(
-        'flutter：原生广告加载状态：$value',
-      ); // 原"checkNativeAdLoadStatus"→"原生广告加载状态"
-    });
-  }
-
-  readyStatus() async {
-    await nativeAdReady();
-    await checkNativeLoadStatus();
-  }
-
-  showSceneNativeAd() async {
-    await ATNativeManager.showSceneNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
-      sceneID: AppAdConfig.nativeSceneID,
-      extraMap: {
-        ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width,
-          Get.height,
-          x: 0,
-          y: 100,
-        ),
-        ATNativeManager.appIcon(): ATNativeManager.createNativeSubViewAttribute(
-          50,
-          50,
-          x: 20,
-          y: 70,
-          backgroundColorStr: 'clearColor',
-        ),
-        ATNativeManager.mainTitle():
-            ATNativeManager.createNativeSubViewAttribute(
-              Get.width - 100,
-              40,
-              x: 90,
-              y: 70,
-              textSize: 15,
-            ),
-        ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width - 100,
-          40,
-          x: 90,
-          y: 120,
-          textSize: 15,
-        ),
-        ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
-          50,
-          50,
-          x: 90,
-          y: 170,
-          textSize: 15,
-        ),
-        ATNativeManager.mainImage():
-            ATNativeManager.createNativeSubViewAttribute(
-              Get.width - 40,
-              Get.height - 200,
-              x: 20,
-              y: 220,
-            ),
-        ATNativeManager.adLogo(): ATNativeManager.createNativeSubViewAttribute(
-          100,
-          50,
-          x: Get.width - 100,
-          y: Get.height - 70,
-        ),
-        ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
-          80,
-          80,
-          x: 20,
-          y: 0,
-        ),
-      },
     );
   }
 
   showNative() async {
-    await ATNativeManager.showNativeAd(
+    return await ATNativeManager.showNativeAd(
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
         ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
@@ -191,9 +321,5 @@ class NativeTool extends GetxService {
     );
   }
 
-  removeNativeAd() async {
-    await ATNativeManager.removeNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
-    );
-  }
+  StreamSubscription<ATNativeResponse>? _nativeAdSubscription;
 }

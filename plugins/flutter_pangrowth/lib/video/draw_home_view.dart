@@ -34,7 +34,7 @@ class _DrawHomeViewState extends State<DrawHomeView> {
     _channel.setMethodCallHandler((call) async {
       if (call.method == onUnlockMethod) {
         print("onUnlockMethod: ${call.arguments}");
-        final bool isUnlock = call.arguments<bool>("isUnlock") ?? false;
+        call.arguments<bool>("isUnlock") ?? false;
       }
     });
   }

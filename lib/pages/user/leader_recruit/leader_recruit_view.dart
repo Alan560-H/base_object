@@ -8,7 +8,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class LeaderRecruitView extends GetView<LeaderRecruitController> {
   const LeaderRecruitView({super.key});
@@ -20,7 +19,6 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
           height: Get.height,
           width: Get.width,
           decoration: BoxDecoration(
-            color: Colors.red,
             image: DecorationImage(
               image: CachedNetworkImageProvider(ImageConfig.leaderRecruit),
               fit: BoxFit.fill,
@@ -35,7 +33,7 @@ class LeaderRecruitView extends GetView<LeaderRecruitController> {
               ),
               Positioned(
                 left: 45.w,
-                top: 290.h,
+                top: 300.h,
                 child: SizedBox(
                   height: 190.h,
                   width: 270.w,

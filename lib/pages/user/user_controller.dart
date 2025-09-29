@@ -1,7 +1,5 @@
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
-import 'package:base_object/pages/invite/invite_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +8,6 @@ import 'package:get/get.dart';
 class UserController extends GetxController {
   RxString appbarTitle = "我的页面标题".obs;
   final UserInfo userInfo = Get.find<UserInfo>();
-  final CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
   List<MenuModel> menuList = [
     MenuModel(
       id: 0,
@@ -36,29 +33,15 @@ class UserController extends GetxController {
       menuName: "联系客服",
       icon: Icons.support_agent,
     ),
-    MenuModel(
-      id: 4,
-      menuName: "用户协议",
-      icon: Icons.description,
-    ),
-    MenuModel(
-      id: 5,
-      menuName: "隐私政策",
-      icon: Icons.description,
-    ),
+    MenuModel(id: 4, menuName: "用户协议", icon: Icons.description),
+    MenuModel(id: 5, menuName: "隐私政策", icon: Icons.description),
     MenuModel(
       id: 6,
       path: AppRoutes.userSystem,
       menuName: "我的设置",
       icon: Icons.settings_outlined,
     ),
-    MenuModel(
-      id: 7,
-      menuName: "清除缓存",
-      icon: Icons.delete,
-    ),
-
-
+    MenuModel(id: 7, menuName: "清除缓存", icon: Icons.delete),
   ];
   @override
   void onInit() {

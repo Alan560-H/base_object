@@ -103,6 +103,20 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
       String url = widget.appUpLoadModel.downUrl;
       String savePath = await getSavePath();
       Utils.logError("保存地址：$savePath");
+      File oldApkFile = File(savePath);
+      // 1. 检查旧文件是否存在
+      if (oldApkFile.existsSync()) {
+        Utils.logError('发现旧APK文件，开始清理');
+        try {
+          // 2. 尝试删除旧文件
+          await oldApkFile.delete();
+          Utils.logError('旧APK文件清理成功');
+        } catch (deleteE) {
+          // 3. 若删除失败（如文件被占用），抛出异常终止下载（避免新文件覆盖失败）
+          Utils.logError('旧APK文件清理失败：$deleteE');
+          throw Exception('旧安装包删除失败，请关闭占用该文件的程序后重试');
+        }
+      }
       // 检查文件是否已存在
       File file = File(savePath);
       if (file.existsSync()) {
@@ -141,10 +155,32 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
     if (Platform.isAndroid) {
       // 打开 APK 文件进行安装
       OpenResult result = await OpenFile.open(filePath);
+      // 安装完成后删除文件
       if (result.type == ResultType.done) {
-        Utils.logError('APK installation started');
+        // 延迟30秒删除APK（时间可根据测试调整，建议20-60秒）
+        Future.delayed(const Duration(seconds: 30), () async {
+          try {
+            File apkFile = File(filePath);
+            if (apkFile.existsSync()) {
+              // 先判断文件是否还存在
+              await apkFile.delete();
+              Get.snackbar(
+                '清理完成',
+                '安装包已自动删除',
+                duration: const Duration(seconds: 2),
+              );
+            }
+          } catch (e) {
+            Get.snackbar(
+              '清理失败',
+              '请手动删除安装包',
+              duration: const Duration(seconds: 2),
+            );
+            Utils.logError('删除APK失败：$e');
+          }
+        });
       } else {
-        Utils.logError('Failed to start APK installation: ${result.message}');
+        Get.snackbar('安装失败', '无法打开安装包', duration: const Duration(seconds: 2));
       }
     } else if (Platform.isIOS) {
       // 引导用户到 App Store 进行更新
@@ -197,9 +233,15 @@ class _AppUpLoadDialogState extends State<AppUpLoadDialog> {
           ),
         ),
         if (isDownloading)
-          LinearProgressIndicator(value: progress / 100)
+          LinearProgressIndicator(
+            value: progress / 100,
+            // 设置进度条颜色
+            valueColor: AlwaysStoppedAnimation<Color>(TextConfig.primary),
+            // 可选：设置进度条背景颜色
+            backgroundColor: Colors.grey[200],
+          )
         else if (progress > 0)
-          Text('Download Progress: ${progress.toStringAsFixed(2)}%'),
+          Text('下载进度: ${progress.toStringAsFixed(2)}%'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10.w,

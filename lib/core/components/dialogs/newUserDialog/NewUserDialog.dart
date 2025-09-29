@@ -1,26 +1,17 @@
-import 'dart:convert';
-
 import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
-import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
-import 'package:base_object/models/backModel/newUserModel/NewUserModel.dart';
 import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:markdown/markdown.dart' as md;
-import 'package:flutter_html/flutter_html.dart';
 
 class NewUserDialog extends StatefulWidget {
   /// 新人红包领取
@@ -86,22 +77,23 @@ class _NewUserDialogState extends State<NewUserDialog> {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      Utils.debounce(()async{
-                        try{
+                      Utils.debounce(() async {
+                        try {
                           EasyLoading.show(status: "正在领取中......");
-                          if(Get.isRegistered<Api>()){
+                          if (Get.isRegistered<Api>()) {
                             BackModel backModel = await Api.to.getNewcomer();
-                            if(backModel.code == CuErrorConfig.success){
-                              HomeController homeController = Get.find<HomeController>();
+                            if (backModel.code == CuErrorConfig.success) {
+                              HomeController homeController =
+                                  Get.find<HomeController>();
                               await homeController.isShowNewUser();
                               await UserInfo.instance.getUserInfoFn();
                               CuToast.success(msg: backModel.data);
                               Get.back();
                             }
                           }
-                        }catch(e){
+                        } catch (e) {
                           Utils.logError("领取新人福利失败：$e");
-                        }finally{
+                        } finally {
                           EasyLoading.dismiss();
                         }
                       });
