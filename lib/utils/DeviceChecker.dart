@@ -4,6 +4,7 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:emulator_checker/emulator_checker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sim_card_info/sim_card_info.dart';
 import 'package:flutter/services.dart';
@@ -12,20 +13,6 @@ import 'package:network_info_plus/network_info_plus.dart';
 
 class DeviceChecker {
   static final DeviceInfoPlugin _deviceInfoPlugin = DeviceInfoPlugin();
-
-  /// 检查是否开启调试模式 true:开启了调试模式，false：没开
-  static Future<bool> isDebugMode() async {
-    bool isDebug = false;
-    Utils.logError("是否开启调试模式：$isDebug");
-    print("是否开启调试模式：$isDebug");
-    EasyLoading.show(status: "是否开启调试模式：$isDebug");
-    if (isDebug) {
-      CuToast.error(msg: "请关闭调试模式后再重新打开本程序");
-      await Future.delayed(const Duration(seconds: 2));
-      SystemNavigator.pop();
-    }
-    return isDebug;
-  }
 
   /// 检查是否使用VPN true:使用了vpn，false：没有使用vpn
   static Future<bool> isVpnActive() async {
@@ -83,12 +70,6 @@ class DeviceChecker {
       EasyLoading.show(status: "是否插卡：$hasSim");
       print("是否插卡：$hasSim");
 
-      if (!hasSim) {
-        CuToast.error(msg: "请插卡后再重新打开本程序");
-        await Future.delayed(const Duration(seconds: 2));
-        SystemNavigator.pop();
-      }
-
       return hasSim;
     } catch (e) {
       return false;
@@ -101,7 +82,7 @@ class DeviceChecker {
     try {
       if (Platform.isAndroid) {
         // 需要通过MethodChannel调用原生方法获取开发者模式状态
-        const platform = MethodChannel('com.example/riskcontrol');
+        const platform = MethodChannel('com.example.riskcontrol');
         bool isDeveloperMode = await platform.invokeMethod(
           'isDeveloperModeEnabled',
         );
@@ -109,11 +90,7 @@ class DeviceChecker {
         print("是否开启开发者模式：$isDeveloperMode");
 
         EasyLoading.show(status: "是否开启开发者模式：$isDeveloperMode");
-        if (isDeveloperMode) {
-          CuToast.error(msg: "请关闭开发者模式后再重新打开本程序");
-          await Future.delayed(const Duration(seconds: 2));
-          SystemNavigator.pop();
-        }
+
         return isDeveloperMode;
       }
       return false;
@@ -125,9 +102,7 @@ class DeviceChecker {
   /// 检查是否为模拟器 true:是模拟器，false：不是模拟器
   static Future<bool> isEmulator() async {
     if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
-      bool isEmu = androidInfo.isPhysicalDevice != true;
-
+      bool isEmu = await EmulatorChecker.isEmulator();
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否为模拟器：$isEmu");
       print("是否为模拟器：$isEmu");
@@ -143,38 +118,10 @@ class DeviceChecker {
     return false;
   }
 
-  /// 检查是否为云机（需要根据特定特征判断）
-  /// 检查是否为云机（需要根据特定特征判断） true:是云机，false：不是云机
-  static Future<bool> isCloudDevice() async {
-    if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
-      // 根据设备型号、制造商等信息判断
-      List<String> cloudDeviceManufacturers = [
-        'Google',
-        'Amazon',
-        'Genymotion',
-      ];
-      bool isCloud = cloudDeviceManufacturers.contains(
-        androidInfo.manufacturer,
-      );
-      await Future.delayed(const Duration(milliseconds: 500));
-      Utils.logError("是否为云机：$isCloud");
-      print("是否为云机：$isCloud");
-      EasyLoading.show(status: "是否为云机：$isCloud");
-      if (isCloud) {
-        CuToast.error(msg: "不允许在云机上运行");
-        await Future.delayed(const Duration(seconds: 2));
-        SystemNavigator.pop();
-      }
-      return isCloud;
-    }
-    return false;
-  }
-
   /// 检查无障碍模式是否开启（需要原生支持）
   static Future<bool> isAccessibilityModeEnabled() async {
     try {
-      const platform = MethodChannel('com.example/riskcontrol');
+      const platform = MethodChannel('com.example.riskcontrol');
       bool isAccess = await platform.invokeMethod('isAccessibilityModeEnabled');
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍模式：$isAccess");
@@ -194,7 +141,7 @@ class DeviceChecker {
   /// 检查是否有开启的无障碍软件
   static Future<List<String>> getEnabledAccessibilityServices() async {
     try {
-      const platform = MethodChannel('com.example/riskcontrol');
+      const platform = MethodChannel('com.example.riskcontrol');
       List<dynamic> services = await platform.invokeMethod(
         'getEnabledAccessibilityServices',
       );
@@ -217,7 +164,6 @@ class DeviceChecker {
   /// 检查所有设备相关的权限和特征 true:所有权限和特征都满足，false：有一个不满足
   static Future<bool> isAllCheckr() async {
     try {
-      bool isDebug = await isDebugMode();
       await Future.delayed(const Duration(milliseconds: 100));
       bool isVpn = await isVpnActive();
       await Future.delayed(const Duration(milliseconds: 100));
@@ -231,30 +177,24 @@ class DeviceChecker {
       bool isEmu = await isEmulator();
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bool isCloud = await isCloudDevice();
-      await Future.delayed(const Duration(milliseconds: 100));
-
       bool isAccess = await isAccessibilityModeEnabled();
       await Future.delayed(const Duration(milliseconds: 100));
 
       List<String> enabledServices = await getEnabledAccessibilityServices();
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bool res =
-          !isDebug &&
-          !isVpn &&
-          hasSim &&
-          !isDev &&
-          !isEmu &&
-          !isCloud &&
-          !isAccess &&
-          enabledServices.isEmpty;
+      // bool res =
+      //     !isVpn &&
+      //     hasSim &&
+      //     !isDev &&
+      //     !isEmu &&
+      //     !isAccess &&
+      //     enabledServices.isEmpty;
+      bool res = true;
       if (res) {
         EasyLoading.showSuccess("检测通过");
       } else {
-        if (isDebug) {
-          CuToast.error(msg: "不允许在调试模式下运行");
-        } else if (isVpn) {
+        if (isVpn) {
           CuToast.error(msg: "请关闭VPN后再重新打开本程序");
         } else if (!hasSim) {
           CuToast.error(msg: "请插入SIM卡后再重新打开本程序");
@@ -262,8 +202,6 @@ class DeviceChecker {
           CuToast.error(msg: "不允许在开发者模式下运行");
         } else if (isEmu) {
           CuToast.error(msg: "不允许在模拟器上运行");
-        } else if (isCloud) {
-          CuToast.error(msg: "不允许在云机上运行");
         } else if (isAccess) {
           CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
         } else if (enabledServices.isNotEmpty) {

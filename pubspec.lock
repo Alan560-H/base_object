@@ -329,6 +329,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.4.0"
+  emulator_checker:
+    dependency: "direct main"
+    description:
+      name: emulator_checker
+      sha256: b2287a9252c7cae3f8e34f2fb98419e625a213085212e666aa67377bdba50fdb
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.4"
   encrypt:
     dependency: "direct main"
     description:
