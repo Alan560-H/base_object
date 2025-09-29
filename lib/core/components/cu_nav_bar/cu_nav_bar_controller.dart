@@ -3,6 +3,7 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
@@ -50,9 +51,12 @@ class CuNavBarController extends GetxService {
     height.value = h;
   }
 
-  void onTabChange(int index) {
+  void onTabChange(int index) async {
     try {
       currentPageIndex.value = index;
+      NativeTool.to.removeNativeAd();
+      bool isHasAdStr = await NativeTool.to.getNativeValidAds();
+      Utils.logError("底部导航判断$isHasAdStr");
       switch (index) {
         case 0:
           Get.offAllNamed(AppRoutes.home);

@@ -32,7 +32,7 @@ class HomeController extends GetxController {
     // 延迟到当前帧构建完成后执行，避免获取不到最新滚动位置
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 确保控制器已绑定到 ListView，且有可滚动空间
-      if (scrollController!.hasClients) {
+      if (scrollController.hasClients) {
         // 平滑滚动到最底部（也可用 controller.jumpTo 实现瞬时滚动）
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,

@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/native_tool.dart';
@@ -33,6 +35,43 @@ class HomeGroupChat extends GetxService {
   bool isAddNative = false;
   int indexNative = -1;
   final RxList<ChatMessage> messages = <ChatMessage>[].obs; // 聊天消息列表]
+  Widget cachedAdWidget = Container(
+    width: Get.width,
+    height: 250.h,
+    color: Colors.blue,
+  );
+  // 构建广告占位容器（承载原生广告）
+  // 修复：返回一个稳定的、可复用的 Widget
+  Future<Widget> getNativeView() async {
+    bool isHasAdStr = await NativeTool.to.getNativeValidAds();
+    Utils.logError("获取原生广告占位容器是否有广告缓存$isHasAdStr");
+    if (!isHasAdStr) {
+      return Container(
+        width: Get.width,
+        height: NativeTool.to.adHeight,
+        color: Colors.red,
+      );
+    }
+    cachedAdWidget = Container(
+      // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
+      // key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
+      width: double.infinity,
+      // height: adHeight,
+      constraints: BoxConstraints(maxHeight: NativeTool.to.adHeight),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: Colors.grey[200]!, width: 1),
+      ),
+      child: PlatformNativeWidget(
+        AppAdConfig.nativePlacementID,
+        NativeTool.to.getAdConfig(),
+        isAdaptiveHeight: true, // 启用自适应高度
+      ),
+    );
+    return cachedAdWidget;
+  }
+
   void homeGroupChatInit() {
     Utils.logError("群聊初始化，消息长度${messages.length}");
     // 初始化消息（5条普通消息）
@@ -120,7 +159,7 @@ class HomeGroupChat extends GetxService {
         // 如果有缓存，则添加
         if (NativeTool.to.isViewCreated.value) {
           Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
-          content = await NativeTool.to.getNativeView();
+          content = await getNativeView();
           _autoMessageTimer?.cancel();
           _autoMessageTimer = null;
           // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
@@ -169,7 +208,7 @@ class HomeGroupChat extends GetxService {
       messages.removeAt(indexNative);
     }
     NativeTool.to.removeNativeAd();
-    NativeTool.to.cachedAdWidget = Container(
+    cachedAdWidget = Container(
       width: Get.width,
       height: NativeTool.to.adHeight,
       color: Colors.yellow,
