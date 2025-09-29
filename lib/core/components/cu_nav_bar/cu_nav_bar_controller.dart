@@ -55,24 +55,24 @@ class CuNavBarController extends GetxService {
       currentPageIndex.value = index;
       switch (index) {
         case 0:
-          Get.offNamed(AppRoutes.home);
+          Get.offAllNamed(AppRoutes.home);
           break;
         // case 1:
         //   Get.toNamed(AppRoutes.shortVideo);
         //   break;
         case 1:
-          Get.offNamed(AppRoutes.djVideo);
+          Get.offAllNamed(AppRoutes.djVideo);
           break;
         case 2:
-          Get.offNamed(AppRoutes.invite);
+          Get.offAllNamed(AppRoutes.invite);
           break;
         case 3:
-          Get.offNamed(AppRoutes.user);
+          Get.offAllNamed(AppRoutes.user);
           break;
       }
     } catch (e) {
       Utils.logError("切换一级页面失败：$e");
-      Get.offNamed(AppRoutes.home);
+      Get.offAllNamed(AppRoutes.home);
       currentPageIndex.value = 0;
     }
   }
