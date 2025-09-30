@@ -4,7 +4,6 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/localModels/BannerVo.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +131,7 @@ class InviteUserView extends GetView<InviteUserController> {
           decoration: BoxDecoration(
             color: TextConfig.fensePageColor,
             image: DecorationImage(
+              fit: BoxFit.fill,
               image: CachedNetworkImageProvider(ImageConfig.commonBg),
             ),
           ),
@@ -140,7 +140,7 @@ class InviteUserView extends GetView<InviteUserController> {
             children: [
               swiperWidget,
               Container(
-                height: 170.h,
+                height: 160.h,
                 width: Get.width,
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(
@@ -212,7 +212,6 @@ class InviteUserView extends GetView<InviteUserController> {
           ),
         ),
       ),
-      // bottomNavigationBar: CuNavBarView(),
     );
   }
 }

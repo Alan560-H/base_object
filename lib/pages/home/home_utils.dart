@@ -1,14 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:math';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
-import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/store/store.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:crypto/crypto.dart';
@@ -21,7 +18,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class HomeUtils {
   // 获取UserAgent
   static Future<String?> getUserAgent() async {
-    const platform = MethodChannel('ua_channel');
+    const platform = MethodChannel('uaChannel');
     try {
       final String? ua = await platform.invokeMethod('getUA');
       return ua;
@@ -50,7 +47,7 @@ class HomeUtils {
     return md5Hash.toString();
   }
 
-  // 检查是否为广告消息  // 获取App升级信息
+  // 获取App升级信息
   static Future<void> getAppUpdata({bool isReturn = false}) async {
     String channel = await getAppChannel();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -72,10 +69,11 @@ class HomeUtils {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     appUpLoadModel.ua = await getUserAgent();
+    Utils.logError("app 的浏览器Ua是：${appUpLoadModel.ua}");
     appUpLoadModel.fingerprint = androidInfo.fingerprint;
     appUpLoadModel.channel = channel;
     appUpLoadModel.channelPackage = appUpLoadForm.channelPackage ?? "";
-
+    Utils.logError("通道参数是：${appUpLoadModel.channel}");
     // 存储升级信息
     Store.instance.updateAppUpLoadModel(appUpLoadModel);
     if (isReturn) return;

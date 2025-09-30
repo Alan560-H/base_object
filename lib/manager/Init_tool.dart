@@ -3,7 +3,7 @@ import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
-class InitTool extends GetxController {
+class InitTool extends GetxService {
   // GetX单例获取方式
   static InitTool get to =>
       Get.isRegistered<InitTool>() ? Get.find<InitTool>() : Get.put(InitTool());

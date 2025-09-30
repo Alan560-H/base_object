@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
@@ -33,7 +31,7 @@ import '../../models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import '../net/cu_http_client.dart';
 import 'api_urls.dart';
 
-class Api extends GetxController {
+class Api extends GetxService {
   // GetX单例获取方式
   static Api get to => Get.find<Api>();
   // 发起请求的通用方法
@@ -338,6 +336,22 @@ class Api extends GetxController {
     } catch (e) {
       Utils.logError("login请求出错: $e");
       return LoginModel();
+    }
+  }
+
+  /// 登录
+  Future<BackModel> getInviteCode(FormModel data) async {
+    try {
+      BackModel backModel = await _sendRequest(
+        ApiUrls.getInviteCode,
+        data,
+        "post",
+      );
+
+      return backModel;
+    } catch (e) {
+      Utils.logError("login请求出错: $e");
+      return BackModel();
     }
   }
 

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.ruyimh.www"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -28,6 +28,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders.put("OPENINSTALL_APPKEY", "kl25pf")
         // 添加默认的渠道信息
         manifestPlaceholders["channel"] = "default"
         // 新增：限制 APK 只包含 arm64-v8a 架构
@@ -144,6 +145,8 @@ android {
 // 在这里添加子项目的依赖配置
 dependencies {
     //Support (Necessary)
+    api("com.amap.api:location:latest.integration")
+
 //    api("com.anythink.sdk:core-taku:6.5.15")
 //    api("com.anythink.sdk:core-china-taku:6.5.15")
 //    api("com.anythink.sdk:nativead-taku:6.5.15")

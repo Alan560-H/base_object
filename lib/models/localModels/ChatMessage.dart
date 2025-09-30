@@ -5,7 +5,7 @@ class ChatMessage {
   final VirtualUser user;
   final Widget content; // 消息小部件
   final DateTime timestamp;
-  final bool isHasNative;
+  final bool isHasNative; // 是否有信息流广告
   ChatMessage({
     required this.id,
     required this.user,
@@ -14,15 +14,12 @@ class ChatMessage {
     required this.isHasNative,
   });
 }
+
 // 虚拟人物模型
 class VirtualUser {
   final String id;
   final String name;
   final String avatarUrl;
 
-  VirtualUser({
-    required this.id,
-    required this.name,
-    required this.avatarUrl,
-  });
+  VirtualUser({required this.id, required this.name, required this.avatarUrl});
 }

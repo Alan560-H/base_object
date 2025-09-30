@@ -8,8 +8,6 @@ import 'package:get/get.dart';
 class DjVideoView extends GetView<DjVideoController> {
   const DjVideoView({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

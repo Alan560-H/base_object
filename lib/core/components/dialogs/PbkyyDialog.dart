@@ -1,20 +1,12 @@
-import 'dart:developer';
-
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_empty.dart';
-import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:flutter_html/flutter_html.dart';
-
-import '../../../utils/local_storage.dart';
-import '../../config/image_config.dart';
-import '../../config/text_config.dart';
 
 class PbkyyDialog extends StatefulWidget {
   /// 屏蔽快应用弹窗
@@ -29,7 +21,6 @@ class _PbkyyDialogState extends State<PbkyyDialog> {
   bool _loadding = true;
   // 当前条目索引
   int index = 0;
-
 
   void getNoticeAPP() async {
     noticeList = await Api.to.getNoticeAPP();
@@ -55,7 +46,6 @@ class _PbkyyDialogState extends State<PbkyyDialog> {
 
   // 关闭弹窗的方法
   void closeDialog() {
-
     Get.back();
   }
 
@@ -63,101 +53,106 @@ class _PbkyyDialogState extends State<PbkyyDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: EdgeInsets.symmetric(horizontal: 10.w),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5.sp),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.sp)),
       backgroundColor: Colors.transparent,
-      child: _loadding
-          ? Center()
-          : Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white60,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            constraints: BoxConstraints(
-              maxHeight: Get.height * 0.6,
-              maxWidth: Get.width,
-            ),
-            padding: EdgeInsets.only(
-              left: 10.w,
-              right: 10.w,
-              top: 10.h,
-              bottom: 10.h,
-            ),
-            child: Column(
-              spacing: 5.h,
-              children: [
-                Container(
-                  width: Get.width,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.circular(5.r)
-                  ),
-                  padding: EdgeInsets.all(5.h),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: noticeList.length,
-                          itemBuilder: (BuildContext _, int i) {
-                            return InkWell(
-                              onTap: () {
-                                setState(() {
-                                  index = i;
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 5.sp),
-                                decoration: BoxDecoration(
-                                    color: index==i?Colors.white:Colors.transparent,
-                                    borderRadius: BorderRadius.circular(5.w)
-                                ),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: 5.h,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(noticeList[i].name),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      InkWell(
-                        onTap: closeDialog,  // 使用统一的关闭方法
-                        child: Icon(Icons.close,size: 30.w,),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: noticeList.isNotEmpty
-                      ? Container(
+      child:
+          _loadding
+              ? Center()
+              : Stack(
+                children: [
+                  Container(
                     decoration: BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.circular(5.r),
+                      color: Colors.white60,
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                    padding: EdgeInsets.all(5.r),
-                    child: SingleChildScrollView(
-                      child: Html(
-                        data: md.markdownToHtml(
-                          noticeList[index].content,
+                    constraints: BoxConstraints(
+                      maxHeight: Get.height * 0.6,
+                      maxWidth: Get.width,
+                    ),
+                    padding: EdgeInsets.only(
+                      left: 10.w,
+                      right: 10.w,
+                      top: 10.h,
+                      bottom: 10.h,
+                    ),
+                    child: Column(
+                      spacing: 5.h,
+                      children: [
+                        Container(
+                          width: Get.width,
+                          height: 40.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.circular(5.r),
+                          ),
+                          padding: EdgeInsets.all(5.h),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: noticeList.length,
+                                  itemBuilder: (BuildContext _, int i) {
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          index = i;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 5.sp,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              index == i
+                                                  ? Colors.white
+                                                  : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                            5.w,
+                                          ),
+                                        ),
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 5.h,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(noticeList[i].name),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              InkWell(
+                                onTap: closeDialog, // 使用统一的关闭方法
+                                child: Icon(Icons.close, size: 30.w),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child:
+                              noticeList.isNotEmpty
+                                  ? Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white70,
+                                      borderRadius: BorderRadius.circular(5.r),
+                                    ),
+                                    padding: EdgeInsets.all(5.r),
+                                    child: SingleChildScrollView(
+                                      child: Html(
+                                        data: md.markdownToHtml(
+                                          noticeList[index].content,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  : CuEmpty(),
+                        ),
+                      ],
                     ),
-                  )
-                      : CuEmpty(),
-                ),
-
-
-              ],
-            ),
-          ),
-        ],
-      ),
+                  ),
+                ],
+              ),
     );
   }
 }

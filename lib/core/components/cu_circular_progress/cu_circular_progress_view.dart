@@ -1,6 +1,4 @@
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
-import 'package:base_object/core/components/dialogs/Dialogs.dart';
-import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,20 +20,22 @@ class CuCircularProgressView extends GetView<CuCircularProgressController> {
     this.strokeWidth = 8.0,
     this.progressColor = Colors.blue,
     this.backgroundColor = Colors.yellowAccent,
-  })  : assert(size > 0, "进度条大小必须大于0"),
-        assert(strokeWidth > 0 && strokeWidth < size / 2, "进度条宽度需在0~${size/2}之间");
-
+  }) : assert(size > 0, "进度条大小必须大于0"),
+       assert(
+         strokeWidth > 0 && strokeWidth < size / 2,
+         "进度条宽度需在0~${size / 2}之间",
+       );
 
   @override
   Widget build(BuildContext context) {
     // 响应式监听进度变化，自动刷新UI
     return Obx(
-          () => InkWell(
-            onTap:controller.showDialog,
+      () => InkWell(
+        onTap: controller.showDialog,
 
-            child: Stack(
-                    alignment: Alignment.center,
-                    children: [
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
             // 1. 圆形进度条（系统组件，基于内置控制器的百分比渲染）
             SizedBox(
               width: size,
@@ -51,9 +51,9 @@ class CuCircularProgressView extends GetView<CuCircularProgressController> {
 
             // 2. 中间圆形图片（优化尺寸计算，避免紧贴进度条）
             _buildCenterImage(),
-                    ],
-                  ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -66,9 +66,8 @@ class CuCircularProgressView extends GetView<CuCircularProgressController> {
         color: backgroundColor,
         width: size,
         height: size,
-        child: CachedNetworkImage(imageUrl: imagePath)
+        child: CachedNetworkImage(imageUrl: imagePath),
       ),
     );
   }
-
 }

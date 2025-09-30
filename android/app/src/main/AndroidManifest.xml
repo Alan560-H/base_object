@@ -1,25 +1,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- 添加权限 -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 读取手机状态权限 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 允许 APP访问互联网（发送 / 接收网络数据） -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 允许 APP读取手机硬件 / 网络状态（如 IMEI/MEID 设备号、手机号、网络运营商、信号强度） -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 检查网络状态 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入外部存储权限 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 检查wifi网络状态 -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 请求安装应用权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 允许 APP触发 “安装 APK” 的系统弹窗（如 APP 内下载更新包后提示用户安装） -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 读取外部存储权限 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 允许修改wifi状态 -->
-    <uses-permission android:name="android.permission.GET_TASKS" /> <!-- 获取任务列表权限 -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 唤醒锁权限 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 允许 APP保持设备唤醒状态（如屏幕常亮、CPU 不休眠） -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- 读取图片权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 访问精确位置权限 -->
-    <uses-permission android:name="${applicationId}.openadsdk.permission.TT_PANGOLIN" />
-
+    <uses-permission android:name="${applicationId}.openadsdk.permission.TT_PANGOLIN" /><!-- 字节跳动 “穿山甲广告 SDK” 的自定义权限（用于广告投放、数据统计、设备匹配） -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!-- 允许 APP获取粗略位置（仅通过基站 / WiFi，精度 100-1000 米，如城市级别） -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" /><!-- 允许 APP读取手机中已登录的账户列表（如 Google 账户、微信 / QQ 账户、手机厂商账户） -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+        tools:ignore="ScopedStorage" /><!-- 允许 APP管理整个外部存储（读取 / 写入所有文件，绕过作用域存储） -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- 允许修改网络状态 -->
-
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- 允许修改网络状态 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/> <!--用于申请调用A-GPS模块,卫星定位加速-->
+    <!--允许写设备缓存，用于问题排查-->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <application
         android:name="${applicationName}"
         android:allowBackup="true"
@@ -28,7 +32,7 @@
         android:label="如意开盒"
         android:networkSecurityConfig="@xml/net_config"
         tools:replace="android:label,android:allowBackup"
-
+        android:theme="@style/AppTheme"
         >
         <uses-library
             android:name="org.apache.http.legacy"
@@ -79,7 +83,9 @@
                 android:resource="@xml/anythink_bk_tt_file_path"
                 tools:replace="android:resource"/>
         </provider>
-
+        <meta-data
+            android:name="com.openinstall.APP_KEY"
+            android:value="kl25pf"/>
         <!-- 添加渠道信息的 meta-data -->
         <meta-data
             android:name="CHANNEL"
@@ -106,11 +112,27 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <!-- App Link sample -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ysxy.ruyigx.com" android:pathPrefix="/" />
+            </intent-filter>
+            <!-- 2. 新增：深度链接配置（用于接收邀请码链接） -->
+            <!-- 配置 URL Scheme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="kl25pf"/>
+            </intent-filter>
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -119,8 +141,8 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
         </activity>
