@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "com.cjbao/channel"
     private val TAG = "MainActivityDebug"
-    private val UACHANNEL = "ua_channel"
+    private val UACHANNEL = "uaChannel"
 
     // 保留通道引用
     private lateinit var uaMethodChannel: MethodChannel
