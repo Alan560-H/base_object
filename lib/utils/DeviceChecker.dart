@@ -183,7 +183,7 @@ class DeviceChecker {
       // List<String> enabledServices = await getEnabledAccessibilityServices();
       // await Future.delayed(const Duration(milliseconds: 100));
 
-      bool res = !isVpn && hasSim && isDev && !isEmu;
+      bool res = !isVpn && hasSim && !isDev && !isEmu;
       // bool res = true;
       if (res) {
         EasyLoading.showSuccess("检测通过");
