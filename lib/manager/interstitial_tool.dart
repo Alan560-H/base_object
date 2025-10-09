@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/pages/login/login_controller.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:get/get.dart';
 
@@ -85,6 +87,11 @@ class InterstitialTool extends GetxService {
           Utils.logError(
             "插屏广告 interstitialAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
+          loadInterstitialAd({
+            Common.getUserIdKey(): UserInfo.instance.userModel.id,
+            Common.getExtraKey():
+                "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_0",
+          });
           break;
         //广告加载成功
         case InterstitialStatus.interstitialAdDidFinishLoading:

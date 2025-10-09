@@ -92,7 +92,7 @@ class InterAdDialog extends GetxService {
       return;
     }
     _timer = Timer(
-      Duration(seconds: Store.instance.getFkConfig.adv1Time),
+      Duration(seconds: Store.instance.getFkConfig.wactchTime),
       () async {
         bool isInterReady = await InterstitialTool.to.hasInterstitialAdReady();
         if (isInterReady) {
