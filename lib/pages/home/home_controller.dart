@@ -6,6 +6,7 @@ import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
@@ -155,7 +156,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-    InterAdDialog.to.restartTimer();
+    InterstitialTool.to.interstitialListen();
+    InterstitialTool.to.loadInterstitialAd();
     NativeTool.to.nativeLisListen();
     NativeTool.to.loadNativeWith();
     HomeGroupChat.to.homeGroupChatInit();

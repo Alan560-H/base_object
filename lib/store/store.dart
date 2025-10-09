@@ -176,11 +176,13 @@ class Store extends GetxController {
   RxBool _isLimit = false.obs;
 
   /// 是否被封禁
+  bool get isLimit => _isLimit.value;
+
+  /// 是否被封禁
   void setIsLimit(bool value) {
     _isLimit.value = value;
   }
 
-  get isLimit => _isLimit.value;
   Future<void> upAddress() async {
     if (Store.instance.locationData == null) {
       return;
