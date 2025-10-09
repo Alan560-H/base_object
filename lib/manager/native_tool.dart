@@ -24,7 +24,7 @@ class NativeTool extends GetxService {
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
         ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width - 20.w, // 与 _getAdConfig 中的宽度一致
+          Get.width - 20.w, // 与 getAdConfig 中的宽度一致
           adHeight, // 与 adHeight 一致
         ),
         ATNativeManager.isAdaptiveHeight(): true,
@@ -71,14 +71,9 @@ class NativeTool extends GetxService {
 
   // 统一广告高度，与文档和加载配置保持一致
   final double adHeight = 250.h;
-  Widget cachedAdWidget = Container(
-    width: Get.width,
-    height: 250.h,
-    color: Colors.blue,
-  );
 
   // 原生广告控件配置
-  Map<String, dynamic> _getAdConfig() {
+  Map<String, dynamic> getAdConfig() {
     return {
       // 广告父容器（整体尺寸）
       ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
@@ -174,33 +169,6 @@ class NativeTool extends GetxService {
   }
 
   final isViewCreated = false.obs; // true有广告缓存，false没有
-  // 构建广告占位容器（承载原生广告）
-  // 修复：返回一个稳定的、可复用的 Widget
-  Future<Widget> getNativeView() async {
-    bool isHasAdStr = await getNativeValidAds();
-    Utils.logError("获取原生广告占位容器是否有广告缓存$isHasAdStr");
-    if (!isHasAdStr) {
-      return Container(width: Get.width, height: adHeight, color: Colors.red);
-    }
-    cachedAdWidget = Container(
-      // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
-      key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
-      width: double.infinity,
-      // height: adHeight,
-      constraints: BoxConstraints(maxHeight: adHeight),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: Colors.grey[200]!, width: 1),
-      ),
-      child: PlatformNativeWidget(
-        AppAdConfig.nativePlacementID,
-        _getAdConfig(),
-        isAdaptiveHeight: true, // 启用自适应高度
-      ),
-    );
-    return cachedAdWidget;
-  }
 
   /// 原生广告监听
   nativeLisListen() async {

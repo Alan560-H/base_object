@@ -118,6 +118,49 @@ class DeviceChecker {
     return false;
   }
 
+  /// 检查无障碍模式是否开启（需要原生支持）
+  static Future<bool> isAccessibilityModeEnabled() async {
+    try {
+      const platform = MethodChannel('com.example.riskcontrol');
+      bool isAccess = await platform.invokeMethod('isAccessibilityModeEnabled');
+      await Future.delayed(const Duration(milliseconds: 500));
+      Utils.logError("是否开启无障碍模式：$isAccess");
+      print("是否开启无障碍模式：$isAccess");
+      EasyLoading.show(status: "是否开启无障碍模式：$isAccess");
+      if (isAccess) {
+        CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
+      }
+      return isAccess;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// 检查是否有开启的无障碍软件
+  static Future<List<String>> getEnabledAccessibilityServices() async {
+    try {
+      const platform = MethodChannel('com.example.riskcontrol');
+      List<dynamic> services = await platform.invokeMethod(
+        'getEnabledAccessibilityServices',
+      );
+      List<String> enabledServices = services.cast<String>();
+      await Future.delayed(const Duration(milliseconds: 500));
+      Utils.logError("是否开启无障碍软件：${enabledServices.isEmpty}");
+      print("是否开启无障碍软件：${enabledServices.isEmpty}");
+      EasyLoading.show(status: "是否开启无障碍软件：${enabledServices.isEmpty}");
+      if (enabledServices.isNotEmpty) {
+        CuToast.error(msg: "请关闭无障碍软件后再重新打开本程序");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
+      }
+      return enabledServices;
+    } catch (e) {
+      return [];
+    }
+  }
+
   /// 检查所有设备相关的权限和特征 true:所有权限和特征都满足，false：有一个不满足
   static Future<bool> isAllCheckr() async {
     try {
@@ -134,7 +177,14 @@ class DeviceChecker {
       bool isEmu = await isEmulator();
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bool res = !isVpn && hasSim && isDev && !isEmu;
+      // bool isAccess = await isAccessibilityModeEnabled();
+      // await Future.delayed(const Duration(milliseconds: 100));
+      //
+      // List<String> enabledServices = await getEnabledAccessibilityServices();
+      // await Future.delayed(const Duration(milliseconds: 100));
+
+      bool res = !isVpn && hasSim && !isDev && !isEmu;
+      // bool res = true;
       if (res) {
         EasyLoading.showSuccess("检测通过");
       } else {

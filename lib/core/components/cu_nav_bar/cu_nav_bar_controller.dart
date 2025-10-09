@@ -3,6 +3,7 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
@@ -50,29 +51,32 @@ class CuNavBarController extends GetxService {
     height.value = h;
   }
 
-  void onTabChange(int index) {
+  void onTabChange(int index) async {
     try {
       currentPageIndex.value = index;
+      NativeTool.to.removeNativeAd();
+      bool isHasAdStr = await NativeTool.to.getNativeValidAds();
+      Utils.logError("底部导航判断$isHasAdStr");
       switch (index) {
         case 0:
-          Get.offNamed(AppRoutes.home);
+          Get.offAllNamed(AppRoutes.home);
           break;
-        // case 1:
-        //   Get.toNamed(AppRoutes.shortVideo);
-        //   break;
         case 1:
-          Get.offNamed(AppRoutes.djVideo);
+          Get.toNamed(AppRoutes.shortVideo);
           break;
         case 2:
-          Get.offNamed(AppRoutes.invite);
+          Get.offAllNamed(AppRoutes.djVideo);
           break;
         case 3:
-          Get.offNamed(AppRoutes.user);
+          Get.offAllNamed(AppRoutes.invite);
+          break;
+        case 4:
+          Get.offAllNamed(AppRoutes.user);
           break;
       }
     } catch (e) {
       Utils.logError("切换一级页面失败：$e");
-      Get.offNamed(AppRoutes.home);
+      Get.offAllNamed(AppRoutes.home);
       currentPageIndex.value = 0;
     }
   }
@@ -88,14 +92,13 @@ class CuNavBarController extends GetxService {
         ImageConfig.redBagDefatult,
         ImageConfig.redBagActive,
       ),
-      // _createMenuModel(
-      //   1,
-      //   "短视频",
-      //   true,
-      //   ImageConfig.videoDefault,
-      //   ImageConfig.videoActive,
-      //
-      // ),
+      _createMenuModel(
+        1,
+        "短视频",
+        true,
+        ImageConfig.videoDefault,
+        ImageConfig.videoActive,
+      ),
       _createMenuModel(
         2,
         "短剧",

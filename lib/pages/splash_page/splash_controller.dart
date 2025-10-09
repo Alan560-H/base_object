@@ -62,10 +62,10 @@ class SplashController extends GetxController {
           await Store.instance.upAddress();
 
           /// 获取风控配置
-          Store.instance.getFkConfigFn();
+          await Store.instance.getFkConfigFn();
 
           /// 获取今日领取了多少个红包
-          Store.instance.initCurrentCount();
+          await Store.instance.initCurrentCount();
           if (await SplashTool.to.splashReady()) {
             SplashTool.to.showSplash();
           }

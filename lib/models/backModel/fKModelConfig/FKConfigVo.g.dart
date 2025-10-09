@@ -16,6 +16,7 @@ FKConfigVo _$FKConfigVoFromJson(Map<String, dynamic> json) =>
       ..wactchMax = (json['wactchMax'] as num).toInt()
       ..wactchMin = (json['wactchMin'] as num).toInt()
       ..adTime = (json['adTime'] as num).toInt()
+      ..wactchTime = (json['wactchTime'] as num).toInt()
       ..wactchMaxAmountV1 = (json['wactchMaxAmountV1'] as num).toInt()
       ..wactchMinAmountV1 = (json['wactchMinAmountV1'] as num).toInt()
       ..hourMaxAmountV1 = (json['hourMaxAmountV1'] as num).toInt()
@@ -36,6 +37,7 @@ Map<String, dynamic> _$FKConfigVoToJson(FKConfigVo instance) =>
       'wactchMax': instance.wactchMax,
       'wactchMin': instance.wactchMin,
       'adTime': instance.adTime,
+      'wactchTime': instance.wactchTime,
       'wactchMaxAmountV1': instance.wactchMaxAmountV1,
       'wactchMinAmountV1': instance.wactchMinAmountV1,
       'hourMaxAmountV1': instance.hourMaxAmountV1,

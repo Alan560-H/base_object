@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
@@ -20,6 +22,83 @@ import 'package:get/get.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
+  // GetX单例获取方式
+  // static NativeTool get to =>
+  //     Get.isRegistered<NativeTool>()
+  //         ? Get.find<NativeTool>()
+  //         : Get.put(NativeTool());
+  final ScrollController scrollController = ScrollController();
+  // 2. 封装“滚动到最底部”的方法（关键：等列表构建完成后再滚动）
+  void scrollToBottom() {
+    // 延迟到当前帧构建完成后执行，避免获取不到最新滚动位置
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 确保控制器已绑定到 ListView，且有可滚动空间
+      if (scrollController.hasClients) {
+        // 平滑滚动到最底部（也可用 controller.jumpTo 实现瞬时滚动）
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300), // 滚动动画时长
+          curve: Curves.easeInOut, // 滚动曲线
+        );
+      }
+    });
+  }
+
+  // 构建聊天列表（支持滚动）
+  Widget buildChatList() {
+    Utils.logError("构建聊天列表");
+    return Obx(
+      () => ListView.builder(
+        controller: scrollController, // 绑定新控制器
+        padding: EdgeInsets.all(10.sp),
+        itemCount: HomeGroupChat.to.messages.length,
+        reverse: false, // 最新消息在底部（需向下滚动查看）
+        itemBuilder: (context, index) {
+          final message = HomeGroupChat.to.messages[index];
+          return _buildMessageItem(message);
+        },
+      ),
+    );
+  }
+
+  // 构建单条消息项（优先级：广告 > 红包 > 普通消息）
+  Widget _buildMessageItem(ChatMessage message) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10.h),
+      margin: EdgeInsets.only(bottom: 8.r), // 消息间距
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. 用户头像
+          Avatar(
+            headImage: message.user.avatarUrl,
+            size: 20.h,
+            isCircle: false,
+          ),
+          SizedBox(width: 10.w), // 头像与内容间距
+          // 2. 消息内容区域
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 2.1 用户名
+                Text(
+                  message.user.name,
+                  style: TextStyle(
+                    fontSize: TextConfig.textSize_14,
+                    color: Utils.fromHex("#888888"),
+                  ),
+                ),
+                SizedBox(height: 5.h), // 用户名与内容间距
+                message.content,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // 获取App升级信息
   Future<void> getAppUpdata({bool isReturn = false}) async {
     await HomeUtils.getAppUpdata(isReturn: isReturn);
@@ -77,7 +156,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-    InterAdDialog.to.restartTimer();
+    InterstitialTool.to.interstitialListen();
+    InterstitialTool.to.loadInterstitialAd();
     NativeTool.to.nativeLisListen();
     NativeTool.to.loadNativeWith();
     HomeGroupChat.to.homeGroupChatInit();

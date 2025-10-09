@@ -55,6 +55,8 @@ class HomeView extends GetView<HomeController> {
                         bgColor: TextConfig.primary,
                         radius: 10.r,
                         text: "新人福利",
+                        // text:
+                        //     "${controller.isShowNew.value},${UserInfo.instance.isLoginIn}",
                         width: 80.w,
                         onPressed: () {
                           Get.dialog(NewUserDialog());
@@ -84,7 +86,7 @@ class HomeView extends GetView<HomeController> {
               Expanded(
                 child: Stack(
                   children: [
-                    HomeGroupChat.to.buildChatList(),
+                    controller.buildChatList(),
                     if (CuCircularProgressController.to.timeEnd.value)
                       Positioned(
                         top: Get.height / 2 - 140.h,

@@ -87,17 +87,23 @@ class InterAdDialog extends GetxService {
   Timer? _timer;
   // 启动定时器
   void _startTimer() {
-    Utils.logError("插屏广告计时器有吗：${_timer?.isActive}");
+    Utils.logError(
+      "插屏广告计时器有吗：$_timer,${Store.instance.getFkConfig.wactchTime}",
+    );
     if (_timer != null) {
       return;
     }
     _timer = Timer(
-      Duration(seconds: Store.instance.getFkConfig.adv1Time),
+      Duration(seconds: Store.instance.getFkConfig.wactchTime),
       () async {
         bool isInterReady = await InterstitialTool.to.hasInterstitialAdReady();
+        Utils.logError(
+          "开始展示插屏广告，$isInterReady,${Store.instance.getFkConfig.wactchTime},${Store.instance.isLimit}",
+        );
+
         if (isInterReady) {
           if (Store.instance.isLimit) return;
-          await InterstitialTool.to.showInterstitialAd();
+          await InterstitialTool.to.showInterstitialAdFlutter();
         } else {
           Get.snackbar("提示", "插屏广告加载失败");
         }
@@ -108,6 +114,7 @@ class InterAdDialog extends GetxService {
   // 取消定时器（可选方法，用于手动控制）
   void cancelTimer() {
     _timer?.cancel();
+    _timer = null;
   }
 
   // 重新启动定时器（可选方法，用于手动控制）
