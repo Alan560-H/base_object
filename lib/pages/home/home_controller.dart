@@ -136,7 +136,7 @@ class HomeController extends GetxController {
     await getAppUpdata();
     // 初始化用户信息
     UserInfo.instance.initialize();
-    RewarderTool.to.loadRewardedVideo(
+    RewarderTool.to.loadRewardedVideoFlutter(
       userID: "${UserInfo.instance.userModel.id}",
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
     );

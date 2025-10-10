@@ -4,6 +4,7 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
+import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -139,11 +140,12 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                                     // 原点击逻辑保留（加widget.前缀）
                                     if (widget.data.value >=
                                         Store.instance.getFkConfig.amountMin) {
+                                      EasyLoading.show(status: "正在请求广告...");
                                       if (await Store.instance
                                           .canLookReward()) {
                                         RewarderTool.to.rewardedAdListen();
-                                        await RewarderTool.to
-                                            .showRewardedVideo();
+                                        RewarderTool.to
+                                            .showRewardedVideoFlutter();
                                       }
                                     } else {
                                       EasyLoading.showInfo("金额太少，请耐心等待");
@@ -163,8 +165,8 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                     icons: Icons.close,
                     fontSize: TextConfig.textSize_24,
                     onPressed: () {
-                      NativeTool.to.removeNativeAd();
-                      NativeTool.to.loadNativeWith();
+                      HomeGroupChat.to.removeAdContainer();
+                      HomeGroupChat.to.startTimer();
                       Get.back();
                     },
                   ),

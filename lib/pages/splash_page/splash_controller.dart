@@ -23,8 +23,8 @@ class SplashController extends GetxController {
     // 初始化广告
     bool isInitAd = await InitTool.to.initTopon();
     Utils.logError("广告初始化完成 $isInitAd ");
-    bool isLog = await InitTool.to.setLogEnabled();
-    Utils.logError("日志打印是否开启 $isLog");
+    // bool isLog = await InitTool.to.setLogEnabled();
+    // Utils.logError("日志打印是否开启 $isLog");
   }
 
   @override

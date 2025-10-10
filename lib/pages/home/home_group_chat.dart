@@ -80,10 +80,24 @@ class HomeGroupChat extends GetxService {
         _addRandomChatMessage();
       }
     }
+    startTimer();
+  }
 
+  void startTimer() {
     // 启动定时器
     _startAutoMessageTimer();
     startPeriodicAddAd();
+  }
+
+  void pauseTimer() {
+    if (_autoMessageTimer != null) {
+      _autoMessageTimer!.cancel();
+      _autoMessageTimer = null;
+    }
+    if (_addAdTimer != null) {
+      _addAdTimer!.cancel();
+      _addAdTimer = null;
+    }
   }
 
   Future<void> startPeriodicAddAd() async {

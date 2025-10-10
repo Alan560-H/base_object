@@ -117,7 +117,7 @@ class UserInfo extends GetxController {
           "extra":
               "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
         });
-        RewarderTool.to.loadRewardedVideo(
+        RewarderTool.to.loadRewardedVideoFlutter(
           userID: "${UserInfo.instance.userModel.id}",
           extra:
               "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",

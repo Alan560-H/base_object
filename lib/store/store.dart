@@ -16,6 +16,7 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -97,12 +98,14 @@ class Store extends GetxController {
     bool isReady = await RewarderTool.to.rewardedVideoReady();
     Utils.logError("准备状态：$isReady}");
     if (!isReady) {
-      CuToast.error(msg: "广告还没准备好，请稍后再试");
-      RewarderTool.to.loadRewardedVideo(
+      EasyLoading.show(status: "广告还没准备好，请稍后再试");
+      RewarderTool.to.loadRewardedVideoFlutter(
         userID: "${UserInfo.instance.userModel.id}",
         extra:
             "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
       );
+      await Future.delayed(const Duration(seconds: 3));
+      EasyLoading.dismiss();
       return false;
     }
 
