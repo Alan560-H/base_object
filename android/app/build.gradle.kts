@@ -68,6 +68,7 @@ android {
 //            keyPassword = "aa123456"      // 密钥密码
 //        }
 //    }
+    /// 如意盒子，jks
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
             storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
