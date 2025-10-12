@@ -53,14 +53,14 @@ class RewarderTool extends GetxService {
     );
   }
 
-  checkRewardedVideoLoadStatus() async {
-    await ATRewardedManager.checkRewardedVideoLoadStatus(
+  ///  使用以下代码获取广告状态（返回值类型为Map） key-value如下：
+  /// 1、isLoading：是否正在加载
+  /// 2、isReady：是否有广告缓存
+  /// 3、adInfo：当前优先级最高的广告缓存信息
+  Future<Map<dynamic, dynamic>> checkRewardedVideoLoadStatus() async {
+    return ATRewardedManager.checkRewardedVideoLoadStatus(
       placementID: AppAdConfig.rewarderPlacementID,
-    ).then((value) {
-      Utils.logError(
-        '激励广告：激励视频加载状态：$value',
-      ); // 原"checkRewardedVideoLoadStatus"→"激励视频加载状态"
-    });
+    );
   }
 
   getRewardedVideoValidAds() async {
@@ -74,6 +74,7 @@ class RewarderTool extends GetxService {
   }
 
   showRewardedVideoFlutter() async {
+    Utils.logError("北伐");
     EasyLoading.dismiss();
     await ATRewardedManager.showRewardedVideo(
       placementID: AppAdConfig.rewarderPlacementID,
@@ -120,6 +121,7 @@ class RewarderTool extends GetxService {
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       if (rewarderModel.amount > 0) {
         Utils.debounce(() async {
+          CuToast.success(msg: "成功领取${rewarderModel.amount}");
           UserInfo.instance.getUserInfoFn();
           // 增加次数
           Store.instance.addCurrentCount(1);

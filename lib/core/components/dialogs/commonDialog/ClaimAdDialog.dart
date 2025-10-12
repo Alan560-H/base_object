@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
@@ -36,9 +37,10 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
   Future<void> checkClaim() async {
     try {
       if (widget.data.value <= Store.instance.getFkConfig.amountMin) {
-        EasyLoading.showInfo("金额太少，请耐心等待");
+        CuToast.error(msg: "金额太少，请耐心等待");
         return;
       }
+      Get.back();
       EasyLoading.show(status: "正在领取中...");
 
       BackModel backModel = await Api.to.getAdAmount();
@@ -131,8 +133,6 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                     icons: Icons.close,
                     fontSize: TextConfig.textSize_24,
                     onPressed: () {
-                      HomeGroupChat.to.removeAdContainer();
-                      HomeGroupChat.to.startTimer();
                       Get.back();
                     },
                   ),

@@ -88,7 +88,7 @@ class CuCircularProgressController extends GetxService {
       currentValue.value = rewarderModel.amount;
       Store.instance.setIsOpenClaim(true);
       Utils.logError("打开的值:${Store.instance.getIsOpenClaim}");
-      Dialogs.ClaimAdDialogs(
+      Dialogs.claimAdDialogs(
         data: CuCircularProgressController.to.currentValue,
       );
       Utils.logError("存钱罐初始化余额: ${currentValue.value}");

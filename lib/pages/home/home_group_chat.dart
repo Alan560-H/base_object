@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
@@ -153,11 +156,17 @@ class HomeGroupChat extends GetxService {
       if (isRewardReady && isShowRedBag) {
         redBagOpen.value = false;
         content = InkWell(
-          onTap: () {
+          onTap: () async {
             if (!UserInfo.instance.isLoginIn) {
               HomeGroupChat.to.removeAdContainer();
             }
-            CuCircularProgressController.to.showDialog(isShowRedBag: false);
+            Map<dynamic, dynamic> status =
+                await RewarderTool.to.checkRewardedVideoLoadStatus();
+            Utils.logError("返回得状态：$status");
+            // 如果有可用播放激励视频信息，取出预估值
+            if (!status['isLoading']) {
+              Dialogs.claimRedBag(data: 0.0.obs, onClick: (data) {});
+            }
           },
           child: CachedNetworkImage(
             imageUrl:

@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'NoticeDialog.dart';
 import 'commonDialog/BaseDialog.dart';
 import 'commonDialog/ClaimAdDialog.dart';
+import 'commonDialog/ClaimRedBag.dart';
 
 /// 如果需要调用通用模态框，请调用showCommonDialog，否则直接调用其特殊模态框静态方法
 class Dialogs {
   /// 通用模态框 调用示例: Dialogs.showCommonDialog(context,dialogType: 'ChangeDialog', dialogTitle: '自定义标题');
-  static Future<Widget?> showCommonDialog(
-     {
+  static Future<Widget?> showCommonDialog({
     required String dialogType,
     String dialogTitle = "提示",
     dynamic data,
@@ -22,7 +22,7 @@ class Dialogs {
       context: Get.context!,
       builder: (BuildContext dialogContext) {
         return BaseDialog(
-          barrierDismissible:barrierDismissible,
+          barrierDismissible: barrierDismissible,
           dialogType: dialogType,
           dialogTitle: dialogTitle,
           data: data,
@@ -32,6 +32,7 @@ class Dialogs {
       },
     );
   }
+
   /// 公告框
   static Future<Widget?> noticeDialog() {
     return showDialog(
@@ -44,20 +45,32 @@ class Dialogs {
   }
 
   /// 领取存钱罐
-  static Future<Widget?> ClaimAdDialogs({ dynamic data,
+  static Future<Widget?> claimAdDialogs({
+    dynamic data,
     void Function(dynamic sonData)? onClick,
     void Function()? onClose,
-    bool barrierDismissible = true,}
-      ) {
+    bool barrierDismissible = true,
+  }) {
     return showDialog(
       context: Get.context!,
       builder: (BuildContext dialogContext) {
-        return ClaimAdDialog(
-          data: data,
-          onClick: onClick,
-        );
+        return ClaimAdDialog(data: data, onClick: onClick);
       },
     );
   }
 
+  /// 领取红包
+  static Future<Widget?> claimRedBag({
+    dynamic data,
+    void Function(dynamic sonData)? onClick,
+    void Function()? onClose,
+    bool barrierDismissible = true,
+  }) {
+    return showDialog(
+      context: Get.context!,
+      builder: (BuildContext dialogContext) {
+        return ClaimRedBag(onClick: onClick, data: data);
+      },
+    );
+  }
 }

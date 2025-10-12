@@ -87,13 +87,15 @@ class InterstitialTool extends GetxService {
     }
     _intertStreamSubscription = ATListenerManager.interstitialEventHandler.listen((
       value,
-    ) {
+    ) async {
       switch (value.interstatus) {
         //广告加载失败
         case InterstitialStatus.interstitialAdFailToLoadAD:
           Utils.logError(
             "插屏广告 interstitialAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
+
+          await Future.delayed(const Duration(seconds: 30));
           loadInterstitialAd();
           break;
         //广告加载成功

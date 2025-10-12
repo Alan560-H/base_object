@@ -135,6 +135,7 @@ class HomeController extends GetxController {
       userID: "${UserInfo.instance.userModel.id}",
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
     );
+    RewarderTool.to.rewardedAdListen();
 
     /// 是否显示新人邀请
     isShowNewUser();
