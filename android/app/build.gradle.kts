@@ -40,6 +40,13 @@ android {
     flavorDimensions("channel") // 配置渠道维度，这里使用括号的形式
 
     productFlavors {
+//        如意盒子（传家宝）
+        create("maingf") {
+            dimension = "channel"
+            manifestPlaceholders["channel"] = "maingf"
+        }
+//        如意开盒（传家宝）
+
         create("maingfkh") {
             dimension = "channel"
             manifestPlaceholders["channel"] = "maingfkh"

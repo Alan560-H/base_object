@@ -104,7 +104,7 @@ class Api extends GetxService {
     return NoticeModel.fromJsonList(backModel.data);
   }
 
-  /// 获取客服配置{"channelPackage":"com.ruyimh.maingfkh"}
+  /// 获取客服配置{"channelPackage":"com.ruyimh.maingf"}
   /// index-0 Q群链接
   /// index-1 客服二维码
   /// index-2 客服联系方式

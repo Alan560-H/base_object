@@ -7,7 +7,7 @@ class AppConfig extends GetxController {
   String get getImgUrl => "https://img.ruyimh.com";
 
   /// 获取wx_appid
-  String get wxAppId => "wxfb5af9767e77b130";
+  String get wxAppId => "wx5ef2b08e4bb891e4";
 
   /// 高德appkey
   String get mapKey => "a22ed8b3045cde75b1ca581a34f18179";
