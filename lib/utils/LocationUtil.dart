@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:amap_flutter_location/amap_flutter_location.dart';
 import 'package:amap_flutter_location/amap_location_option.dart';
+import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -23,8 +24,8 @@ class LocationUtil {
 
   LocationUtil() {
     AMapFlutterLocation.setApiKey(
-      "99ee090365d57e359d2a5ceb2dd89a3c", //androidkey
-      "99ee090365d57e359d2a5ceb2dd89a3c", //ioskey
+      AppConfig.instance.mapKey, //androidkey
+      AppConfig.instance.mapKey, //ioskey
     );
 
     /// 设置是否已经包含高德隐私政策并弹窗展示显示用户查看，如果未包含或者没有弹窗展示，高德定位SDK将不会工作

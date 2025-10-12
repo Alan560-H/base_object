@@ -9,6 +9,9 @@ class AppConfig extends GetxController {
   /// 获取wx_appid
   String get wxAppId => "wxfb5af9767e77b130";
 
+  /// 高德appkey
+  String get mapKey => "a22ed8b3045cde75b1ca581a34f18179";
+
   /// 获取app 下载地址
   String get appDownUrl => "https://img.ruyimh.com/Rscsgo/app/ruyimh.apk";
 
