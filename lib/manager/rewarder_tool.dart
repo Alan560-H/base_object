@@ -87,16 +87,13 @@ class RewarderTool extends GetxService {
     );
   }
 
-  RxBool isLingquSuccess = false.obs;
-
   /// 领取存钱罐奖励
   Future<void> checkClaim() async {
     if (Get.isRegistered<Api>()) {
       BackModel backModel = await Api.to.getAdAmount();
       Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
       if (backModel.code == CuErrorConfig.success) {
-        isLingquSuccess.value = true;
-
+        CuToast.success(msg: "存钱罐领取成功");
         UserInfo.instance.getUserInfoFn();
         Store.instance.setIsOpenClaim(false);
         CuCircularProgressController.to.resetProgressTimer();
@@ -140,7 +137,6 @@ class RewarderTool extends GetxService {
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       if (rewarderModel.amount > 0) {
         Utils.debounce(() async {
-          await checkClaim();
           UserInfo.instance.getUserInfoFn();
           // 增加次数
           Store.instance.addCurrentCount(1);
@@ -204,10 +200,8 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-          if (isLingquSuccess.value) {
-            CuToast.success(msg: "存钱罐领取成功");
-            isLingquSuccess.value = false;
-          }
+          checkClaim();
+
           // else {
           //   CuToast.error(msg: "存钱罐领取失败,请稍后重试");
           // }
