@@ -66,6 +66,7 @@ class SplashTool extends GetxController {
           Utils.logError(
             "开屏广告 splash--splashDidFinishLoading ---- placementID: ${value.placementID} ---- isTimeout：${value.isTimeout}",
           );
+          showSplash();
           break;
         //广告加载超时
         case SplashStatus.splashDidTimeout:

@@ -9,7 +9,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.cjbao/channel"
+    private val CHANNEL = "com.example.base_object/channel"
     private val TAG = "MainActivityDebug"
     private val UACHANNEL = "uaChannel"
 

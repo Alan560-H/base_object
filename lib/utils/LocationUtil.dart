@@ -23,8 +23,8 @@ class LocationUtil {
 
   LocationUtil() {
     AMapFlutterLocation.setApiKey(
-      "a22ed8b3045cde75b1ca581a34f18179", //androidkey
-      "a22ed8b3045cde75b1ca581a34f18179", //ioskey
+      "99ee090365d57e359d2a5ceb2dd89a3c", //androidkey
+      "99ee090365d57e359d2a5ceb2dd89a3c", //ioskey
     );
 
     /// 设置是否已经包含高德隐私政策并弹窗展示显示用户查看，如果未包含或者没有弹窗展示，高德定位SDK将不会工作

@@ -44,54 +44,6 @@ android {
             dimension = "channel"
             manifestPlaceholders["channel"] = "maingfkh"
         }
-        create("huawei") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "huawei"
-        }
-        create("pugongying") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "pugongying"
-        }
-        create("cjbao") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "cjbao"
-        }
-        create("xiaomi") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "xiaomi"
-        }
-        create("baidu") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "baidu"
-        }
-        create("vivo") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "vivo"
-        }
-        create("oppo") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "oppo"
-        }
-        create("gaoxu") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "gaoxu"
-        }
-        create("minm") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "minm"
-        }
-        create("tuoni") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "tuoni"
-        }
-        create("rongyao") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "rongyao"
-        }
-        create("pdd") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "pdd"
-        }
 
     }
     // 添加签名配置

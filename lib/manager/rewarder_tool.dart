@@ -94,6 +94,8 @@ class RewarderTool extends GetxService {
       upDataADForm.extra =
           "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event.extraMap['adsource_price']}_time_0";
       upDataADForm.transId = event.extraMap?['id'];
+      upDataADForm.channelPackage =
+          Store.instance.getAppUpLoadModel.channelPackage;
       Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
