@@ -79,6 +79,10 @@ class LocationUtil {
     }
 
     if (isPermitted) {
+      if (_locationListener != null) {
+        return;
+      }
+
       ///注册定位结果监听
       _locationListener = _locationPlugin.onLocationChanged().listen((
         Map<String, Object> result,
