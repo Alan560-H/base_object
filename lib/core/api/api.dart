@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/LoginForm/LoginForm.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
@@ -102,7 +104,7 @@ class Api extends GetxService {
     return NoticeModel.fromJsonList(backModel.data);
   }
 
-  /// 获取客服配置{"channelPackage":"com.ruyimh.maingf"}
+  /// 获取客服配置{"channelPackage":"com.ruyimh.maingfkh"}
   /// index-0 Q群链接
   /// index-1 客服二维码
   /// index-2 客服联系方式
@@ -270,7 +272,7 @@ class Api extends GetxService {
         FormModel(),
         "post",
       );
-      Utils.logError("激励视频领取奖励返回的数据${backModel.toJson()}");
+
       return RewarderModel.fromJson(backModel.data);
     } catch (e) {
       Utils.logError("getSelectAdV3: $e");

@@ -7,7 +7,7 @@ class AppConfig extends GetxController {
   String get getImgUrl => "https://img.ruyimh.com";
 
   /// 获取wx_appid
-  String get wxAppId => "wx5ef2b08e4bb891e4";
+  String get wxAppId => "wxfb5af9767e77b130";
 
   /// 获取app 下载地址
   String get appDownUrl => "https://img.ruyimh.com/Rscsgo/app/ruyimh.apk";
@@ -42,17 +42,14 @@ class AppConfig extends GetxController {
   void init() {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // 生产环境（release模式）
-
-      // _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
       // _baseUrl = 'http://129.211.211.100:39300';
       _baseUrl = 'https://prd.ruyigx.com'; // 如意盒子
-      // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
+      // _baseUrl = 'http://192.168.0.101:39300'; // 周子为
     } else {
       // 开发环境（debug模式）
-      // _baseUrl = 'http://192.168.0.101:39300'; //周子为环境
       // _baseUrl = 'http://129.211.211.100:39300';
       _baseUrl = 'https://prd.ruyigx.com'; // 如意盒子
-      // _baseUrl = 'https://ruyikh.ruyigx.com';// 如意开盒
+      // _baseUrl = 'http://192.168.0.101:39300'; // 周子为
     }
   }
 }

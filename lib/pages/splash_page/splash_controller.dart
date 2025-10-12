@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
@@ -33,13 +34,13 @@ class SplashController extends GetxController {
 
     /// 初始化广告
     initAd();
-    SplashTool.to.loadSplash();
 
     /// 初始化开屏广告
     SplashTool.to.splashListen();
     bool isPermission = await PermissionManager.requestAllPermissions();
     Utils.logError(isPermission);
     bool isAllCheck = await DeviceChecker.isAllCheckr();
+
     if (isAllCheck) {
       await LocationUtil().getCurrentLocation((Map result) async {
         Utils.logError("定位结果：$result");
@@ -50,27 +51,26 @@ class SplashController extends GetxController {
         );
         Store.instance.setLocationData(locationData);
       });
-      Store.instance.getVer().then((value) async {
-        Utils.logError("是否封禁返回的数值：$value");
-        // 如果被封了，就去错误页面
-        if (value) {
-          BannerTool.to.removeBannerAd();
-          await Store.instance.getServerConfig();
-          Get.offAllNamed(AppRoutes.userError);
-        } else {
-          /// 上传地址
-          await Store.instance.upAddress();
+      bool getVer = await Store.instance.getVer();
 
-          /// 获取风控配置
-          await Store.instance.getFkConfigFn();
+      Utils.logError("是否封禁返回的数值：$getVer");
+      // 如果被封了，就去错误页面
+      if (getVer) {
+        BannerTool.to.removeBannerAd();
+        await Store.instance.getServerConfig();
+        Get.offAllNamed(AppRoutes.userError);
+      } else {
+        /// 上传地址
+        await Store.instance.upAddress();
 
-          /// 获取今日领取了多少个红包
-          await Store.instance.initCurrentCount();
-          if (await SplashTool.to.splashReady()) {
-            SplashTool.to.showSplash();
-          }
-        }
-      });
+        /// 获取风控配置
+        await Store.instance.getFkConfigFn();
+
+        /// 获取今日领取了多少个红包
+        await Store.instance.initCurrentCount();
+        SplashTool.to.splashListen();
+        SplashTool.to.loadSplash();
+      }
     }
     super.onInit();
   }

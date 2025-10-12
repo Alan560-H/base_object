@@ -73,8 +73,10 @@ class CuCircularProgressController extends GetxService {
   }
 
   Future<void> getCurrentValue() async {
-    RewarderModel rewarderModel = await Api.to.getSelectAdV3();
-    currentValue.value = rewarderModel.amount;
+    if (UserInfo.instance.isLoginIn) {
+      RewarderModel rewarderModel = await Api.to.getSelectAdV3();
+      currentValue.value = rewarderModel.amount;
+    }
   }
 
   // 打开存钱罐
