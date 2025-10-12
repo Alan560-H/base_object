@@ -23,8 +23,8 @@ class SplashController extends GetxController {
     // 初始化广告
     bool isInitAd = await InitTool.to.initTopon();
     Utils.logError("广告初始化完成 $isInitAd ");
-    bool isLog = await InitTool.to.setLogEnabled();
-    Utils.logError("日志打印是否开启 $isLog");
+    // bool isLog = await InitTool.to.setLogEnabled();
+    // Utils.logError("日志打印是否开启 $isLog");
   }
 
   @override
@@ -62,10 +62,10 @@ class SplashController extends GetxController {
           await Store.instance.upAddress();
 
           /// 获取风控配置
-          Store.instance.getFkConfigFn();
+          await Store.instance.getFkConfigFn();
 
           /// 获取今日领取了多少个红包
-          Store.instance.initCurrentCount();
+          await Store.instance.initCurrentCount();
           if (await SplashTool.to.splashReady()) {
             SplashTool.to.showSplash();
           }

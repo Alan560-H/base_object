@@ -40,9 +40,9 @@ android {
     flavorDimensions("channel") // 配置渠道维度，这里使用括号的形式
 
     productFlavors {
-        create("maingf") {
+        create("maingfkh") {
             dimension = "channel"
-            manifestPlaceholders["channel"] = "maingf"
+            manifestPlaceholders["channel"] = "maingfkh"
         }
         create("huawei") {
             dimension = "channel"

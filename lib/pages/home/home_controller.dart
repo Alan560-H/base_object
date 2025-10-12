@@ -6,6 +6,7 @@ import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
@@ -21,11 +22,6 @@ import 'package:get/get.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
-  // GetX单例获取方式
-  // static NativeTool get to =>
-  //     Get.isRegistered<NativeTool>()
-  //         ? Get.find<NativeTool>()
-  //         : Get.put(NativeTool());
   final ScrollController scrollController = ScrollController();
   // 2. 封装“滚动到最底部”的方法（关键：等列表构建完成后再滚动）
   void scrollToBottom() {
@@ -135,10 +131,11 @@ class HomeController extends GetxController {
     await getAppUpdata();
     // 初始化用户信息
     UserInfo.instance.initialize();
-    RewarderTool.to.loadRewardedVideo(
+    RewarderTool.to.loadRewardedVideoFlutter(
       userID: "${UserInfo.instance.userModel.id}",
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
     );
+    RewarderTool.to.rewardedAdListen();
 
     /// 是否显示新人邀请
     isShowNewUser();
@@ -155,7 +152,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-    InterAdDialog.to.restartTimer();
+    InterstitialTool.to.interstitialListen();
+    InterstitialTool.to.loadInterstitialAd();
     NativeTool.to.nativeLisListen();
     NativeTool.to.loadNativeWith();
     HomeGroupChat.to.homeGroupChatInit();

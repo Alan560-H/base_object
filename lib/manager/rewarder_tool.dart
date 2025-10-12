@@ -17,6 +17,7 @@ import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import 'native_tool.dart';
@@ -27,7 +28,9 @@ class RewarderTool extends GetxService {
       Get.isRegistered<RewarderTool>()
           ? Get.find<RewarderTool>()
           : Get.put(RewarderTool());
-  loadRewardedVideo({userID = '', extra = ""}) async {
+
+  /// 激励视频加载
+  loadRewardedVideoFlutter({userID = '', extra = ""}) async {
     Utils.logError("初始化的userId:$userID,extra=$extra");
     await ATRewardedManager.loadRewardedVideo(
       placementID: AppAdConfig.rewarderPlacementID,
@@ -50,14 +53,14 @@ class RewarderTool extends GetxService {
     );
   }
 
-  checkRewardedVideoLoadStatus() async {
-    await ATRewardedManager.checkRewardedVideoLoadStatus(
+  ///  使用以下代码获取广告状态（返回值类型为Map） key-value如下：
+  /// 1、isLoading：是否正在加载
+  /// 2、isReady：是否有广告缓存
+  /// 3、adInfo：当前优先级最高的广告缓存信息
+  Future<Map<dynamic, dynamic>> checkRewardedVideoLoadStatus() async {
+    return ATRewardedManager.checkRewardedVideoLoadStatus(
       placementID: AppAdConfig.rewarderPlacementID,
-    ).then((value) {
-      Utils.logError(
-        '激励广告：激励视频加载状态：$value',
-      ); // 原"checkRewardedVideoLoadStatus"→"激励视频加载状态"
-    });
+    );
   }
 
   getRewardedVideoValidAds() async {
@@ -70,7 +73,8 @@ class RewarderTool extends GetxService {
     });
   }
 
-  showRewardedVideo() async {
+  showRewardedVideoFlutter() async {
+    EasyLoading.dismiss();
     await ATRewardedManager.showRewardedVideo(
       placementID: AppAdConfig.rewarderPlacementID,
     );
@@ -81,23 +85,6 @@ class RewarderTool extends GetxService {
       sceneID: AppAdConfig.rewarderSceneID,
       placementID: AppAdConfig.rewarderPlacementID,
     );
-  }
-
-  /// 领取存钱罐奖励
-  Future<void> checkClaim() async {
-    if (Get.isRegistered<Api>()) {
-      BackModel backModel = await Api.to.getAdAmount();
-      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "存钱罐领取成功");
-        UserInfo.instance.getUserInfoFn();
-        Store.instance.setIsOpenClaim(false);
-        CuCircularProgressController.to.resetProgressTimer();
-        NativeTool.to.removeNativeAd();
-        NativeTool.to.loadNativeWith();
-        Get.back();
-      }
-    }
   }
 
   // 查询激励广告奖励
@@ -126,13 +113,15 @@ class RewarderTool extends GetxService {
         await Api.to.getVer(checkDeviceForm);
         Get.offAllNamed(AppRoutes.userError);
       }
+      await Future.delayed(const Duration(seconds: 2));
+      Utils.logError("查询奖励");
 
       /// 查询奖励
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       if (rewarderModel.amount > 0) {
         Utils.debounce(() async {
-          await checkClaim();
-          UserInfo.instance.getUserInfoFn();
+          CuToast.success(msg: "存钱罐成功增加${rewarderModel.amount * 10000}");
+          CuCircularProgressController.to.getCurrentValue();
           // 增加次数
           Store.instance.addCurrentCount(1);
           // 重置间隔时间
@@ -143,10 +132,27 @@ class RewarderTool extends GetxService {
       }
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
+    } finally {}
+  }
+
+  /// 领取存钱罐奖励
+  Future<void> checkClaim() async {
+    try {
+      EasyLoading.show(status: "正在领取中...");
+
+      BackModel backModel = await Api.to.getAdAmount();
+      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
+      if (backModel.code == CuErrorConfig.success) {
+        CuToast.success(msg: "存钱罐领取成功${backModel.data}");
+        UserInfo.instance.getUserInfoFn();
+        Store.instance.setIsOpenClaim(false);
+        CuCircularProgressController.to.resetProgressTimer();
+        Get.back();
+      }
+    } catch (e) {
+      Utils.logError("领取存钱罐失败$e");
     } finally {
-      NativeTool.to.removeNativeAd();
-      NativeTool.to.loadNativeWith();
-      Get.back();
+      EasyLoading.dismiss();
     }
   }
 
@@ -163,96 +169,64 @@ class RewarderTool extends GetxService {
         //广告加载失败
         case RewardedStatus.rewardedVideoDidFailToLoad:
           Utils.logError(
-            "激励广告 rewardedVideoDidFailToLoad ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "激励广告 加载失败 ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
+
           break;
         //广告加载成功
         case RewardedStatus.rewardedVideoDidFinishLoading:
           Utils.logError(
             "激励广告 rewardedVideoDidFinishLoading ---- placementID: ${value.placementID}",
           );
+          EasyLoading.dismiss();
           break;
-        //广告开始播放
-        case RewardedStatus.rewardedVideoDidStartPlaying:
-          Utils.logError(
-            "激励广告 rewardedVideoDidStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
-        //广告结束播放
-        case RewardedStatus.rewardedVideoDidEndPlaying:
-          Utils.logError(
-            "激励广告 rewardedVideoDidEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
-        //广告播放失败
-        case RewardedStatus.rewardedVideoDidFailToPlay:
-          Utils.logError(
-            "激励广告 rewardedVideoDidFailToPlay ---- placementID: ${value.placementID} ---- errStr:${value.extraMap}",
-          );
-          break;
+        //激励成功（只针对穿山甲的再看一个广告）
+        case RewardedStatus.rewardedVideoDidAgainRewardSuccess:
         //激励成功，建议在此回调中下发奖励
         case RewardedStatus.rewardedVideoDidRewardSuccess:
           Utils.logError(
             "激励广告 rewardedVideoDidRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-          break;
-        //广告被点击
-        case RewardedStatus.rewardedVideoDidClick:
-          Utils.logError(
-            "激励广告 rewardedVideoDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+          checkRewarderAd(value);
+          HomeGroupChat.to.redBagOpen.value = false;
+          loadRewardedVideoFlutter(
+            userID: "${UserInfo.instance.userModel.id}",
+            extra:
+                "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
           );
           break;
-        //Deeplink
-        case RewardedStatus.rewardedVideoDidDeepLink:
-          Utils.logError(
-            "激励广告 rewardedVideoDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
-          );
-          break;
+
         //广告被关闭
         case RewardedStatus.rewardedVideoDidClose:
           Utils.logError(
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-          loadRewardedVideo(
-            userID: "${UserInfo.instance.userModel.id}",
-            extra:
-                "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
-          );
-          checkRewarderAd(value);
-          HomeGroupChat.to.redBagOpen.value = false;
-
+          if (Store.instance.getIsClaim) {
+            checkClaim();
+          }
           break;
-
+        //广告结束播放
+        case RewardedStatus.rewardedVideoDidEndPlaying:
+        //广告播放失败
+        case RewardedStatus.rewardedVideoDidFailToPlay:
+        //广告开始播放
+        case RewardedStatus.rewardedVideoDidStartPlaying:
+          break;
+        //广告被点击
+        case RewardedStatus.rewardedVideoDidClick:
+          break;
+        //Deeplink
+        case RewardedStatus.rewardedVideoDidDeepLink:
+          break;
         //广告开始播放（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainStartPlaying:
-          Utils.logError(
-            "激励广告 rewardedVideoDidAgainStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
         //广告结束播放（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainEndPlaying:
-          Utils.logError(
-            "激励广告 rewardedVideoDidAgainEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
         //广告播放失败（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainFailToPlay:
-          Utils.logError(
-            "激励广告 rewardedVideoDidAgainFailToPlay ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
-        //激励成功（只针对穿山甲的再看一个广告）
-        case RewardedStatus.rewardedVideoDidAgainRewardSuccess:
-          Utils.logError(
-            "激励广告 rewardedVideoDidAgainRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
+
         //广告被点击（只针对穿山甲的再看一个广告）
         case RewardedStatus.rewardedVideoDidAgainClick:
-          Utils.logError(
-            "激励广告 rewardedVideoDidAgainClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-
         case RewardedStatus.rewardedVideoUnknown:
           Utils.logError("激励广告 rewardedVideoUnknown");
           break;

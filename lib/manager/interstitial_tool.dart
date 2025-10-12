@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/pages/login/login_controller.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class InterstitialTool extends GetxService {
@@ -19,7 +23,14 @@ class InterstitialTool extends GetxService {
     });
   }
 
-  loadInterstitialAd(Map<String, dynamic> extraMap) async {
+  loadInterstitialAd([Map<String, dynamic>? extraMap]) async {
+    // 当未传入参数时，extraMap 会默认是 null，此时触发 ??= 设置默认值
+    extraMap ??= {
+      Common.getUserIdKey(): UserInfo.instance.userModel.id,
+      Common.getExtraKey():
+          "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_0",
+    };
+
     await ATInterstitialManager.loadInterstitialAd(
       placementID: AppAdConfig.interstitialPlacementID,
       extraMap: extraMap,
@@ -58,7 +69,7 @@ class InterstitialTool extends GetxService {
     });
   }
 
-  showInterstitialAd() async {
+  showInterstitialAdFlutter() async {
     await ATInterstitialManager.showInterstitialAd(
       placementID: AppAdConfig.interstitialPlacementID,
     );
@@ -78,74 +89,64 @@ class InterstitialTool extends GetxService {
     }
     _intertStreamSubscription = ATListenerManager.interstitialEventHandler.listen((
       value,
-    ) {
+    ) async {
       switch (value.interstatus) {
         //广告加载失败
         case InterstitialStatus.interstitialAdFailToLoadAD:
           Utils.logError(
             "插屏广告 interstitialAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
+
+          await Future.delayed(const Duration(seconds: 30));
+          loadInterstitialAd();
           break;
         //广告加载成功
         case InterstitialStatus.interstitialAdDidFinishLoading:
           Utils.logError(
             "插屏广告 interstitialAdDidFinishLoading ---- placementID: ${value.placementID}",
           );
+          InterAdDialog.to.restartTimer();
           break;
-        //广告视频开始播放，部分平台有此回调
-        case InterstitialStatus.interstitialAdDidStartPlaying:
-          Utils.logError(
-            "插屏广告 interstitialAdDidStartPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
-        //广告视频播放结束，部分广告平台有此回调
-        case InterstitialStatus.interstitialAdDidEndPlaying:
-          Utils.logError(
-            "插屏广告 interstitialAdDidEndPlaying ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
-        //广告视频播放失败，部分广告平台有此回调
-        case InterstitialStatus.interstitialDidFailToPlayVideo:
-          Utils.logError(
-            "插屏广告 interstitialDidFailToPlayVideo ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
-          );
-          break;
+
         //广告展示成功
         case InterstitialStatus.interstitialDidShowSucceed:
           Utils.logError(
             "插屏广告 interstitialDidShowSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          loadInterstitialAd();
           break;
         //广告展示失败
         case InterstitialStatus.interstitialFailedToShow:
           Utils.logError(
             "插屏广告 interstitialFailedToShow ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
+          loadInterstitialAd();
           break;
         //广告被点击
         case InterstitialStatus.interstitialAdDidClick:
           Utils.logError(
             "插屏广告 interstitialAdDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          loadInterstitialAd();
           break;
-        //Deeplink
-        case InterstitialStatus.interstitialAdDidDeepLink:
-          Utils.logError(
-            "插屏广告 interstitialAdDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
-          );
-          break;
+
         //广告被关闭
         case InterstitialStatus.interstitialAdDidClose:
           Utils.logError(
             "插屏广告 interstitialAdDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          CuCircularProgressController.to.getCurrentValue();
           InterAdDialog.to.upDataADFn(value);
+          InterAdDialog.to.cancelTimer();
           InterAdDialog.to.restartTimer();
+          loadInterstitialAd();
           break;
-
+        case InterstitialStatus.interstitialAdDidDeepLink:
+        case InterstitialStatus.interstitialAdDidStartPlaying:
+        case InterstitialStatus.interstitialAdDidEndPlaying:
+        case InterstitialStatus.interstitialDidFailToPlayVideo:
         case InterstitialStatus.interstitialUnknown:
           Utils.logError("插屏广告 interstitialUnknown");
-          break;
       }
     });
   }

@@ -5,6 +5,7 @@ import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -71,6 +72,11 @@ class CuCircularProgressController extends GetxService {
     _progress.value = 0.0;
   }
 
+  Future<void> getCurrentValue() async {
+    RewarderModel rewarderModel = await Api.to.getSelectAdV3();
+    currentValue.value = rewarderModel.amount;
+  }
+
   // 打开存钱罐
   void showDialog({isShowRedBag = true}) async {
     try {
@@ -82,16 +88,11 @@ class CuCircularProgressController extends GetxService {
         CuToast.error(msg: "奖励还未准备好");
         return;
       }
+      await getCurrentValue();
 
-      if (Get.isRegistered<NativeTool>()) {
-        NativeTool.to.nativeLisListen();
-        NativeTool.to.showNative();
-      }
-      RewarderModel rewarderModel = await Api.to.getSelectAdV3();
-      currentValue.value = rewarderModel.amount;
       Store.instance.setIsOpenClaim(true);
       Utils.logError("打开的值:${Store.instance.getIsOpenClaim}");
-      Dialogs.ClaimAdDialogs(
+      Dialogs.claimAdDialogs(
         data: CuCircularProgressController.to.currentValue,
       );
       Utils.logError("存钱罐初始化余额: ${currentValue.value}");
