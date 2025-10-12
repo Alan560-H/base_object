@@ -22,11 +22,6 @@ import 'package:get/get.dart';
 import 'home_utils.dart';
 
 class HomeController extends GetxController {
-  // GetX单例获取方式
-  // static NativeTool get to =>
-  //     Get.isRegistered<NativeTool>()
-  //         ? Get.find<NativeTool>()
-  //         : Get.put(NativeTool());
   final ScrollController scrollController = ScrollController();
   // 2. 封装“滚动到最底部”的方法（关键：等列表构建完成后再滚动）
   void scrollToBottom() {

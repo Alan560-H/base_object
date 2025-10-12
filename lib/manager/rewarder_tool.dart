@@ -87,23 +87,6 @@ class RewarderTool extends GetxService {
     );
   }
 
-  /// 领取存钱罐奖励
-  Future<void> checkClaim() async {
-    if (Get.isRegistered<Api>()) {
-      BackModel backModel = await Api.to.getAdAmount();
-      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "存钱罐领取成功");
-        UserInfo.instance.getUserInfoFn();
-        Store.instance.setIsOpenClaim(false);
-        CuCircularProgressController.to.resetProgressTimer();
-        NativeTool.to.removeNativeAd();
-        NativeTool.to.loadNativeWith();
-        Get.back();
-      }
-    }
-  }
-
   // 查询激励广告奖励
   checkRewarderAd(dynamic event) async {
     try {
@@ -200,7 +183,7 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-          checkClaim();
+          // checkClaim();
 
           // else {
           //   CuToast.error(msg: "存钱罐领取失败,请稍后重试");

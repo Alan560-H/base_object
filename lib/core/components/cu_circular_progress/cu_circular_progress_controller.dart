@@ -84,11 +84,6 @@ class CuCircularProgressController extends GetxService {
         return;
       }
 
-      if (Get.isRegistered<NativeTool>()) {
-        HomeGroupChat.to.removeAdContainer();
-        HomeGroupChat.to.pauseTimer();
-        NativeTool.to.showNative();
-      }
       RewarderModel rewarderModel = await Api.to.getSelectAdV3();
       currentValue.value = rewarderModel.amount;
       Store.instance.setIsOpenClaim(true);

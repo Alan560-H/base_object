@@ -1,11 +1,16 @@
 import 'dart:async';
+import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/manager/native_tool.dart';
-import 'package:base_object/manager/rewarder_tool.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -27,37 +32,29 @@ class ClaimAdDialog extends StatefulWidget {
 }
 
 class _ClaimAdDialogState extends State<ClaimAdDialog> {
-  // 2. 倒计时状态（6秒，用RxInt方便Obx监听）
-  final RxInt _countdown = 6.obs;
-  // 计时器对象（用于控制倒计时，防止内存泄漏）
-  Timer? _countdownTimer;
+  /// 领取存钱罐奖励
+  Future<void> checkClaim() async {
+    try {
+      if (widget.data.value <= Store.instance.getFkConfig.amountMin) {
+        EasyLoading.showInfo("金额太少，请耐心等待");
+        return;
+      }
+      EasyLoading.show(status: "正在领取中...");
 
-  @override
-  void initState() {
-    super.initState();
-    // 3. 初始化倒计时：每秒减1，到0时停止
-    _startCountdown();
-  }
-
-  @override
-  void dispose() {
-    // 4. 页面销毁时取消计时器（关键：防止内存泄漏）
-    _countdownTimer?.cancel();
-    super.dispose();
-  }
-
-  /// 启动倒计时
-  void _startCountdown() {
-    _countdownTimer = Timer.periodic(
-      const Duration(seconds: 1), // 每秒执行一次
-      (timer) {
-        if (_countdown.value > 0) {
-          _countdown.value--; // 倒计时减1
-        } else {
-          timer.cancel(); // 倒计时结束，取消计时器
-        }
-      },
-    );
+      BackModel backModel = await Api.to.getAdAmount();
+      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
+      if (backModel.code == CuErrorConfig.success) {
+        CuToast.success(msg: "存钱罐领取成功");
+        UserInfo.instance.getUserInfoFn();
+        Store.instance.setIsOpenClaim(false);
+        CuCircularProgressController.to.resetProgressTimer();
+        Get.back();
+      }
+    } catch (e) {
+      Utils.logError("领取存钱罐失败$e");
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 
   @override
@@ -70,7 +67,6 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 260.h),
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -115,44 +111,14 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                       ),
                       SizedBox(height: 10.h),
                       // 6. 核心：倒计时按钮（Obx监听倒计时状态）
-                      Obx(
-                        () => CuButton(
-                          text:
-                              _countdown.value > 0
-                                  ? "${_countdown.value}秒后可以领取"
-                                  : "立即领取",
-                          width: 120.w,
-                          height: 40.h,
-                          radius: 10.r,
-                          textColor:
-                              _countdown.value > 0
-                                  ? TextConfig.primary
-                                  : Colors.white,
-                          // 按钮颜色：倒计时中灰色（禁用），结束后用原主题色
-                          bgColor:
-                              _countdown.value > 0
-                                  ? Colors.white
-                                  : TextConfig.primary,
-                          // 关键：倒计时未结束时，onPressed为null（禁用点击）
-                          onPressed:
-                              _countdown.value == 0
-                                  ? () async {
-                                    // 原点击逻辑保留（加widget.前缀）
-                                    if (widget.data.value >=
-                                        Store.instance.getFkConfig.amountMin) {
-                                      EasyLoading.show(status: "正在请求广告...");
-                                      if (await Store.instance
-                                          .canLookReward()) {
-                                        RewarderTool.to.rewardedAdListen();
-                                        RewarderTool.to
-                                            .showRewardedVideoFlutter();
-                                      }
-                                    } else {
-                                      EasyLoading.showInfo("金额太少，请耐心等待");
-                                    }
-                                  }
-                                  : null,
-                        ),
+                      CuButton(
+                        text: "立即领取",
+                        width: 120.w,
+                        height: 40.h,
+                        radius: 10.r,
+                        textColor: Colors.white,
+                        bgColor: TextConfig.primary,
+                        onPressed: () => Utils.debounce(checkClaim),
                       ),
                     ],
                   ),
