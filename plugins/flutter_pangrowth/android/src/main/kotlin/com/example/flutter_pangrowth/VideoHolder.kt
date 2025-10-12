@@ -28,8 +28,8 @@ object VideoHolder : CoroutineScope by MainScope() {
 
     private const val TAG = "VideoHolder"
 
-    //    private const val configJson = "pangrowthconfig.json"
-    private const val configJson = "SDK_Setting_5670418.json"
+        private const val configJson = "pangrowthconfig.json"
+//    private const val configJson = "SDK_Setting_5670418.json"
 
     var isDPStarted: Boolean = false
 
