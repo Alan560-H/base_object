@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class InterstitialTool extends GetxService {
@@ -133,6 +135,7 @@ class InterstitialTool extends GetxService {
           Utils.logError(
             "插屏广告 interstitialAdDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          CuCircularProgressController.to.getCurrentValue();
           InterAdDialog.to.upDataADFn(value);
           InterAdDialog.to.cancelTimer();
           InterAdDialog.to.restartTimer();

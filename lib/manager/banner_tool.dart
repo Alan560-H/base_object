@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -148,6 +149,7 @@ class BannerTool extends GetxService {
             "横幅广告 bannerAdAutoRefreshSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           cuNavBarController.upDataADFn(value);
+          CuCircularProgressController.to.getCurrentValue();
           break;
         //广告被点击
         case BannerStatus.bannerAdDidClick:

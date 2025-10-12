@@ -236,4 +236,10 @@ class Store extends GetxController {
   void setLocationData(LocationData? value) {
     _locationData = value;
   }
+
+  final RxBool _isClaim = false.obs;
+  bool get getIsClaim => _isClaim.value;
+  void setIsClaim(bool val) {
+    _isClaim.value = val;
+  }
 }

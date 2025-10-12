@@ -72,6 +72,11 @@ class CuCircularProgressController extends GetxService {
     _progress.value = 0.0;
   }
 
+  Future<void> getCurrentValue() async {
+    RewarderModel rewarderModel = await Api.to.getSelectAdV3();
+    currentValue.value = rewarderModel.amount;
+  }
+
   // 打开存钱罐
   void showDialog({isShowRedBag = true}) async {
     try {
@@ -83,9 +88,8 @@ class CuCircularProgressController extends GetxService {
         CuToast.error(msg: "奖励还未准备好");
         return;
       }
+      await getCurrentValue();
 
-      RewarderModel rewarderModel = await Api.to.getSelectAdV3();
-      currentValue.value = rewarderModel.amount;
       Store.instance.setIsOpenClaim(true);
       Utils.logError("打开的值:${Store.instance.getIsOpenClaim}");
       Dialogs.claimAdDialogs(

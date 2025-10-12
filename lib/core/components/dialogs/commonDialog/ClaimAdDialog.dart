@@ -7,6 +7,7 @@ import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
@@ -33,32 +34,6 @@ class ClaimAdDialog extends StatefulWidget {
 }
 
 class _ClaimAdDialogState extends State<ClaimAdDialog> {
-  /// 领取存钱罐奖励
-  Future<void> checkClaim() async {
-    try {
-      if (widget.data.value <= Store.instance.getFkConfig.amountMin) {
-        CuToast.error(msg: "金额太少，请耐心等待");
-        return;
-      }
-      Get.back();
-      EasyLoading.show(status: "正在领取中...");
-
-      BackModel backModel = await Api.to.getAdAmount();
-      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
-      if (backModel.code == CuErrorConfig.success) {
-        CuToast.success(msg: "存钱罐领取成功");
-        UserInfo.instance.getUserInfoFn();
-        Store.instance.setIsOpenClaim(false);
-        CuCircularProgressController.to.resetProgressTimer();
-        Get.back();
-      }
-    } catch (e) {
-      Utils.logError("领取存钱罐失败$e");
-    } finally {
-      EasyLoading.dismiss();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -96,9 +71,8 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20.h),
                       Text(
-                        "今日已领取${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}",
+                        "今日已提高奖励${Store.instance.getCurrentCount.dayMaxCount}/${Store.instance.getFkConfig.dayMax}次",
                         style: TextStyle(
                           fontSize: TextConfig.textSize_20,
                           color: Colors.white,
@@ -112,6 +86,27 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                         ),
                       ),
                       SizedBox(height: 10.h),
+                      CuButton(
+                        text: "",
+                        width: 120.w,
+                        height: 40.h,
+                        radius: 10.r,
+                        bgImage: ImageConfig.upClaim,
+                        onPressed:
+                            () => Utils.debounce(() async {
+                              bool isRewardReady =
+                                  await RewarderTool.to.rewardedVideoReady();
+                              // 如果奖励准备号了
+                              if (!isRewardReady) {
+                                CuToast.error(msg: "资源未准备好，稍后重试");
+                              } else {
+                                Store.instance.setIsClaim(false);
+                                Get.back();
+                                RewarderTool.to.showRewardedVideoFlutter();
+                              }
+                            }),
+                      ),
+                      SizedBox(height: 10.h),
                       // 6. 核心：倒计时按钮（Obx监听倒计时状态）
                       CuButton(
                         text: "立即领取",
@@ -120,7 +115,24 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                         radius: 10.r,
                         textColor: Colors.white,
                         bgColor: TextConfig.primary,
-                        onPressed: () => Utils.debounce(checkClaim),
+                        onPressed:
+                            () => Utils.debounce(() async {
+                              if (widget.data.value <=
+                                  Store.instance.getFkConfig.amountMin) {
+                                CuToast.error(msg: "金额太少，请耐心等待");
+                                return;
+                              }
+                              bool isRewardReady =
+                                  await RewarderTool.to.rewardedVideoReady();
+                              // 如果奖励准备号了
+                              if (!isRewardReady) {
+                                RewarderTool.to.checkClaim();
+                              } else {
+                                Store.instance.setIsClaim(true);
+                                Get.back();
+                                RewarderTool.to.showRewardedVideoFlutter();
+                              }
+                            }),
                       ),
                     ],
                   ),

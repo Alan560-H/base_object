@@ -74,7 +74,6 @@ class RewarderTool extends GetxService {
   }
 
   showRewardedVideoFlutter() async {
-    Utils.logError("北伐");
     EasyLoading.dismiss();
     await ATRewardedManager.showRewardedVideo(
       placementID: AppAdConfig.rewarderPlacementID,
@@ -121,8 +120,8 @@ class RewarderTool extends GetxService {
       RewarderModel rewarderModel = await Api.to.getSelectAd(upDataADForm);
       if (rewarderModel.amount > 0) {
         Utils.debounce(() async {
-          CuToast.success(msg: "成功领取${rewarderModel.amount}");
-          UserInfo.instance.getUserInfoFn();
+          CuToast.success(msg: "存钱罐成功增加${rewarderModel.amount * 10000}");
+          CuCircularProgressController.to.getCurrentValue();
           // 增加次数
           Store.instance.addCurrentCount(1);
           // 重置间隔时间
@@ -133,10 +132,27 @@ class RewarderTool extends GetxService {
       }
     } catch (e) {
       Utils.logError("领取激励视频奖励失败：$e");
+    } finally {}
+  }
+
+  /// 领取存钱罐奖励
+  Future<void> checkClaim() async {
+    try {
+      EasyLoading.show(status: "正在领取中...");
+
+      BackModel backModel = await Api.to.getAdAmount();
+      Utils.logError("领取存钱罐奖励返回数据：${backModel.toJson()}");
+      if (backModel.code == CuErrorConfig.success) {
+        CuToast.success(msg: "存钱罐领取成功${backModel.data}");
+        UserInfo.instance.getUserInfoFn();
+        Store.instance.setIsOpenClaim(false);
+        CuCircularProgressController.to.resetProgressTimer();
+        Get.back();
+      }
+    } catch (e) {
+      Utils.logError("领取存钱罐失败$e");
     } finally {
-      NativeTool.to.removeNativeAd();
-      HomeGroupChat.to.startTimer();
-      Get.back();
+      EasyLoading.dismiss();
     }
   }
 
@@ -185,11 +201,9 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-          // checkClaim();
-
-          // else {
-          //   CuToast.error(msg: "存钱罐领取失败,请稍后重试");
-          // }
+          if (Store.instance.getIsClaim) {
+            checkClaim();
+          }
           break;
         //广告结束播放
         case RewardedStatus.rewardedVideoDidEndPlaying:

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -189,6 +190,7 @@ class NativeTool extends GetxService {
             "信息流广告展示成功: ${value.placementID},是否有缓存${isViewCreated.value}",
           );
           loadNativeWith();
+          CuCircularProgressController.to.getCurrentValue();
           break;
 
         case NativeStatus.nativeAdDidTapCloseButton:

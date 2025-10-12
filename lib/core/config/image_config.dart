@@ -70,6 +70,10 @@ class ImageConfig {
   static String empty =
       "${AppConfig.instance.getImgUrl}/AdObject/common/empty.png";
 
+  /// 提高奖励
+  static String upClaim =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/upClaim.png";
+
   /// 我的徒弟
   static String userSon =
       "${AppConfig.instance.getImgUrl}/AdObject/common/user_son.png";

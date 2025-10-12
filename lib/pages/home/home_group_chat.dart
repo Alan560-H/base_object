@@ -157,16 +157,21 @@ class HomeGroupChat extends GetxService {
         redBagOpen.value = false;
         content = InkWell(
           onTap: () async {
-            if (!UserInfo.instance.isLoginIn) {
-              HomeGroupChat.to.removeAdContainer();
-            }
-            Map<dynamic, dynamic> status =
-                await RewarderTool.to.checkRewardedVideoLoadStatus();
-            Utils.logError("返回得状态：$status");
-            // 如果有可用播放激励视频信息，取出预估值
-            if (!status['isLoading']) {
-              Dialogs.claimRedBag(data: 0.0.obs, onClick: (data) {});
-            }
+            // if (!UserInfo.instance.isLoginIn) {
+            //   HomeGroupChat.to.removeAdContainer();
+            // }
+            // Map<dynamic, dynamic> status =
+            //     await RewarderTool.to.checkRewardedVideoLoadStatus();
+            // Utils.logError("返回得状态：$status");
+            // // 如果有可用播放激励视频信息，取出预估值
+            // if (!status['isLoading']) {
+            //   // Dialogs.claimRedBag(data: 0.0.obs, onClick: (data) {});
+            //
+            // }
+            CuCircularProgressController.to.getCurrentValue();
+            Dialogs.claimAdDialogs(
+              data: CuCircularProgressController.to.currentValue,
+            );
           },
           child: CachedNetworkImage(
             imageUrl:
@@ -178,24 +183,24 @@ class HomeGroupChat extends GetxService {
       }
       bool isHasNative = false;
 
-      if (isAddNative) {
-        // 如果有缓存，则添加
-        if (NativeTool.to.isViewCreated.value) {
-          Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
-          content = await getNativeView();
-          _autoMessageTimer?.cancel();
-          _autoMessageTimer = null;
-          // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
-          Future.delayed(const Duration(seconds: 20), () {
-            removeAdContainer();
-            Utils.logError("又开始启动啦定时器1");
-
-            _startAutoMessageTimer();
-          });
-        }
-        isAddNative = false;
-        isHasNative = true;
-      }
+      // if (isAddNative) {
+      //   // 如果有缓存，则添加
+      //   if (NativeTool.to.isViewCreated.value) {
+      //     Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
+      //     content = await getNativeView();
+      //     _autoMessageTimer?.cancel();
+      //     _autoMessageTimer = null;
+      //     // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
+      //     Future.delayed(const Duration(seconds: 20), () {
+      //       removeAdContainer();
+      //       Utils.logError("又开始启动啦定时器1");
+      //
+      //       _startAutoMessageTimer();
+      //     });
+      //   }
+      //   isAddNative = false;
+      //   isHasNative = true;
+      // }
       // 3. 创建消息对象
       final ChatMessage newMessage = ChatMessage(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
