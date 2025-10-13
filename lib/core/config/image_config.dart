@@ -37,6 +37,10 @@ class ImageConfig {
   static String logo =
       "${AppConfig.instance.getImgUrl}/AdObject/common/logo.png";
 
+  /// logokh
+  static String logokh =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/logokh.png";
+
   /// 登录微信背景
   static String loginBg1 =
       "${AppConfig.instance.getImgUrl}/AdObject/login/wechatLogin.png";
