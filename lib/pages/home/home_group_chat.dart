@@ -10,6 +10,7 @@ import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
@@ -168,6 +169,10 @@ class HomeGroupChat extends GetxService {
             //   // Dialogs.claimRedBag(data: 0.0.obs, onClick: (data) {});
             //
             // }
+            if (!UserInfo.instance.isLoginIn) {
+              Get.toNamed(AppRoutes.login);
+              return;
+            }
             CuCircularProgressController.to.getCurrentValue();
             Dialogs.claimAdDialogs(
               data: CuCircularProgressController.to.currentValue,

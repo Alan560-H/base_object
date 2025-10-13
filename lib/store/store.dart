@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
@@ -84,17 +85,22 @@ class Store extends GetxController {
   }
 
   setRemainingSeconds() {
-    _remainingSeconds = _fkConfig.value.adTime;
+    _remainingSeconds.value = _fkConfig.value.adTime;
     Utils.logError("当前间隔时间$_remainingSeconds");
   }
 
-  int _remainingSeconds = 0;
+  RxInt _remainingSeconds = 0.obs;
+  int get remainingSeconds => _remainingSeconds.value;
 
   /// 如果 间隔时间大于0，则表示时间还没到，不可领取
-  bool get isTimeOver => _remainingSeconds > 0;
+  bool get isTimeOver => _remainingSeconds.value > 0;
 
   /// 是否可以观看激励广告,true 是可以，false不可以
   Future<bool> canLookReward() async {
+    if (Store.instance.isTimeOver) {
+      CuToast.error(msg: "广告间隔时间还没到$_remainingSeconds");
+      return false;
+    }
     bool isReady = await RewarderTool.to.rewardedVideoReady();
     Utils.logError("准备状态：$isReady}");
     if (!isReady) {
@@ -114,7 +120,7 @@ class Store extends GetxController {
       CuToast.error(msg: "今日领取次数已达上限，请明日再来");
       return false;
     }
-
+    EasyLoading.dismiss();
     return true;
   }
 

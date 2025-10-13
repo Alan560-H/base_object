@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
@@ -74,6 +75,11 @@ class RewarderTool extends GetxService {
   }
 
   showRewardedVideoFlutter() async {
+    bool isOk = await Store.instance.canLookReward();
+    if (!isOk) {
+      EasyLoading.showError("广告资源正在准备中...");
+      return;
+    }
     EasyLoading.dismiss();
     await ATRewardedManager.showRewardedVideo(
       placementID: AppAdConfig.rewarderPlacementID,
@@ -203,6 +209,7 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+
           if (Store.instance.getIsClaim) {
             checkClaim();
           }
