@@ -206,6 +206,7 @@ class Store extends GetxController {
     if (checkDeviceForm.userId == 0) {
       checkDeviceForm.userId = null;
     }
+    // 地理位置异常
     BackModel data = await Api.to.getVer(checkDeviceForm);
     setIsLimit(data.data);
   }

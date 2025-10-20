@@ -9,6 +9,7 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/pages/invite/invite_controller.dart';
 import 'package:base_object/pages/user/user_controller.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -77,12 +78,24 @@ class UserView extends GetView<UserController> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        controller.userInfo.userModel.username,
-                        style: TextStyle(
-                          fontSize: TextConfig.textSize_20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            controller.userInfo.userModel.username,
+                            style: TextStyle(
+                              fontSize: TextConfig.textSize_20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          ///  团长标志
+                          if (UserInfo.instance.userModel.type == 2)
+                            CachedNetworkImage(
+                              imageUrl: ImageConfig.svip,
+                              height: 30.h,
+                              width: 80.w,
+                            ),
+                        ],
                       ),
                       Text(
                         "会员ID:${controller.userInfo.userModel.id} | 邀请码：${controller.userInfo.userModel.inviteCode}",

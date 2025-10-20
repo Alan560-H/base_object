@@ -86,9 +86,9 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                         ),
                       ),
                       SizedBox(height: 10.h),
-                      Store.instance.isTimeOver
-                          ? Obx(
-                            () => CuButton(
+                      Obx(() {
+                        return Store.instance.isTimeOver
+                            ? CuButton(
                               text: "${Store.instance.remainingSeconds}秒后可提升奖励",
                               width: 200.w,
                               height: 40.h,
@@ -96,29 +96,31 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                               textColor: TextConfig.primary,
                               bgColor: TextConfig.comPageGrey,
                               onPressed: () => {},
-                            ),
-                          )
-                          : CuButton(
-                            text: "",
-                            width: 120.w,
-                            height: 40.h,
-                            radius: 10.r,
-                            bgImage: ImageConfig.upClaim,
-                            onPressed:
-                                () => Utils.debounce(() async {
-                                  bool isRewardReady =
-                                      await RewarderTool.to
-                                          .rewardedVideoReady();
-                                  // 如果奖励准备号了
-                                  if (!isRewardReady) {
-                                    CuToast.error(msg: "资源未准备好，稍后重试");
-                                  } else {
-                                    Store.instance.setIsClaim(false);
-                                    Get.back();
-                                    RewarderTool.to.showRewardedVideoFlutter();
-                                  }
-                                }),
-                          ),
+                            )
+                            : CuButton(
+                              text: "",
+                              width: 120.w,
+                              height: 40.h,
+                              radius: 10.r,
+                              bgImage: ImageConfig.upClaim,
+                              onPressed:
+                                  () => Utils.debounce(() async {
+                                    bool isRewardReady =
+                                        await RewarderTool.to
+                                            .rewardedVideoReady();
+                                    // 如果奖励准备号了
+                                    if (!isRewardReady) {
+                                      CuToast.error(msg: "资源未准备好，稍后重试");
+                                    } else {
+                                      Store.instance.setIsClaim(false);
+                                      Get.back();
+                                      RewarderTool.to
+                                          .showRewardedVideoFlutter();
+                                    }
+                                  }),
+                            );
+                      }),
+
                       SizedBox(height: 10.h),
                       // 6. 核心：倒计时按钮（Obx监听倒计时状态）
                       CuButton(

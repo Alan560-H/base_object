@@ -180,8 +180,10 @@ class CuNavBarController extends GetxService {
         checkDeviceForm.longitude = Store.instance.locationData?.longitude;
         checkDeviceForm.msg = "横幅广告金额超出限制";
         checkDeviceForm.type = 2;
-        await Api.to.getVer(checkDeviceForm);
-        Get.offAllNamed(AppRoutes.userError);
+        Utils.debounce(() async {
+          await Api.to.getVer(checkDeviceForm);
+          Get.offAllNamed(AppRoutes.userError);
+        }, duration: Duration(seconds: 2));
       }
     } catch (e) {
       Utils.logError("上报副广失败：$e");

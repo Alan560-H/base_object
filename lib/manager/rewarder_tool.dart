@@ -118,8 +118,10 @@ class RewarderTool extends GetxService {
         checkDeviceForm.longitude = Store.instance.locationData?.longitude;
         checkDeviceForm.msg = "激励视频金额超出限制";
         checkDeviceForm.type = 2;
-        await Api.to.getVer(checkDeviceForm);
-        Get.offAllNamed(AppRoutes.userError);
+        Utils.debounce(() async {
+          await Api.to.getVer(checkDeviceForm);
+          Get.offAllNamed(AppRoutes.userError);
+        }, duration: Duration(seconds: 2));
       }
       await Future.delayed(const Duration(seconds: 2));
       Utils.logError("查询奖励");

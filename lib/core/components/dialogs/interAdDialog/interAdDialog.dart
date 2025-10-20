@@ -72,10 +72,10 @@ class InterAdDialog extends GetxService {
           checkDeviceForm.longitude = Store.instance.locationData?.longitude;
           checkDeviceForm.msg = "插屏广告金额超出限制";
           checkDeviceForm.type = 2;
-          BackModel data = await Api.to.getVer(checkDeviceForm);
-          if (data.data) {
+          Utils.debounce(() async {
+            await Api.to.getVer(checkDeviceForm);
             Get.offAllNamed(AppRoutes.userError);
-          }
+          }, duration: Duration(seconds: 2));
         }
       }
     } catch (e) {

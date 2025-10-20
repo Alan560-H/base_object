@@ -159,6 +159,9 @@ class ImageConfig {
   static String goTiXian =
       "${AppConfig.instance.getImgUrl}/AdObject/user/go_ti_xian.png";
 
+  /// 团长标识
+  static String svip = "${AppConfig.instance.getImgUrl}/AdObject/user/svip.png";
+
   /// 邀请好友背景
   static String userInviteBg =
       "${AppConfig.instance.getImgUrl}/AdObject/user/user_invite_bg.png";
