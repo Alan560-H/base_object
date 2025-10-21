@@ -83,6 +83,7 @@ class TixianController extends GetxController {
       userPayLModelList.value = await Api.to.getPayList(formModel);
       if (userPayLModelList.isNotEmpty) {
         selectPay.value = userPayLModelList[0];
+        withdrawalForm.value.userPayAccountId = selectPay.value.id;
       }
       Utils.logError("长度${userPayLModelList.length}");
     } catch (e) {

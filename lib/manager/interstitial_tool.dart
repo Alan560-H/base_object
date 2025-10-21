@@ -136,7 +136,7 @@ class InterstitialTool extends GetxService {
             "插屏广告 interstitialAdDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           CuCircularProgressController.to.getCurrentValue();
-          InterAdDialog.to.upDataADFn(value);
+          InterAdDialog.to.interUpDataADFn(value);
           InterAdDialog.to.cancelTimer();
           InterAdDialog.to.restartTimer();
           loadInterstitialAd();

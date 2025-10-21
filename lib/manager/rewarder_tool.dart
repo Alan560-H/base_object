@@ -108,6 +108,9 @@ class RewarderTool extends GetxService {
       dynamic adSourcePrice = event.extraMap?['adsource_price'];
       double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
       int pross = amount?.toInt() ?? 0;
+      Utils.logError(
+        "激励广告金额$pross，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
+      );
       // 如果金额超出限制，上报异常
       if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
         CheckDeviceForm checkDeviceForm = CheckDeviceForm();
@@ -116,7 +119,7 @@ class RewarderTool extends GetxService {
         checkDeviceForm.address = Store.instance.locationData?.address;
         checkDeviceForm.latitude = Store.instance.locationData?.latitude;
         checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-        checkDeviceForm.msg = "激励视频金额超出限制";
+        checkDeviceForm.msg = "激励视频金额超出限制${upDataADForm.toJson()}";
         checkDeviceForm.type = 2;
         Utils.debounce(() async {
           await Api.to.getVer(checkDeviceForm);
