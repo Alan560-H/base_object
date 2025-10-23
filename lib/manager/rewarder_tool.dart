@@ -77,7 +77,7 @@ class RewarderTool extends GetxService {
   showRewardedVideoFlutter() async {
     bool isOk = await Store.instance.canLookReward();
     if (!isOk) {
-      EasyLoading.showError("广告资源正在准备中...");
+      // EasyLoading.showError("广告资源正在准备中...");
       return;
     }
     EasyLoading.dismiss();
@@ -188,9 +188,7 @@ class RewarderTool extends GetxService {
           break;
         //广告加载成功
         case RewardedStatus.rewardedVideoDidFinishLoading:
-          Utils.logError(
-            "激励广告 rewardedVideoDidFinishLoading ---- placementID: ${value.placementID}",
-          );
+          Utils.logError("激励广告 激励失败 ---- placementID: ${value.placementID}");
           EasyLoading.dismiss();
           break;
         //激励成功（只针对穿山甲的再看一个广告）
@@ -198,7 +196,7 @@ class RewarderTool extends GetxService {
         //激励成功，建议在此回调中下发奖励
         case RewardedStatus.rewardedVideoDidRewardSuccess:
           Utils.logError(
-            "激励广告 rewardedVideoDidRewardSuccess ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+            "激励广告 激励成功 ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           checkRewarderAd(value);
           HomeGroupChat.to.redBagOpen.value = false;

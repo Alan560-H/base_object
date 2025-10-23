@@ -105,18 +105,9 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                               bgImage: ImageConfig.upClaim,
                               onPressed:
                                   () => Utils.debounce(() async {
-                                    bool isRewardReady =
-                                        await RewarderTool.to
-                                            .rewardedVideoReady();
-                                    // 如果奖励准备号了
-                                    if (!isRewardReady) {
-                                      CuToast.error(msg: "资源未准备好，稍后重试");
-                                    } else {
-                                      Store.instance.setIsClaim(false);
-                                      Get.back();
-                                      RewarderTool.to
-                                          .showRewardedVideoFlutter();
-                                    }
+                                    Store.instance.setIsClaim(false);
+                                    Get.back();
+                                    RewarderTool.to.showRewardedVideoFlutter();
                                   }),
                             );
                       }),
