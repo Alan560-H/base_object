@@ -226,13 +226,13 @@ packages:
     source: hosted
     version: "1.19.1"
   connectivity_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: connectivity_plus
-      sha256: "33bae12a398f841c6cda09d1064212957265869104c478e5ad51e2fb26c3973c"
+      sha256: b5e72753cf63becce2c61fd04dfe0f1c430cc5278b53a1342dc5ad839eab29ec
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.0.0"
+    version: "6.1.5"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -1460,6 +1460,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "14.3.1"
+  vpn_connection_detector:
+    dependency: "direct main"
+    description:
+      name: vpn_connection_detector
+      sha256: "96f44f42f2001730d822d4f6998c9be14cfc7efa6c041e66365cf94ff92bc204"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.10"
   watcher:
     dependency: transitive
     description:

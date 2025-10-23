@@ -1,5 +1,4 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
@@ -11,10 +10,8 @@ import 'package:base_object/core/components/dialogs/newUserDialog/NewUserDialog.
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/models/localModels/ChatMessage.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/user_info.dart';
-import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

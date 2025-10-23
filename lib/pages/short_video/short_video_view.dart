@@ -1,8 +1,4 @@
-import 'package:base_object/core/components/cu_app_bar.dart';
-import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
-import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

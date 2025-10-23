@@ -2,65 +2,14 @@ import 'dart:io';
 
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:emulator_checker/emulator_checker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sim_card_info/sim_card_info.dart';
 import 'package:flutter/services.dart';
 import 'package:sim_card_info/sim_info.dart';
-import 'package:network_info_plus/network_info_plus.dart';
+import 'package:vpn_connection_detector/vpn_connection_detector.dart';
 
 class DeviceChecker {
-  static final DeviceInfoPlugin _deviceInfoPlugin = DeviceInfoPlugin();
-
-  /// 检查是否使用VPN true:使用了vpn，false：没有使用vpn
-  static Future<bool> isVpnActive() async {
-    // 1. 先用connectivity_plus检测系统级VPN（兼容旧逻辑）
-    final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult.contains(ConnectivityResult.vpn)) {
-      return true;
-    }
-
-    // 2. 检测网络接口（VPN通常会创建虚拟接口，如tun0、ppp0、ipsec等）
-    final networkInfo = NetworkInfo();
-    try {
-      // 获取所有网络接口（需要设备权限）
-      final interfaces = await NetworkInterface.list(includeLoopback: false);
-      for (var interface in interfaces) {
-        // 常见VPN虚拟接口名称关键字
-        final isVpnInterface =
-            interface.name.contains('tun') ||
-            interface.name.contains('ppp') ||
-            interface.name.contains('ipsec') ||
-            interface.name.contains('vpn');
-        if (isVpnInterface) {
-          return true;
-        }
-      }
-    } catch (e) {
-      print('检测网络接口失败：$e');
-    }
-    // 3. （可选）检测IP地址是否为VPN分配的私有IP（非本地局域网IP）
-    // （需排除常见局域网IP段：192.168.x.x、10.x.x.x、172.16.x.x等）
-    final ip = await networkInfo.getWifiIP();
-    if (ip != null && !_isLocalIp(ip)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // 辅助方法：判断是否为本地局域网IP
-  static bool _isLocalIp(String ip) {
-    final parts = ip.split('.').map(int.parse).toList();
-    if (parts.length != 4) return false;
-    // 10.x.x.x 或 192.168.x.x 或 172.16.x.x-172.31.x.x
-    return (parts[0] == 10) ||
-        (parts[0] == 192 && parts[1] == 168) ||
-        (parts[0] == 172 && parts[1] >= 16 && parts[1] <= 31);
-  }
-
   /// 检查是否插卡 true:插卡了，false：没有插卡
   static Future<bool> hasSimCard() async {
     try {
@@ -165,7 +114,7 @@ class DeviceChecker {
   static Future<bool> isAllCheckr() async {
     try {
       await Future.delayed(const Duration(milliseconds: 100));
-      bool isVpn = await isVpnActive();
+      bool isVpn = await VpnConnectionDetector.isVpnActive();
       await Future.delayed(const Duration(milliseconds: 100));
 
       bool hasSim = await hasSimCard();

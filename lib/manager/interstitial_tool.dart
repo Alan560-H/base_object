@@ -7,7 +7,6 @@ import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class InterstitialTool extends GetxService {

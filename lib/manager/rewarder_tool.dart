@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
@@ -12,7 +10,6 @@ import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dar
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
-import 'package:base_object/pages/home/home_controller.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
@@ -20,8 +17,6 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-
-import 'native_tool.dart';
 
 class RewarderTool extends GetxService {
   // GetX单例获取方式
