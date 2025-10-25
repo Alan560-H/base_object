@@ -1,5 +1,9 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_tab_menu.dart';
+import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/components/custom_input_field.dart';
+import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
@@ -10,6 +14,7 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 
 class TixianView extends GetView<TixianController> {
@@ -88,6 +93,90 @@ class TixianView extends GetView<TixianController> {
     );
   }
 
+  // 选择支付方式
+  Widget get selectPayType {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.r),
+        color: TextConfig.commonYellowPageColor,
+      ),
+      width: Get.width,
+      padding: EdgeInsets.all(5.sp),
+      child: CuTabMenu(
+        bgColor: Colors.white,
+        categoryList: controller.payTypeNavs,
+        tabChange: controller.tabChange,
+        currentIndex: controller.currentIndex.value,
+      ),
+    );
+  }
+
+  /// 微信提交表单
+  Widget get enterWxForm {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.r),
+        color: TextConfig.commonYellowPageColor,
+      ),
+      // height: Get.height,
+      width: Get.width,
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 10.h,
+        children: [
+          Text(
+            "微信提现近期即将开放，敬请期待",
+            style: TextStyle(
+              fontSize: TextConfig.textSize_16,
+              color: TextConfig.primary,
+            ),
+          ),
+
+          /// 账号登录
+          // CustomInputField(
+          //   key: GlobalKey(),
+          //   height: 50.h,
+          //   bgColor: TextConfig.inputBgcolor,
+          //   hintText: "请输入package信息",
+          //   onChanged: (value) {},
+          //   controller: controller.accountController,
+          // ),
+          // CuButton(
+          //   text: "唤醒微信",
+          //   width: Get.width,
+          //   height: 50.h,
+          //   bgColor: TextConfig.primary,
+          //   onPressed: () async {
+          //     Fluwx fluwx = Fluwx();
+          //     bool isRegister = await fluwx.registerApi(
+          //       appId: AppConfig.instance.wxAppId,
+          //     );
+          //     Utils.logError("微信是否注册成功：$isRegister");
+          //     // 2. 检测当前微信是否支持 OpenBusinessView（核心步骤）
+          //     if (await fluwx.isSupportOpenBusinessView) {
+          //       CuToast.success(
+          //         msg: "唤醒成功,参数是${controller.accountController.text}",
+          //       );
+          //
+          //       /// 延迟两秒后 唤醒微信
+          //       await Future.delayed(const Duration(seconds: 2));
+          //       fluwx.open(
+          //         target: BusinessView(
+          //           businessType: 'requestMerchantTransfer',
+          //           query: controller.accountController.text,
+          //         ),
+          //       );
+          //     }
+          //   },
+          // ),
+        ],
+      ),
+    );
+  }
+
+  /// 支付宝提交表单
   Widget get enterForm {
     return Container(
       decoration: BoxDecoration(
@@ -156,78 +245,6 @@ class TixianView extends GetView<TixianController> {
         ],
       ),
     );
-    // return Container(
-    //   decoration: BoxDecoration(
-    //     borderRadius: BorderRadius.circular(10.r),
-    //     color: TextConfig.commonYellowPageColor,
-    //   ),
-    //   // height: Get.height,
-    //   width: Get.width,
-    //   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-    //   child: Column(
-    //     spacing: 10.h,
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     crossAxisAlignment: CrossAxisAlignment.center,
-    //     children: [
-    //       Row(
-    //         children: [
-    //           Text("支付宝账号："),
-    //
-    //           /// 账号登录
-    //           Expanded(
-    //             child: CustomInputField(
-    //               key: GlobalKey(),
-    //               height: 30.h,
-    //               textColor: TextConfig.black333,
-    //               textSize: TextConfig.textSize_12,
-    //               bgColor: Colors.white,
-    //               hintText: "请输入账号",
-    //               onChanged: (value) {
-    //                 controller.withdrawalForm.value.payAccount = value;
-    //               },
-    //               controller: controller.accountController,
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       Row(
-    //         children: [
-    //           Text("姓名："),
-    //
-    //           /// 实名
-    //           Expanded(
-    //             child: CustomInputField(
-    //               textColor: TextConfig.black333,
-    //               textSize: TextConfig.textSize_12,
-    //               key: GlobalKey(),
-    //               height: 30.h,
-    //               bgColor: Colors.white,
-    //               hintText: "请输入姓名",
-    //               onChanged: (value) {
-    //                 controller.withdrawalForm.value.payName = value;
-    //               },
-    //               controller: controller.nameController,
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       Text(
-    //         "输入的账号和姓名仅用作于提现，不做保存",
-    //         style: TextStyle(
-    //           color: TextConfig.primary,
-    //           fontSize: TextConfig.textSize_12,
-    //         ),
-    //       ),
-    //       Text(
-    //         "名下多个支付账号，请填支付宝账号，不要填手机号，否则无法到账。",
-    //         style: TextStyle(
-    //           color: TextConfig.primary,
-    //           fontSize: TextConfig.textSize_12,
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget get tixianLiebiao {
@@ -399,7 +416,13 @@ class TixianView extends GetView<TixianController> {
                             spacing: 10.h,
                             children: [
                               userCurrentAmount,
-                              enterForm,
+                              selectPayType,
+                              Obx(
+                                () =>
+                                    controller.currentIndex.value == 0
+                                        ? enterForm
+                                        : enterWxForm,
+                              ),
                               tixianLiebiao,
                             ],
                           ),

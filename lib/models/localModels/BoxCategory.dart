@@ -1,4 +1,4 @@
-// 定义 BoxCategory 类 ,用来进行首页箱子的分类
+// 定义 BoxCategory 类 ,
 class BoxCategory {
   int id;
   String categoryName;
@@ -11,6 +11,7 @@ class BoxCategory {
   String toString() {
     return 'ID: $id, 分类名称: $categoryName';
   }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

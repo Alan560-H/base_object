@@ -98,7 +98,7 @@ class UserView extends GetView<UserController> {
                         ],
                       ),
                       Text(
-                        "会员ID:${controller.userInfo.userModel.id} | 邀请码：${controller.userInfo.userModel.inviteCode}",
+                        "会员ID:${controller.userInfo.userModel.id} |师傅ID：${controller.userInfo.userModel.inviteUserId}",
                       ),
                     ],
                   ),

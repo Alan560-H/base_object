@@ -7,6 +7,7 @@ import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/userModel/UserPayLModel.dart';
 import 'package:base_object/models/backModel/userModel/WithdrawalModel.dart';
+import 'package:base_object/models/localModels/BoxCategory.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -21,6 +22,16 @@ class TixianController extends GetxController {
   RxList<WithdrawalModel> withdrawalList = <WithdrawalModel>[].obs;
   Rx<WithdrawalModel> selectedWithdrawalModel = WithdrawalModel().obs;
   Rx<WithdrawalForm> withdrawalForm = WithdrawalForm().obs;
+
+  /// 饰品分类列表
+  List<BoxCategory> payTypeNavs = [
+    BoxCategory(id: 0, categoryName: "支付宝"),
+    BoxCategory(id: 1, categoryName: "微信"),
+  ];
+  RxInt currentIndex = 0.obs;
+  void tabChange(i) {
+    currentIndex.value = i;
+  }
 
   /// 密码控制器
   final nameController = TextEditingController();
@@ -70,7 +81,10 @@ class TixianController extends GetxController {
     }
   }
 
+  /// 绑定的支付宝列表
   RxList<UserPayLModel> userPayLModelList = <UserPayLModel>[].obs;
+
+  /// 支付宝提交表单
   Rx<UserPayLModel> selectPay = UserPayLModel().obs;
 
   /// 获取支付列表
