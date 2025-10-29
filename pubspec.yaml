@@ -110,8 +110,8 @@ dependencies:
   # 微信sdk
   fluwx: ^5.7.2
   #穿山甲
-  flutter_pangrowth:
-    path: ./plugins/flutter_pangrowth
+#  flutter_pangrowth:
+#    path: ./plugins/flutter_pangrowth
   vpn_connection_detector: ^1.0.10
 
 dev_dependencies:

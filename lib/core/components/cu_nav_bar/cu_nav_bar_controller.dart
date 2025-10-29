@@ -61,16 +61,16 @@ class CuNavBarController extends GetxService {
         case 0:
           Get.offAllNamed(AppRoutes.home);
           break;
+        // case 1:
+        //   Get.toNamed(AppRoutes.shortVideo);
+        //   break;
+        // case 2:
+        //   Get.offAllNamed(AppRoutes.djVideo);
+        //   break;
         case 1:
-          Get.toNamed(AppRoutes.shortVideo);
-          break;
-        case 2:
-          Get.offAllNamed(AppRoutes.djVideo);
-          break;
-        case 3:
           Get.offAllNamed(AppRoutes.invite);
           break;
-        case 4:
+        case 2:
           Get.offAllNamed(AppRoutes.user);
           break;
       }
@@ -92,30 +92,30 @@ class CuNavBarController extends GetxService {
         ImageConfig.redBagDefatult,
         ImageConfig.redBagActive,
       ),
+      // _createMenuModel(
+      //   1,
+      //   "短视频",
+      //   true,
+      //   ImageConfig.videoDefault,
+      //   ImageConfig.videoActive,
+      // ),
+      // _createMenuModel(
+      //   2,
+      //   "短剧",
+      //   true,
+      //   ImageConfig.shortVideoDefault,
+      //
+      //   ImageConfig.shortVideoActive,
+      // ),
       _createMenuModel(
         1,
-        "短视频",
-        true,
-        ImageConfig.videoDefault,
-        ImageConfig.videoActive,
-      ),
-      _createMenuModel(
-        2,
-        "短剧",
-        true,
-        ImageConfig.shortVideoDefault,
-
-        ImageConfig.shortVideoActive,
-      ),
-      _createMenuModel(
-        3,
         "邀请",
         false,
         ImageConfig.inviteDefault,
         ImageConfig.inviteActive,
       ),
       _createMenuModel(
-        4,
+        2,
         "我的",
         false,
         ImageConfig.myDefatult,

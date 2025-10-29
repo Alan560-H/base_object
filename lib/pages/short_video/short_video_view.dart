@@ -1,6 +1,6 @@
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_pangrowth/flutter_pangrowth.dart';
+// import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -12,10 +12,12 @@ class ShortVideoView extends GetView<ShortVideoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PangrowthVideo.videoSingleCardView(
-        viewWidth: 10.sw,
-        viewHeight: 1.sh - ScreenUtil().statusBarHeight,
-      ),
+      body: Placeholder(),
+
+      // body: PangrowthVideo.videoSingleCardView(
+      //   viewWidth: 10.sw,
+      //   viewHeight: 1.sh - ScreenUtil().statusBarHeight,
+      // ),
       bottomNavigationBar: CuNavBarView(),
     );
   }

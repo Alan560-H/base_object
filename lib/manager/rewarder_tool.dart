@@ -209,7 +209,8 @@ class RewarderTool extends GetxService {
           );
 
           if (Store.instance.getIsClaim) {
-            checkClaim();
+            // checkClaim();
+            CuCircularProgressController.to.getCurrentValue();
           }
           break;
         //广告结束播放

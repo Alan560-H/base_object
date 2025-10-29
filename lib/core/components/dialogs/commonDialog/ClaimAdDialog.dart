@@ -119,16 +119,12 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                                 CuToast.error(msg: "金额太少，请耐心等待");
                                 return;
                               }
-                              bool isRewardReady =
-                                  await RewarderTool.to.rewardedVideoReady();
+                              RewarderTool.to.checkClaim();
+                              // bool isRewardReady =
+                              //     await RewarderTool.to.rewardedVideoReady();
                               // 如果奖励准备号了
-                              if (!isRewardReady) {
-                                RewarderTool.to.checkClaim();
-                              } else {
-                                Store.instance.setIsClaim(true);
-                                Get.back();
-                                RewarderTool.to.showRewardedVideoFlutter();
-                              }
+                              Store.instance.setIsClaim(true);
+                              RewarderTool.to.showRewardedVideoFlutter();
                             }),
                       ),
                     ],

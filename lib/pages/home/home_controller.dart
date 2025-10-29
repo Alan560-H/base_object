@@ -11,7 +11,7 @@ import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_pangrowth/flutter_pangrowth.dart';
+// import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -111,16 +111,16 @@ class HomeController extends GetxController {
     }
   }
 
-  Future _pangrowthInit() async {
-    // 这里的appid  和logappid 填写穿山甲的sdkjson文件李的值
-    await PangrowthVideo.registerVideo(
-      appName: "",
-      andoridAppId: "5670418",
-      appLogAppId: "751081",
-      iosAppId: "",
-      debug: true,
-    );
-  }
+  // Future _pangrowthInit() async {
+  //   // 这里的appid  和logappid 填写穿山甲的sdkjson文件李的值
+  //   await PangrowthVideo.registerVideo(
+  //     appName: "",
+  //     andoridAppId: "5670418",
+  //     appLogAppId: "751081",
+  //     iosAppId: "",
+  //     debug: true,
+  //   );
+  // }
 
   // ------------------- 生命周期 -------------------
   void allInit() async {
@@ -142,7 +142,7 @@ class HomeController extends GetxController {
     await getAppUpdata(isReturn: true);
 
     ///同意隐私政策之后调用
-    await _pangrowthInit();
+    // await _pangrowthInit();
   }
 
   @override
