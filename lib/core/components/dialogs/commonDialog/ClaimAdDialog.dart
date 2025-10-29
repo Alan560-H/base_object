@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
@@ -122,6 +124,7 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                                 return;
                               }
                               await RewarderTool.to.checkClaim();
+                              await Future.delayed(const Duration(seconds: 2));
                               bool isOk = Store.instance.isTimeOver;
                               if (isOk) {
                                 return;

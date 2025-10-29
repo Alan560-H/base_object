@@ -73,6 +73,7 @@ class Store extends GetxController {
 
   /// 倒计时
   Future<void> countDown() async {
+    if (_timer != null) return;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
