@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
@@ -10,8 +12,10 @@ import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
 import 'package:base_object/pages/home/home_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -153,22 +157,16 @@ class HomeGroupChat extends GetxService {
         redBagOpen.value = false;
         content = InkWell(
           onTap: () async {
-            // if (!UserInfo.instance.isLoginIn) {
-            //   HomeGroupChat.to.removeAdContainer();
-            // }
-            // Map<dynamic, dynamic> status =
-            //     await RewarderTool.to.checkRewardedVideoLoadStatus();
-            // Utils.logError("返回得状态：$status");
-            // // 如果有可用播放激励视频信息，取出预估值
-            // if (!status['isLoading']) {
-            //   // Dialogs.claimRedBag(data: 0.0.obs, onClick: (data) {});
-            //
-            // }
             if (!UserInfo.instance.isLoginIn) {
               Get.toNamed(AppRoutes.login);
               return;
             }
             CuCircularProgressController.to.getCurrentValue();
+            String? adtime = await LocalStorage.getString(AppKeys.rewarderTime);
+            if (adtime != null) {
+              Store.instance.setRemainingSeconds2(int.parse(adtime));
+              Store.instance.countDown();
+            }
             Dialogs.claimAdDialogs(
               data: CuCircularProgressController.to.currentValue,
             );
@@ -183,24 +181,25 @@ class HomeGroupChat extends GetxService {
       }
       bool isHasNative = false;
 
-      if (isAddNative) {
-        // 如果有缓存，则添加
-        if (NativeTool.to.isViewCreated.value) {
-          Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
-          content = await getNativeView();
-          _autoMessageTimer?.cancel();
-          _autoMessageTimer = null;
-          // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
-          Future.delayed(const Duration(seconds: 20), () {
-            removeAdContainer();
-            Utils.logError("又开始启动啦定时器1");
-
-            _startAutoMessageTimer();
-          });
-        }
-        isAddNative = false;
-        isHasNative = true;
-      }
+      /// 生成信息流
+      // if (isAddNative) {
+      //   // 如果有缓存，则添加
+      //   if (NativeTool.to.isViewCreated.value) {
+      //     Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
+      //     content = await getNativeView();
+      //     _autoMessageTimer?.cancel();
+      //     _autoMessageTimer = null;
+      //     // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
+      //     Future.delayed(const Duration(seconds: 20), () {
+      //       removeAdContainer();
+      //       Utils.logError("又开始启动啦定时器1");
+      //
+      //       _startAutoMessageTimer();
+      //     });
+      //   }
+      //   isAddNative = false;
+      //   isHasNative = true;
+      // }
       // 3. 创建消息对象
       final ChatMessage newMessage = ChatMessage(
         id: DateTime.now().microsecondsSinceEpoch.toString(),

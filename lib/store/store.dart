@@ -73,9 +73,14 @@ class Store extends GetxController {
 
   /// 倒计时
   Future<void> countDown() async {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
+        await LocalStorage.setString(
+          AppKeys.rewarderTime,
+          _remainingSeconds.value,
+        );
+        Utils.logError("存入间隔时间$_remainingSeconds");
       } else {
         _timer?.cancel();
         _timer = null;
@@ -83,9 +88,12 @@ class Store extends GetxController {
     });
   }
 
-  setRemainingSeconds() {
+  setRemainingSeconds() async {
     _remainingSeconds.value = _fkConfig.value.adTime;
-    Utils.logError("当前间隔时间$_remainingSeconds");
+  }
+
+  setRemainingSeconds2(int val) async {
+    _remainingSeconds.value = val;
   }
 
   RxInt _remainingSeconds = 0.obs;

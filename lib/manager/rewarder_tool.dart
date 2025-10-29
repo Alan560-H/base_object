@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
@@ -14,6 +16,7 @@ import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -72,18 +75,10 @@ class RewarderTool extends GetxService {
   showRewardedVideoFlutter() async {
     bool isOk = await Store.instance.canLookReward();
     if (!isOk) {
-      // EasyLoading.showError("广告资源正在准备中...");
       return;
     }
-    EasyLoading.dismiss();
-    await ATRewardedManager.showRewardedVideo(
-      placementID: AppAdConfig.rewarderPlacementID,
-    );
-  }
 
-  showSceneRewardedAd() async {
-    await ATRewardedManager.showSceneRewardedVideo(
-      sceneID: AppAdConfig.rewarderSceneID,
+    await ATRewardedManager.showRewardedVideo(
       placementID: AppAdConfig.rewarderPlacementID,
     );
   }
@@ -132,6 +127,10 @@ class RewarderTool extends GetxService {
           CuCircularProgressController.to.getCurrentValue();
           // 增加次数
           Store.instance.addCurrentCount(1);
+          await LocalStorage.setString(
+            AppKeys.rewarderTime,
+            Store.instance.getFkConfig.adTime,
+          );
           // 重置间隔时间
           Store.instance.setRemainingSeconds();
           // 开始倒计时
@@ -195,6 +194,7 @@ class RewarderTool extends GetxService {
           );
           checkRewarderAd(value);
           HomeGroupChat.to.redBagOpen.value = false;
+
           loadRewardedVideoFlutter(
             userID: "${UserInfo.instance.userModel.id}",
             extra:
@@ -208,10 +208,9 @@ class RewarderTool extends GetxService {
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
 
-          if (Store.instance.getIsClaim) {
-            // checkClaim();
-            CuCircularProgressController.to.getCurrentValue();
-          }
+          // if (Store.instance.getIsClaim) {
+          //   // checkClaim();
+          // }
           break;
         //广告结束播放
         case RewardedStatus.rewardedVideoDidEndPlaying:

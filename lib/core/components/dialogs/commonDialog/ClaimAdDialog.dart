@@ -1,10 +1,12 @@
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -119,12 +121,14 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                                 CuToast.error(msg: "金额太少，请耐心等待");
                                 return;
                               }
-                              RewarderTool.to.checkClaim();
-                              // bool isRewardReady =
-                              //     await RewarderTool.to.rewardedVideoReady();
-                              // 如果奖励准备号了
-                              Store.instance.setIsClaim(true);
-                              RewarderTool.to.showRewardedVideoFlutter();
+                              await RewarderTool.to.checkClaim();
+                              bool isOk = Store.instance.isTimeOver;
+                              if (isOk) {
+                                return;
+                              } else {
+                                Store.instance.setIsClaim(true);
+                                RewarderTool.to.showRewardedVideoFlutter();
+                              }
                             }),
                       ),
                     ],

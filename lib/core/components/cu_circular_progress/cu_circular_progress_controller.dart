@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
+import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart';
 
 /// 内置控制器：管理进度状态（对外隐藏实现，仅暴露操作方法）
@@ -92,6 +94,13 @@ class CuCircularProgressController extends GetxService {
 
       Store.instance.setIsOpenClaim(true);
       Utils.logError("打开的值:${Store.instance.getIsOpenClaim}");
+      String? adtime = await LocalStorage.getString(AppKeys.rewarderTime);
+      Utils.logError("要打开广告了哦:${adtime}");
+
+      if (adtime != null) {
+        Store.instance.setRemainingSeconds2(int.parse(adtime));
+        Store.instance.countDown();
+      }
       Dialogs.claimAdDialogs(
         data: CuCircularProgressController.to.currentValue,
       );
