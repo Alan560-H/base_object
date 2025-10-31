@@ -60,11 +60,10 @@ class InterAdDialog extends GetxService {
           adsourceId: adsourceId,
         );
         Utils.logError("插屏广告凑成的字符串${upDataADForm.toJson()}");
-        int pross = amount.toInt();
         Utils.logError(
-          "插屏广告金额$pross，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
+          "一：$amount,二：${Store.instance.getFkConfig.wactchMaxAmountV1}，三：插屏广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
         );
-        if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
+        if (amount > Store.instance.getFkConfig.wactchMaxAmountV1) {
           CheckDeviceForm checkDeviceForm = CheckDeviceForm();
           checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
           checkDeviceForm.userId = UserInfo.instance.userModel.id;

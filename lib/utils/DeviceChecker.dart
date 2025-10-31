@@ -116,8 +116,8 @@ class DeviceChecker {
       bool isVpn = await VpnConnectionDetector.isVpnActive();
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bool hasSim = await hasSimCard();
-      await Future.delayed(const Duration(milliseconds: 100));
+      // bool hasSim = await hasSimCard();
+      // await Future.delayed(const Duration(milliseconds: 100));
 
       bool isDev = await isDeveloperModeEnabled();
       await Future.delayed(const Duration(milliseconds: 100));
@@ -131,8 +131,8 @@ class DeviceChecker {
       // List<String> enabledServices = await getEnabledAccessibilityServices();
       // await Future.delayed(const Duration(milliseconds: 100));
 
-      bool res = !isVpn && hasSim && !isDev && !isEmu;
-      //
+      bool res = !isVpn && !isDev && !isEmu;
+      //&& hasSim
 
       // bool res = true;
       if (res) {
@@ -140,9 +140,11 @@ class DeviceChecker {
       } else {
         if (isVpn) {
           CuToast.error(msg: "请关闭VPN后再重新打开本程序");
-        } else if (!hasSim) {
-          CuToast.error(msg: "请插入SIM卡后再重新打开本程序");
-        } else if (isDev) {
+        }
+        // else if (!hasSim) {
+        //   CuToast.error(msg: "请插入SIM卡后再重新打开本程序");
+        // }
+        else if (isDev) {
           CuToast.error(msg: "不允许在开发者模式下运行");
         } else if (isEmu) {
           CuToast.error(msg: "不允许在模拟器上运行");

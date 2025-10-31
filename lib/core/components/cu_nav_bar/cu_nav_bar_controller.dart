@@ -170,18 +170,18 @@ class CuNavBarController extends GetxService {
       );
       Utils.logError("横幅广告凑成的字符串${upDataADForm.toJson()}");
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
-      int pross = amount.toInt();
       Utils.logError(
-        "横幅广告金额$pross，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
+        "横幅广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
       );
-      if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
+      if (amount > Store.instance.getFkConfig.wactchMaxAmountV1) {
         CheckDeviceForm checkDeviceForm = CheckDeviceForm();
         checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
         checkDeviceForm.userId = UserInfo.instance.userModel.id;
         checkDeviceForm.address = Store.instance.locationData?.address;
         checkDeviceForm.latitude = Store.instance.locationData?.latitude;
         checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-        checkDeviceForm.msg = "横幅广告金额超出限制${upDataADForm.toJson()}";
+        checkDeviceForm.msg =
+            "一：$amount,二：${Store.instance.getFkConfig.wactchMaxAmountV1}，三：横幅广告金额超出限制${upDataADForm.toJson()}";
         checkDeviceForm.type = 2;
         Utils.debounce(() async {
           await Api.to.getVer(checkDeviceForm);

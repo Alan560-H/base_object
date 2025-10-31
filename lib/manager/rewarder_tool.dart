@@ -92,24 +92,26 @@ class RewarderTool extends GetxService {
       upDataADForm.transId = event.extraMap?['id'];
       upDataADForm.channelPackage =
           Store.instance.getAppUpLoadModel.channelPackage;
+
       Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
-      dynamic adSourcePrice = event.extraMap?['adsource_price'];
+      dynamic adSourcePrice = event.extraMap['adsource_price'];
       double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
-      int pross = amount?.toInt() ?? 0;
+      upDataADForm.amount = (amount! / 1000);
       Utils.logError(
-        "激励广告金额$pross，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
+        "激励广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
       );
       // 如果金额超出限制，上报异常
-      if (pross > Store.instance.getFkConfig.wactchMaxAmountV1) {
+      if (amount > Store.instance.getFkConfig.wactchMaxAmountV1) {
         CheckDeviceForm checkDeviceForm = CheckDeviceForm();
         checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
         checkDeviceForm.userId = UserInfo.instance.userModel.id;
         checkDeviceForm.address = Store.instance.locationData?.address;
         checkDeviceForm.latitude = Store.instance.locationData?.latitude;
         checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-        checkDeviceForm.msg = "激励视频金额超出限制${upDataADForm.toJson()}";
+        checkDeviceForm.msg =
+            "一：$amount,二：${Store.instance.getFkConfig.wactchMaxAmountV1}，三：激励视频金额超出限制${upDataADForm.toJson()}";
         checkDeviceForm.type = 2;
         Utils.debounce(() async {
           await Api.to.getVer(checkDeviceForm);
