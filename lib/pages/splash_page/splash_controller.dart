@@ -6,6 +6,7 @@ import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/DeviceChecker.dart';
 import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/PermissionManager.dart';
@@ -47,6 +48,9 @@ class SplashController extends GetxController {
       Utils.logError("是否封禁返回的数值：$getVer");
       // 如果被封了，就去错误页面
       if (getVer) {
+        if (UserInfo.instance.isLoginIn) {
+          UserInfo.instance.loginOut();
+        }
         Store.instance.setDisableLogin(true);
       } else {
         Store.instance.setDisableLogin(false);
