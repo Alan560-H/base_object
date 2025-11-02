@@ -65,17 +65,16 @@ class InterAdDialog extends GetxService {
         Utils.logError(
           "一：$amount,二：${Store.instance.getFkConfig.wactchMaxAmountV1}，三：插屏广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
         );
-        if (amount > Store.instance.getFkConfig.wactchMaxAmountV1) {
-          CheckDeviceForm checkDeviceForm = CheckDeviceForm();
-          checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
-          checkDeviceForm.userId = UserInfo.instance.userModel.id;
-          checkDeviceForm.address = Store.instance.locationData?.address;
-          checkDeviceForm.latitude = Store.instance.locationData?.latitude;
-          checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-          checkDeviceForm.msg = "插屏广告金额超出限制${upDataADForm.toJson()}";
-          checkDeviceForm.type = 2;
+        // 如果金额超出限制，上报异常
+        if (amount > Store.instance.getFkConfig.wactchMaxAmountV1 ||
+            amount < Store.instance.getFkConfig.wactchMinAmountV1) {
+          String msg =
+              "一：$amount,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：插屏广告金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
+          int type = 2;
+
           Utils.debounce(() async {
-            await Api.to.getVer(checkDeviceForm);
+            await Store.instance.getVer(type: type, msg: msg);
+            UserInfo.instance.loginOut();
             Get.offAllNamed(AppRoutes.userError);
           }, duration: Duration(seconds: 2));
         }

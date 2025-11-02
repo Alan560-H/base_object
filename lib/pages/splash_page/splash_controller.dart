@@ -41,7 +41,16 @@ class SplashController extends GetxController {
     bool isPermission = await PermissionManager.requestAllPermissions();
     Utils.logError(isPermission);
     bool isAllCheck = await DeviceChecker.isAllCheckr();
-
+    // 获取地理位置
+    await LocationUtil().getCurrentLocation((Map result) async {
+      Utils.logError("定位结果：$result");
+      LocationData locationData = LocationData(
+        address: result["address"],
+        latitude: result["latitude"],
+        longitude: result["longitude"],
+      );
+      Store.instance.setLocationData(locationData);
+    });
     if (isAllCheck) {
       bool getVer = await Store.instance.getVer();
 

@@ -116,19 +116,8 @@ class HomeController extends GetxController {
 
   // ------------------- 生命周期 -------------------
   void allInit() async {
-    // 获取地理位置
-    await LocationUtil().getCurrentLocation((Map result) async {
-      Utils.logError("定位结果：$result");
-      LocationData locationData = LocationData(
-        address: result["address"],
-        latitude: result["latitude"],
-        longitude: result["longitude"],
-      );
-      Store.instance.setLocationData(locationData);
-    });
-
     /// 上传地址
-    await Store.instance.upAddress();
+    await Store.instance.getVer(type: 3, msg: "上传地理位置");
 
     /// 获取风控配置
     await Store.instance.getFkConfigFn();

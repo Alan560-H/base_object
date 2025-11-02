@@ -209,40 +209,28 @@ class Store extends GetxController {
     _isLimit.value = value;
   }
 
-  Future<void> upAddress() async {
-    if (Store.instance.locationData == null) {
-      return;
-    }
-    CheckDeviceForm checkDeviceForm = CheckDeviceForm();
-    checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
-    checkDeviceForm.userId = UserInfo.instance.userModel.id;
-    checkDeviceForm.address = Store.instance.locationData?.address;
-    checkDeviceForm.latitude = Store.instance.locationData?.latitude;
-    checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-    checkDeviceForm.type = 3;
-    if (checkDeviceForm.userId == 0) {
-      checkDeviceForm.userId = null;
-    }
-    // 地理位置异常
-    BackModel data = await Api.to.getVer(checkDeviceForm);
-    setIsLimit(data.data);
-  }
-
   /// 检查设备封禁
-  Future<bool> getVer() async {
+  /// type 1 检查设备是否封禁，2 金额异常上报，3 上传位置
+  /// msg 传递得信息
+  Future<bool> getVer({int type = 1, String msg = "主动查询封禁信息"}) async {
     try {
       CheckDeviceForm checkDeviceForm = CheckDeviceForm();
       checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
       checkDeviceForm.userId = UserInfo.instance.userModel.id;
-      checkDeviceForm.address = Store.instance.locationData?.address;
-      checkDeviceForm.latitude = Store.instance.locationData?.latitude;
-      checkDeviceForm.longitude = Store.instance.locationData?.longitude;
-      checkDeviceForm.type = 1;
+      checkDeviceForm.address = locationData?.address;
+      checkDeviceForm.latitude = locationData?.latitude;
+      checkDeviceForm.longitude = locationData?.longitude;
+      checkDeviceForm.type = type;
+      checkDeviceForm.msg = msg;
       if (checkDeviceForm.userId == 0) {
         checkDeviceForm.userId = null;
       }
       BackModel data = await Api.to.getVer(checkDeviceForm);
-      setIsLimit(data.data);
+      // 如果类型是1，就设置限定
+      if (type == 1) {
+        setIsLimit(data.data);
+      }
+
       return isLimit;
     } catch (e) {
       Utils.logError("获取风控配置失败$e");
