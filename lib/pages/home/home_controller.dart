@@ -142,6 +142,7 @@ class HomeController extends GetxController {
       userID: "${UserInfo.instance.userModel.id}",
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
     );
+    RewarderTool.to.rewardedAdListen();
 
     /// 是否显示新人邀请
     isShowNewUser();
@@ -154,6 +155,10 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
+    Store.instance.isInitListen(true);
+    // 开启广告监听器
+    InterstitialTool.to.interstitialListen();
+    NativeTool.to.nativeLisListen();
 
     InterstitialTool.to.loadInterstitialAd();
 

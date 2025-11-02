@@ -23,6 +23,14 @@ import 'package:jiffy/jiffy.dart';
 class Store extends GetxController {
   /// 获取单例
   static Store get instance => Get.find();
+
+  final RxBool _isInitADLister = false.obs;
+  bool get getIsInitADLister => _isInitADLister.value;
+
+  void isInitListen(bool val) {
+    _isInitADLister.value = val;
+  }
+
   final RxInt _currentIndex = 0.obs;
   void changeIndex(int index) {
     _currentIndex.value = index;

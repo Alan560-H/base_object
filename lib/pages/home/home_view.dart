@@ -24,10 +24,10 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    // final HomeController controller =
-    //     Get.isRegistered<HomeController>()
-    //         ? Get.find<HomeController>()
-    //         : Get.put(HomeController());
+    final HomeController controller =
+        Get.isRegistered<HomeController>()
+            ? Get.find<HomeController>()
+            : Get.put(HomeController());
     // WidgetsBinding.instance.addPostFrameCallback((_) async {
     //   controller.getAppUpdata();
     // });
