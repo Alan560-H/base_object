@@ -24,13 +24,13 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller =
-        Get.isRegistered<HomeController>()
-            ? Get.find<HomeController>()
-            : Get.put(HomeController());
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      controller.getAppUpdata();
-    });
+    // final HomeController controller =
+    //     Get.isRegistered<HomeController>()
+    //         ? Get.find<HomeController>()
+    //         : Get.put(HomeController());
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   controller.getAppUpdata();
+    // });
     return Scaffold(
       body: Obx(
         () => Container(

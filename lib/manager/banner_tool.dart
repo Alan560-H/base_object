@@ -132,7 +132,7 @@ class BannerTool extends GetxService {
           Utils.logError(
             "横幅广告 bannerAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
-          cuNavBarController.setHeight(60.h);
+          cuNavBarController.setHeight(100.h);
           break;
         //广告加载成功
         case BannerStatus.bannerAdDidFinishLoading:

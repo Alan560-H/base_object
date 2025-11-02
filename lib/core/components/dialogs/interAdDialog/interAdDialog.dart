@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
+import 'package:base_object/manager/native_tool.dart';
+import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/pages/login/login_controller.dart';
@@ -23,7 +25,10 @@ class InterAdDialog extends GetxService {
   void onInit() {
     Utils.logError("插屏广告初始化触发");
     super.onInit();
+    // 开启广告监听器
     InterstitialTool.to.interstitialListen();
+    NativeTool.to.nativeLisListen();
+    RewarderTool.to.rewardedAdListen();
     // 初始化插屏广告
     InterstitialTool.to.loadInterstitialAd({
       Common.getUserIdKey(): UserInfo.instance.userModel.id,

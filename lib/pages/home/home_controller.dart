@@ -7,8 +7,11 @@ import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
+import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_pangrowth/flutter_pangrowth.dart';
@@ -111,19 +114,27 @@ class HomeController extends GetxController {
     }
   }
 
-  // Future _pangrowthInit() async {
-  //   // 这里的appid  和logappid 填写穿山甲的sdkjson文件李的值
-  //   await PangrowthVideo.registerVideo(
-  //     appName: "",
-  //     andoridAppId: "5670418",
-  //     appLogAppId: "751081",
-  //     iosAppId: "",
-  //     debug: true,
-  //   );
-  // }
-
   // ------------------- 生命周期 -------------------
   void allInit() async {
+    // 获取地理位置
+    await LocationUtil().getCurrentLocation((Map result) async {
+      Utils.logError("定位结果：$result");
+      LocationData locationData = LocationData(
+        address: result["address"],
+        latitude: result["latitude"],
+        longitude: result["longitude"],
+      );
+      Store.instance.setLocationData(locationData);
+    });
+
+    /// 上传地址
+    await Store.instance.upAddress();
+
+    /// 获取风控配置
+    await Store.instance.getFkConfigFn();
+
+    /// 获取今日领取了多少个红包
+    await Store.instance.initCurrentCount();
     await getAppUpdata();
     // 初始化用户信息
     UserInfo.instance.initialize();
@@ -131,7 +142,6 @@ class HomeController extends GetxController {
       userID: "${UserInfo.instance.userModel.id}",
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
     );
-    RewarderTool.to.rewardedAdListen();
 
     /// 是否显示新人邀请
     isShowNewUser();
@@ -139,21 +149,18 @@ class HomeController extends GetxController {
     /// 是否显示公告框
     isShow();
     // 初始化app升级信息
-    await getAppUpdata(isReturn: true);
-
-    ///同意隐私政策之后调用
-    // await _pangrowthInit();
   }
 
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-    InterstitialTool.to.interstitialListen();
+
     InterstitialTool.to.loadInterstitialAd();
-    NativeTool.to.nativeLisListen();
+
     NativeTool.to.loadNativeWith();
     HomeGroupChat.to.homeGroupChatInit();
     allInit();
+
     super.onInit();
   }
 

@@ -42,15 +42,6 @@ class SplashController extends GetxController {
     bool isAllCheck = await DeviceChecker.isAllCheckr();
 
     if (isAllCheck) {
-      await LocationUtil().getCurrentLocation((Map result) async {
-        Utils.logError("定位结果：$result");
-        LocationData locationData = LocationData(
-          address: result["address"],
-          latitude: result["latitude"],
-          longitude: result["longitude"],
-        );
-        Store.instance.setLocationData(locationData);
-      });
       bool getVer = await Store.instance.getVer();
 
       Utils.logError("是否封禁返回的数值：$getVer");
@@ -60,14 +51,14 @@ class SplashController extends GetxController {
         await Store.instance.getServerConfig();
         Get.offAllNamed(AppRoutes.userError);
       } else {
-        /// 上传地址
-        await Store.instance.upAddress();
-
-        /// 获取风控配置
-        await Store.instance.getFkConfigFn();
-
-        /// 获取今日领取了多少个红包
-        await Store.instance.initCurrentCount();
+        // /// 上传地址
+        // await Store.instance.upAddress();
+        //
+        // /// 获取风控配置
+        // await Store.instance.getFkConfigFn();
+        //
+        // /// 获取今日领取了多少个红包
+        // await Store.instance.initCurrentCount();
         SplashTool.to.splashListen();
         SplashTool.to.loadSplash();
       }
