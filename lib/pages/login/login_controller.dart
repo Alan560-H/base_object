@@ -182,6 +182,10 @@ class LoginController extends GetxController {
   /// 账号密码手机号登录按钮
   void submitForm() async {
     try {
+      if (Store.instance.getDisableLogin) {
+        CuToast.error(msg: "您已被限制登录，请联系管理员");
+        return;
+      }
       EasyLoading.show(status: "登录中...");
       loginForm.value.channelPackage =
           Store.instance.getAppUpLoadModel.channelPackage;

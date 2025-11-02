@@ -13,4 +13,7 @@ class AppKeys {
 
   /// 激励视频倒计时本地缓存时间
   static String rewarderTime = "rewarder_time";
+
+  /// 禁止登录
+  static String disableLogin = "disable_login";
 }

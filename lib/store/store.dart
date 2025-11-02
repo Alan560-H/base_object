@@ -24,11 +24,12 @@ class Store extends GetxController {
   /// 获取单例
   static Store get instance => Get.find();
 
-  final RxBool _isInitADLister = false.obs;
-  bool get getIsInitADLister => _isInitADLister.value;
+  final RxBool _disableLogin = false.obs;
+  bool get getDisableLogin => _disableLogin.value;
 
-  void isInitListen(bool val) {
-    _isInitADLister.value = val;
+  /// 设置禁止登录
+  void setDisableLogin(bool val) {
+    _disableLogin.value = val;
   }
 
   final RxInt _currentIndex = 0.obs;

@@ -47,10 +47,9 @@ class SplashController extends GetxController {
       Utils.logError("是否封禁返回的数值：$getVer");
       // 如果被封了，就去错误页面
       if (getVer) {
-        BannerTool.to.removeBannerAd();
-        await Store.instance.getServerConfig();
-        Get.offAllNamed(AppRoutes.userError);
+        Store.instance.setDisableLogin(true);
       } else {
+        Store.instance.setDisableLogin(false);
         // /// 上传地址
         // await Store.instance.upAddress();
         //

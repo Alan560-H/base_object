@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:base_object/core/api/api_urls.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/app_keys.dart';
@@ -7,18 +8,19 @@ import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:get/get.dart' as Getx;
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
-
-class CuHttpClient extends Getx.GetxService  {
+class CuHttpClient extends Getx.GetxService {
   final Dio _dio = Dio();
   DioAdapter? _dioAdapter; // 模拟适配器
 
   // 通过Get.find()获取单例实例
   static CuHttpClient get instance => Getx.Get.find<CuHttpClient>();
+
   /// 获取单例
 
   // 初始化方法，在应用启动时通过Get.putAsync()调用
@@ -39,11 +41,11 @@ class CuHttpClient extends Getx.GetxService  {
 
   // 设置模拟响应
   void setupMockResponse(
-      String apiPath,
-      Map<String, dynamic> mockData, {
-        String requestType = 'post',
-        int delaySeconds = 1,
-      }) {
+    String apiPath,
+    Map<String, dynamic> mockData, {
+    String requestType = 'post',
+    int delaySeconds = 1,
+  }) {
     if (_dioAdapter == null) {
       throw Exception("模拟适配器未初始化，请先调用setUseMock(true)");
     }
@@ -52,7 +54,7 @@ class CuHttpClient extends Getx.GetxService  {
       case 'post':
         _dioAdapter!.onPost(
           url,
-              (server) => server.reply(
+          (server) => server.reply(
             200,
             mockData,
             delay: Duration(seconds: delaySeconds),
@@ -62,7 +64,7 @@ class CuHttpClient extends Getx.GetxService  {
       case 'get':
         _dioAdapter!.onGet(
           url,
-              (server) => server.reply(
+          (server) => server.reply(
             200,
             mockData,
             delay: Duration(seconds: delaySeconds),
@@ -75,13 +77,14 @@ class CuHttpClient extends Getx.GetxService  {
   }
 
   Future<BackModel> request(
-      String apiPath,
-      Map<String, dynamic> data, {
-        String requestType = 'post',
-      }) async {
+    String apiPath,
+    Map<String, dynamic> data, {
+    String requestType = 'post',
+  }) async {
     try {
       // 将 data 转换为 JSON 字符串
       String jsonData = jsonEncode(data);
+
       /// 获取token
       String token = await UserInfo.instance.getToken;
       Map<String, dynamic> httpHeaders = {AppKeys.tokenName: token};
@@ -108,7 +111,7 @@ class CuHttpClient extends Getx.GetxService  {
           throw Exception("不支持的请求类型: $requestType");
       }
 
-      return await _parseData(response, url);
+      return await _parseData(response, url, apiPath);
     } catch (e) {
       // 处理其他异常
       BackModel backModel = BackModel();
@@ -119,9 +122,12 @@ class CuHttpClient extends Getx.GetxService  {
   }
 
   /// 格式化返回数据
-  Future<BackModel> _parseData(Response response, String url) async {
+  Future<BackModel> _parseData(
+    Response response,
+    String url,
+    String apiPath,
+  ) async {
     try {
-
       Map<String, dynamic> scores;
       if (response.data is String) {
         scores = json.decode(response.data);
@@ -133,6 +139,7 @@ class CuHttpClient extends Getx.GetxService  {
 
       BackModel backModel = BackModel.fromJson(scores);
       Utils.logError("返回的数据${backModel.toJson()}");
+
       /// 不是100 就代表出错
       if (backModel.code != CuErrorConfig.success) {
         BackModel errorModel = BackModel();
@@ -141,11 +148,9 @@ class CuHttpClient extends Getx.GetxService  {
         errorModel.data = backModel.data;
 
         /// 处理token过期
-        if (
-        backModel.code == CuErrorConfig.err_1000
-            || backModel.code == CuErrorConfig.err10001
-            || backModel.code == CuErrorConfig.err_502
-        ) {
+        if (backModel.code == CuErrorConfig.err_1000 ||
+            backModel.code == CuErrorConfig.err10001 ||
+            backModel.code == CuErrorConfig.err_502) {
           await UserInfo.instance.loginOut();
         }
 
