@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/manager/banner_tool.dart';
@@ -55,8 +56,11 @@ class SplashController extends GetxController {
       bool getVer = await Store.instance.getVer();
 
       Utils.logError("是否封禁返回的数值：$getVer");
+      SplashTool.to.splashListen();
+      SplashTool.to.loadSplash();
       // 如果被封了，就去错误页面
       if (getVer) {
+        CuToast.error(msg: "该设备禁止登录，但可正常进入");
         if (UserInfo.instance.isLoginIn) {
           UserInfo.instance.loginOut();
         }
@@ -71,8 +75,6 @@ class SplashController extends GetxController {
         //
         // /// 获取今日领取了多少个红包
         // await Store.instance.initCurrentCount();
-        SplashTool.to.splashListen();
-        SplashTool.to.loadSplash();
       }
     }
     super.onInit();

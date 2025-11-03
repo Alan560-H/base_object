@@ -41,19 +41,21 @@ class InterAdDialog extends GetxService {
       if (userInfo.isLoginIn) {
         UpDataADForm upDataADForm = UpDataADForm();
 
-        // 1. 安全获取 adsource_price + 处理类型转换（核心改这里）
+        // 1. 安全获取 publisher_revenue_cny + 处理类型转换（核心改这里）
         // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
-        dynamic adSourcePrice = event.extraMap?['adsource_price'];
+        dynamic publisherRevenueCny = event.extraMap?['publisher_revenue_cny'];
         // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
-        double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
+        double? amount = double.tryParse(
+          publisherRevenueCny?.toString() ?? "0",
+        );
         String reqId = event.extraMap?['req_id'];
         String adsourceId = event.extraMap?['adsource_id'];
         // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
         String userId = UserInfo.instance.userModel.id.toString();
         upDataADForm.extra =
-            "userid_${userId}_type_2_amount_${adSourcePrice ?? 0}_time_0";
+            "userid_${userId}_type_2_amount_${publisherRevenueCny ?? 0}_time_0";
         upDataADForm.transId = event.extraMap?['id'];
-        upDataADForm.amount = (amount! / 1000);
+        upDataADForm.amount = amount;
         upDataADForm.adsourceId = adsourceId;
         upDataADForm.reqId = reqId;
         upDataADForm.sign = Utils.generateEncryptedString(
@@ -65,16 +67,18 @@ class InterAdDialog extends GetxService {
         Utils.logError(
           "一：$amount,二：${Store.instance.getFkConfig.wactchMaxAmountV1}，三：插屏广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
         );
+        if (!UserInfo.instance.isLoginIn) return;
+        if (amount == null) return;
+        double amount1 = amount * 10000;
         // 如果金额超出限制，上报异常
-        if (amount > Store.instance.getFkConfig.wactchMaxAmountV1 ||
-            amount < Store.instance.getFkConfig.wactchMinAmountV1) {
+        if (amount1 > Store.instance.getFkConfig.wactchMaxAmountV1 ||
+            amount1 < Store.instance.getFkConfig.wactchMinAmountV1) {
           String msg =
-              "一：$amount,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：插屏广告金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
+              "一：$amount，$amount1,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1 / 10000}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1 / 10000}，三：插屏广告金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
           int type = 2;
 
           Utils.debounce(() async {
             await Store.instance.getVer(type: type, msg: msg);
-            UserInfo.instance.loginOut();
             Get.offAllNamed(AppRoutes.userError);
           }, duration: Duration(seconds: 2));
         }

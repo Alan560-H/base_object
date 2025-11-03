@@ -89,7 +89,7 @@ class RewarderTool extends GetxService {
     try {
       UpDataADForm upDataADForm = UpDataADForm();
       upDataADForm.extra =
-          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event.extraMap['adsource_price']}_time_0";
+          "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event.extraMap['publisher_revenue_cny']}_time_0";
       upDataADForm.transId = event.extraMap?['id'];
       upDataADForm.channelPackage =
           Store.instance.getAppUpLoadModel.channelPackage;
@@ -97,22 +97,24 @@ class RewarderTool extends GetxService {
       Utils.logError("激励视频凑成的字符串${upDataADForm.toJson()}");
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
-      dynamic adSourcePrice = event.extraMap['adsource_price'];
-      double? amount = double.tryParse(adSourcePrice?.toString() ?? "0");
-      upDataADForm.amount = (amount! / 1000);
+      dynamic publisherRevenueCny = event.extraMap['publisher_revenue_cny'];
+      double? amount = double.tryParse(publisherRevenueCny?.toString() ?? "0");
+      upDataADForm.amount = amount;
       Utils.logError(
         "激励广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
       );
+      if (!UserInfo.instance.isLoginIn) return;
+      if (amount == null) return;
+      double amount1 = amount * 10000;
       // 如果金额超出限制，上报异常
-      if (amount > Store.instance.getFkConfig.wactchMaxAmount ||
-          amount < Store.instance.getFkConfig.wactchMinAmount) {
+      if (amount1 > Store.instance.getFkConfig.wactchMaxAmount ||
+          amount1 < Store.instance.getFkConfig.wactchMinAmount) {
         String msg =
-            "一：$amount,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmount}最低限制：${Store.instance.getFkConfig.wactchMinAmount}，三：激励视频金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
+            "一：$amount，$amount1,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1 / 10000}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：激励视频金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
         int type = 2;
 
         Utils.debounce(() async {
           await Store.instance.getVer(type: type, msg: msg);
-          UserInfo.instance.loginOut();
           Get.offAllNamed(AppRoutes.userError);
         }, duration: Duration(seconds: 2));
       }

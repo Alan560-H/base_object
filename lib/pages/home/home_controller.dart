@@ -117,7 +117,9 @@ class HomeController extends GetxController {
   // ------------------- 生命周期 -------------------
   void allInit() async {
     /// 上传地址
-    await Store.instance.getVer(type: 3, msg: "上传地理位置");
+    if (UserInfo.instance.isLoginIn) {
+      await Store.instance.getVer(type: 3, msg: "正常上传地理位置");
+    }
 
     /// 获取风控配置
     await Store.instance.getFkConfigFn();

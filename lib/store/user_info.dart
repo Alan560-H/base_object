@@ -194,6 +194,13 @@ class UserInfo extends GetxController {
   }
 
   /// 退出登录
+  Future<void> loginOutNoGo() async {
+    initUserInfo();
+    await LocalStorage.removeString(AppKeys.userKey);
+    setToken(value: '');
+  }
+
+  /// 退出登录
   Future<void> loginOut() async {
     initUserInfo();
     await LocalStorage.removeString(AppKeys.userKey);
