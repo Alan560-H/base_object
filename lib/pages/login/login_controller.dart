@@ -133,6 +133,10 @@ class LoginController extends GetxController {
       Get.snackbar("提示", "请先同意相关协议再登录");
       return;
     }
+    if (Store.instance.getDisableLogin) {
+      CuToast.error(msg: "您已被限制登录，请联系管理员");
+      return;
+    }
     EasyLoading.show(status: "登录中...");
     fluwx
         .authBy(which: NormalAuth(scope: 'snsapi_userinfo', state: 'app_login'))
