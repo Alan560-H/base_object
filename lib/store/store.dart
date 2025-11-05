@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
@@ -12,6 +13,7 @@ import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart'
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
 import 'package:base_object/models/localModels/LocationData.dart';
+import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
@@ -53,6 +55,127 @@ class Store extends GetxController {
   }
 
   AppUpLoadModel get getAppUpLoadModel => _appUpLoadModel.value;
+
+  /// 副广封禁数组（最高）
+  final RxList<UpADModel> _wactchMaxADList = <UpADModel>[].obs;
+
+  /// 添加副广封禁（最高）
+  void addWactchMaxADList(UpADModel model) async {
+    /// 当副广封禁数组长度大于风控配置的最大封禁数时上传封禁数组。
+    if (_wactchMaxADList.length > _fkConfig.value.wactchMaxV1) {
+      UpADModel firstModel = _wactchMaxADList.first;
+      UpADModel lastModel = _wactchMaxADList.last;
+      num hourDiff = firstModel.createTime.diff(
+        lastModel.createTime,
+        unit: Unit.hour,
+      );
+      bool isOverOneHour = hourDiff.abs() > 1;
+      if (isOverOneHour) {
+        _wactchMaxADList.clear();
+      } else {
+        Utils.logError("当前：${_wactchMaxADList.length}条广告收益超出了最高限制，请联系管理员或明日再来");
+        String msg =
+            "这是副广超出了最高限制：一：最高限制：${getFkConfig.wactchMaxAmountV1}最低限制：${getFkConfig.wactchMinAmountV1}，三：超出最高限制，以及封禁数组情况：${_wactchMaxADList.toString()}";
+        await getVer(type: 2, msg: msg);
+        Get.offAllNamed(AppRoutes.userError);
+      }
+    } else {
+      _wactchMaxADList.add(model);
+      CuToast.error(msg: "副广最高数组长度：${_wactchMaxADList.length}");
+      Utils.logError("副广最高数组长度：${_wactchMaxADList.length}");
+    }
+  }
+
+  /// 副广封禁数组（最低）
+  final RxList<UpADModel> _wactchMinADList = <UpADModel>[].obs;
+
+  /// 添加副广封禁（最低）
+  void addWactchMinADList(UpADModel model) async {
+    /// 当副广封禁数组长度大于风控配置的最大封禁数时上传封禁数组。
+    if (_wactchMinADList.length > _fkConfig.value.wactchMinV1) {
+      UpADModel firstModel = _wactchMinADList.first;
+      UpADModel lastModel = _wactchMinADList.last;
+      num hourDiff = firstModel.createTime.diff(
+        lastModel.createTime,
+        unit: Unit.hour,
+      );
+      bool isOverOneHour = hourDiff.abs() > 1;
+      if (isOverOneHour) {
+        _wactchMinADList.clear();
+      } else {
+        Utils.logError("当前：${_wactchMinADList.length}条广告收益超出了最低限制，请联系管理员或明日再来");
+        String msg =
+            "这是副广超出了最低限制：一：最高限制：${getFkConfig.wactchMaxAmountV1}最低限制：${getFkConfig.wactchMinAmountV1}，三：超出最低限制，以及封禁数组情况：${_wactchMinADList.toString()}";
+        await getVer(type: 2, msg: msg);
+        Get.offAllNamed(AppRoutes.userError);
+      }
+    } else {
+      _wactchMinADList.add(model);
+      CuToast.error(msg: "副广最低数组长度：${_wactchMinADList.length}");
+      Utils.logError("副广最低数组长度：${_wactchMinADList.length}");
+    }
+  }
+
+  /// 主广封禁数组（最低）
+  final RxList<UpADModel> _wactchMainMinADList = <UpADModel>[].obs;
+
+  /// 添加主广封禁（最低）
+  void addWactchMainMinADList(UpADModel model) async {
+    /// 当主广封禁数组长度大于风控配置的最大封禁数时上传封禁数组。
+    if (_wactchMainMinADList.length > _fkConfig.value.wactchMin) {
+      UpADModel firstModel = _wactchMainMinADList.first;
+      UpADModel lastModel = _wactchMainMinADList.last;
+      num hourDiff = firstModel.createTime.diff(
+        lastModel.createTime,
+        unit: Unit.hour,
+      );
+      bool isOverOneHour = hourDiff.abs() > 1;
+      if (isOverOneHour) {
+        _wactchMainMinADList.clear();
+      } else {
+        Utils.logError(
+          "当前：${_wactchMainMinADList.length}条广告收益超出了最低限制，请联系管理员或明日再来",
+        );
+        String msg =
+            "这是主广超出了最低限制：一：最高限制：${getFkConfig.wactchMaxAmount}最低限制：${getFkConfig.wactchMinAmount}，三：超出最低限制，以及封禁数组情况：${_wactchMainMinADList.toString()}";
+        await getVer(type: 2, msg: msg);
+        Get.offAllNamed(AppRoutes.userError);
+      }
+    } else {
+      _wactchMainMinADList.add(model);
+      CuToast.error(msg: "主广最低数组长度：${_wactchMainMinADList.length}");
+    }
+  }
+
+  /// 主广封禁数组（最高）
+  final RxList<UpADModel> _wactchMainMaxADList = <UpADModel>[].obs;
+
+  /// 添加主广封禁（最高）
+  void addWactchMainMaxADList(UpADModel model) async {
+    /// 当主广封禁数组长度大于风控配置的最大封禁数时上传封禁数组。
+    if (_wactchMainMaxADList.length > _fkConfig.value.wactchMax) {
+      UpADModel firstModel = _wactchMainMaxADList.first;
+      UpADModel lastModel = _wactchMainMaxADList.last;
+      num hourDiff = firstModel.createTime.diff(
+        lastModel.createTime,
+        unit: Unit.hour,
+      );
+      bool isOverOneHour = hourDiff.abs() > 1;
+      if (isOverOneHour) {
+        _wactchMainMaxADList.clear();
+      } else {
+        Utils.logError(
+          "当前：${_wactchMainMaxADList.length}条广告收益超出了最高限制，请联系管理员或明日再来",
+        );
+        String msg =
+            "这是主广超出了最高限制：一：最高限制：${getFkConfig.wactchMaxAmount}最低限制：${getFkConfig.wactchMinAmount}，三：超出最高限制，以及封禁数组情况：${_wactchMainMaxADList.toString()}";
+        await getVer(type: 2, msg: msg);
+        Get.offAllNamed(AppRoutes.userError);
+      }
+    } else {
+      _wactchMainMaxADList.add(model);
+    }
+  }
 
   //   风控配置
   final Rx<FKConfigVo> _fkConfig = FKConfigVo().obs;

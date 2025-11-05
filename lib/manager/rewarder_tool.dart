@@ -13,6 +13,7 @@ import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dar
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
@@ -98,6 +99,8 @@ class RewarderTool extends GetxService {
       // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
       // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
       dynamic publisherRevenueCny = event.extraMap['publisher_revenue_cny'];
+      String reqId = event.extraMap?['req_id'];
+      String adsourceId = event.extraMap?['adsource_id'];
       double? amount = double.tryParse(publisherRevenueCny?.toString() ?? "0");
       upDataADForm.amount = amount;
       Utils.logError(
@@ -106,18 +109,34 @@ class RewarderTool extends GetxService {
       if (!UserInfo.instance.isLoginIn) return;
       if (amount == null) return;
       double amount1 = amount * 10000;
-      // 如果金额超出限制，上报异常
-      if (amount1 > Store.instance.getFkConfig.wactchMaxAmount ||
-          amount1 < Store.instance.getFkConfig.wactchMinAmount) {
-        String msg =
-            "一：$amount，$amount1,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1 / 10000}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：激励视频金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
-        int type = 2;
+      UpADModel upADModel = UpADModel(
+        adsourceId: adsourceId,
+        reqId: reqId,
+        adType: "激励广告",
+        adAmount: amount1,
+      );
 
-        Utils.debounce(() async {
-          await Store.instance.getVer(type: type, msg: msg);
-          Get.offAllNamed(AppRoutes.userError);
-        }, duration: Duration(seconds: 2));
+      /// 如果广告金额大于风控设置的最高金额
+      if (amount1 > Store.instance.getFkConfig.wactchMaxAmount) {
+        Store.instance.addWactchMainMaxADList(upADModel);
       }
+
+      /// 如果广告金额小于风控设置得最低金额
+      if (amount1 < Store.instance.getFkConfig.wactchMinAmount) {
+        Store.instance.addWactchMainMinADList(upADModel);
+      }
+      // // 如果金额超出限制，上报异常
+      // if (amount1 > Store.instance.getFkConfig.wactchMaxAmount ||
+      //     amount1 < Store.instance.getFkConfig.wactchMinAmount) {
+      //   String msg =
+      //       "一：$amount，$amount1,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1 / 10000}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：激励视频金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
+      //   int type = 2;
+      //
+      //   Utils.debounce(() async {
+      //     await Store.instance.getVer(type: type, msg: msg);
+      //     Get.offAllNamed(AppRoutes.userError);
+      //   }, duration: Duration(seconds: 2));
+      // }
       await Future.delayed(const Duration(seconds: 2));
       Utils.logError("查询奖励");
 

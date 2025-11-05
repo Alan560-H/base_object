@@ -7,6 +7,7 @@ import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
+import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
@@ -176,17 +177,21 @@ class CuNavBarController extends GetxService {
       if (!UserInfo.instance.isLoginIn) return;
       if (amount == null) return;
       double amount1 = amount * 10000;
-      // 如果金额超出限制，上报异常
-      if (amount1 > Store.instance.getFkConfig.wactchMaxAmountV1 ||
-          amount1 < Store.instance.getFkConfig.wactchMinAmountV1) {
-        String msg =
-            "一：$amount，$amount1，二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：横幅广告金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
-        int type = 2;
+      UpADModel upADModel = UpADModel(
+        adsourceId: adsourceId,
+        reqId: reqId,
+        adType: "横幅广告",
+        adAmount: amount1,
+      );
 
-        Utils.debounce(() async {
-          await Store.instance.getVer(type: type, msg: msg);
-          Get.offAllNamed(AppRoutes.userError);
-        }, duration: Duration(seconds: 2));
+      /// 如果广告金额大于风控设置的最高金额
+      if (amount1 > Store.instance.getFkConfig.wactchMaxAmountV1) {
+        Store.instance.addWactchMaxADList(upADModel);
+      }
+
+      /// 如果广告金额小于风控设置得最低金额
+      if (amount1 < Store.instance.getFkConfig.wactchMinAmountV1) {
+        Store.instance.addWactchMinADList(upADModel);
       }
     } catch (e) {
       Utils.logError("上报副广失败：$e");
