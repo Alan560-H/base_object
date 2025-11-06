@@ -134,7 +134,7 @@ class LoginController extends GetxController {
       return;
     }
     if (Store.instance.getDisableLogin) {
-      CuToast.error(msg: "您已被限制登录，请联系管理员");
+      CuToast.error(msg: "您已被限制登录，请联系管理员或等待零点自动解封");
       return;
     }
     EasyLoading.show(status: "登录中...");
@@ -187,7 +187,7 @@ class LoginController extends GetxController {
   void submitForm() async {
     try {
       if (Store.instance.getDisableLogin) {
-        CuToast.error(msg: "您已被限制登录，请联系管理员");
+        CuToast.error(msg: "您已被限制登录，请联系管理员或等待零点自动解封");
         return;
       }
       EasyLoading.show(status: "登录中...");

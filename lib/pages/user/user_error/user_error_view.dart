@@ -18,6 +18,8 @@ class UserErrorView extends GetView<UserErrorController> {
         () => Container(
           color: TextConfig.commonYellowPageColor,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+
             spacing: 10.h,
             children: [
               CuAppBar(
@@ -40,6 +42,16 @@ class UserErrorView extends GetView<UserErrorController> {
               Text(
                 "微信号：${Store.instance.getServiceTel?.data ?? '呜啦啦'}",
                 style: TextStyle(fontSize: TextConfig.textSize_16),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Text(
+                  controller.errorMsg.value,
+                  style: TextStyle(
+                    color: TextConfig.primary,
+                    fontSize: TextConfig.textSize_16,
+                  ),
+                ),
               ),
             ],
           ),

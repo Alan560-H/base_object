@@ -8,10 +8,14 @@ import 'package:get/get.dart';
 
 class UserErrorController extends GetxController {
   RxString appbarTitle = "设备检查不通过".obs;
-
+  final RxString errorMsg = "".obs; // 存储消息的响应式变量
   @override
   void onInit() {
     super.onInit();
+    // 接收命名路由传递的参数（同样是 Get.arguments）
+    if (Get.arguments != null) {
+      errorMsg.value = Get.arguments as String; // 强转为 String
+    }
     UserInfo.instance.loginOutNoGo();
     BannerTool.to.removeBannerAd();
     NativeTool.to.removeNativeAd();
