@@ -1,5 +1,6 @@
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_empty.dart';
+import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +63,7 @@ class _PbkyyDialogState extends State<PbkyyDialog> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white60,
+                      color: TextConfig.primary,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     constraints: BoxConstraints(
@@ -106,8 +107,8 @@ class _PbkyyDialogState extends State<PbkyyDialog> {
                                         decoration: BoxDecoration(
                                           color:
                                               index == i
-                                                  ? Colors.white
-                                                  : Colors.transparent,
+                                                  ? TextConfig.primary
+                                                  : Colors.white,
                                           borderRadius: BorderRadius.circular(
                                             5.w,
                                           ),

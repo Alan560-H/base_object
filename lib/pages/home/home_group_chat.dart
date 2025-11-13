@@ -181,24 +181,24 @@ class HomeGroupChat extends GetxService {
       }
       bool isHasNative = false;
 
-      // /// 生成信息流
-      // if (isAddNative) {
-      //   // 如果有缓存，则添加
-      //   if (NativeTool.to.isViewCreated.value) {
-      //     Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
-      //     content = await getNativeView();
-      //     _autoMessageTimer?.cancel();
-      //     _autoMessageTimer = null;
-      //     // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
-      //     Future.delayed(const Duration(seconds: 20), () {
-      //       removeAdContainer();
-      //       Utils.logError("又开始启动啦定时器1");
-      //       _startAutoMessageTimer();
-      //     });
-      //   }
-      //   isAddNative = false;
-      //   isHasNative = true;
-      // }
+      /// 生成信息流
+      if (isAddNative) {
+        // 如果有缓存，则添加
+        if (NativeTool.to.isViewCreated.value) {
+          Utils.logError("给广告赋值：${NativeTool.to.isViewCreated.value}");
+          content = await getNativeView();
+          _autoMessageTimer?.cancel();
+          _autoMessageTimer = null;
+          // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
+          Future.delayed(const Duration(seconds: 20), () {
+            removeAdContainer();
+            Utils.logError("又开始启动啦定时器1");
+            _startAutoMessageTimer();
+          });
+        }
+        isAddNative = false;
+        isHasNative = true;
+      }
       // 3. 创建消息对象
       final ChatMessage newMessage = ChatMessage(
         id: DateTime.now().microsecondsSinceEpoch.toString(),

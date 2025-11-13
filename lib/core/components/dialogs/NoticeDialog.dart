@@ -104,7 +104,7 @@ class _NoticeDialogState extends State<NoticeDialog> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white60,
+                      color: TextConfig.primary,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     constraints: BoxConstraints(
@@ -148,8 +148,8 @@ class _NoticeDialogState extends State<NoticeDialog> {
                                         decoration: BoxDecoration(
                                           color:
                                               index == i
-                                                  ? Colors.white
-                                                  : Colors.transparent,
+                                                  ? TextConfig.primary
+                                                  : Colors.white,
                                           borderRadius: BorderRadius.circular(
                                             5.w,
                                           ),
