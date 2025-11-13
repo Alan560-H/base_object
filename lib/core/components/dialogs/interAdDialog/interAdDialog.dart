@@ -40,6 +40,8 @@ class InterAdDialog extends GetxService {
     try {
       UserInfo userInfo = UserInfo.instance;
       if (userInfo.isLoginIn) {
+        await Store.instance.checkFkConfig();
+
         UpDataADForm upDataADForm = UpDataADForm();
 
         // 1. 安全获取 publisher_revenue_cny + 处理类型转换（核心改这里）

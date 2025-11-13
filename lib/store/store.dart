@@ -179,15 +179,33 @@ class Store extends GetxController {
 
   //   风控配置
   final Rx<FKConfigVo> _fkConfig = FKConfigVo().obs;
-  void setFKConfigVo(FKConfigVo data) {
+  Future<void> setFKConfigVo(FKConfigVo data) async {
     _fkConfig.value = data;
+    await LocalStorage.setString(AppKeys.fkConfig, data);
+  }
+
+  Future<void> checkFkConfig() async {
+    if (getFkConfig.wactchMaxAmountV1 >= 0) {
+      FKConfigVo? cachedConfig = await LocalStorage.getObject<FKConfigVo>(
+        AppKeys.fkConfig,
+        (json) => FKConfigVo.fromJson(json),
+      );
+      Utils.logError("本地存储得风控配置是${cachedConfig?.toJson()}");
+      if (cachedConfig == null) return;
+      if (cachedConfig.wactchMaxAmountV1 > 0) {
+        setFKConfigVo(cachedConfig);
+      } else {
+        LocalStorage.removeString(AppKeys.fkConfig);
+        getFkConfigFn();
+      }
+    }
   }
 
   /// 获取风控配置
   Future<void> getFkConfigFn() async {
     try {
       FKConfigVo data = await Api.to.getFkConfig();
-      setFKConfigVo(data);
+      await setFKConfigVo(data);
       Utils.logError("风控设置：${getFkConfig.toJson()}");
     } catch (e) {
       Utils.logError("获取风控配置失败$e");

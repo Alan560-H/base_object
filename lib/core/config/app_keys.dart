@@ -16,4 +16,5 @@ class AppKeys {
 
   /// 禁止登录
   static String disableLogin = "disable_login";
+  static String fkConfig = "fkConfig";
 }

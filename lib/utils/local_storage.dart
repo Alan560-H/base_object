@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 /// 本地数据存储工具类
 class LocalStorage {
   static const String userInfoKey = 'user_info'; // 用户信息存储键
@@ -23,6 +22,28 @@ class LocalStorage {
     }
   }
 
+  /// 新增：获取对象
+  /// [fromJson] 是一个工厂构造函数或静态方法，用于将 Map 转换回对象，例如 `User.fromJson`
+  static Future<T?> getObject<T>(
+    String key,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    try {
+      // 获取存储的 JSON 字符串
+      String? jsonString = await getString(key);
+      if (jsonString == null) {
+        return null;
+      }
+      // 将 JSON 字符串解码为 Map
+      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      // 使用传入的 fromJson 方法将 Map 转换为目标对象
+      return fromJson(jsonMap);
+    } catch (e) {
+      print('Error retrieving object: $e');
+      return null;
+    }
+  }
+
   /// 移除指定键的数据
   static Future<bool> removeString(String key) async {
     try {
@@ -32,7 +53,6 @@ class LocalStorage {
       return false;
     }
   }
-
 
   /// 清除一天的数据
   static Future<void> clearOneDayData() async {

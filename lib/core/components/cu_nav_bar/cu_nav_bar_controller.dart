@@ -1,17 +1,20 @@
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
+import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
 import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:base_object/utils/local_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
@@ -142,6 +145,7 @@ class CuNavBarController extends GetxService {
   }
 
   upDataADFn(dynamic event) async {
+    await Store.instance.checkFkConfig();
     try {
       Utils.logError(
         "${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告upDataADFn${event.extraMap}",
@@ -176,6 +180,8 @@ class CuNavBarController extends GetxService {
       );
       if (!UserInfo.instance.isLoginIn) return;
       if (amount == null) return;
+      // 如果最高限制金币为0，判断可能没获取到风控配置，此时要去本地存储获取配置
+
       double amount1 = amount * 10000;
       UpADModel upADModel = UpADModel(
         adsourceId: adsourceId,

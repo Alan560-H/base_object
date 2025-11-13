@@ -88,6 +88,8 @@ class RewarderTool extends GetxService {
   // 查询激励广告奖励
   checkRewarderAd(dynamic event) async {
     try {
+      await Store.instance.checkFkConfig();
+
       UpDataADForm upDataADForm = UpDataADForm();
       upDataADForm.extra =
           "userid_${UserInfo.instance.userModel.id}_type_1_amount_${event.extraMap['publisher_revenue_cny']}_time_0";
@@ -125,18 +127,7 @@ class RewarderTool extends GetxService {
       if (amount1 < Store.instance.getFkConfig.wactchMinAmount) {
         Store.instance.addWactchMainMinADList(upADModel);
       }
-      // // 如果金额超出限制，上报异常
-      // if (amount1 > Store.instance.getFkConfig.wactchMaxAmount ||
-      //     amount1 < Store.instance.getFkConfig.wactchMinAmount) {
-      //   String msg =
-      //       "一：$amount，$amount1,二：最高限制：${Store.instance.getFkConfig.wactchMaxAmountV1 / 10000}最低限制：${Store.instance.getFkConfig.wactchMinAmountV1}，三：激励视频金额超出限制${upDataADForm.toJson()}，四：塔酷广告回调信息：${event.extraMap}";
-      //   int type = 2;
-      //
-      //   Utils.debounce(() async {
-      //     await Store.instance.getVer(type: type, msg: msg);
-      //     Get.offAllNamed(AppRoutes.userError);
-      //   }, duration: Duration(seconds: 2));
-      // }
+
       await Future.delayed(const Duration(seconds: 2));
       Utils.logError("查询奖励");
 
