@@ -247,7 +247,7 @@ class InviteView extends GetView<InviteController> {
                                   "学习赚钱技巧，尽在用户交流群",
                                   style: TextStyle(
                                     fontSize: TextConfig.textSize_12,
-                                    color: TextConfig.primary,
+                                    color: Colors.white70,
                                   ),
                                 ),
                               ),

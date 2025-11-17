@@ -99,11 +99,11 @@ class HomeView extends GetView<HomeController> {
                       top: Get.height / 2 - 100.h,
                       left: 0,
                       child: CuCircularProgressView(
-                        imagePath: ImageConfig.progressBg,
+                        imagePath: ImageConfig.logo,
                         size: 60.h, // 自定义进度条大小
                         strokeWidth: 5.h, // 自定义进度条宽度
                         progressColor: TextConfig.primary, // 自定义进度色（橙色）
-                        backgroundColor: TextConfig.black333, // 自定义背景色
+                        backgroundColor: Colors.white70, // 自定义背景色
                       ),
                     ),
                     // 看广小技巧

@@ -164,10 +164,10 @@ class UserView extends GetView<UserController> {
                       padding: EdgeInsets.symmetric(horizontal: 20.w),
                       width: Get.width,
                       height: 40.h,
-                      child: Marquee(
-                        text: '本平台不存在任何收费项目，请勿轻信广告内容，谨防诈骗。',
-                        style: TextStyle(color: Colors.white70),
-                      ),
+                      // child: Marquee(
+                      //   text: '本平台不存在任何收费项目，请勿轻信广告内容，谨防诈骗。',
+                      //   style: TextStyle(color: Colors.white70),
+                      // ),
                     ),
                   ],
                 ),

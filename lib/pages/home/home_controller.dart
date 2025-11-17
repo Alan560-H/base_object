@@ -173,5 +173,5 @@ class HomeController extends GetxController {
   }
 
   // ------------------- 响应式状态 -------------------
-  final RxString appbarTitle = "红包群".obs; // 导航栏标题
+  final RxString appbarTitle = "首页".obs; // 导航栏标题
 }

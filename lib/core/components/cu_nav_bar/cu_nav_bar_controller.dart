@@ -91,7 +91,7 @@ class CuNavBarController extends GetxService {
     menuModels = [
       _createMenuModel(
         0,
-        "红包群",
+        "抢红包",
         false,
         ImageConfig.redBagDefatult,
         ImageConfig.redBagActive,
@@ -113,14 +113,14 @@ class CuNavBarController extends GetxService {
       // ),
       _createMenuModel(
         1,
-        "邀请",
+        "分享",
         false,
         ImageConfig.inviteDefault,
         ImageConfig.inviteActive,
       ),
       _createMenuModel(
         2,
-        "我的",
+        "个人中心",
         false,
         ImageConfig.myDefatult,
         ImageConfig.myActive,

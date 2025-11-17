@@ -33,6 +33,11 @@ class SplashController extends GetxController
   }
 
   late AnimationController animationController;
+  @override
+  void onClose() {
+    animationController.dispose();
+    super.onClose();
+  }
 
   @override
   void onInit() async {

@@ -17,41 +17,40 @@ class InviteController extends GetxController {
   List<MenuModel> menuList = [
     MenuModel(
       id: 0,
-      menuName: "我的钱包",
+      menuName: "钱包",
       path: AppRoutes.userWallet,
-      icon: Icons.shopping_bag,
+      icon: Icons.shopping_bag_outlined,
     ),
     MenuModel(
       id: 1,
       path: AppRoutes.userEarnings,
-      menuName: "我的收益",
-      icon: Icons.share,
+      menuName: "收益",
+      icon: Icons.account_balance_wallet_outlined,
     ),
     MenuModel(
       id: 2,
-      menuName: "我的徒弟",
+      menuName: "粉丝",
       path: AppRoutes.userSon,
-      icon: Icons.supervisor_account,
+      icon: Icons.add_box_outlined,
     ),
     MenuModel(
       id: 3,
       path: AppRoutes.userEditInfo,
-      menuName: "我的资料",
-      icon: Icons.info,
+      menuName: "资料",
+      icon: Icons.info_outline_rounded,
     ),
   ];
-  void getMyInviteInfo()async {
-    try{
-      if(userInfo.isLoginIn){
+  void getMyInviteInfo() async {
+    try {
+      if (userInfo.isLoginIn) {
         EasyLoading.show();
         userInviteInfoModel.value = await Api().getMyInviteInfo();
         Utils.logError("我的邀请数据 ${userInviteInfoModel.toJson()}");
       }
-    }catch(e){
+    } catch (e) {
       Utils.logError("getMyInviteInfo 邀请界面报错：$e");
-    }finally{
+    } finally {
       EasyLoading.dismiss();
     }
   }
-
 }

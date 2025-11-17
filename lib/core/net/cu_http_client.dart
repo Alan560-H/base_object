@@ -138,7 +138,7 @@ class CuHttpClient extends Getx.GetxService {
       }
 
       BackModel backModel = BackModel.fromJson(scores);
-      Utils.logError("返回的数据${backModel.toJson()}");
+      Utils.logError("返回的数据${backModel.toJson()}，接口地址是：$apiPath");
 
       /// 不是100 就代表出错
       if (backModel.code != CuErrorConfig.success) {
