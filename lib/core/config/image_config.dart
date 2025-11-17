@@ -25,6 +25,10 @@ class ImageConfig {
   static String firstBotton =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_botton.png";
 
+  /// 启动页背景 背景（米多多）
+  static String mddSplach =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/mdd_splach.png";
+
   /// 进度条图片
   static String progressBg =
       "${AppConfig.instance.getImgUrl}/AdObject/common/progress_bg.png";
@@ -35,7 +39,7 @@ class ImageConfig {
 
   /// logo
   static String logo =
-      "${AppConfig.instance.getImgUrl}/AdObject/common/logo.png";
+      "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
 
   /// logokh
   static String logokh =

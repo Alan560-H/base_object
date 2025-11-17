@@ -12,10 +12,12 @@ import 'package:base_object/utils/DeviceChecker.dart';
 import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
-class SplashController extends GetxController {
+class SplashController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   /// 初始化广告
   Future<void> initAd() async {
     InitTool.to.setCustomDataDic({
@@ -30,8 +32,15 @@ class SplashController extends GetxController {
     // Utils.logError("日志打印是否开启 $isLog");
   }
 
+  late AnimationController animationController;
+
   @override
   void onInit() async {
+    // TODO: implement initState
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat();
     EasyLoading.show(status: "检测设备中..");
 
     /// 初始化广告

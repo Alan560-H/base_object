@@ -51,6 +51,11 @@ android {
             dimension = "channel"
             manifestPlaceholders["channel"] = "maingfkh"
         }
+        // 米多多
+        create("mdd") {
+            dimension = "channel"
+            manifestPlaceholders["channel"] = "mdd"
+        }
 
     }
     // 添加签名配置
