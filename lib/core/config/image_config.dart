@@ -37,12 +37,11 @@ class ImageConfig {
   static String newUser1 =
       "${AppConfig.instance.getImgUrl}/AdObject/common/newUser1.png";
 
-  /// logo
+  /// logo-米多多
+  // static String logo =
+  //     "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
+  /// logo-如意开盒
   static String logo =
-      "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
-
-  /// logokh
-  static String logokh =
       "${AppConfig.instance.getImgUrl}/AdObject/common/logokh.png";
 
   /// 登录微信背景

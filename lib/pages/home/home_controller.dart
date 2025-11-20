@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
+import 'package:base_object/core/components/dialogs/WeiHuDialog.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
@@ -146,15 +147,17 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-    // 开启广告监听器
-    InterstitialTool.to.interstitialListen();
-    NativeTool.to.nativeLisListen();
 
-    InterstitialTool.to.loadInterstitialAd();
-
-    NativeTool.to.loadNativeWith();
-    HomeGroupChat.to.homeGroupChatInit();
-    allInit();
+    //
+    // // 开启广告监听器
+    // InterstitialTool.to.interstitialListen();
+    // NativeTool.to.nativeLisListen();
+    //
+    // InterstitialTool.to.loadInterstitialAd();
+    //
+    // NativeTool.to.loadNativeWith();
+    // HomeGroupChat.to.homeGroupChatInit();
+    // allInit();
 
     super.onInit();
   }
@@ -169,6 +172,7 @@ class HomeController extends GetxController {
   void onReady() {
     Utils.logError("首页页面onReady");
     // TODO: implement onReady
+    Get.dialog(barrierDismissible: false, WeiHuDialog());
     super.onReady();
   }
 
