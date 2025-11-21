@@ -2,8 +2,10 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -26,6 +28,14 @@ class _WeiHuDialogState extends State<WeiHuDialog> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (UserInfo.instance.isLoginIn) {
+        UserInfo.instance.loginOut();
+      }
+      Future.delayed(Duration(seconds: 6), () {
+        SystemNavigator.pop();
+      });
+    });
   }
 
   @override
@@ -99,14 +109,25 @@ class _WeiHuDialogState extends State<WeiHuDialog> {
                             ),
                           ),
                           Expanded(
-                            child: Center(
-                              child: Text(
-                                "当前版本维护中，暂不支持使用",
-                                style: TextStyle(
-                                  fontSize: TextConfig.textSize_20,
-                                  color: Colors.white,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              spacing: 10.h,
+                              children: [
+                                Text(
+                                  "当前版本维护中，暂不支持使用",
+                                  style: TextStyle(
+                                    fontSize: TextConfig.textSize_20,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  "系统于6秒后自动退出",
+                                  style: TextStyle(
+                                    fontSize: TextConfig.textSize_20,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
