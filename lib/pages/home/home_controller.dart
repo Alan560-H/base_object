@@ -148,16 +148,15 @@ class HomeController extends GetxController {
   void onInit() {
     Utils.logError("首页页面onInit");
 
-    //
-    // // 开启广告监听器
-    // InterstitialTool.to.interstitialListen();
-    // NativeTool.to.nativeLisListen();
-    //
-    // InterstitialTool.to.loadInterstitialAd();
-    //
-    // NativeTool.to.loadNativeWith();
-    // HomeGroupChat.to.homeGroupChatInit();
-    // allInit();
+    // 开启广告监听器
+    InterstitialTool.to.interstitialListen();
+    NativeTool.to.nativeLisListen();
+
+    InterstitialTool.to.loadInterstitialAd();
+
+    NativeTool.to.loadNativeWith();
+    HomeGroupChat.to.homeGroupChatInit();
+    allInit();
 
     super.onInit();
   }
@@ -172,7 +171,8 @@ class HomeController extends GetxController {
   void onReady() {
     Utils.logError("首页页面onReady");
     // TODO: implement onReady
-    Get.dialog(barrierDismissible: false, WeiHuDialog());
+    // 打开维护弹窗
+    // Get.dialog(barrierDismissible: false, WeiHuDialog());
     super.onReady();
   }
 

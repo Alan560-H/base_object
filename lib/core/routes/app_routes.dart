@@ -60,4 +60,7 @@ abstract class AppRoutes {
 
   /// 提现记录
   static const userWithdrawalHistory = "/user/withdrawalHistory";
+
+  /// 任务大厅
+  static const task = "/task";
 }

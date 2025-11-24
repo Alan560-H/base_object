@@ -2,9 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'BackModel.g.dart';
 
-/// 手动构建： flutter packages pub run build_runner build
-/// 全部构建:  flutter packages pub run build_runner build --delete-conflicting-outputs
-/// 自动构建:  flutter packages pub run build_runner watch
+/// 手动构建： dart pub run build_runner build
+/// 全部构建:  dart run build_runner build --delete-conflicting-outputs
+/// 自动构建:  dart pub run build_runner watch
 @JsonSerializable()
 class BackModel {
   String code = '';

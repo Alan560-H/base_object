@@ -38,11 +38,12 @@ class ImageConfig {
       "${AppConfig.instance.getImgUrl}/AdObject/common/newUser1.png";
 
   /// logo-米多多
-  // static String logo =
-  //     "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
-  /// logo-如意开盒
   static String logo =
-      "${AppConfig.instance.getImgUrl}/AdObject/common/logokh.png";
+      "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
+
+  /// logo-如意开盒
+  // static String logo =
+  //     "${AppConfig.instance.getImgUrl}/AdObject/common/logokh.png";
 
   /// 登录微信背景
   static String loginBg1 =
@@ -141,6 +142,15 @@ class ImageConfig {
   static String myDefatult =
       "${AppConfig.instance.getImgUrl}/AdObject/navIcon/myDefatult.png";
   //   ————————————————————底部导航结束——————————————————————
+  //   ————————————————————任务大厅——————————————————————
+  /// 签到图标
+  static String checkInIcon =
+      "${AppConfig.instance.getImgUrl}/AdObject/taskIcon/check_in.png";
+  /// 看广告低保
+  static String videoAd =
+      "${AppConfig.instance.getImgUrl}/AdObject/taskIcon/video_ad.png";
+
+  //   ————————————————————结束——————————————————————
   //   ————————————————————user结束——————————————————————
   /// 我的金币概括
   static String userMenoyCardBg =

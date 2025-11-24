@@ -6,6 +6,7 @@ import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
+import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
@@ -100,6 +101,16 @@ class Api extends GetxService {
       return [];
     }
     return NoticeModel.fromJsonList(backModel.data);
+  }
+
+  /// 获取任务列表
+  Future<List<TaskModel>> postTask(FormModel data) async {
+    BackModel backModel = await _sendRequest(ApiUrls.getTask, data, "post");
+    if (backModel.data == null) {
+      Utils.logError("任务列表返回为空");
+      return [];
+    }
+    return TaskModel.fromJsonList(backModel.data);
   }
 
   /// 获取客服配置{"channelPackage":"com.ruyimh.maingf"}

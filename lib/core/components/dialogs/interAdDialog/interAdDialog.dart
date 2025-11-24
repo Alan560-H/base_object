@@ -115,7 +115,7 @@ class InterAdDialog extends GetxService {
 
         if (isInterReady) {
           if (Store.instance.isLimit) return;
-          await InterstitialTool.to.showInterstitialAdFlutter();
+          // await InterstitialTool.to.showInterstitialAdFlutter();
         } else {
           Get.snackbar("提示", "插屏广告加载失败");
         }

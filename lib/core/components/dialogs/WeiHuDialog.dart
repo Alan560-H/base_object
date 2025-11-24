@@ -21,7 +21,7 @@ class WeiHuDialog extends StatefulWidget {
 
 class _WeiHuDialogState extends State<WeiHuDialog> {
   List<NoticeModel> noticeList = [];
-  bool _loadding = true;
+  final _loadding = true;
   // 当前条目索引
   int index = 0;
 

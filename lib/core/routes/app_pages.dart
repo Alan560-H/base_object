@@ -15,6 +15,8 @@ import 'package:base_object/pages/login/login_view.dart';
 import 'package:base_object/pages/short_video/short_video_view.dart';
 import 'package:base_object/pages/splash_page/splash_binding.dart';
 import 'package:base_object/pages/splash_page/splash_view.dart';
+import 'package:base_object/pages/task_page/task_binding.dart';
+import 'package:base_object/pages/task_page/task_view.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_binding.dart';
 import 'package:base_object/pages/user/leader_recruit/leader_recruit_view.dart';
 import 'package:base_object/pages/user/tixian/tixian_binding.dart';
@@ -65,6 +67,12 @@ class AppPages {
     GetPage(
       name: AppRoutes.home,
       page: () => HomeView(),
+      middlewares: [AuthMiddleware()], // 路由守卫
+    ),
+    GetPage(
+      name: AppRoutes.task,
+      page: () => TaskView(),
+      binding: TaskBinding(),
       middlewares: [AuthMiddleware()], // 路由守卫
     ),
     GetPage(

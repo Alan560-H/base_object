@@ -8,6 +8,9 @@ class ApiUrls {
   /// 获取公告
   static const String getNotice = "/v1/announce/list";
 
+  /// 获取任务列表
+  static const String getTask = "/v1/task/list";
+
   /// 新人福利
   static const String getNewcomerConfig = "/v1/benefit/newcomerConfig";
 
