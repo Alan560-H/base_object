@@ -60,43 +60,43 @@ class SplashView extends GetView<SplashController> {
       body: SizedBox(
         width: Get.width,
         height: Get.height,
-        child: Column(
-          // alignment: Alignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        child: Stack(
+          alignment: Alignment.center,
 
+          // mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            CachedNetworkImage(imageUrl: ImageConfig.firstTitle),
-            CachedNetworkImage(imageUrl: ImageConfig.firstBotton),
-            // CachedNetworkImage(
-            //   height: Get.height,
-            //   width: Get.width,
-            //   imageUrl: ImageConfig.mddSplach,
-            //   fit: BoxFit.cover,
-            // ),
-            // Positioned(
-            //   child: SizedBox(
-            //     height: 100.h,
-            //     width: 100.w,
-            //     child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         SizedBox(
-            //           height: 50.w,
-            //           width: 50.w,
-            //           child: CircularProgressIndicator(
-            //             backgroundColor: Colors.transparent,
-            //             valueColor: const AlwaysStoppedAnimation<Color>(
-            //               Colors.red,
-            //             ), // 进度条颜色
-            //             strokeWidth: 5.sp, // 进度条粗细
-            //           ),
-            //         ),
-            //         SizedBox(height: 16.sp),
-            //         _buildLoadingText(),
-            //       ],
-            //     ),
-            //   ),
-            // ),
+            // CachedNetworkImage(imageUrl: ImageConfig.firstTitle),
+            // CachedNetworkImage(imageUrl: ImageConfig.firstBotton),
+            CachedNetworkImage(
+              height: Get.height,
+              width: Get.width,
+              imageUrl: ImageConfig.mddSplach,
+              fit: BoxFit.cover,
+            ),
+            Positioned(
+              child: SizedBox(
+                height: 100.h,
+                width: 100.w,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 50.w,
+                      width: 50.w,
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Colors.red,
+                        ), // 进度条颜色
+                        strokeWidth: 5.sp, // 进度条粗细
+                      ),
+                    ),
+                    SizedBox(height: 16.sp),
+                    _buildLoadingText(),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -64,7 +64,13 @@ class HomeUtils {
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
     Utils.logError("返回的版本信息：${appUpLoadModel.toJson()}");
     // 补充设备信息
-    appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
+    try {
+      appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
+    } catch (e) {
+      Utils.logError("获取oaid失败：$e");
+      appUpLoadModel.oaid = "";
+    }
+
     Utils.logError("oaid是：${appUpLoadModel.oaid}");
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;

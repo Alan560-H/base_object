@@ -9,10 +9,11 @@ class AppConfig extends GetxController {
   /// 获取wx_appid
   /// 如意开盒
   String get wxAppId => "wxfb5af9767e77b130";
+
   /// 如意盒子
   // String get wxAppId => "wx5ef2b08e4bb891e4";
 
-  /// 高德appkey
+  /// 高德appkey(如意开盒 com.ruyimh）
   String get mapKey => "99ee090365d57e359d2a5ceb2dd89a3c";
 
   /// 获取app 下载地址

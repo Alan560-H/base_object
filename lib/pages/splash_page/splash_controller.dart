@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/routes/app_routes.dart';
@@ -28,8 +29,7 @@ class SplashController extends GetxController
     bool isInitAd = await InitTool.to.initTopon();
     Utils.logError("广告初始化完成 $isInitAd ");
     // 打开广告插件日志
-    bool isLog = await InitTool.to.setLogEnabled();
-    // Utils.logError("日志打印是否开启 $isLog");
+    await InitTool.to.setLogEnabled();
   }
 
   late AnimationController animationController;
@@ -39,24 +39,19 @@ class SplashController extends GetxController
     super.onClose();
   }
 
-  @override
-  void onInit() async {
-    // TODO: implement initState
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..repeat();
+  void allInit() async {
     EasyLoading.show(status: "检测设备中..");
+    bool isPermission = await PermissionManager.requestAllPermissions();
+    Utils.logError(isPermission);
+
+    /// 检测设备
+    await DeviceChecker.isAllCheckr();
 
     /// 初始化广告
     initAd();
 
     /// 初始化开屏广告
     SplashTool.to.splashListen();
-    bool isPermission = await PermissionManager.requestAllPermissions();
-    Utils.logError(isPermission);
-    bool isAllCheck = await DeviceChecker.isAllCheckr();
-    // 获取地理位置
     await LocationUtil().getCurrentLocation((Map result) async {
       Utils.logError("定位结果：$result");
       LocationData locationData = LocationData(
@@ -66,31 +61,32 @@ class SplashController extends GetxController
       );
       Store.instance.setLocationData(locationData);
     });
-    if (isAllCheck) {
-      bool getVer = await Store.instance.getVer();
+    bool getVer = await Store.instance.getVer();
 
-      Utils.logError("是否封禁返回的数值：$getVer");
-      SplashTool.to.splashListen();
-      SplashTool.to.loadSplash();
-      // 如果被封了，就去错误页面
-      if (getVer) {
-        CuToast.error(msg: "该设备禁止登录，但可正常进入");
-        if (UserInfo.instance.isLoginIn) {
-          UserInfo.instance.loginOut();
-        }
-        Store.instance.setDisableLogin(true);
-      } else {
-        Store.instance.setDisableLogin(false);
-        // /// 上传地址
-        // await Store.instance.upAddress();
-        //
-        // /// 获取风控配置
-        // await Store.instance.getFkConfigFn();
-        //
-        // /// 获取今日领取了多少个红包
-        // await Store.instance.initCurrentCount();
+    Utils.logError("是否封禁返回的数值：$getVer");
+    SplashTool.to.splashListen();
+    SplashTool.to.loadSplash();
+    // 如果被封了，就去错误页面
+    if (getVer) {
+      CuToast.error(msg: "该设备禁止登录，但可正常进入");
+      if (UserInfo.instance.isLoginIn) {
+        UserInfo.instance.loginOut();
       }
+      Store.instance.setDisableLogin(true);
+    } else {
+      Store.instance.setDisableLogin(false);
     }
+  }
+
+  @override
+  void onInit() async {
+    // TODO: implement initState
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat();
+
     super.onInit();
+    allInit();
   }
 }

@@ -34,6 +34,9 @@ android {
         // 新增：限制 APK 只包含 arm64-v8a 架构
         ndk {
             abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("x86_64")
+            abiFilters.add("x86")
         }
         manifestPlaceholders.put("APPLOG_SCHEME", "rangersapplog.dc6f26f3112ee022".lowercase())
     }
@@ -58,36 +61,36 @@ android {
         }
 
     }
-    // 添加签名配置
-//    signingConfigs {
-//        create("release") {  // 定义名为 "release" 的签名配置
-//            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
-//            storePassword = "aa123456"  // 密钥库密码
-//            keyAlias = "cjbao"            // 密钥别名
-//            keyPassword = "aa123456"      // 密钥密码
-//        }
-//        create("customDebug") {  // 定义名为 "release" 的签名配置
-//            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
-//            storePassword = "aa123456"  // 密钥库密码
-//            keyAlias = "cjbao"            // 密钥别名
-//            keyPassword = "aa123456"      // 密钥密码
-//        }
-//    }
-    /// 如意盒子，jks
+    // 添加签名配置 如意开盒（传家宝）
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
-            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
-            storePassword = "usxw4fQ4"  // 密钥库密码
-            keyAlias = "ym251627"            // 密钥别名
-            keyPassword = "usxw4fQ4"      // 密钥密码
+            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
+            storePassword = "aa123456"  // 密钥库密码
+            keyAlias = "cjbao"            // 密钥别名
+            keyPassword = "aa123456"      // 密钥密码
         }
         create("customDebug") {  // 定义名为 "release" 的签名配置
-            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
-            storePassword = "usxw4fQ4"  // 密钥库密码
-            keyAlias = "ym251627"            // 密钥别名
-            keyPassword = "usxw4fQ4"      // 密钥密码
+            storeFile = file("cjbao.jks")  // 替换为你的签名文件名
+            storePassword = "aa123456"  // 密钥库密码
+            keyAlias = "cjbao"            // 密钥别名
+            keyPassword = "aa123456"      // 密钥密码
         }
     }
+    /// 如意盒子，jks（米多多）
+//    signingConfigs {
+//        create("release") {  // 定义名为 "release" 的签名配置
+//            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
+//            storePassword = "usxw4fQ4"  // 密钥库密码
+//            keyAlias = "ym251627"            // 密钥别名
+//            keyPassword = "usxw4fQ4"      // 密钥密码
+//        }
+//        create("customDebug") {  // 定义名为 "release" 的签名配置
+//            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
+//            storePassword = "usxw4fQ4"  // 密钥库密码
+//            keyAlias = "ym251627"            // 密钥别名
+//            keyPassword = "usxw4fQ4"      // 密钥密码
+//        }
+//    }
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

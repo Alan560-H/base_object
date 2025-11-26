@@ -2,14 +2,21 @@ import 'dart:io';
 
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:emulator_checker/emulator_checker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:safe_device/safe_device.dart';
 import 'package:sim_card_info/sim_card_info.dart';
 import 'package:flutter/services.dart';
 import 'package:sim_card_info/sim_info.dart';
 import 'package:vpn_connection_detector/vpn_connection_detector.dart';
 
 class DeviceChecker {
+  static _cuMsg(String msg) async {
+    CuToast.error(msg: msg);
+    await Future.delayed(const Duration(seconds: 2));
+    SystemNavigator.pop();
+  }
+
   /// 检查是否插卡 true:插卡了，false：没有插卡
   static Future<bool> hasSimCard() async {
     try {
@@ -17,29 +24,42 @@ class DeviceChecker {
       bool hasSim = simCards?.isNotEmpty ?? false;
       Utils.logError("是否插卡：$hasSim");
       EasyLoading.show(status: "是否插卡：$hasSim");
-
+      if (!hasSim) {
+        await _cuMsg("请插入SIM卡");
+      }
       return hasSim;
     } catch (e) {
       return false;
     }
   }
 
-  /// 检查是否开启开发者模式（仅Android）
+  /// 检查是否开启蓝牙 true:开启了蓝牙，false：没有开启蓝牙
+  static Future<bool> isBluetoothActive() async {
+    try {
+      bool isBluetoothOpen = await Permission.bluetooth.isGranted;
+      Utils.logError("是否开启蓝牙：$isBluetoothOpen");
+      EasyLoading.show(status: "是否开启蓝牙：$isBluetoothOpen");
+      if (!isBluetoothOpen) {
+        await _cuMsg("请关闭蓝牙后再重新打开本程序");
+      }
+      return isBluetoothOpen;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// 检查是否开启开发者模式（仅Android） true:开启了开发者模式，false：没开
   static Future<bool> isDeveloperModeEnabled() async {
     try {
       if (Platform.isAndroid) {
-        // 需要通过MethodChannel调用原生方法获取开发者模式状态
-        const platform = MethodChannel('com.example.riskcontrol');
-        bool isDeveloperMode = await platform.invokeMethod(
-          'isDeveloperModeEnabled',
-        );
-        Utils.logError("是否开启开发者模式：$isDeveloperMode");
-        print("是否开启开发者模式：$isDeveloperMode");
+        bool isDevelopmentModeEnable = await SafeDevice.isDevelopmentModeEnable;
+        Utils.logError("是否开启开发者模式：$isDevelopmentModeEnable");
 
-        EasyLoading.show(status: "是否开启开发者模式：$isDeveloperMode");
-
-        return isDeveloperMode;
+        EasyLoading.show(status: "是否开启开发者模式：$isDevelopmentModeEnable");
+        if (isDevelopmentModeEnable) {
+          await _cuMsg("请关闭开发者模式后再重新打开本程序");
+        }
+        return isDevelopmentModeEnable;
       }
       return false;
     } catch (e) {
@@ -47,21 +67,43 @@ class DeviceChecker {
     }
   }
 
+  /// 检查是否为为越狱设备 true:是模拟器，false：不是模拟器
+  static Future<bool> isJailBrokenFN() async {
+    if (Platform.isAndroid) {
+      bool isJailBroken = await SafeDevice.isJailBroken;
+      Utils.logError("是否越狱：$isJailBroken");
+      EasyLoading.show(status: "是否越狱：$isJailBroken");
+      if (isJailBroken) {
+        await _cuMsg("不允许在越狱设备上运行");
+      }
+      return isJailBroken;
+    }
+    return false;
+  }
+
+  /// 检查是否为为越狱设备 true:是模拟器，false：不是模拟器
+  static Future<bool> isVpnActive() async {
+    if (Platform.isAndroid) {
+      bool isVpn = await VpnConnectionDetector.isVpnActive();
+      Utils.logError("是否开启vpn：$isVpn");
+      if (isVpn) {
+        await _cuMsg("请关闭vpn后再重新打开本程序");
+      }
+      return isVpn;
+    }
+    return false;
+  }
+
   /// 检查是否为模拟器 true:是模拟器，false：不是模拟器
   static Future<bool> isEmulator() async {
     if (Platform.isAndroid) {
-      bool isEmu = await EmulatorChecker.isEmulator();
+      bool isRealDevice = await SafeDevice.isRealDevice;
       await Future.delayed(const Duration(milliseconds: 500));
-      Utils.logError("是否为模拟器：$isEmu");
-      print("是否为模拟器：$isEmu");
-
-      EasyLoading.show(status: "是否为模拟器：$isEmu");
-      if (isEmu) {
-        CuToast.error(msg: "不允许在模拟器上运行");
-        await Future.delayed(const Duration(seconds: 2));
-        SystemNavigator.pop();
+      Utils.logError("是否为模拟器：$isRealDevice");
+      if (isRealDevice) {
+        await _cuMsg("不允许在模拟器上运行");
       }
-      return isEmu;
+      return isRealDevice;
     }
     return false;
   }
@@ -73,8 +115,6 @@ class DeviceChecker {
       bool isAccess = await platform.invokeMethod('isAccessibilityModeEnabled');
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍模式：$isAccess");
-      print("是否开启无障碍模式：$isAccess");
-      EasyLoading.show(status: "是否开启无障碍模式：$isAccess");
       if (isAccess) {
         CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
         await Future.delayed(const Duration(seconds: 2));
@@ -96,8 +136,6 @@ class DeviceChecker {
       List<String> enabledServices = services.cast<String>();
       await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍软件：${enabledServices.isEmpty}");
-      print("是否开启无障碍软件：${enabledServices.isEmpty}");
-      EasyLoading.show(status: "是否开启无障碍软件：${enabledServices.isEmpty}");
       if (enabledServices.isNotEmpty) {
         CuToast.error(msg: "请关闭无障碍软件后再重新打开本程序");
         await Future.delayed(const Duration(seconds: 2));
@@ -110,56 +148,24 @@ class DeviceChecker {
   }
 
   /// 检查所有设备相关的权限和特征 true:所有权限和特征都满足，false：有一个不满足
-  static Future<bool> isAllCheckr() async {
+  static Future<void> isAllCheckr() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 100));
-      bool isVpn = await VpnConnectionDetector.isVpnActive();
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      // bool hasSim = await hasSimCard();
-      // await Future.delayed(const Duration(milliseconds: 100));
-
-      bool isDev = await isDeveloperModeEnabled();
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      bool isEmu = await isEmulator();
-      await Future.delayed(const Duration(milliseconds: 100));
-
+      await isBluetoothActive();
+      await isJailBrokenFN();
+      await hasSimCard();
+      await isVpnActive();
+      await isDeveloperModeEnabled();
+      await isEmulator();
+      EasyLoading.showSuccess("设备检测完成");
       // bool isAccess = await isAccessibilityModeEnabled();
       // await Future.delayed(const Duration(milliseconds: 100));
       //
       // List<String> enabledServices = await getEnabledAccessibilityServices();
       // await Future.delayed(const Duration(milliseconds: 100));
-
-      bool res = !isVpn && !isDev && !isEmu;
-      //&& hasSim
-
-      // bool res = true;
-      if (res) {
-        EasyLoading.showSuccess("检测通过");
-      } else {
-        if (isVpn) {
-          CuToast.error(msg: "请关闭VPN后再重新打开本程序");
-        }
-        // else if (!hasSim) {
-        //   CuToast.error(msg: "请插入SIM卡后再重新打开本程序");
-        // }
-        else if (isDev) {
-          CuToast.error(msg: "不允许在开发者模式下运行");
-        } else if (isEmu) {
-          CuToast.error(msg: "不允许在模拟器上运行");
-        }
-        // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
-        Future.delayed(const Duration(seconds: 2), () {
-          SystemNavigator.pop();
-        });
-      }
-
-      return res;
     } catch (e) {
       Utils.logError("检测设备不通过：$e");
       EasyLoading.dismiss();
-      return false;
+      return null;
     } finally {
       EasyLoading.dismiss();
     }
