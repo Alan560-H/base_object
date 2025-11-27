@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:emulator_checker/emulator_checker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:safe_device/safe_device.dart';
@@ -39,7 +40,7 @@ class DeviceChecker {
       bool isBluetoothOpen = await Permission.bluetooth.isGranted;
       Utils.logError("是否开启蓝牙：$isBluetoothOpen");
       EasyLoading.show(status: "是否开启蓝牙：$isBluetoothOpen");
-      if (!isBluetoothOpen) {
+      if (isBluetoothOpen) {
         await _cuMsg("请关闭蓝牙后再重新打开本程序");
       }
       return isBluetoothOpen;
@@ -94,12 +95,11 @@ class DeviceChecker {
     return false;
   }
 
-  /// 检查是否为模拟器 true:是模拟器，false：不是模拟器
+  /// 检查是否为模拟器 true:是真实设备，false：是模拟器
   static Future<bool> isEmulator() async {
     if (Platform.isAndroid) {
-      bool isRealDevice = await SafeDevice.isRealDevice;
-      await Future.delayed(const Duration(milliseconds: 500));
-      Utils.logError("是否为模拟器：$isRealDevice");
+      bool isRealDevice = await EmulatorChecker.isEmulator();
+      Utils.logError("是否为模拟器设备：$isRealDevice");
       if (isRealDevice) {
         await _cuMsg("不允许在模拟器上运行");
       }
@@ -113,7 +113,6 @@ class DeviceChecker {
     try {
       const platform = MethodChannel('com.example.riskcontrol');
       bool isAccess = await platform.invokeMethod('isAccessibilityModeEnabled');
-      await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍模式：$isAccess");
       if (isAccess) {
         CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
@@ -134,7 +133,6 @@ class DeviceChecker {
         'getEnabledAccessibilityServices',
       );
       List<String> enabledServices = services.cast<String>();
-      await Future.delayed(const Duration(milliseconds: 500));
       Utils.logError("是否开启无障碍软件：${enabledServices.isEmpty}");
       if (enabledServices.isNotEmpty) {
         CuToast.error(msg: "请关闭无障碍软件后再重新打开本程序");
@@ -154,7 +152,7 @@ class DeviceChecker {
       await isJailBrokenFN();
       await hasSimCard();
       await isVpnActive();
-      await isDeveloperModeEnabled();
+      // await isDeveloperModeEnabled();
       await isEmulator();
       EasyLoading.showSuccess("设备检测完成");
       // bool isAccess = await isAccessibilityModeEnabled();
