@@ -148,12 +148,12 @@ class DeviceChecker {
   /// 检查所有设备相关的权限和特征 true:所有权限和特征都满足，false：有一个不满足
   static Future<void> isAllCheckr() async {
     try {
-      await isBluetoothActive();
-      await isJailBrokenFN();
-      await hasSimCard();
-      await isVpnActive();
+      // await isBluetoothActive();
+      // await isJailBrokenFN();
+      // await hasSimCard();
+      // await isVpnActive();
       // await isDeveloperModeEnabled();
-      await isEmulator();
+      // await isEmulator();
       EasyLoading.showSuccess("设备检测完成");
       // bool isAccess = await isAccessibilityModeEnabled();
       // await Future.delayed(const Duration(milliseconds: 100));

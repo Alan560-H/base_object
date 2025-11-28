@@ -23,6 +23,9 @@ class TaskModel {
   /// 任务进度 ：用于低保任务
   int taskProgress = 0;
 
+  /// 任务总数 ：用于低保任务
+  int taskTotal = 0;
+
   /// 任务
   TaskModel();
 

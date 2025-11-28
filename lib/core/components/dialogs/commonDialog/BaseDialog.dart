@@ -10,6 +10,7 @@ import 'AppMaintenanceDialog.dart';
 import 'AppUpLoadDialog.dart';
 import 'AuthenticationDialog.dart';
 import 'BindViteCodeDialog.dart';
+import 'CheckInDialog.dart';
 import 'EditPayAccountDialog.dart';
 import 'ConfirmDialog.dart';
 import 'DeregisterDialog.dart';
@@ -49,6 +50,8 @@ class _BaseDialogState extends State<BaseDialog> {
 
     // 维护中
     'AppMaintenanceDialog': () => AppMaintenanceDialog(),
+    // 签到
+    'CheckInDialog': () => CheckInDialog(),
   };
 
   /// 如果有需要回调再这里单独引入组件

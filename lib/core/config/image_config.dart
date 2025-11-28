@@ -13,6 +13,10 @@ class ImageConfig {
   static String dialogBodyBg =
       "${AppConfig.instance.getImgUrl}/AdObject/common/com_dialog_bg.png";
 
+  /// 金币图标
+  static String coinsIcon =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/coin.png";
+
   /// 启动页背景 背景
   static String firstTitle =
       "${AppConfig.instance.getImgUrl}/AdObject/common/first_title.png";
@@ -146,6 +150,7 @@ class ImageConfig {
   /// 签到图标
   static String checkInIcon =
       "${AppConfig.instance.getImgUrl}/AdObject/taskIcon/check_in.png";
+
   /// 看广告低保
   static String videoAd =
       "${AppConfig.instance.getImgUrl}/AdObject/taskIcon/video_ad.png";

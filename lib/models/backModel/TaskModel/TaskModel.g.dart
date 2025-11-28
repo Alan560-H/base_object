@@ -13,7 +13,8 @@ TaskModel _$TaskModelFromJson(Map<String, dynamic> json) =>
       ..taskName = json['taskName'] as String
       ..taskDesc = json['taskDesc'] as String
       ..taskType = (json['taskType'] as num).toInt()
-      ..taskProgress = (json['taskProgress'] as num).toInt();
+      ..taskProgress = (json['taskProgress'] as num).toInt()
+      ..taskTotal = (json['taskTotal'] as num).toInt();
 
 Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
   'taskId': instance.taskId,
@@ -22,4 +23,5 @@ Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
   'taskDesc': instance.taskDesc,
   'taskType': instance.taskType,
   'taskProgress': instance.taskProgress,
+  'taskTotal': instance.taskTotal,
 };

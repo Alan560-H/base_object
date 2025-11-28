@@ -29,6 +29,7 @@ class TaskController extends GetxController {
         "taskDesc": "签到任务描述",
         "taskType": 1,
         "taskProgress": 0,
+        "taskTotal": 100,
       },
       {
         "taskId": 2,
@@ -36,7 +37,8 @@ class TaskController extends GetxController {
         "taskName": "低保任务",
         "taskDesc": "低保任务描述",
         "taskType": 2,
-        "taskProgress": 50,
+        "taskProgress": 2,
+        "taskTotal": 6,
       },
     ]);
   }

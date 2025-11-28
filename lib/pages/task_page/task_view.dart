@@ -1,8 +1,12 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
+import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/image_config.dart';
+import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,7 +35,18 @@ class TaskView extends GetView<TaskController> {
             ),
             title: Text(task.taskName),
             subtitle: Text(task.taskDesc),
-            trailing: Text(task.taskProgress.toString()),
+            trailing: CuButton(
+              fontSize: TextConfig.textSize_12,
+              bgColor: TextConfig.primary,
+              radius: 10.r,
+              text: "签到",
+              onPressed: () {
+                Dialogs.showCommonDialog(
+                  dialogType: "CheckInDialog",
+                  dialogTitle: "签到",
+                );
+              },
+            ),
           );
         case 2:
           return ListTile(
@@ -42,9 +57,19 @@ class TaskView extends GetView<TaskController> {
             ),
             title: Text(task.taskName),
             subtitle: Text(task.taskDesc),
-            trailing: Text(task.taskProgress.toString()),
+            trailing: CuButton(
+              fontSize: TextConfig.textSize_12,
+              bgColor: TextConfig.primary,
+              radius: 10.r,
+              width: 100.w,
+              text: "领取${task.taskProgress}/${task.taskTotal}",
+              onPressed: () {
+                Utils.logError("低保按钮点击事件");
+              },
+            ),
           );
       }
+      return null;
     },
   );
   @override

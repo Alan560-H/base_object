@@ -57,7 +57,7 @@ class HomeGroupChat extends GetxService {
     }
     cachedAdWidget = Container(
       // 修复：使用 const ValueKey，确保 Widget 的“身份”不变
-      // key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
+      key: const ValueKey('SINGLE_NATIVE_AD_CONTAINER'),
       width: double.infinity,
       // height: adHeight,
       constraints: BoxConstraints(maxHeight: NativeTool.to.adHeight),
@@ -111,11 +111,11 @@ class HomeGroupChat extends GetxService {
     Utils.logError("启动定时器2");
 
     // 启动定时任务：每6秒执行一次回调
-    _addAdTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+    _addAdTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
       // 判断广告是否准备好，避免添加无效容器
       bool isADReady = await NativeTool.to.nativeAdReady();
       if (isADReady) {
-        Utils.logError("5秒定时添加广告容器");
+        Utils.logError("30秒定时添加广告容器");
         isAddNative = true; // 添加新的广告容器
         //
       }
@@ -189,7 +189,6 @@ class HomeGroupChat extends GetxService {
       //     content = await getNativeView();
       //     _autoMessageTimer?.cancel();
       //     _autoMessageTimer = null;
-      //     // 去掉 await，用 then 回调实现“10秒后异步执行”，不阻塞当前函数
       //     Future.delayed(const Duration(seconds: 20), () {
       //       removeAdContainer();
       //       Utils.logError("又开始启动啦定时器1");

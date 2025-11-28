@@ -16,11 +16,9 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-///指数盲盒下注确认框
 class AppUpLoadDialog extends StatefulWidget {
   final AppUpLoadModel appUpLoadModel;
 
-  /// 指数盲盒下注确认框
   const AppUpLoadDialog({super.key, required this.appUpLoadModel});
 
   @override
