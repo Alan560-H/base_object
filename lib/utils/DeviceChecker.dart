@@ -122,6 +122,8 @@ class DeviceChecker {
       // await isDeveloperModeEnabled();
       // await isEmulator();
       EasyLoading.showSuccess("设备检测完成");
+
+      /// 检测通过
     } catch (e) {
       Utils.logError("检测设备不通过：$e");
       EasyLoading.dismiss();

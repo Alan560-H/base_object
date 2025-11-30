@@ -7,12 +7,14 @@ import 'package:base_object/models/FormModel/withdrawal/WithdrawalForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/NoticeModel/NoticeModel.dart';
 import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
+import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/loginModel/LoginModel.dart';
 import 'package:base_object/models/backModel/newUserModel/NewUserModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
 import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
+import 'package:base_object/models/backModel/signModel/SignModel.dart';
 import 'package:base_object/models/backModel/userModel/UserAmountListModel.dart';
 import 'package:base_object/models/backModel/userModel/UserBayModel.dart';
 import 'package:base_object/models/backModel/userModel/UserInviteCountModel.dart';
@@ -101,6 +103,44 @@ class Api extends GetxService {
       return [];
     }
     return NoticeModel.fromJsonList(backModel.data);
+  }
+
+  /// 进行签到
+  Future<BackModel> postCheckIn() async {
+    return await _sendRequest(ApiUrls.postCheckIn, FormModel(), "post");
+  }
+
+  /// 获取签到列表
+  Future<List<SignModel>> postSignList() async {
+    BackModel backModel = await _sendRequest(
+      ApiUrls.getCheckInList,
+      FormModel(),
+      "post",
+    );
+    if (backModel.data == null) {
+      Utils.logError("签到列表返回为空");
+      return [];
+    }
+    return SignModel.fromJsonList(backModel.data);
+  }
+
+  /// 领取保底任务奖励
+  Future<BackModel> postMinAdPrizeIn() async {
+    return await _sendRequest(ApiUrls.postMinAdPrizeIn, FormModel(), "post");
+  }
+
+  /// 获取保底任务进度
+  Future<AdTaskModel> postMinAdPrizeList() async {
+    BackModel backModel = await _sendRequest(
+      ApiUrls.postMinAdPrizeList,
+      FormModel(),
+      "post",
+    );
+    if (backModel.data == null) {
+      Utils.logError("获取保底任务进度返回为空");
+      return AdTaskModel();
+    }
+    return AdTaskModel.fromJson(backModel.data);
   }
 
   /// 获取任务列表

@@ -107,46 +107,46 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     // 看广小技巧
-                    Positioned(
-                      top: Get.height / 2 - 100.h,
-                      right: 0,
-                      child: InkWell(
-                        onTap: () {
-                          Get.dialog(KgxjqDialog());
-                        },
-                        child: Container(
-                          height: 100.h,
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent,
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-
-                          child: CachedNetworkImage(
-                            imageUrl: ImageConfig.kgxjq,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   top: Get.height / 2 - 100.h,
+                    //   right: 0,
+                    //   child: InkWell(
+                    //     onTap: () {
+                    //       Get.dialog(KgxjqDialog());
+                    //     },
+                    //     child: Container(
+                    //       height: 100.h,
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.greenAccent,
+                    //         borderRadius: BorderRadius.circular(10.r),
+                    //       ),
+                    //
+                    //       child: CachedNetworkImage(
+                    //         imageUrl: ImageConfig.kgxjq,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     // 屏蔽快应用
-                    Positioned(
-                      top: Get.height / 2 - 210.h,
-                      right: 0,
-                      child: InkWell(
-                        onTap: () {
-                          Get.dialog(PbkyyDialog());
-                        },
-                        child: Container(
-                          height: 100.h,
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent,
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: CachedNetworkImage(
-                            imageUrl: ImageConfig.pbkyy,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   top: Get.height / 2 - 210.h,
+                    //   right: 0,
+                    //   child: InkWell(
+                    //     onTap: () {
+                    //       Get.dialog(PbkyyDialog());
+                    //     },
+                    //     child: Container(
+                    //       height: 100.h,
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.greenAccent,
+                    //         borderRadius: BorderRadius.circular(10.r),
+                    //       ),
+                    //       child: CachedNetworkImage(
+                    //         imageUrl: ImageConfig.pbkyy,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

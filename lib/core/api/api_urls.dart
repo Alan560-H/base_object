@@ -11,6 +11,18 @@ class ApiUrls {
   /// 获取任务列表
   static const String getTask = "/v1/task/list";
 
+  /// 获取签到列表
+  static const String getCheckInList = "/v1/task/signList";
+
+  /// 进行签到
+  static const String postCheckIn = "/v1/task/signIn";
+
+  /// 保底任务进度
+  static const String postMinAdPrizeList = "/v1/task/minAdPrizeList";
+
+  /// 保底任务完成领取
+  static const String postMinAdPrizeIn = "/v1/task/minAdPrizeIn";
+
   /// 新人福利
   static const String getNewcomerConfig = "/v1/benefit/newcomerConfig";
 

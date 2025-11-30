@@ -81,7 +81,7 @@ class Store extends GetxController {
       }
     } else {
       _wactchMaxADList.add(model);
-      CuToast.error(msg: "副广最高数组长度：${_wactchMaxADList.length}");
+      // CuToast.error(msg: "副广最高数组长度：${_wactchMaxADList.length}");
       Utils.logError("副广最高数组长度：${_wactchMaxADList.length}");
     }
   }
@@ -111,7 +111,7 @@ class Store extends GetxController {
       }
     } else {
       _wactchMinADList.add(model);
-      CuToast.error(msg: "副广最低数组长度：${_wactchMinADList.length}");
+      // CuToast.error(msg: "副广最低数组长度：${_wactchMinADList.length}");
       Utils.logError("副广最低数组长度：${_wactchMinADList.length}");
     }
   }
@@ -143,7 +143,7 @@ class Store extends GetxController {
       }
     } else {
       _wactchMainMinADList.add(model);
-      CuToast.error(msg: "主广最低数组长度：${_wactchMainMinADList.length}");
+      // CuToast.error(msg: "主广最低数组长度：${_wactchMainMinADList.length}");
     }
   }
 

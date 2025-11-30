@@ -1,8 +1,13 @@
+import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/custom_input_field.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
+import 'package:base_object/models/backModel/signModel/SignModel.dart';
+import 'package:base_object/store/user_info.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,23 +22,32 @@ class CheckInDialog extends StatefulWidget {
 }
 
 class _CheckInDialogState extends State<CheckInDialog> {
+  List<SignModel> signList = [];
+  Future<void> _getCheckInList() async {
+    signList = await Api().postSignList();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _getCheckInList();
+    super.initState();
+  }
+
   @override
   void dispose() {
     super.dispose();
   }
 
   /// 构建单个签到项Widget（金币+奖励+日期）
-  Widget _buildCheckInItem({
-    required int day,
-    required int reward,
-    required bool isChecked, // 是否已签到
-  }) {
+  Widget _buildCheckInItem(SignModel signModel) {
+    bool isChecked = signModel.status == 2;
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5.h),
       width: 55.w, // 单个签到项宽度
       decoration: BoxDecoration(
         // 已签到/未签到背景色区分
-        color: isChecked ? Color(0xFFFEF0E6) : Colors.white70,
+        color: isChecked ? Color(0xFFFEF0E6) : Colors.white30,
         border: Border.all(
           color: isChecked ? TextConfig.primary : Color(0xFFEEEEEE),
           width: 1.w,
@@ -51,17 +65,24 @@ class _CheckInDialogState extends State<CheckInDialog> {
           ),
           SizedBox(height: 4.h),
           // 2. 奖励数量
-          Text(
-            "+$reward",
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: isChecked ? Color(0xFFFFB800) : Color(0xFF999999),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          isChecked
+              ? Text(
+                "+${signModel.label}",
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: TextConfig.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+              : Text(
+                "+${signModel.amount}",
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.yellowAccent,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
           SizedBox(height: 2.h),
-          // 3. 第N天
-          Text("第$day天", style: TextStyle(fontSize: 10.sp)),
         ],
       ),
     );
@@ -82,13 +103,9 @@ class _CheckInDialogState extends State<CheckInDialog> {
             runSpacing: 5.h,
             // 整体居中对齐
             alignment: WrapAlignment.center,
-            children: List.generate(7, (index) {
+            children: List.generate(signList.length, (index) {
               // 生成7个签到项
-              return _buildCheckInItem(
-                day: index + 1, // 第N天
-                reward: index * 2, // 奖励数量
-                isChecked: index < 3, // 模拟已签到（前3天已签，可根据业务动态改）
-              );
+              return _buildCheckInItem(signList[index]);
             }),
           ),
 
@@ -97,8 +114,12 @@ class _CheckInDialogState extends State<CheckInDialog> {
             text: "签到",
             width: 100.w,
             height: 40.h,
-            onPressed: () {
-              CuToast.success(msg: "签到成功");
+            onPressed: () async {
+              CuToast.error(msg: "功能暂未开放");
+              // BackModel backModel = await Api().postCheckIn();
+              // await UserInfo.instance.getUserInfoFn();
+              // await _getCheckInList();
+              // CuToast.success(msg: backModel.data);
             },
             bgColor: TextConfig.primary,
           ),
