@@ -1,4 +1,4 @@
-package com.ruyimh.www
+package com.ruyimh
 
 import android.content.Intent
 import android.os.Bundle // 1. 新增：导入 Bundle 类（解决 Unresolved reference 问题）

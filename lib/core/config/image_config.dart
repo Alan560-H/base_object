@@ -33,6 +33,10 @@ class ImageConfig {
   static String mddSplach =
       "${AppConfig.instance.getImgUrl}/AdObject/common/mdd_splach.png";
 
+  /// 启动页背景 背景（悠米赚）
+  static String ymzSplach =
+      "${AppConfig.instance.getImgUrl}/AdObject/common/ymz_splach.png";
+
   /// 进度条图片
   static String progressBg =
       "${AppConfig.instance.getImgUrl}/AdObject/common/progress_bg.png";
@@ -41,9 +45,12 @@ class ImageConfig {
   static String newUser1 =
       "${AppConfig.instance.getImgUrl}/AdObject/common/newUser1.png";
 
-  /// logo-米多多
+  // /// logo-米多多
+  // static String logo =
+  //     "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
+  /// logo-悠米赚
   static String logo =
-      "${AppConfig.instance.getImgUrl}/AdObject/common/logo_mdd.png";
+      "${AppConfig.instance.getImgUrl}/AdObject/common/logo_ymz.png";
 
   /// logo-如意开盒
   // static String logo =

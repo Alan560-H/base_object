@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:emulator_checker/emulator_checker.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:safe_device/safe_device.dart';
 import 'package:sim_card_info/sim_card_info.dart';
 import 'package:flutter/services.dart';
@@ -34,17 +34,21 @@ class DeviceChecker {
     }
   }
 
-  /// 检查是否开启蓝牙 true:开启了蓝牙，false：没有开启蓝牙
+  /// 检查蓝牙是否开启（硬件状态）
   static Future<bool> isBluetoothActive() async {
     try {
-      bool isBluetoothOpen = await Permission.bluetooth.isGranted;
-      Utils.logError("是否开启蓝牙：$isBluetoothOpen");
-      EasyLoading.show(status: "是否开启蓝牙：$isBluetoothOpen");
-      if (isBluetoothOpen) {
+      // 步骤3：获取蓝牙状态（Android特有处理，无需处理iOS的unknown状态）
+      BluetoothAdapterState state = await FlutterBluePlus.adapterState.first;
+      // 步骤4：判断蓝牙是否开启（Android特有状态判断）
+      bool isOpen = (state == BluetoothAdapterState.on);
+      Utils.logError("蓝牙是否开启：$isOpen");
+      // 等待状态返回（超时保护：5秒未返回则判定为失败，文档「Debugging」超时处理）
+      if (isOpen) {
         await _cuMsg("请关闭蓝牙后再重新打开本程序");
       }
-      return isBluetoothOpen;
+      return isOpen;
     } catch (e) {
+      Utils.logError("检测蓝牙状态失败：$e");
       return false;
     }
   }
@@ -108,43 +112,6 @@ class DeviceChecker {
     return false;
   }
 
-  /// 检查无障碍模式是否开启（需要原生支持）
-  static Future<bool> isAccessibilityModeEnabled() async {
-    try {
-      const platform = MethodChannel('com.example.riskcontrol');
-      bool isAccess = await platform.invokeMethod('isAccessibilityModeEnabled');
-      Utils.logError("是否开启无障碍模式：$isAccess");
-      if (isAccess) {
-        CuToast.error(msg: "请关闭无障碍模式后再重新打开本程序");
-        await Future.delayed(const Duration(seconds: 2));
-        SystemNavigator.pop();
-      }
-      return isAccess;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /// 检查是否有开启的无障碍软件
-  static Future<List<String>> getEnabledAccessibilityServices() async {
-    try {
-      const platform = MethodChannel('com.example.riskcontrol');
-      List<dynamic> services = await platform.invokeMethod(
-        'getEnabledAccessibilityServices',
-      );
-      List<String> enabledServices = services.cast<String>();
-      Utils.logError("是否开启无障碍软件：${enabledServices.isEmpty}");
-      if (enabledServices.isNotEmpty) {
-        CuToast.error(msg: "请关闭无障碍软件后再重新打开本程序");
-        await Future.delayed(const Duration(seconds: 2));
-        SystemNavigator.pop();
-      }
-      return enabledServices;
-    } catch (e) {
-      return [];
-    }
-  }
-
   /// 检查所有设备相关的权限和特征 true:所有权限和特征都满足，false：有一个不满足
   static Future<void> isAllCheckr() async {
     try {
@@ -155,15 +122,9 @@ class DeviceChecker {
       // await isDeveloperModeEnabled();
       // await isEmulator();
       EasyLoading.showSuccess("设备检测完成");
-      // bool isAccess = await isAccessibilityModeEnabled();
-      // await Future.delayed(const Duration(milliseconds: 100));
-      //
-      // List<String> enabledServices = await getEnabledAccessibilityServices();
-      // await Future.delayed(const Duration(milliseconds: 100));
     } catch (e) {
       Utils.logError("检测设备不通过：$e");
       EasyLoading.dismiss();
-      return null;
     } finally {
       EasyLoading.dismiss();
     }

@@ -5,7 +5,11 @@ class PermissionManager {
   // 请求所有必要权限
   static Future<bool> requestAllPermissions() async {
     Map<Permission, PermissionStatus> statuses =
-        await [Permission.location, Permission.phone].request();
+        await [
+          Permission.location,
+          Permission.phone,
+          Permission.bluetooth,
+        ].request();
     // 打印每个权限的状态
     statuses.forEach((permission, status) {
       Utils.logError("权限: $permission, 状态: $status");

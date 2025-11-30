@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> with AppTheme {
           initialRoute: AppRoutes.firstPage,
           // 路由列表
           getPages: AppPages.routes,
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: true,
           title: Store.instance.getAppUpLoadModel.appName,
           builder: EasyLoading.init(),
           theme: appTheme,

@@ -70,7 +70,7 @@ class SplashView extends GetView<SplashController> {
             CachedNetworkImage(
               height: Get.height,
               width: Get.width,
-              imageUrl: ImageConfig.mddSplach,
+              imageUrl: ImageConfig.ymzSplach,
               fit: BoxFit.cover,
             ),
             Positioned(
