@@ -2,12 +2,14 @@ import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/custom_input_field.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/models/backModel/signModel/SignModel.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,6 +27,7 @@ class _CheckInDialogState extends State<CheckInDialog> {
   List<SignModel> signList = [];
   Future<void> _getCheckInList() async {
     signList = await Api().postSignList();
+    Utils.logError("签到列表:$signList");
     setState(() {});
   }
 
@@ -115,11 +118,16 @@ class _CheckInDialogState extends State<CheckInDialog> {
             width: 100.w,
             height: 40.h,
             onPressed: () async {
-              CuToast.error(msg: "功能暂未开放");
-              // BackModel backModel = await Api().postCheckIn();
-              // await UserInfo.instance.getUserInfoFn();
-              // await _getCheckInList();
-              // CuToast.success(msg: backModel.data);
+              // CuToast.error(msg: "功能暂未开放");
+              BackModel backModel = await Api().postCheckIn();
+              Utils.logError(
+                "签到返回信息：${backModel.toJson()}，${backModel.code == CuErrorConfig.success}",
+              );
+              if (backModel.code == CuErrorConfig.success) {
+                await UserInfo.instance.getUserInfoFn();
+                await _getCheckInList();
+                CuToast.success(msg: backModel.msg);
+              }
             },
             bgColor: TextConfig.primary,
           ),

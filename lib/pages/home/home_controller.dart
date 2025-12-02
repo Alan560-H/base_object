@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:base_object/core/components/Avatar.dart';
+import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/WeiHuDialog.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
@@ -141,6 +143,14 @@ class HomeController extends GetxController {
 
     /// 是否显示公告框
     isShow();
+
+    /// 检查低保任务
+    await Store.instance.postMinAdPrizeList();
+
+    /// 如果任务状态是接取的，那么就跳转到任务大厅
+    if (Store.instance.isTaskStatus == 1) {
+      CuNavBarController.to.onTabChange(1);
+    }
     // 初始化app升级信息
   }
 

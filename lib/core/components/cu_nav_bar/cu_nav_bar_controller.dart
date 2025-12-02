@@ -66,7 +66,7 @@ class CuNavBarController extends GetxService {
           Get.offAllNamed(AppRoutes.home);
           break;
         case 1:
-          Get.toNamed(AppRoutes.task);
+          Get.offAllNamed(AppRoutes.task);
           break;
         // case 2:
         //   Get.offAllNamed(AppRoutes.djVideo);

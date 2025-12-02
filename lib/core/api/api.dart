@@ -125,12 +125,17 @@ class Api extends GetxService {
   }
 
   /// 领取保底任务奖励
-  Future<BackModel> postMinAdPrizeIn() async {
-    return await _sendRequest(ApiUrls.postMinAdPrizeIn, FormModel(), "post");
+  Future<BackModel> postMinAdEnd() async {
+    return await _sendRequest(ApiUrls.postMinAdEnd, FormModel(), "post");
+  }
+
+  /// 接保底任务
+  Future<BackModel> postMinAdStart() async {
+    return await _sendRequest(ApiUrls.postMinAdStart, FormModel(), "post");
   }
 
   /// 获取保底任务进度
-  Future<AdTaskModel> postMinAdPrizeList() async {
+  Future<AdTaskModel> postMinAdPrizeList(FormModel data) async {
     BackModel backModel = await _sendRequest(
       ApiUrls.postMinAdPrizeList,
       FormModel(),

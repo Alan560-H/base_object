@@ -1,7 +1,10 @@
 import 'package:base_object/core/api/api.dart';
+import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
+import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/store/store.dart';
+import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
@@ -35,9 +38,9 @@ class TaskController extends GetxController {
         "taskId": 2,
         "taskStatus": 1,
         "taskName": "低保任务",
-        "taskDesc": "低保任务描述",
+        "taskDesc": "一旦领取，必须完成",
         "taskType": 2,
-        "taskProgress": 2,
+        "taskProgress": 0,
         "taskTotal": 6,
       },
     ]);
@@ -46,7 +49,20 @@ class TaskController extends GetxController {
   @override
   void onInit() {
     getTaskList();
+
     // TODO: implement onInit
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    if (Store.instance.isTaskStatus == 1) {
+      Dialogs.showCommonDialog(
+        dialogType: "MinAdPrizeDialog",
+        dialogTitle: "低保任务",
+        barrierDismissible: false,
+      );
+    }
+    super.onReady();
   }
 }

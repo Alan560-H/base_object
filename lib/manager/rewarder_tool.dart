@@ -88,6 +88,30 @@ class RewarderTool extends GetxService {
   // 查询激励广告奖励
   checkRewarderAd(dynamic event) async {
     try {
+      /// 先看低保任务 是否接了
+      await Store.instance.postMinAdPrizeList();
+
+      /// 如果接了任务,就退出方法
+      if (Store.instance.isTaskStatus == 1) {
+        await Future.delayed(const Duration(seconds: 2));
+        await Store.instance.postMinAdPrizeList();
+
+        /// 如果任务完成
+        if (Store.instance.adTaskModel.value.numConfig -
+                Store.instance.adTaskModel.value.userNum <=
+            0) {
+          await Store.instance.postMinAdEnd();
+          return;
+        }
+        CuToast.error(
+          msg:
+              "距离任务完成还差${Store.instance.adTaskModel.value.numConfig - Store.instance.adTaskModel.value.userNum}，请继续观看广告",
+        );
+        Store.instance.setRemainingSeconds();
+        // 开始倒计时
+        Store.instance.countDown();
+        return;
+      }
       await Store.instance.checkFkConfig();
 
       UpDataADForm upDataADForm = UpDataADForm();
@@ -219,10 +243,6 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 rewardedVideoDidClose ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-
-          // if (Store.instance.getIsClaim) {
-          //   // checkClaim();
-          // }
           break;
         //广告结束播放
         case RewardedStatus.rewardedVideoDidEndPlaying:

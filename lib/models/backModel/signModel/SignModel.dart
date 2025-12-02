@@ -15,7 +15,7 @@ class SignModel {
   String title = "";
 
   /// status 0.未达成 1.待领取 2.已领取
-  int status = 0;
+  int? status = 0;
 
   /// amount 奖励的金币数
   int amount = 0;

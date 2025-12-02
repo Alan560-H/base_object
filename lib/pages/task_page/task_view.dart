@@ -2,10 +2,12 @@ import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_empty.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -56,14 +58,23 @@ class TaskView extends GetView<TaskController> {
               width: 20.w,
             ),
             title: Text(task.taskName),
-            subtitle: Text(task.taskDesc),
+            subtitle: Text("保底奖励：${Store.instance.adTaskModel.value.amount}金币"),
             trailing: CuButton(
               fontSize: TextConfig.textSize_12,
               bgColor: TextConfig.primary,
               radius: 10.r,
               width: 100.w,
-              text: "领取${task.taskProgress}/${task.taskTotal}",
+              text: Store.instance.isOverTask ? "已完成" : "开始任务",
               onPressed: () {
+                if (Store.instance.isOverTask) {
+                  CuToast.success(msg: "任务已完成，请阁下明日再来");
+                  return;
+                }
+                Dialogs.showCommonDialog(
+                  dialogType: "MinAdPrizeDialog",
+                  dialogTitle: "低保任务",
+                  barrierDismissible: false,
+                );
                 Utils.logError("低保按钮点击事件");
               },
             ),

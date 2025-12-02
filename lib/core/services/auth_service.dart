@@ -1,7 +1,9 @@
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+
 // 路由守卫
 class AuthMiddleware extends GetMiddleware {
   // 优先级：数字越小优先级越高
@@ -19,7 +21,7 @@ class AuthMiddleware extends GetMiddleware {
     var needAuthRoutes = [
       AppRoutes.user, // 个人中心
       AppRoutes.invite,
-      AppRoutes.userTixian
+      AppRoutes.userTixian,
     ];
 
     // 如果访问的是需要登录的路由且未登录，重定向到登录页

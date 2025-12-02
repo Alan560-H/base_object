@@ -4,11 +4,15 @@ import 'dart:convert';
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
+import 'package:base_object/models/FormModel/FormModel.dart';
 import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
 import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
+import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
+import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
@@ -25,6 +29,32 @@ import 'package:jiffy/jiffy.dart';
 class Store extends GetxController {
   /// 获取单例
   static Store get instance => Get.find();
+
+  /// 保底任务模型
+  Rx<AdTaskModel> adTaskModel = AdTaskModel().obs;
+
+  /// 0 :未接取 ，1：已接 ，2：已完成
+  int get isTaskStatus => adTaskModel.value.status;
+  bool get isOverTask =>
+      adTaskModel.value.numConfig - adTaskModel.value.userNum <= 0;
+  Future<void> postMinAdEnd() async {
+    BackModel backModel = await Api.to.postMinAdEnd();
+    if (backModel.code == CuErrorConfig.success) {
+      CuToast.success(msg: "任务完成，获得金币${backModel.data}");
+
+      /// 刷新任务状态
+      await Store.instance.postMinAdPrizeList();
+      Get.back();
+    }
+  }
+
+  /// 任务保底详情
+  Future<void> postMinAdPrizeList() async {
+    FormModel formModel = FormModel();
+    formModel.channelPackage = Store.instance.getAppUpLoadModel.channelPackage;
+    adTaskModel.value = await Api.to.postMinAdPrizeList(formModel);
+    Utils.logError("任务保底详情${adTaskModel.value.toJson()}");
+  }
 
   final RxBool _disableLogin = false.obs;
   bool get getDisableLogin => _disableLogin.value;
