@@ -111,11 +111,11 @@ class HomeGroupChat extends GetxService {
     Utils.logError("启动定时器2");
 
     // 启动定时任务：每6秒执行一次回调
-    _addAdTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
+    _addAdTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       // 判断广告是否准备好，避免添加无效容器
       bool isADReady = await NativeTool.to.nativeAdReady();
       if (isADReady) {
-        Utils.logError("30秒定时添加广告容器");
+        Utils.logError("5秒定时添加广告容器");
         isAddNative = true; // 添加新的广告容器
         //
       }

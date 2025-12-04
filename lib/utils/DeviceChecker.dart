@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:emulator_checker/emulator_checker.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:safe_device/safe_device.dart';
 import 'package:sim_card_info/sim_card_info.dart';
 import 'package:flutter/services.dart';
@@ -115,12 +117,19 @@ class DeviceChecker {
   /// 检查所有设备相关的权限和特征 true:所有权限和特征都满足，false：有一个不满足
   static Future<void> isAllCheckr() async {
     try {
-      // await isBluetoothActive();
-      // await isJailBrokenFN();
-      // await hasSimCard();
-      // await isVpnActive();
-      // await isDeveloperModeEnabled();
-      // await isEmulator();
+      bool isLocationGranted = await PermissionManager.checkPermission(
+        Permission.location,
+      );
+      Utils.logError("是否授予定位权限：$isLocationGranted");
+      if (!isLocationGranted) {
+        await _cuMsg("请授予定位权限");
+      }
+      await isBluetoothActive();
+      await isJailBrokenFN();
+      await hasSimCard();
+      await isVpnActive();
+      await isDeveloperModeEnabled();
+      await isEmulator();
       EasyLoading.showSuccess("设备检测完成");
 
       /// 检测通过

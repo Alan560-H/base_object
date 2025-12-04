@@ -14,6 +14,7 @@ import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
@@ -54,6 +55,12 @@ class SplashController extends GetxController
     SplashTool.to.splashListen();
     await LocationUtil().getCurrentLocation((Map result) async {
       Utils.logError("定位结果：$result");
+      if (result["errorCode"] != null || result["address"] == null) {
+        CuToast.error(msg: "定位失败，请打开定位");
+        await Future.delayed(const Duration(seconds: 2));
+        SystemNavigator.pop();
+        return;
+      }
       LocationData locationData = LocationData(
         address: result["address"],
         latitude: result["latitude"],

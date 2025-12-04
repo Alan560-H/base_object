@@ -49,6 +49,7 @@
                 android:resource="@xml/anythink_bk_sigmob_file_path"/>
         </provider>
         <!-- source file: china_jcenter/network_sdk/csj/6.9.2.3/AndroidManifest.xml -->
+<!--        穿山甲-->
         <provider
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
             android:authorities="${applicationId}.TTMultiProvider"
@@ -63,6 +64,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_meishu_file_path" />
         </provider>
+<!--        腾讯广点通-->
         <provider
             android:name="com.qq.e.comm.GDTFileProvider"
             android:authorities="${applicationId}.gdt.fileprovider"
@@ -72,6 +74,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_gdt_file_path" />
         </provider>
+<!--        穿山甲-->
         <provider
             android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
             android:authorities="${applicationId}.TTFileProvider"
@@ -83,6 +86,17 @@
                 android:resource="@xml/anythink_bk_tt_file_path"
                 tools:replace="android:resource"/>
         </provider>
+<!--        倍兹-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false"
+        >
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/beizi_file_path" />
+    </provider>
         <meta-data
             android:name="com.openinstall.APP_KEY"
             android:value="kl25pf"/>

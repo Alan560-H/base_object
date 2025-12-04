@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
 import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
 import 'package:base_object/core/components/dialogs/WeiHuDialog.dart';
@@ -17,6 +18,7 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -121,7 +123,27 @@ class HomeController extends GetxController {
   void allInit() async {
     /// 上传地址
     if (UserInfo.instance.isLoginIn) {
-      await Store.instance.getVer(type: 3, msg: "正常上传地理位置");
+      await LocationUtil().getCurrentLocation((Map result) async {
+        Utils.logError("定位结果：$result");
+        if (result["errorCode"] != null || result["address"] == null) {
+          CuToast.error(msg: "定位失败，请打开定位");
+          await Future.delayed(const Duration(seconds: 2));
+          SystemNavigator.pop();
+          return;
+        }
+        LocationData locationData = LocationData(
+          address: result["address"],
+          latitude: result["latitude"],
+          longitude: result["longitude"],
+        );
+        Store.instance.setLocationData(locationData);
+      });
+
+      await Store.instance.getVer(
+        type: 3,
+        msg:
+            "地理位置${Store.instance.locationData?.address}，经度${Store.instance.locationData?.longitude}，纬度${Store.instance.locationData?.latitude}",
+      );
     }
 
     /// 获取风控配置

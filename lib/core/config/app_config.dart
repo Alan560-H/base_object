@@ -16,7 +16,7 @@ class AppConfig extends GetxController {
   /// 高德appkey(如意开盒 com.ruyimh.www）
   // String get mapKey => "99ee090365d57e359d2a5ceb2dd89a3c";
   /// 高德appkey(如意盒子 com.ruyimh）
-  String get mapKey => "99ee090365d57e359d2a5ceb2dd89a3c";
+  String get mapKey => "a22ed8b3045cde75b1ca581a34f18179";
 
   /// 获取app 下载地址
   String get appDownUrl => "https://img.ruyimh.com/Rscsgo/app/ruyimh.apk";

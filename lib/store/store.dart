@@ -393,6 +393,9 @@ class Store extends GetxController {
       checkDeviceForm.longitude = locationData?.longitude;
       checkDeviceForm.type = type;
       checkDeviceForm.msg = msg;
+      Utils.logError(
+        "上传的地理位置：${checkDeviceForm.address}，纬度：${checkDeviceForm.latitude}，经度：${checkDeviceForm.longitude}",
+      );
       if (checkDeviceForm.userId == 0) {
         checkDeviceForm.userId = null;
       }
