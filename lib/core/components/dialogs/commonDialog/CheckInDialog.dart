@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
@@ -26,7 +28,7 @@ class CheckInDialog extends StatefulWidget {
 class _CheckInDialogState extends State<CheckInDialog> {
   List<SignModel> signList = [];
   Future<void> _getCheckInList() async {
-    signList = await Api().postSignList();
+    signList = await Api.to.postSignList();
     Utils.logError("签到列表:$signList");
     setState(() {});
   }

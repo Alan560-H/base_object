@@ -31,6 +31,23 @@ class UserInfo extends GetxController {
   /// 获取余额
   double get yuE => userModel.currentAmount;
 
+  /// 获取用户等级
+  String get getUserLevel {
+    Utils.logError("用户等级是${userModel.type}");
+    switch (userModel.type) {
+      case 1:
+        return "会员";
+      case 2:
+        return "高级团长";
+      case 3:
+        return "代理";
+      case 4:
+        return "总代理";
+      default:
+        return "会员";
+    }
+  }
+
   /// 获取UserModel
   UserModel get userModel {
     try {

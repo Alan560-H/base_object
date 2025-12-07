@@ -79,6 +79,7 @@ class UserView extends GetView<UserController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        spacing: 10.w,
                         children: [
                           Text(
                             controller.userInfo.userModel.username,
@@ -88,13 +89,30 @@ class UserView extends GetView<UserController> {
                             ),
                           ),
 
-                          ///  团长标志
-                          if (UserInfo.instance.userModel.type == 2)
-                            CachedNetworkImage(
-                              imageUrl: ImageConfig.svip,
-                              height: 30.h,
-                              width: 80.w,
+                          ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                // 亮黄→橙红→红金：活泼又有层次感
+                                colors: [
+                                  Color(0xFFFF6600), // 鲜艳橙红（增加活力感）
+                                  Color(0xFFFFC107), // 明亮浅黄（更活泼）
+                                  // Color(0xFF993300), // 深红木金（对比强烈）
+                                ],
+                                stops: [0.0, 1], // 让橙红的过渡更靠前，更醒目
+                              ).createShader(bounds);
+                            },
+                            blendMode: BlendMode.srcIn,
+                            child: Text(
+                              UserInfo.instance.getUserLevel,
+                              style: TextStyle(
+                                fontSize: TextConfig.textSize_14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                          ),
                         ],
                       ),
                       Text(

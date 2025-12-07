@@ -124,13 +124,13 @@ class DeviceChecker {
       if (!isLocationGranted) {
         await _cuMsg("请授予定位权限");
       }
-      await isBluetoothActive();
-      await isJailBrokenFN();
-      await hasSimCard();
-      await isVpnActive();
-      await isDeveloperModeEnabled();
-      await isEmulator();
-      EasyLoading.showSuccess("设备检测完成");
+      // await isBluetoothActive();
+      // await isJailBrokenFN();
+      // await hasSimCard();
+      // await isVpnActive();
+      // await isDeveloperModeEnabled();
+      // await isEmulator();
+      // EasyLoading.showSuccess("设备检测完成");
 
       /// 检测通过
     } catch (e) {
