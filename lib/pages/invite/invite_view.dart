@@ -145,7 +145,7 @@ class InviteView extends GetView<InviteController> {
                                                 .value
                                                 .inviteNum
                                                 .toString(),
-                                        title: "总人数",
+                                        title: "团队人数",
                                       ),
                                       Spacer(),
                                       getCom(
@@ -192,7 +192,8 @@ class InviteView extends GetView<InviteController> {
                                                 .value
                                                 .yesterdayNum
                                                 .toString(),
-                                        title: "我的粉丝",
+                                        // 我的粉丝
+                                        title: "直属人数",
                                       ),
                                     ),
                                   ],

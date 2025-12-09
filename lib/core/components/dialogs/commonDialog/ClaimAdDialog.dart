@@ -80,32 +80,32 @@ class _ClaimAdDialogState extends State<ClaimAdDialog> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 10.h),
-                      Obx(() {
-                        return Store.instance.isTimeOver
-                            ? CuButton(
-                              text: "${Store.instance.remainingSeconds}秒后可提升奖励",
-                              width: 200.w,
-                              height: 40.h,
-                              radius: 10.r,
-                              textColor: TextConfig.primary,
-                              bgColor: TextConfig.comPageGrey,
-                              onPressed: () => {},
-                            )
-                            : CuButton(
-                              text: "",
-                              width: 120.w,
-                              height: 40.h,
-                              radius: 10.r,
-                              bgImage: ImageConfig.upClaim,
-                              onPressed:
-                                  () => Utils.debounce(() async {
-                                    Store.instance.setIsClaim(false);
-                                    Get.back();
-                                    RewarderTool.to.showRewardedVideoFlutter();
-                                  }),
-                            );
-                      }),
+                      // SizedBox(height: 10.h),
+                      // Obx(() {
+                      //   return Store.instance.isTimeOver
+                      //       ? CuButton(
+                      //         text: "${Store.instance.remainingSeconds}秒后可提升奖励",
+                      //         width: 200.w,
+                      //         height: 40.h,
+                      //         radius: 10.r,
+                      //         textColor: TextConfig.primary,
+                      //         bgColor: TextConfig.comPageGrey,
+                      //         onPressed: () => {},
+                      //       )
+                      //       : CuButton(
+                      //         text: "",
+                      //         width: 120.w,
+                      //         height: 40.h,
+                      //         radius: 10.r,
+                      //         bgImage: ImageConfig.upClaim,
+                      //         onPressed:
+                      //             () => Utils.debounce(() async {
+                      //               Store.instance.setIsClaim(false);
+                      //               Get.back();
+                      //               RewarderTool.to.showRewardedVideoFlutter();
+                      //             }),
+                      //       );
+                      // }),
 
                       SizedBox(height: 10.h),
                       // 6. 核心：倒计时按钮（Obx监听倒计时状态）
