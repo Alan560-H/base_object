@@ -16,6 +16,7 @@ import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/backModel/serviceModel/ServiceModel.dart';
+import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/store/user_info.dart';
@@ -50,6 +51,7 @@ class Store extends GetxController {
 
   /// 任务保底详情
   Future<void> postMinAdPrizeList() async {
+    if (!UserInfo.instance.isLoginIn) return;
     FormModel formModel = FormModel();
     formModel.channelPackage = Store.instance.getAppUpLoadModel.channelPackage;
     adTaskModel.value = await Api.to.postMinAdPrizeList(formModel);
@@ -285,10 +287,10 @@ class Store extends GetxController {
 
   /// 是否可以观看激励广告,true 是可以，false不可以
   Future<bool> canLookReward() async {
-    if (Store.instance.isTimeOver) {
-      CuToast.error(msg: "广告间隔时间还没到$_remainingSeconds");
-      return false;
-    }
+    // if (Store.instance.isTimeOver) {
+    //   CuToast.error(msg: "广告间隔时间还没到$_remainingSeconds");
+    //   return false;
+    // }
     bool isReady = await RewarderTool.to.rewardedVideoReady();
     Utils.logError("准备状态：$isReady}");
     if (!isReady) {
@@ -304,10 +306,10 @@ class Store extends GetxController {
     }
 
     /// 如果今日观看主广次数已达最大次数
-    if (_currentCount.value.dayMaxCount >= _fkConfig.value.dayMax) {
-      CuToast.error(msg: "今日领取次数已达上限，请明日再来");
-      return false;
-    }
+    // if (_currentCount.value.dayMaxCount >= _fkConfig.value.dayMax) {
+    //   CuToast.error(msg: "今日领取次数已达上限，请明日再来");
+    //   return false;
+    // }
     EasyLoading.dismiss();
     return true;
   }
@@ -427,5 +429,41 @@ class Store extends GetxController {
   bool get getIsClaim => _isClaim.value;
   void setIsClaim(bool val) {
     _isClaim.value = val;
+  }
+
+  final RxList<AdInfo> _adInfos = <AdInfo>[].obs;
+  List<AdInfo> get getAdInfos => _adInfos;
+
+  /// 核心方法：计算所有广告收益的总和（getter形式，自动响应列表变化）
+  double get getAdInfosTotal {
+    // 使用Dart集合的fold方法累加，简洁高效
+    // fold(初始值, 累加器)：sum是当前总和，adInfo是遍历的每个元素
+    return _adInfos.fold(
+      0.0, // 初始值必须是double（0.0），避免int和double类型混合
+      (double sum, AdInfo adInfo) => sum + adInfo.publisherRevenue,
+    );
+  }
+
+  void addAdInfos(AdInfo value) async {
+    _adInfos.add(value);
+    await LocalStorage.setString(AppKeys.adInfosKey, _adInfos);
+    Utils.logError("当前记录：$getAdInfos");
+  }
+
+  void setAdInfos(List<AdInfo> value) async {
+    _adInfos.value = value;
+    await LocalStorage.setString(AppKeys.adInfosKey, _adInfos);
+    Utils.logError("有值，初始化成功：$RxList");
+  }
+
+  initAdInfos() async {
+    List<AdInfo>? adInfoList = await LocalStorage.getObjectList(
+      AppKeys.adInfosKey,
+      AdInfo.fromJson, // 传入单个对象的反序列化方法
+    );
+    Utils.logError("到底是什么$adInfoList");
+    if (adInfoList != null) {
+      setAdInfos(adInfoList);
+    }
   }
 }

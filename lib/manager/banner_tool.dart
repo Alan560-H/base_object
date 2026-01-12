@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -129,9 +130,11 @@ class BannerTool extends GetxService {
       switch (value.bannerStatus) {
         //广告加载失败
         case BannerStatus.bannerAdFailToLoadAD:
+          ATBannerResponse atBannerResponse = value;
           Utils.logError(
-            "横幅广告 bannerAdFailToLoadAD ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+            "横幅广告 bannerAdFailToLoadAD ---- placementID: ${atBannerResponse.requestMessage}",
           );
+          // CuToast.error(msg: "横幅广告加载失败");
           cuNavBarController.setHeight(100.h);
           break;
         //广告加载成功

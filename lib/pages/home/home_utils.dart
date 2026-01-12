@@ -49,6 +49,7 @@ class HomeUtils {
 
   // 获取App升级信息
   static Future<void> getAppUpdata({bool isReturn = false}) async {
+    return;
     String channel = await getAppChannel();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AppUpLoadForm appUpLoadForm = AppUpLoadForm();
@@ -61,6 +62,7 @@ class HomeUtils {
     }
     Utils.logError("设备信息提交：${appUpLoadForm.toJson()}，$channel,通道");
     // 请求升级信息
+
     AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
     Utils.logError("返回的版本信息：${appUpLoadModel.toJson()}");
     // 补充设备信息

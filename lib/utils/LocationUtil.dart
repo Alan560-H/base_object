@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
+// import 'package:amap_flutter_location/amap_flutter_location.dart';
+// import 'package:amap_flutter_location/amap_location_option.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,14 +19,14 @@ import 'package:permission_handler/permission_handler.dart';
 
 class LocationUtil {
   StreamSubscription<Map<String, Object>>? _locationListener;
-  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
+  // final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
   PermissionStatus? status;
 
   LocationUtil() {
-    AMapFlutterLocation.setApiKey(
-      AppConfig.instance.mapKey, //androidkey
-      AppConfig.instance.mapKey, //ioskey
-    );
+    // AMapFlutterLocation.setApiKey(
+    //   AppConfig.instance.mapKey, //androidkey
+    //   AppConfig.instance.mapKey, //ioskey
+    // );
 
     /// 设置是否已经包含高德隐私政策并弹窗展示显示用户查看，如果未包含或者没有弹窗展示，高德定位SDK将不会工作
     ///
@@ -38,7 +38,7 @@ class LocationUtil {
     /// [hasContains] 隐私声明中是否包含高德隐私政策说明
     ///
     /// [hasShow] 隐私权政策是否弹窗展示告知用户
-    AMapFlutterLocation.updatePrivacyShow(true, true);
+    // AMapFlutterLocation.updatePrivacyShow(true, true);
 
     /// 设置是否已经取得用户同意，如果未取得用户同意，高德定位SDK将不会工作
     ///
@@ -47,7 +47,7 @@ class LocationUtil {
     /// <b>必须保证在调用定位功能之前调用, 建议首次启动App时弹出《隐私政策》并取得用户同意</b>
     ///
     /// [hasAgree] 隐私权政策是否已经取得用户同意
-    AMapFlutterLocation.updatePrivacyAgree(true);
+    // AMapFlutterLocation.updatePrivacyAgree(true);
   }
 
   /// 动态申请定位权限
@@ -84,36 +84,36 @@ class LocationUtil {
       }
 
       ///注册定位结果监听
-      _locationListener = _locationPlugin.onLocationChanged().listen((
-        Map<String, Object> result,
-      ) {
-        onLocationChanged(result);
-        if (result['longitude'] != null) {
-          //print("当前位置：$result");
-          if (once) _stopLocation();
-        }
-      });
+      // _locationListener = _locationPlugin.onLocationChanged().listen((
+      //   Map<String, Object> result,
+      // ) {
+      //   onLocationChanged(result);
+      //   if (result['longitude'] != null) {
+      //     //print("当前位置：$result");
+      //     if (once) _stopLocation();
+      //   }
+      // });
       _startLocation();
     }
   }
 
   ///设置定位参数
   void _setLocationOption() {
-    AMapLocationOption locationOption = AMapLocationOption();
+    // AMapLocationOption locationOption = AMapLocationOption();
 
     ///将定位参数设置给定位插件
-    _locationPlugin.setLocationOption(locationOption);
+    // _locationPlugin.setLocationOption(locationOption);
   }
 
   ///开始定位
   void _startLocation() {
     _setLocationOption();
-    _locationPlugin.startLocation();
+    // _locationPlugin.startLocation();
   }
 
   ///停止定位
   void _stopLocation() {
-    _locationPlugin.stopLocation();
+    // _locationPlugin.stopLocation();
   }
 
   void cancel() {

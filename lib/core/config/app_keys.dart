@@ -17,4 +17,7 @@ class AppKeys {
   /// 禁止登录
   static String disableLogin = "disable_login";
   static String fkConfig = "fkConfig";
+
+  /// 广告收益列表
+  static String adInfosKey = "ad_infos_key";
 }

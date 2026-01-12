@@ -320,14 +320,14 @@ class LoginView extends GetView<LoginController> {
               onPressed: controller.wxLogin,
             ),
             checkedXieyi(),
-            // CuButton(
-            //   width: 150.w,
-            //   text: "切换到账号登录",
-            //   textColor: Colors.blue,
-            //   onPressed: () {
-            //     controller.isWechatLogin.value = false;
-            //   },
-            // ),
+            CuButton(
+              width: 150.w,
+              text: "切换到账号登录",
+              textColor: Colors.blue,
+              onPressed: () {
+                controller.isWechatLogin.value = false;
+              },
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:base_object/core/components/Avatar.dart';
+import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/components/dialogs/Dialogs.dart';
@@ -10,6 +11,7 @@ import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
+import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/models/localModels/ChatMessage.dart';
 import 'package:base_object/models/localModels/LocationData.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
@@ -46,18 +48,97 @@ class HomeController extends GetxController {
   // 构建聊天列表（支持滚动）
   Widget buildChatList() {
     Utils.logError("构建聊天列表");
-    return Obx(
-      () => ListView.builder(
-        controller: scrollController, // 绑定新控制器
-        padding: EdgeInsets.all(10.sp),
-        itemCount: HomeGroupChat.to.messages.length,
-        reverse: false, // 最新消息在底部（需向下滚动查看）
-        itemBuilder: (context, index) {
-          final message = HomeGroupChat.to.messages[index];
-          return _buildMessageItem(message);
-        },
-      ),
+    return Column(
+      spacing: 10.h,
+      children: [
+        Expanded(
+          child: Container(
+            width: Get.width,
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: Store.instance.getAdInfos.length,
+              itemBuilder: (context, i) {
+                AdInfo currentItem = Store.instance.getAdInfos[i];
+                Utils.logError("当前条目${Store.instance.getAdInfos.length}");
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.h,
+                    vertical: 5.w,
+                  ),
+                  margin: EdgeInsets.only(bottom: 10.h),
+                  width: 100.w,
+                  color: Colors.white70,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("广告位id：${currentItem.placementID}"),
+                      Text(
+                        "预估收益：${currentItem.publisherRevenue}",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: TextConfig.textSize_30,
+                        ),
+                      ),
+                      Text("请求id：${currentItem.reqId}"),
+                      Text("广告平台来源id：${currentItem.networkfirmId}"),
+                      Text("广告源id：${currentItem.adsourceId}"),
+                      Text("生成时间：${currentItem.createdTime}"),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            CuButton(
+              bgColor: TextConfig.primary,
+              text: "清空统计数据",
+              width: 150.w,
+              height: 40.h,
+              onPressed: () {
+                Store.instance.setAdInfos([]);
+              },
+            ),
+            CuButton(
+              bgColor: TextConfig.primary,
+              text: "观看激励视频",
+              width: 150.w,
+              height: 40.h,
+              onPressed: () {
+                RewarderTool.to.showRewardedVideoFlutter();
+              },
+            ),
+          ],
+        ),
+      ],
     );
+    // return Center(
+    //   child: CuButton(
+    //     bgColor: TextConfig.primary,
+    //     text: "观看激励视频",
+    //     width: 150.w,
+    //     height: 40.h,
+    //     onPressed: () {
+    //       RewarderTool.to.showRewardedVideoFlutter();
+    //     },
+    //   ),
+    // );
+    // return Obx(
+    //   () => ListView.builder(
+    //     controller: scrollController, // 绑定新控制器
+    //     padding: EdgeInsets.all(10.sp),
+    //     itemCount: HomeGroupChat.to.messages.length,
+    //     reverse: false, // 最新消息在底部（需向下滚动查看）
+    //     itemBuilder: (context, index) {
+    //       final message = HomeGroupChat.to.messages[index];
+    //       return _buildMessageItem(message);
+    //     },
+    //   ),
+    // );
   }
 
   // 构建单条消息项（优先级：广告 > 红包 > 普通消息）
@@ -121,39 +202,41 @@ class HomeController extends GetxController {
 
   // ------------------- 生命周期 -------------------
   void allInit() async {
-    /// 上传地址
-    if (UserInfo.instance.isLoginIn) {
-      await LocationUtil().getCurrentLocation((Map result) async {
-        Utils.logError("定位结果：$result");
-        if (result["errorCode"] != null || result["address"] == null) {
-          CuToast.error(msg: "定位失败，请打开定位");
-          await Future.delayed(const Duration(seconds: 2));
-          SystemNavigator.pop();
-          return;
-        }
-        LocationData locationData = LocationData(
-          address: result["address"],
-          latitude: result["latitude"],
-          longitude: result["longitude"],
-        );
-        Store.instance.setLocationData(locationData);
-      });
+    Store.instance.initAdInfos();
 
-      await Store.instance.getVer(
-        type: 3,
-        msg:
-            "地理位置${Store.instance.locationData?.address}，经度${Store.instance.locationData?.longitude}，纬度${Store.instance.locationData?.latitude}",
-      );
-    }
+    /// 上传地址
+    // if (UserInfo.instance.isLoginIn) {
+    //   await LocationUtil().getCurrentLocation((Map result) async {
+    //     Utils.logError("定位结果：$result");
+    //     if (result["errorCode"] != null || result["address"] == null) {
+    //       CuToast.error(msg: "定位失败，请打开定位");
+    //       await Future.delayed(const Duration(seconds: 2));
+    //       SystemNavigator.pop();
+    //       return;
+    //     }
+    //     LocationData locationData = LocationData(
+    //       address: result["address"],
+    //       latitude: result["latitude"],
+    //       longitude: result["longitude"],
+    //     );
+    //     Store.instance.setLocationData(locationData);
+    //   });
+    //
+    //   await Store.instance.getVer(
+    //     type: 3,
+    //     msg:
+    //         "地理位置${Store.instance.locationData?.address}，经度${Store.instance.locationData?.longitude}，纬度${Store.instance.locationData?.latitude}",
+    //   );
+    // }
 
     /// 获取风控配置
-    await Store.instance.getFkConfigFn();
+    // await Store.instance.getFkConfigFn();
 
     /// 获取今日领取了多少个红包
-    await Store.instance.initCurrentCount();
-    await getAppUpdata();
+    // await Store.instance.initCurrentCount();
+    // await getAppUpdata();
     // 初始化用户信息
-    UserInfo.instance.initialize();
+    // UserInfo.instance.initialize();
     RewarderTool.to.loadRewardedVideoFlutter(
       userID: "${UserInfo.instance.userModel.id}",
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
@@ -161,18 +244,18 @@ class HomeController extends GetxController {
     RewarderTool.to.rewardedAdListen();
 
     /// 是否显示新人邀请
-    isShowNewUser();
+    // isShowNewUser();
 
     /// 是否显示公告框
-    isShow();
+    // isShow();
 
     /// 检查低保任务
-    await Store.instance.postMinAdPrizeList();
+    // await Store.instance.postMinAdPrizeList();
 
     /// 如果任务状态是接取的，那么就跳转到任务大厅
-    if (Store.instance.isTaskStatus == 1) {
-      CuNavBarController.to.onTabChange(1);
-    }
+    // if (Store.instance.isTaskStatus == 1) {
+    //   CuNavBarController.to.onTabChange(1);
+    // }
     // 初始化app升级信息
   }
 
@@ -181,13 +264,13 @@ class HomeController extends GetxController {
     Utils.logError("首页页面onInit");
 
     // 开启广告监听器
-    InterstitialTool.to.interstitialListen();
-    NativeTool.to.nativeLisListen();
+    // InterstitialTool.to.interstitialListen();
+    // NativeTool.to.nativeLisListen();
 
-    InterstitialTool.to.loadInterstitialAd();
+    // InterstitialTool.to.loadInterstitialAd();
 
-    NativeTool.to.loadNativeWith();
-    HomeGroupChat.to.homeGroupChatInit();
+    // NativeTool.to.loadNativeWith();
+    // HomeGroupChat.to.homeGroupChatInit();
     allInit();
 
     super.onInit();

@@ -21,9 +21,9 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
       itemBuilder: (context, i) {
         UserAmountListModel item = controller.userAmountListModelList[i];
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 10.w,vertical: 5.h),
+          margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
           decoration: BoxDecoration(
-            color:Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
@@ -33,8 +33,21 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("${item.initAmount}金币",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
-                Text("${controller.sourceFn[item.type]}",style: TextStyle(color: TextConfig.grey, fontSize: TextConfig.textSize_12,),)
+                Text(
+                  "${item.initAmount}金币",
+                  style: TextStyle(
+                    color: TextConfig.primary,
+                    fontSize: TextConfig.textSize_16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "${controller.sourceFn[item.type]}",
+                  style: TextStyle(
+                    color: TextConfig.grey,
+                    fontSize: TextConfig.textSize_12,
+                  ),
+                ),
               ],
             ),
           ),
@@ -42,7 +55,8 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
       },
     );
   }
-// 提现表
+
+  // 提现表
   Widget get userWithdrawalList {
     if (controller.userWithdrawalModelList.isEmpty) return CuEmpty();
     return ListView.builder(
@@ -51,20 +65,28 @@ class TransactionDetailsView extends GetView<TransactionDetailsController> {
       itemBuilder: (context, i) {
         UserWithdrawalModel item = controller.userWithdrawalModelList[i];
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 10.w,vertical: 5.h),
+          margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
           decoration: BoxDecoration(
-            color:Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: ListTile(
             title: Text(Store.instance.getAppUpLoadModel.appName),
             subtitle: Text(item.payTime),
-            trailing: Text("${item.payMoney}￥",style: TextStyle(color: TextConfig.primary, fontSize: TextConfig.textSize_16,fontWeight: FontWeight.bold),),
+            trailing: Text(
+              "${item.payMoney}￥",
+              style: TextStyle(
+                color: TextConfig.primary,
+                fontSize: TextConfig.textSize_16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         );
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

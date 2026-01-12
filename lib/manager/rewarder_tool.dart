@@ -13,6 +13,7 @@ import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dar
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
 import 'package:base_object/models/backModel/rewarderModel/RewarderModel.dart';
+import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
@@ -22,6 +23,7 @@ import 'package:base_object/utils/local_storage.dart';
 import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:jiffy/jiffy.dart';
 
 class RewarderTool extends GetxService {
   // GetX单例获取方式
@@ -228,13 +230,27 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 激励成功 ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
-          checkRewarderAd(value);
+          AdInfo adInfo = AdInfo(
+            value.extraMap['publisher_revenue_cny'],
+            value.placementID,
+            value.extraMap['req_id'],
+            value.extraMap['network_firm_id'],
+            value.extraMap['adsource_id'],
+            Jiffy.now().format(),
+          );
+          Utils.logError(value.extraMap['publisher_revenue_cny'] is String);
+          Utils.logError(value.placementID is String);
+          Utils.logError(value.extraMap['req_id'] is String);
+          Utils.logError(value.extraMap['network_firm_id'] is int);
+          Utils.logError(value.extraMap['adsource_id'] is String);
+          Store.instance.addAdInfos(adInfo);
+          // checkRewarderAd(value);
           HomeGroupChat.to.redBagOpen.value = false;
 
           loadRewardedVideoFlutter(
-            userID: "${UserInfo.instance.userModel.id}",
-            extra:
-                "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+            // userID: "${UserInfo.instance.userModel.id}",
+            // extra:
+            //     "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
           );
           break;
 

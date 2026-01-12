@@ -50,6 +50,8 @@ class SplashController extends GetxController
 
     /// 初始化广告
     initAd();
+    Get.offAllNamed(AppRoutes.home);
+    return;
 
     /// 初始化开屏广告
     SplashTool.to.splashListen();

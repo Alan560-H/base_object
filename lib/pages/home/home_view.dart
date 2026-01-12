@@ -11,6 +11,7 @@ import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/pages/home/home_group_chat.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -44,38 +45,39 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.transparent,
                 actions: [
-                  if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
-                    Tada(
-                      infinite: true,
-                      duration: const Duration(milliseconds: 1000),
-                      child: CuButton(
-                        bgColor: TextConfig.primary,
-                        radius: 10.r,
-                        text: "新人福利",
-                        // text:
-                        //     "${controller.isShowNew.value},${UserInfo.instance.isLoginIn}",
-                        width: 80.w,
-                        onPressed: () {
-                          Get.dialog(NewUserDialog());
-                        },
-                      ),
-                    ),
-                  SizedBox(width: 40.w),
-                  CuButton(
-                    bgColor: TextConfig.primary,
-                    radius: 15.r,
-                    text:
-                        UserInfo.instance.isLoginIn
-                            ? "${UserInfo.instance.userModel.currentAmount} 提现"
-                            : "登录",
-                    width: 130.w,
-                    onPressed: () {
-                      if (!UserInfo.instance.isLoginIn) {
-                        HomeGroupChat.to.removeAdContainer();
-                      }
-                      Get.toNamed(AppRoutes.userTixian);
-                    },
-                  ),
+                  Text("总收益：${Store.instance.getAdInfosTotal}"),
+                  // if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
+                  //   Tada(
+                  //     infinite: true,
+                  //     duration: const Duration(milliseconds: 1000),
+                  //     child: CuButton(
+                  //       bgColor: TextConfig.primary,
+                  //       radius: 10.r,
+                  //       text: "新人福利",
+                  //       // text:
+                  //       //     "${controller.isShowNew.value},${UserInfo.instance.isLoginIn}",
+                  //       width: 80.w,
+                  //       onPressed: () {
+                  //         Get.dialog(NewUserDialog());
+                  //       },
+                  //     ),
+                  //   ),
+                  // SizedBox(width: 40.w),
+                  // CuButton(
+                  //   bgColor: TextConfig.primary,
+                  //   radius: 15.r,
+                  //   text:
+                  //       UserInfo.instance.isLoginIn
+                  //           ? "${UserInfo.instance.userModel.currentAmount} 提现"
+                  //           : "登录",
+                  //   width: 130.w,
+                  //   onPressed: () {
+                  //     if (!UserInfo.instance.isLoginIn) {
+                  //       HomeGroupChat.to.removeAdContainer();
+                  //     }
+                  //     Get.toNamed(AppRoutes.userTixian);
+                  //   },
+                  // ),
                 ],
               ),
 

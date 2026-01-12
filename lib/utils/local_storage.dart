@@ -22,6 +22,27 @@ class LocalStorage {
     }
   }
 
+  /// 新增：获取对象数组（适配NoticeModel列表）
+  /// [fromJson] 是将单个Map转换为对象的方法，例如 `NoticeModel.fromJson`
+  static Future<List<T>?> getObjectList<T>(
+    String key,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    try {
+      String? jsonString = await getString(key);
+      if (jsonString == null) {
+        return null;
+      }
+      // 数组解码后是List<dynamic>，而非Map
+      List<dynamic> jsonList = jsonDecode(jsonString);
+      // 遍历数组，逐个转换为NoticeModel对象
+      return jsonList.map((json) => fromJson(json)).toList();
+    } catch (e) {
+      print('Error retrieving object list: $e');
+      return null;
+    }
+  }
+
   /// 新增：获取对象
   /// [fromJson] 是一个工厂构造函数或静态方法，用于将 Map 转换回对象，例如 `User.fromJson`
   static Future<T?> getObject<T>(

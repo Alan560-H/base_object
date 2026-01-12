@@ -24,12 +24,14 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/> <!--用于申请调用A-GPS模块,卫星定位加速-->
     <!--允许写设备缓存，用于问题排查-->
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <!--        android:label="悠米赚"-->
+
     <application
         android:name="${applicationName}"
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="悠米赚"
+        android:label="家乐宝"
         android:networkSecurityConfig="@xml/net_config"
         tools:replace="android:label,android:allowBackup"
         android:theme="@style/AppTheme"
