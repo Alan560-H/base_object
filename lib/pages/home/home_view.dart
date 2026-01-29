@@ -45,6 +45,7 @@ class HomeView extends GetView<HomeController> {
                 title: controller.appbarTitle.value,
                 backgroundColor: Colors.transparent,
                 actions: [
+                  Text("总计数：${Store.instance.getAdInfos.length}"),
                   Text("总收益：${Store.instance.getAdInfosTotal}"),
                   // if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
                   //   Tada(

@@ -96,7 +96,7 @@ dependencies:
   # 获取sim卡信息
   sim_card_info: ^1.0.0
   # 获取地理位置
-#  amap_flutter_location: ^3.0.0
+  amap_flutter_location: ^3.0.0
   # 安全存储
   flutter_secure_storage: ^9.2.4
   # 网络信息
