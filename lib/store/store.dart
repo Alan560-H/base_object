@@ -1,17 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_keys.dart';
-import 'package:base_object/core/config/cu_error_config.dart';
-import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
-import 'package:base_object/models/FormModel/FormModel.dart';
-import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
-import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
-import 'package:base_object/models/backModel/BackModel.dart';
-import 'package:base_object/models/backModel/TaskModel/TaskModel.dart';
 import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
 import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
@@ -22,7 +14,6 @@ import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
@@ -38,25 +29,10 @@ class Store extends GetxController {
   int get isTaskStatus => adTaskModel.value.status;
   bool get isOverTask =>
       adTaskModel.value.numConfig - adTaskModel.value.userNum <= 0;
-  Future<void> postMinAdEnd() async {
-    BackModel backModel = await Api.to.postMinAdEnd();
-    if (backModel.code == CuErrorConfig.success) {
-      CuToast.success(msg: "任务完成，获得金币${backModel.data}");
-
-      /// 刷新任务状态
-      await Store.instance.postMinAdPrizeList();
-      Get.back();
-    }
-  }
+  Future<void> postMinAdEnd() async {}
 
   /// 任务保底详情
-  Future<void> postMinAdPrizeList() async {
-    if (!UserInfo.instance.isLoginIn) return;
-    FormModel formModel = FormModel();
-    formModel.channelPackage = Store.instance.getAppUpLoadModel.channelPackage;
-    adTaskModel.value = await Api.to.postMinAdPrizeList(formModel);
-    Utils.logError("任务保底详情${adTaskModel.value.toJson()}");
-  }
+  Future<void> postMinAdPrizeList() async {}
 
   final RxBool _disableLogin = false.obs;
   bool get getDisableLogin => _disableLogin.value;
@@ -109,7 +85,7 @@ class Store extends GetxController {
         String msg =
             "这是副广超出了最高限制：一：最高限制：${getFkConfig.wactchMaxAmountV1}最低限制：${getFkConfig.wactchMinAmountV1}，三：超出最高限制，以及封禁数组情况：${_wactchMaxADList.toString()}";
         await getVer(type: 2, msg: msg);
-        Get.offAllNamed(AppRoutes.userError);
+        CuToast.error(msg: "今日广告已达上限，请明日再来");
       }
     } else {
       _wactchMaxADList.add(model);
@@ -139,7 +115,7 @@ class Store extends GetxController {
         String msg =
             "这是副广超出了最低限制：一：最高限制：${getFkConfig.wactchMaxAmountV1}最低限制：${getFkConfig.wactchMinAmountV1}，三：超出最低限制，以及封禁数组情况：${_wactchMinADList.toString()}";
         await getVer(type: 2, msg: msg);
-        Get.offAllNamed(AppRoutes.userError);
+        CuToast.error(msg: "今日广告已达上限，请明日再来");
       }
     } else {
       _wactchMinADList.add(model);
@@ -171,7 +147,7 @@ class Store extends GetxController {
         String msg =
             "这是主广超出了最低限制：一：最高限制：${getFkConfig.wactchMaxAmount}最低限制：${getFkConfig.wactchMinAmount}，三：超出最低限制，以及封禁数组情况：${_wactchMainMinADList.toString()}";
         await getVer(type: 2, msg: msg);
-        Get.offAllNamed(AppRoutes.userError);
+        CuToast.error(msg: "今日广告已达上限，请明日再来");
       }
     } else {
       _wactchMainMinADList.add(model);
@@ -202,7 +178,7 @@ class Store extends GetxController {
         String msg =
             "这是主广超出了最高限制：一：最高限制：${getFkConfig.wactchMaxAmount}最低限制：${getFkConfig.wactchMinAmount}，三：超出最高限制，以及封禁数组情况：${_wactchMainMaxADList.toString()}";
         await getVer(type: 2, msg: msg);
-        Get.offAllNamed(AppRoutes.userError);
+        CuToast.error(msg: "今日广告已达上限，请明日再来");
       }
     } else {
       _wactchMainMaxADList.add(model);
@@ -216,32 +192,13 @@ class Store extends GetxController {
     await LocalStorage.setString(AppKeys.fkConfig, data);
   }
 
-  Future<void> checkFkConfig() async {
-    if (getFkConfig.wactchMaxAmountV1 >= 0) {
-      FKConfigVo? cachedConfig = await LocalStorage.getObject<FKConfigVo>(
-        AppKeys.fkConfig,
-        (json) => FKConfigVo.fromJson(json),
-      );
-      Utils.logError("本地存储得风控配置是${cachedConfig?.toJson()}");
-      if (cachedConfig == null) return;
-      if (cachedConfig.wactchMaxAmountV1 > 0) {
-        setFKConfigVo(cachedConfig);
-      } else {
-        LocalStorage.removeString(AppKeys.fkConfig);
-        getFkConfigFn();
-      }
-    }
-  }
+  Future<void> checkFkConfig() async {}
 
-  /// 获取风控配置
+  /// 获取风控配置（本地默认，无后端）
   Future<void> getFkConfigFn() async {
-    try {
-      FKConfigVo data = await Api.to.getFkConfig();
-      await setFKConfigVo(data);
-      Utils.logError("风控设置：${getFkConfig.toJson()}");
-    } catch (e) {
-      Utils.logError("获取风控配置失败$e");
-    }
+    FKConfigVo defaultConfig = FKConfigVo();
+    defaultConfig.adTime = 60;
+    await setFKConfigVo(defaultConfig);
   }
 
   FKConfigVo get getFkConfig => _fkConfig.value;
@@ -352,14 +309,10 @@ class Store extends GetxController {
 
   bool get getIsOpenClaim => _isOpenClaim.value;
 
-  /// 获取客服配置
-  /// 客服配置
+  /// 获取客服配置（无后端，保持空列表）
   final RxList<ServiceModel> _serviceList = <ServiceModel>[].obs;
   Future getServerConfig() async {
-    AppUpLoadForm form = AppUpLoadForm();
-    form.channelPackage = getAppUpLoadModel.channelPackage;
-    List<ServiceModel> list = await Api.to.getServerConfig(form);
-    _serviceList.value = list;
+    _serviceList.value = [];
   }
 
   // 获取q群链接
@@ -382,36 +335,9 @@ class Store extends GetxController {
     _isLimit.value = value;
   }
 
-  /// 检查设备封禁
-  /// type 1 检查设备是否封禁，2 金额异常上报，3 上传位置
-  /// msg 传递得信息
+  /// 检查设备封禁（无后端，始终返回未封禁）
   Future<bool> getVer({int type = 1, String msg = "主动查询封禁信息"}) async {
-    try {
-      CheckDeviceForm checkDeviceForm = CheckDeviceForm();
-      checkDeviceForm.oaid = await FlutterAndroidOaidPlugin.getOAID();
-      checkDeviceForm.userId = UserInfo.instance.userModel.id;
-      checkDeviceForm.address = locationData?.address;
-      checkDeviceForm.latitude = locationData?.latitude;
-      checkDeviceForm.longitude = locationData?.longitude;
-      checkDeviceForm.type = type;
-      checkDeviceForm.msg = msg;
-      Utils.logError(
-        "上传的地理位置：${checkDeviceForm.address}，纬度：${checkDeviceForm.latitude}，经度：${checkDeviceForm.longitude}",
-      );
-      if (checkDeviceForm.userId == 0) {
-        checkDeviceForm.userId = null;
-      }
-      BackModel data = await Api.to.getVer(checkDeviceForm);
-      // 如果类型是1，就设置限定
-      if (type == 1) {
-        setIsLimit(data.data);
-      }
-
-      return isLimit;
-    } catch (e) {
-      Utils.logError("获取风控配置失败$e");
-      return false;
-    }
+    return false;
   }
 
   /// 位置信息

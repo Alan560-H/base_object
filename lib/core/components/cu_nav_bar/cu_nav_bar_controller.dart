@@ -1,23 +1,17 @@
 import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/core/config/ad_param_keys.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
-import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
-import 'package:base_object/models/backModel/fKModelConfig/FKConfigVo.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
 import 'package:base_object/models/localModels/UpADModel.dart';
-import 'package:base_object/pages/login/login_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
@@ -48,7 +42,7 @@ class CuNavBarController extends GetxService {
 
   /// 一级页面索引
   RxInt currentPageIndex = 0.obs;
-  RxDouble height = 110.h.obs;
+  RxDouble height = 60.h.obs;
 
   /// 设置高度
   void setHeight(double h) {
@@ -59,24 +53,16 @@ class CuNavBarController extends GetxService {
     try {
       currentPageIndex.value = index;
       NativeTool.to.removeNativeAd();
-      bool isHasAdStr = await NativeTool.to.getNativeValidAds();
-      Utils.logError("底部导航判断$isHasAdStr");
       switch (index) {
         case 0:
           Get.offAllNamed(AppRoutes.home);
           break;
         case 1:
-          Get.offAllNamed(AppRoutes.task);
-          break;
-        // case 2:
-        //   Get.offAllNamed(AppRoutes.djVideo);
-        //   break;
-        case 2:
-          Get.offAllNamed(AppRoutes.invite);
-          break;
-        case 3:
           Get.offAllNamed(AppRoutes.user);
           break;
+        default:
+          Get.offAllNamed(AppRoutes.home);
+          currentPageIndex.value = 0;
       }
     } catch (e) {
       Utils.logError("切换一级页面失败：$e");
@@ -86,41 +72,18 @@ class CuNavBarController extends GetxService {
   }
 
   List<MenuModel> menuModels = [];
-  // 定义一个方法来生成 BottomNavigationBarItem 列表
   List<BottomNavigationBarItem> getNavigationItems() {
     menuModels = [
       _createMenuModel(
         0,
-        "抢红包",
+        "首页",
         false,
         ImageConfig.redBagDefatult,
         ImageConfig.redBagActive,
       ),
       _createMenuModel(
         1,
-        "任务大厅",
-        true,
-        ImageConfig.videoDefault,
-        ImageConfig.videoActive,
-      ),
-      // _createMenuModel(
-      //   2,
-      //   "短剧",
-      //   true,
-      //   ImageConfig.shortVideoDefault,
-      //
-      //   ImageConfig.shortVideoActive,
-      // ),
-      _createMenuModel(
-        2,
-        "分享",
-        false,
-        ImageConfig.inviteDefault,
-        ImageConfig.inviteActive,
-      ),
-      _createMenuModel(
-        3,
-        "个人中心",
+        "我的",
         false,
         ImageConfig.myDefatult,
         ImageConfig.myActive,
@@ -145,7 +108,6 @@ class CuNavBarController extends GetxService {
   }
 
   upDataADFn(dynamic event) async {
-    await Store.instance.checkFkConfig();
     try {
       Utils.logError(
         "${Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss")}横幅广告upDataADFn${event.extraMap}",

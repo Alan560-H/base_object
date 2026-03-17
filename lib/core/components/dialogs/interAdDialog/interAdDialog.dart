@@ -1,18 +1,12 @@
 import 'dart:async';
 
-import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/interstitial_tool.dart';
-import 'package:base_object/manager/native_tool.dart';
-import 'package:base_object/manager/rewarder_tool.dart';
-import 'package:base_object/models/FormModel/checkDeviceForm/CheckDeviceForm.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/localModels/UpADModel.dart';
-import 'package:base_object/pages/login/login_controller.dart';
+import 'package:base_object/core/config/ad_param_keys.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
 import 'package:get/get.dart';
 
 class InterAdDialog extends GetxService {

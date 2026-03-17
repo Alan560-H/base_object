@@ -1,7 +1,7 @@
 package com.jialeb
 
 import android.content.Intent
-import android.os.Bundle // 1. 新增：导入 Bundle 类（解决 Unresolved reference 问题）
+import android.os.Bundle
 import android.util.Log
 import android.webkit.WebView
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -9,15 +9,13 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.example.base_object/channel"
+    private val CHANNEL = "com.jialeb/channel"
     private val TAG = "MainActivityDebug"
-    private val UACHANNEL = "uaChannel"
+    private val UACHANNEL = "com.jialeb/uaChannel"
 
-    // 保留通道引用
     private lateinit var uaMethodChannel: MethodChannel
     private lateinit var channelMethodChannel: MethodChannel
 
-    // 2. 修复：onCreate 方法签名（参数类型 Bundle? 已导入，与父类匹配）
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "MainActivity 已创建：onCreate 执行")
@@ -27,13 +25,11 @@ class MainActivity : FlutterFragmentActivity() {
         super.configureFlutterEngine(flutterEngine)
         Log.d(TAG, "=== configureFlutterEngine 开始执行 ===")
 
-        // 关键修复：移除 finish()，避免阻断通道注册
         if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             Log.d(TAG, "检测到页面复用标记，不销毁 Activity")
-            return // 仅跳过后续初始化，不销毁 Activity
+            return
         }
 
-        // 处理 UA 通道
         Log.d(TAG, "开始注册 UA 通道：$UACHANNEL")
         uaMethodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -48,7 +44,6 @@ class MainActivity : FlutterFragmentActivity() {
                     result.error("CONTEXT_ERROR", "应用 Context 为空，无法获取 UserAgent", null)
                     return@setMethodCallHandler
                 }
-
                 var webView: WebView? = null
                 try {
                     webView = WebView(appContext)
@@ -67,7 +62,6 @@ class MainActivity : FlutterFragmentActivity() {
             }
         }
 
-        // 处理 CHANNEL 通道
         Log.d(TAG, "开始注册 CHANNEL 通道：$CHANNEL")
         channelMethodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -103,7 +97,6 @@ class MainActivity : FlutterFragmentActivity() {
         Log.d(TAG, "=== configureFlutterEngine 执行完成 ===")
     }
 
-    // Activity 销毁时解绑通道
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "MainActivity 销毁：解绑所有通道")

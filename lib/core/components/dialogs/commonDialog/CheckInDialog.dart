@@ -1,21 +1,16 @@
-import 'dart:developer';
-
 import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/components/custom_input_field.dart';
 import 'package:base_object/core/config/cu_error_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/models/backModel/BackModel.dart';
-import 'package:base_object/models/backModel/adTaskModel/AdTaskModel.dart';
 import 'package:base_object/models/backModel/signModel/SignModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
 class CheckInDialog extends StatefulWidget {
   /// 实名认证

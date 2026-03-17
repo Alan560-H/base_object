@@ -28,41 +28,20 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders.put("OPENINSTALL_APPKEY", "kl25pf")
-        // 添加默认的渠道信息
+        manifestPlaceholders["OPENINSTALL_APPKEY"] = "kl25pf"
         manifestPlaceholders["channel"] = "default"
-        // 新增：限制 APK 只包含 arm64-v8a 架构
+        // 真机: arm64-v8a, armeabi-v7a；模拟器(雷电等 64 位): x86_64（请用 64 位雷电）
         ndk {
-            abiFilters.add("arm64-v8a")
-//            abiFilters.add("armeabi-v7a")
-//            abiFilters.add("x86_64")
-//            abiFilters.add("x86")
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
         }
-        manifestPlaceholders.put("APPLOG_SCHEME", "rangersapplog.dc6f26f3112ee022".lowercase())
-    }
-    flavorDimensions("channel") // 配置渠道维度，这里使用括号的形式
-
-    productFlavors {
-//        如意盒子（悠米赚）
-        create("maingf") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "maingf"
-        }
-//        如意开盒（传家宝）
-
-        create("maingfkh") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "maingfkh"
-        }
-        // 悠米赚
-        create("mdd") {
-            dimension = "channel"
-            manifestPlaceholders["channel"] = "mdd"
-        }
-
     }
 
-    /// 如意盒子，jks（悠米赚）
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
 //    signingConfigs {
 //        create("release") {  // 定义名为 "release" 的签名配置
 //            storeFile = file("ruyimh_key.jks")  // 替换为你的签名文件名
@@ -113,9 +92,6 @@ android {
 }
 // 在这里添加子项目的依赖配置
 dependencies {
-    //Support (Necessary)
-    api("com.amap.api:location:latest.integration")
-
 //    api("com.anythink.sdk:core-taku:6.5.15")
 //    api("com.anythink.sdk:core-china-taku:6.5.15")
 //    api("com.anythink.sdk:nativead-taku:6.5.15")

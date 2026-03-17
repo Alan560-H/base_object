@@ -1,8 +1,6 @@
 import 'package:base_object/core/components/dialogs/interAdDialog/interAdDialog.dart';
 import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/manager/interstitial_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
-import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:get/get.dart';
 

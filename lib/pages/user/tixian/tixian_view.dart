@@ -1,9 +1,6 @@
 import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_tab_menu.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/components/custom_input_field.dart';
-import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
@@ -14,7 +11,6 @@ import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 
 class TixianView extends GetView<TixianController> {

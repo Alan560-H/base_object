@@ -1,5 +1,4 @@
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';

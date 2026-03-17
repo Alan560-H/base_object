@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_keys.dart';
 import 'package:base_object/manager/Init_tool.dart';
@@ -10,7 +9,6 @@ import 'package:base_object/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/models/backModel/userModel/UserTodayModel.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:base_object/utils/local_storage.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class UserInfo extends GetxController {
@@ -153,40 +151,21 @@ class UserInfo extends GetxController {
 
   /// 请求用户是否是新人
   Future<bool> isNewUser() async {
-    try {
-      EasyLoading.show();
-      if (!isLoginIn) {
-        return false;
-      }
-      newUserModel.value = await Api.to.getNewcomerConfig();
-      Utils.logError("新人福利状态${newUserModel.value.toJson()}");
-      return newUserModel.value.status == 0;
-    } catch (e) {
-      Utils.logError("请求用户是否是新人失败$e");
-      return false;
-    } finally {
-      EasyLoading.dismiss();
-    }
+    return false;
   }
 
-  /// 请求最新用户信息
+  /// 请求最新用户信息（无后端，仅从本地恢复）
   Future<void> getUserInfoFn() async {
     try {
-      EasyLoading.show(status: "请求用户信息中...");
-      if (!Get.isRegistered<Api>()) {
-        Get.put(Api());
-      }
-      UserModel userModel = await Api.to.getUserInfo();
-      if (userModel.id != 0) {
-        UserInfo.instance.updateUserModel(userModel);
-        UserTodayModel userTodayModel = await Api.to.getTodayAmount();
-        UserInfo.instance.updateUserTodayModel(userTodayModel);
-        Utils.logError("用户今日收益：${userTodayModel.toJson()}");
+      UserModel? model = await LocalStorage.getObject<UserModel>(
+        AppKeys.userKey,
+        (v) => UserModel.fromJson(v),
+      );
+      if (model != null && model.id > 0) {
+        updateUserModel(model);
       }
     } catch (e) {
-      Utils.logError("请求最新用户信息失败$e");
-    } finally {
-      EasyLoading.dismiss();
+      Utils.logError("读取本地用户信息失败$e");
     }
   }
 

@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- 添加权限 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 允许 APP访问互联网（发送 / 接收网络数据） -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 允许 APP读取手机硬件 / 网络状态（如 IMEI/MEID 设备号、手机号、网络运营商、信号强度） -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 检查网络状态 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入外部存储权限 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 检查wifi网络状态 -->
@@ -11,17 +10,13 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 允许修改wifi状态 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 允许 APP保持设备唤醒状态（如屏幕常亮、CPU 不休眠） -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- 读取图片权限 -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 访问精确位置权限 -->
     <uses-permission android:name="${applicationId}.openadsdk.permission.TT_PANGOLIN" /><!-- 字节跳动 “穿山甲广告 SDK” 的自定义权限（用于广告投放、数据统计、设备匹配） -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!-- 允许 APP获取粗略位置（仅通过基站 / WiFi，精度 100-1000 米，如城市级别） -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" /><!-- 允许 APP读取手机中已登录的账户列表（如 Google 账户、微信 / QQ 账户、手机厂商账户） -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" /><!-- 允许 APP管理整个外部存储（读取 / 写入所有文件，绕过作用域存储） -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- 允许修改网络状态 -->
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- 允许修改网络状态 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/> <!--用于申请调用A-GPS模块,卫星定位加速-->
     <!--允许写设备缓存，用于问题排查-->
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <!--        android:label="悠米赚"-->
@@ -39,7 +34,7 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-        <!-- sigmob文件提供者 -->
+        <!-- Sigmob 已移除：APK 中无 SigmobFileV4Provider 会触发 ClassNotFoundException，故注释
         <provider
             android:name="com.sigmob.sdk.SigmobFileV4Provider"
             android:authorities="${applicationId}.sigprovider"
@@ -49,7 +44,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_sigmob_file_path"/>
-        </provider>
+        </provider> -->
         <!-- source file: china_jcenter/network_sdk/csj/6.9.2.3/AndroidManifest.xml -->
 <!--        穿山甲-->
         <provider

@@ -1,31 +1,13 @@
-import 'dart:async';
-import 'package:base_object/core/components/Avatar.dart';
 import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/components/dialogs/Dialogs.dart';
-import 'package:base_object/core/components/dialogs/NoticeDialog.dart';
-import 'package:base_object/core/components/dialogs/WeiHuDialog.dart';
 import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/manager/interstitial_tool.dart';
-import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/AdInfo.dart';
-import 'package:base_object/models/localModels/ChatMessage.dart';
-import 'package:base_object/models/localModels/LocationData.dart';
-import 'package:base_object/pages/home/home_group_chat.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
-import 'package:base_object/utils/LocationUtil.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-// import 'package:flutter_pangrowth/flutter_pangrowth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
-import 'home_utils.dart';
 
 class HomeController extends GetxController {
   final ScrollController scrollController = ScrollController();
@@ -141,68 +123,12 @@ class HomeController extends GetxController {
     // );
   }
 
-  // 构建单条消息项（优先级：广告 > 红包 > 普通消息）
-  Widget _buildMessageItem(ChatMessage message) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.h),
-      margin: EdgeInsets.only(bottom: 8.r), // 消息间距
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. 用户头像
-          Avatar(
-            headImage: message.user.avatarUrl,
-            size: 20.h,
-            isCircle: false,
-          ),
-          SizedBox(width: 10.w), // 头像与内容间距
-          // 2. 消息内容区域
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 2.1 用户名
-                Text(
-                  message.user.name,
-                  style: TextStyle(
-                    fontSize: TextConfig.textSize_14,
-                    color: Utils.fromHex("#888888"),
-                  ),
-                ),
-                SizedBox(height: 5.h), // 用户名与内容间距
-                message.content,
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  /// 是否显示新人福利（无后端，占位方法）
+  Future<void> isShowNewUser() async {}
 
-  // 获取App升级信息
-  Future<void> getAppUpdata({bool isReturn = false}) async {
-    await HomeUtils.getAppUpdata(isReturn: isReturn);
-  }
-
-  RxBool isShowNew = false.obs;
-
-  /// 是否显示新人奖励
-  isShowNewUser() async {
-    Utils.logError("登录？？${UserInfo.instance.isLoginIn}");
-    if (!UserInfo.instance.isLoginIn) return false;
-    isShowNew.value = await UserInfo.instance.isNewUser();
-  }
-
-  /// 显示公告框
-  isShow() async {
-    if (await NoticeDialog.shouldShow()) {
-      Dialogs.noticeDialog();
-    }
-  }
-
-  // ------------------- 生命周期 -------------------
   void allInit() async {
     Store.instance.initAdInfos();
+    await Store.instance.getFkConfigFn();
 
     /// 上传地址
     // if (UserInfo.instance.isLoginIn) {

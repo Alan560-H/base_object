@@ -24,16 +24,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 
-class Common {
-  static String getUserIdKey() {
-    return 'userId';
-  }
-
-  static String getExtraKey() {
-    return 'extra';
-  }
-}
-
 class LoginController extends GetxController {
   final CuNavBarController cuNavBarController = Get.find<CuNavBarController>();
   RxString appbarTitle = "登录页面标题".obs;

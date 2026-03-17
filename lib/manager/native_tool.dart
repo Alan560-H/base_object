@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
-import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/localModels/UpADModel.dart';
 import 'package:base_object/store/store.dart';
@@ -254,7 +252,6 @@ class NativeTool extends GetxService {
           );
           nativeUpDataADFn(value);
           loadNativeWith();
-          CuCircularProgressController.to.getCurrentValue();
           break;
 
         case NativeStatus.nativeAdDidTapCloseButton:

@@ -1,4 +1,4 @@
-import 'package:base_object/core/api/api_binding.dart';
+import 'package:base_object/core/api/api.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/store/store.dart';
@@ -9,15 +9,10 @@ import 'user_info.dart';
 class DependencyInjection {
   /// 依赖注入
   static Future<void> mainInit() async {
-    // 注册 UserInfo 依赖
     Get.put<UserInfo>(UserInfo());
-    // 注入 appConfig 依赖
     Get.put<AppConfig>(AppConfig());
-    // 注册广告配置
     Get.put<AppAdConfig>(AppAdConfig());
-    // 注入api
-    ApiBinding().dependencies();
-    // 注入
+    Get.put<Api>(Api());
     Get.put<Store>(Store());
   }
 }

@@ -6,8 +6,6 @@ class PermissionManager {
   static Future<bool> requestAllPermissions() async {
     Map<Permission, PermissionStatus> statuses =
         await [
-          Permission.location,
-          Permission.phone,
           Permission.bluetooth,
         ].request();
     // 打印每个权限的状态

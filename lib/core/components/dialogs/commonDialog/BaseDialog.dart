@@ -14,7 +14,6 @@ import 'CheckInDialog.dart';
 import 'EditPayAccountDialog.dart';
 import 'ConfirmDialog.dart';
 import 'DeregisterDialog.dart';
-import 'MinAdPrizeDialog.dart';
 
 /// 如果调用通用模态框，请调用showCustomDialog,如果是特殊模态框，请直接调用其静态方法
 class BaseDialog extends StatefulWidget {
@@ -53,8 +52,6 @@ class _BaseDialogState extends State<BaseDialog> {
     'AppMaintenanceDialog': () => AppMaintenanceDialog(),
     // 签到
     'CheckInDialog': () => CheckInDialog(),
-    // 低保任务弹窗
-    'MinAdPrizeDialog': () => MinAdPrizeDialog(),
   };
 
   /// 如果有需要回调再这里单独引入组件

@@ -1,14 +1,12 @@
 import 'package:base_object/core/components/Avatar.dart';
-import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_config.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/pages/invite/invite_controller.dart';
 import 'package:base_object/pages/user/user_controller.dart';
+import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -16,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:marquee/marquee.dart';
 
 class UserView extends GetView<UserController> {
   const UserView({super.key});
@@ -49,9 +46,7 @@ class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (controller.userInfo.isLoginIn) {
-        await controller.userInfo.getUserInfoFn();
-      }
+      await controller.userInfo.getUserInfoFn();
     });
     return Scaffold(
       body: Obx(
@@ -82,7 +77,9 @@ class UserView extends GetView<UserController> {
                         spacing: 10.w,
                         children: [
                           Text(
-                            controller.userInfo.userModel.username,
+                            controller.userInfo.userModel.id > 0
+                                ? controller.userInfo.userModel.username
+                                : "游客",
                             style: TextStyle(
                               fontSize: TextConfig.textSize_20,
                               fontWeight: FontWeight.bold,
@@ -116,18 +113,24 @@ class UserView extends GetView<UserController> {
                         ],
                       ),
                       Text(
-                        "会员ID:${controller.userInfo.userModel.id} |师傅ID：${controller.userInfo.userModel.inviteUserId}",
+                        controller.userInfo.userModel.id > 0
+                            ? "会员ID:${controller.userInfo.userModel.id}"
+                            : "游客",
+                        style: TextStyle(
+                          fontSize: TextConfig.textSize_14,
+                          color: Colors.white70,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
 
-              /// 当前可提现金币，去提现按钮
+              /// 本地统计展示（无后端提现）
               Container(
                 width: Get.width,
-                constraints: BoxConstraints(minHeight: 130.h, maxHeight: 150.h),
-                padding: EdgeInsets.symmetric(horizontal: 0.h, vertical: 10.h),
+                constraints: BoxConstraints(minHeight: 100.h, maxHeight: 130.h),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     alignment: Alignment.center,
@@ -137,55 +140,19 @@ class UserView extends GetView<UserController> {
                     ),
                   ),
                 ),
-                child: Column(
+                child: Row(
                   children: [
                     Expanded(
-                      child: Row(
-                        children: [
-                          //
-                          Expanded(
-                            child: getCom(
-                              value:
-                                  "${Utils.floorToTwoDecimal(controller.userInfo.userModel.currentAmount / 10000)} 元",
-                              title: "可提现金额",
-                            ),
-                          ),
-                          Expanded(
-                            child: getCom(
-                              value:
-                                  InviteController
-                                      .to
-                                      .userInviteInfoModel
-                                      .value
-                                      .todayAmount
-                                      .toString(),
-                              title: "今日已赚金币",
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: CuButton(
-                                text: "",
-                                width: 90.w,
-                                height: 50.h,
-                                bgImage: ImageConfig.goTiXian,
-                                onPressed: () {
-                                  Get.toNamed(AppRoutes.userTixian);
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: getCom(
+                        value: "广告数：${Store.instance.getAdInfos.length}",
+                        title: "累计观看",
                       ),
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      width: Get.width,
-                      height: 40.h,
-                      // child: Marquee(
-                      //   text: '本平台不存在任何收费项目，请勿轻信广告内容，谨防诈骗。',
-                      //   style: TextStyle(color: Colors.white70),
-                      // ),
+                    Expanded(
+                      child: getCom(
+                        value: Store.instance.getAdInfosTotal.toString(),
+                        title: "总收益(展示)",
+                      ),
                     ),
                   ],
                 ),

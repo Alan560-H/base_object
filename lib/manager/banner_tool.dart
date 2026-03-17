@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/core/components/cu_circular_progress/cu_circular_progress_controller.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
-import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -135,7 +133,6 @@ class BannerTool extends GetxService {
             "横幅广告 bannerAdFailToLoadAD ---- placementID: ${atBannerResponse.requestMessage}",
           );
           // CuToast.error(msg: "横幅广告加载失败");
-          cuNavBarController.setHeight(100.h);
           break;
         //广告加载成功
         case BannerStatus.bannerAdDidFinishLoading:
@@ -143,8 +140,6 @@ class BannerTool extends GetxService {
             "横幅广告 bannerAdDidFinishLoading ---- placementID: ${value.placementID}",
           );
           showAdInPosition();
-
-          cuNavBarController.setHeight(110.h);
           break;
         //广告自动刷新成功
         case BannerStatus.bannerAdAutoRefreshSucceed:
@@ -152,7 +147,6 @@ class BannerTool extends GetxService {
             "横幅广告 bannerAdAutoRefreshSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           cuNavBarController.upDataADFn(value);
-          CuCircularProgressController.to.getCurrentValue();
           break;
         //广告被点击
         case BannerStatus.bannerAdDidClick:
@@ -183,7 +177,6 @@ class BannerTool extends GetxService {
           Utils.logError(
             "横幅广告 bannerAdAutoRefreshFail ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
-          cuNavBarController.setHeight(110.h);
           break;
         case BannerStatus.bannerAdUnknown:
           Utils.logError("横幅广告 bannerAdUnknown");

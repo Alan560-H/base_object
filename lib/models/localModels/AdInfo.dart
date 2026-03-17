@@ -1,5 +1,3 @@
-import 'package:jiffy/jiffy.dart';
-
 /// 收益列表
 
 class AdInfo {

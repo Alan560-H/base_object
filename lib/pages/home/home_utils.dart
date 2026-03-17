@@ -1,24 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:base_object/core/api/api.dart';
-import 'package:base_object/core/components/dialogs/Dialogs.dart';
-import 'package:base_object/models/FormModel/appUpLoadForm/AppUpLoadForm.dart';
-import 'package:base_object/models/backModel/appUpLoadModel/AppUpLoadModel.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
 import 'package:crypto/crypto.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_android_oaid_plugin/flutter_android_oaid_plugin.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeUtils {
   // 获取UserAgent
   static Future<String?> getUserAgent() async {
-    const platform = MethodChannel('uaChannel');
+    const platform = MethodChannel('com.jialeb/uaChannel');
     try {
       final String? ua = await platform.invokeMethod('getUA');
       return ua;
@@ -31,7 +21,7 @@ class HomeUtils {
   // 获取渠道标识
   static Future<String> getAppChannel() async {
     try {
-      var platform = MethodChannel('com.example.base_object/channel');
+      var platform = MethodChannel('com.jialeb/channel');
       String channel = await platform.invokeMethod('getChannel');
       return channel;
     } catch (e) {
@@ -47,75 +37,9 @@ class HomeUtils {
     return md5Hash.toString();
   }
 
-  // 获取App升级信息
+  // 获取App升级信息（无后端，仅占位）
   static Future<void> getAppUpdata({bool isReturn = false}) async {
     return;
-    String channel = await getAppChannel();
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    AppUpLoadForm appUpLoadForm = AppUpLoadForm();
-
-    // 配置渠道包名
-    if (channel.isEmpty) {
-      appUpLoadForm.channelPackage = packageInfo.packageName;
-    } else {
-      appUpLoadForm.channelPackage = "${packageInfo.packageName}.$channel";
-    }
-    Utils.logError("设备信息提交：${appUpLoadForm.toJson()}，$channel,通道");
-    // 请求升级信息
-
-    AppUpLoadModel appUpLoadModel = await Api.to.postUpApp(appUpLoadForm);
-    Utils.logError("返回的版本信息：${appUpLoadModel.toJson()}");
-    // 补充设备信息
-    try {
-      appUpLoadModel.oaid = await FlutterAndroidOaidPlugin.getOAID();
-    } catch (e) {
-      Utils.logError("获取oaid失败：$e");
-      appUpLoadModel.oaid = "";
-    }
-
-    Utils.logError("oaid是：${appUpLoadModel.oaid}");
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    appUpLoadModel.ua = await getUserAgent();
-    Utils.logError("app 的浏览器Ua是：${appUpLoadModel.ua}");
-    appUpLoadModel.fingerprint = androidInfo.fingerprint;
-    appUpLoadModel.channel = channel;
-    appUpLoadModel.channelPackage = appUpLoadForm.channelPackage ?? "";
-    Utils.logError("通道参数是：${appUpLoadModel.channel}");
-    // 存储升级信息
-    Store.instance.updateAppUpLoadModel(appUpLoadModel);
-    if (isReturn) return;
-    // 获取客服配置
-    Store.instance.getServerConfig();
-    // 校验版本并弹窗
-    if (appUpLoadModel.packageName.isEmpty) return;
-    String input = "${appUpLoadForm.channelPackage}${packageInfo.version}";
-    String sign = generateMD5(input);
-
-    if (sign == appUpLoadModel.sign) return;
-    if ((sign != appUpLoadModel.sign && appUpLoadModel.sign != null) ||
-        Store.instance.getAppUpLoadModel.must == '1') {
-      appUpLoadModel.needUpdate = true;
-      Store.instance.updateAppUpLoadModel(appUpLoadModel);
-
-      // 控制弹窗频率（每天一次）
-      String? lastTime = await LocalStorage.getString("isUpApp");
-      bool isShowUpDialog = true;
-      if (lastTime != null && Store.instance.getAppUpLoadModel.must != '1') {
-        Jiffy now = Jiffy.now();
-        Jiffy last = Jiffy.parse(jsonDecode(lastTime));
-        isShowUpDialog = last.isBefore(now, unit: Unit.day);
-      }
-
-      if (isShowUpDialog) {
-        Dialogs.showCommonDialog(
-          barrierDismissible: false,
-          dialogType: "AppUpLoadDialog",
-          data: appUpLoadModel,
-          dialogTitle: "升级提示",
-        );
-      }
-    }
   }
 
   static final Random random = Random(); // 全局随机数生成器
