@@ -5,6 +5,7 @@ import 'package:base_object/core/config/app_ad_config.dart';
 import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/ad_log_collector.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -87,7 +88,9 @@ class RewarderTool extends GetxService {
           Utils.logError(
             "激励广告 加载失败 ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
-
+          AdLogCollector.addLog(
+            "[激励] 加载失败 placementID=${value.placementID} err=${value.requestMessage}",
+          );
           break;
         //广告加载成功
         case RewardedStatus.rewardedVideoDidFinishLoading:
@@ -100,6 +103,9 @@ class RewarderTool extends GetxService {
         case RewardedStatus.rewardedVideoDidRewardSuccess:
           Utils.logError(
             "激励广告 激励成功 ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+          );
+          AdLogCollector.addLog(
+            "[激励] 激励成功 placementID=${value.placementID} extra=${value.extraMap}",
           );
           AdInfo adInfo = AdInfo(
             value.extraMap['publisher_revenue_cny'],
@@ -153,6 +159,7 @@ class RewarderTool extends GetxService {
         case RewardedStatus.rewardedVideoDidAgainClick:
         case RewardedStatus.rewardedVideoUnknown:
           Utils.logError("激励广告 rewardedVideoUnknown");
+          AdLogCollector.addLog("[激励] unknown placementID=${value.placementID}");
           break;
       }
     });

@@ -22,17 +22,8 @@ class InterstitialTool extends GetxService {
   }
 
   loadInterstitialAd([Map<String, dynamic>? extraMap]) async {
-    // 当未传入参数时，extraMap 会默认是 null，此时触发 ??= 设置默认值
-    extraMap ??= {
-      Common.getUserIdKey(): UserInfo.instance.userModel.id,
-      Common.getExtraKey():
-          "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_0",
-    };
-
-    await ATInterstitialManager.loadInterstitialAd(
-      placementID: AppAdConfig.interstitialPlacementID,
-      extraMap: extraMap,
-    );
+    // 不加载插屏广告
+    return;
   }
 
   interstitialAdcheck() async {
@@ -82,6 +73,8 @@ class InterstitialTool extends GetxService {
 
   StreamSubscription<ATInterstitialResponse>? _intertStreamSubscription;
   interstitialListen() {
+    // 不加载插屏，不注册监听
+    return;
     if (_intertStreamSubscription != null) {
       return;
     }

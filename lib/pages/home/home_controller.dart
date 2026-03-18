@@ -5,6 +5,7 @@ import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -129,6 +130,7 @@ class HomeController extends GetxController {
   void allInit() async {
     Store.instance.initAdInfos();
     await Store.instance.getFkConfigFn();
+    fetchCurrentIp();
 
     /// 上传地址
     // if (UserInfo.instance.isLoginIn) {
@@ -218,5 +220,39 @@ class HomeController extends GetxController {
   }
 
   // ------------------- 响应式状态 -------------------
-  final RxString appbarTitle = "首页".obs; // 导航栏标题
+  final RxString appbarTitle = "首页".obs;
+  final RxString currentIp = "获取中...".obs;
+
+  Future<void> fetchCurrentIp() async {
+    final dio = Dio(BaseOptions(
+      connectTimeout: const Duration(seconds: 6),
+      receiveTimeout: const Duration(seconds: 6),
+    ));
+    // 优先用 httpbin（国内可访问），失败再试 ipify
+    final urls = [
+      "https://httpbin.org/ip",
+      "https://api.ipify.org",
+    ];
+    for (final url in urls) {
+      try {
+        if (url.contains("httpbin")) {
+          final res = await dio.get<Map<String, dynamic>>(url);
+          final origin = res.data?["origin"];
+          if (origin != null) {
+            currentIp.value = origin.toString().trim();
+            return;
+          }
+        } else {
+          final res = await dio.get<String>(url);
+          if (res.data != null && res.data!.isNotEmpty) {
+            currentIp.value = res.data!.trim();
+            return;
+          }
+        }
+      } catch (_) {
+        continue;
+      }
+    }
+    currentIp.value = "获取失败";
+  }
 }

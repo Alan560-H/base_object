@@ -1,8 +1,5 @@
-import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/core/config/ad_param_keys.dart';
 import 'package:base_object/core/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/native_tool.dart';
 import 'package:base_object/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/models/localModels/MenuModel.dart';
@@ -168,25 +165,7 @@ class CuNavBarController extends GetxService {
 
   @override
   void onInit() async {
-    // TODO: implement onReady
     super.onInit();
-    // 启动banner监听
-    BannerTool.to.bannerListen();
-
-    DateTime now = DateTime.now();
-    int timestampMs = now.millisecondsSinceEpoch;
-    await BannerTool.to.loadBannerWith({
-      Common.getUserIdKey(): UserInfo.instance.userModel.id,
-      Common.getExtraKey():
-          "userid_${UserInfo.instance.userModel.id}_type_2_amount_0_time_$timestampMs",
-      ATCommon.isNativeShow(): true,
-      ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
-        Get.width,
-        Get.width * (50 / 320),
-      ),
-      ATBannerManager.getAdaptiveWidthKey(): Get.width,
-      ATBannerManager.getAdaptiveOrientationKey():
-          ATBannerManager.adaptiveOrientationCurrent(),
-    });
+    // 不加载 Banner 广告
   }
 }

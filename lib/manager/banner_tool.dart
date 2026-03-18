@@ -129,9 +129,9 @@ class BannerTool extends GetxService {
         //广告加载失败
         case BannerStatus.bannerAdFailToLoadAD:
           ATBannerResponse atBannerResponse = value;
-          Utils.logError(
-            "横幅广告 bannerAdFailToLoadAD ---- placementID: ${atBannerResponse.requestMessage}",
-          );
+          // Utils.logError(
+          //   "横幅广告 bannerAdFailToLoadAD ---- placementID: ${atBannerResponse.requestMessage}",
+          // );
           // CuToast.error(msg: "横幅广告加载失败");
           break;
         //广告加载成功

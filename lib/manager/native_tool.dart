@@ -17,8 +17,9 @@ class NativeTool extends GetxService {
           ? Get.find<NativeTool>()
           : Get.put(NativeTool());
 
-  // 加载原生广告
+  // 加载原生广告（当前不加载信息流）
   loadNativeWith() async {
+    return;
     Utils.logError("加载原生广告");
 
     await getNativeValidAds();
@@ -230,8 +231,9 @@ class NativeTool extends GetxService {
     }
   }
 
-  /// 原生广告监听
+  /// 原生广告监听（当前不加载信息流，不注册监听）
   nativeLisListen() async {
+    return;
     Utils.logError("原生广告是不是监听哦：$_nativeAdSubscription");
     if (_nativeAdSubscription != null) {
       return;
