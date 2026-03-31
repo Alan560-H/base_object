@@ -1,20 +1,27 @@
-/// 收益列表
+/// 收益列表（publisherRevenue 存人民币口径，与 Taku publisher_revenue_cny 一致）
 
 class AdInfo {
-  final double publisherRevenue; // 展示收益
-  final String placementID; //广告位id
+  static const String typeRewarded = 'rewarded';
+  static const String typeBanner = 'banner';
+
+  final double publisherRevenue; // 展示收益（人民币）
+  final String placementID; // 广告位id
   final String reqId; // 请求id
-  final int networkfirmId; //广告平台来源
-  final String adsourceId; //广告源id
+  final int networkfirmId; // 广告平台来源
+  final String adsourceId; // 广告源id
   final String createdTime;
+  /// [typeRewarded] / [typeBanner]
+  final String adType;
+
   AdInfo(
     this.publisherRevenue,
     this.placementID,
     this.reqId,
     this.networkfirmId,
     this.adsourceId,
-    this.createdTime,
-  );
+    this.createdTime, {
+    this.adType = typeRewarded,
+  });
 
   /// 将AdInfo实例转换为JSON格式的Map
   Map<String, dynamic> toJson() {
@@ -25,28 +32,66 @@ class AdInfo {
       'networkfirmId': networkfirmId,
       'adsourceId': adsourceId,
       'createdTime': createdTime,
+      'adType': adType,
     };
+  }
+
+  static double _parseRevenue(dynamic v) {
+    if (v == null) return 0.0;
+    if (v is num) return v.toDouble();
+    return double.tryParse(v.toString()) ?? 0.0;
+  }
+
+  static int _parseNetworkFirmId(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString()) ?? 0;
+  }
+
+  static String _parseString(dynamic v) {
+    if (v == null) return '';
+    return v.toString();
   }
 
   /// 从JSON格式的Map创建AdInfo实例（反序列化，读取本地数据时用）
   factory AdInfo.fromJson(Map<String, dynamic> json) {
     return AdInfo(
-      json['publisherRevenue'] as double,
-      json['placementID'] as String,
-      json['reqId'] as String,
-      json['networkfirmId'] as int,
-      json['adsourceId'] as String,
-      json['createdTime'] as String,
+      _parseRevenue(json['publisherRevenue']),
+      _parseString(json['placementID']),
+      _parseString(json['reqId']),
+      _parseNetworkFirmId(json['networkfirmId']),
+      _parseString(json['adsourceId']),
+      _parseString(json['createdTime']),
+      adType: json['adType'] as String? ?? typeRewarded,
     );
   }
 
   /// 批量将JSON数组转换为AdInfo列表（读取本地数组时用）
   static List<AdInfo> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => AdInfo.fromJson(json)).toList();
+    return jsonList.map((json) => AdInfo.fromJson(json as Map<String, dynamic>)).toList();
+  }
+
+  /// Taku 回调 extraMap 构建记录（人民币、字段安全解析）
+  factory AdInfo.fromTakuExtra({
+    required Map<dynamic, dynamic>? extraMap,
+    required String placementID,
+    required String createdTime,
+    required String adType,
+  }) {
+    return AdInfo(
+      _parseRevenue(extraMap?['publisher_revenue_cny']),
+      placementID,
+      _parseString(extraMap?['req_id']),
+      _parseNetworkFirmId(extraMap?['network_firm_id']),
+      _parseString(extraMap?['adsource_id']),
+      createdTime,
+      adType: adType,
+    );
   }
 
   @override
   String toString() {
-    return 'AdInfo{publisherRevenue: $publisherRevenue, placementID: $placementID, reqId: $reqId, networkfirmId: $networkfirmId, adsourceId: $adsourceId, createdTime: $createdTime}';
+    return 'AdInfo{publisherRevenue: $publisherRevenue, placementID: $placementID, reqId: $reqId, networkfirmId: $networkfirmId, adsourceId: $adsourceId, createdTime: $createdTime, adType: $adType}';
   }
 }

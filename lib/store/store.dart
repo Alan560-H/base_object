@@ -360,12 +360,60 @@ class Store extends GetxController {
   final RxList<AdInfo> _adInfos = <AdInfo>[].obs;
   List<AdInfo> get getAdInfos => _adInfos;
 
-  /// 核心方法：计算所有广告收益的总和（getter形式，自动响应列表变化）
+  /// 激励视频条数（本地记录）
+  int get rewardedAdCount =>
+      _adInfos.where((e) => e.adType == AdInfo.typeRewarded).length;
+
+  /// 横幅展示记录条数
+  int get bannerAdCount =>
+      _adInfos.where((e) => e.adType == AdInfo.typeBanner).length;
+
+  /// 激励视频人民币合计
+  double get rewardedRevenueTotalCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeRewarded)
+      .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
+
+  /// 横幅人民币合计
+  double get bannerRevenueTotalCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeBanner)
+      .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
+
+  /// 是否为本地自然日「今天」（解析失败则视为非今日）
+  bool _isLocalToday(AdInfo e) {
+    try {
+      final Jiffy t = Jiffy.parse(e.createdTime);
+      return t.isSame(Jiffy.now(), unit: Unit.day);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// 今日激励条数
+  int get rewardedCountToday => _adInfos
+      .where(
+        (e) => e.adType == AdInfo.typeRewarded && _isLocalToday(e),
+      )
+      .length;
+
+  /// 今日横幅条数
+  int get bannerCountToday => _adInfos
+      .where((e) => e.adType == AdInfo.typeBanner && _isLocalToday(e))
+      .length;
+
+  /// 今日激励人民币合计
+  double get rewardedRevenueTodayCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeRewarded && _isLocalToday(e))
+      .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
+
+  /// 今日横幅人民币合计
+  double get bannerRevenueTodayCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeBanner && _isLocalToday(e))
+      .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
+
+  /// 全部广告收益总和（人民币，含激励与横幅）
   double get getAdInfosTotal {
-    // 使用Dart集合的fold方法累加，简洁高效
-    // fold(初始值, 累加器)：sum是当前总和，adInfo是遍历的每个元素
     return _adInfos.fold(
-      0.0, // 初始值必须是double（0.0），避免int和double类型混合
+      0.0,
       (double sum, AdInfo adInfo) => sum + adInfo.publisherRevenue,
     );
   }

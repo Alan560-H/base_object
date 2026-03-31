@@ -1,7 +1,6 @@
-import 'package:base_object/core/components/cu_app_bar.dart';
 import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/ad_log_collector.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +13,7 @@ class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   static void _showLogDialog() {
+    AdLogCollector.printLogsToConsole();
     Get.dialog(
       barrierDismissible: true,
       Dialog(
@@ -32,6 +32,9 @@ class HomeView extends GetView<HomeController> {
                     text: "清空",
                     width: 60.w,
                     height: 32.h,
+                    textColor: Colors.black87,
+                    bgColor: const Color(0xFFE8E8E8),
+                    radius: 6.r,
                     onPressed: () {
                       AdLogCollector.clear();
                     },
@@ -44,15 +47,26 @@ class HomeView extends GetView<HomeController> {
                   () {
                     final lines = AdLogCollector.observable;
                     if (lines.isEmpty) {
-                      return Center(child: Text("暂无日志"));
+                      return const Center(child: Text("暂无日志"));
                     }
                     return ListView.builder(
                       itemCount: lines.length,
                       itemBuilder: (_, i) => Padding(
-                        padding: EdgeInsets.symmetric(vertical: 2.h),
-                        child: Text(
-                          lines[i],
-                          style: TextStyle(fontSize: 12.sp),
+                        padding: EdgeInsets.only(bottom: 8.h),
+                        child: Card(
+                          margin: EdgeInsets.zero,
+                          elevation: 1,
+                          child: Padding(
+                            padding: EdgeInsets.all(10.w),
+                            child: Text(
+                              lines[i],
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                height: 1.4,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     );
@@ -72,83 +86,222 @@ class HomeView extends GetView<HomeController> {
         Get.isRegistered<HomeController>()
             ? Get.find<HomeController>()
             : Get.put(HomeController());
+    final double bottomViewPadding = MediaQuery.viewPaddingOf(context).bottom;
+    final double screenW = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
-      body: Obx(
-        () => Container(
-          color: TextConfig.comPageGrey,
-          child: Column(
-            spacing: 5.h,
+      body: Container(
+        color: TextConfig.comPageGrey,
+        child: Column(
+          spacing: 5.h,
+          children: [
+            _HomeTopSection(controller: controller),
+            Expanded(
+              child: controller.buildChatList(),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _HomeBannerPlaceholder(bannerWidth: screenW),
+          SizedBox(height: bottomViewPadding),
+        ],
+      ),
+    );
+  }
+}
+
+/// 顶部：IP、刷新、刷新时间、统计、日志按钮
+class _HomeTopSection extends StatelessWidget {
+  const _HomeTopSection({required this.controller});
+
+  final HomeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final double topPad = MediaQuery.paddingOf(context).top;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16.w,
+        right: 16.w,
+        top: topPad + 8.h,
+        bottom: 4.h,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CuAppBar(
-                alignment: Alignment.centerLeft,
-                showBackArrow: false,
-                title: controller.currentIp.value,
-                backgroundColor: Colors.transparent,
-                actions: [
-                  Text("总计数：${Store.instance.getAdInfos.length}"),
-                  Text("总收益：${Store.instance.getAdInfosTotal}"),
-                  // if (controller.isShowNew.value && UserInfo.instance.isLoginIn)
-                  //   Tada(
-                  //     infinite: true,
-                  //     duration: const Duration(milliseconds: 1000),
-                  //     child: CuButton(
-                  //       bgColor: TextConfig.primary,
-                  //       radius: 10.r,
-                  //       text: "新人福利",
-                  //       // text:
-                  //       //     "${controller.isShowNew.value},${UserInfo.instance.isLoginIn}",
-                  //       width: 80.w,
-                  //       onPressed: () {
-                  //         Get.dialog(NewUserDialog());
-                  //       },
-                  //     ),
-                  //   ),
-                  // SizedBox(width: 40.w),
-                  // CuButton(
-                  //   bgColor: TextConfig.primary,
-                  //   radius: 15.r,
-                  //   text:
-                  //       UserInfo.instance.isLoginIn
-                  //           ? "${UserInfo.instance.userModel.currentAmount} 提现"
-                  //           : "登录",
-                  //   width: 130.w,
-                  //   onPressed: () {
-                  //     if (!UserInfo.instance.isLoginIn) {
-                  //       HomeGroupChat.to.removeAdContainer();
-                  //     }
-                  //     Get.toNamed(AppRoutes.userTixian);
-                  //   },
-                  // ),
-                ],
+              Expanded(
+                child: Obx(
+                  () => Text(
+                    controller.currentIp.value,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
               Obx(
-                () => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                () {
+                  final bool busy = controller.ipRefreshing.value;
+                  return IconButton(
+                    onPressed: busy
+                        ? null
+                        : () => controller.fetchCurrentIp(showLoading: true),
+                    icon:
+                        busy
+                            ? SizedBox(
+                              width: 22.w,
+                              height: 22.w,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black87,
+                              ),
+                            )
+                            : Icon(
+                              Icons.refresh,
+                              size: 24.sp,
+                              color: Colors.black87,
+                            ),
+                    tooltip: '刷新 IP',
+                  );
+                },
+              ),
+            ],
+          ),
+          Obx(
+            () => Text(
+              controller.ipRefreshedAt.value.isEmpty
+                  ? '尚未刷新'
+                  : '刷新时间：${controller.ipRefreshedAt.value}',
+              style: TextStyle(fontSize: 12.sp, color: Colors.black54),
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Obx(
+            () => Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    '当前OAID：${controller.currentOaid.value}',
+                    style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+                  ),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: () => controller.copyCurrentOaid(),
+                  child: Text(
+                    '复制',
+                    style: TextStyle(fontSize: 12.sp, color: TextConfig.primary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Obx(
+            () {
+              final s = Store.instance;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalCny.toStringAsFixed(2)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  Text(
+                    '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalCny.toStringAsFixed(2)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  Text(
+                    '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayCny.toStringAsFixed(2)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  Text(
+                    '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayCny.toStringAsFixed(2)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
-                        "激励视频观看次数：${Store.instance.getAdInfos.length}",
-                        style: TextStyle(fontSize: 14.sp),
-                      ),
                       CuButton(
                         text: "日志",
                         width: 70.w,
                         height: 32.h,
+                        textColor: Colors.black87,
+                        bgColor: const Color(0xFFE8E8E8),
+                        radius: 6.r,
                         onPressed: HomeView._showLogDialog,
                       ),
                     ],
                   ),
-                ),
-              ),
-              Expanded(
-                child: controller.buildChatList(),
-              ),
-            ],
+                ],
+              );
+            },
           ),
-        ),
+        ],
       ),
-      bottomNavigationBar: CuNavBarView(),
     );
+  }
+}
+
+/// 底栏上方横幅占位（高度 320:50）
+class _HomeBannerPlaceholder extends StatelessWidget {
+  const _HomeBannerPlaceholder({required this.bannerWidth});
+
+  final double bannerWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final double h = bannerWidth * 50 / 320;
+    return Obx(() {
+      final HomeBannerSlotState state = BannerTool.to.bannerSlotState.value;
+      String msg;
+      switch (state) {
+        case HomeBannerSlotState.idle:
+          msg = '等待横幅加载…';
+          break;
+        case HomeBannerSlotState.loading:
+          msg = '横幅加载中…';
+          break;
+        case HomeBannerSlotState.failed:
+          msg = '暂无广告或加载失败';
+          break;
+        case HomeBannerSlotState.ready:
+          msg = '';
+          break;
+      }
+      return Material(
+        color: Colors.grey.shade300,
+        child: SizedBox(
+          width: double.infinity,
+          height: h,
+          child: msg.isEmpty
+              ? const SizedBox.shrink()
+              : Center(
+                  child: Text(
+                    msg,
+                    style: TextStyle(fontSize: 11.sp, color: Colors.black54),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+        ),
+      );
+    });
   }
 }

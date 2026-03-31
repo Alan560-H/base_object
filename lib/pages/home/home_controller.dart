@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:base_object/core/components/cu_button.dart';
+import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
@@ -7,8 +11,11 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:base_object/utils/oaid_helper.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:jiffy/jiffy.dart';
 
 class HomeController extends GetxController {
   final ScrollController scrollController = ScrollController();
@@ -28,77 +35,88 @@ class HomeController extends GetxController {
     });
   }
 
-  // 构建聊天列表（支持滚动）
+  /// 构建广告记录列表（Obx 订阅 Store 列表变化）
   Widget buildChatList() {
     Utils.logError("构建聊天列表");
-    return Column(
-      spacing: 10.h,
-      children: [
-        Expanded(
-          child: Container(
-            width: Get.width,
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: Store.instance.getAdInfos.length,
-              itemBuilder: (context, i) {
-                AdInfo currentItem = Store.instance.getAdInfos[i];
-                Utils.logError("当前条目${Store.instance.getAdInfos.length}");
-                return Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10.h,
-                    vertical: 5.w,
-                  ),
-                  margin: EdgeInsets.only(bottom: 10.h),
-                  width: 100.w,
-                  color: Colors.white70,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("广告位id：${currentItem.placementID}"),
-                      Text(
-                        "预估收益：${currentItem.publisherRevenue}",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: TextConfig.textSize_30,
+    return Obx(() {
+      final list = Store.instance.getAdInfos;
+      return Column(
+        spacing: 10.h,
+        children: [
+          Expanded(
+            child: Container(
+              width: Get.width,
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: list.length,
+                itemBuilder: (context, i) {
+                  final AdInfo currentItem = list[i];
+                  final String typeLabel =
+                      currentItem.adType == AdInfo.typeBanner ? '横幅' : '激励视频';
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.h,
+                      vertical: 5.w,
+                    ),
+                    margin: EdgeInsets.only(bottom: 10.h),
+                    width: 100.w,
+                    color: Colors.white70,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "类型：$typeLabel",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: TextConfig.textSize_30,
+                          ),
                         ),
-                      ),
-                      Text("请求id：${currentItem.reqId}"),
-                      Text("广告平台来源id：${currentItem.networkfirmId}"),
-                      Text("广告源id：${currentItem.adsourceId}"),
-                      Text("生成时间：${currentItem.createdTime}"),
-                    ],
-                  ),
-                );
-              },
+                        Text("广告位id：${currentItem.placementID}"),
+                        Text(
+                          "预估收益（元）：${currentItem.publisherRevenue}",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: TextConfig.textSize_30,
+                          ),
+                        ),
+                        Text("请求id：${currentItem.reqId}"),
+                        Text("广告平台来源id：${currentItem.networkfirmId}"),
+                        Text("广告源id：${currentItem.adsourceId}"),
+                        Text("生成时间：${currentItem.createdTime}"),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            CuButton(
-              bgColor: TextConfig.primary,
-              text: "清空统计数据",
-              width: 150.w,
-              height: 40.h,
-              onPressed: () {
-                Store.instance.setAdInfos([]);
-              },
-            ),
-            CuButton(
-              bgColor: TextConfig.primary,
-              text: "观看激励视频",
-              width: 150.w,
-              height: 40.h,
-              onPressed: () {
-                RewarderTool.to.showRewardedVideoFlutter();
-              },
-            ),
-          ],
-        ),
-      ],
-    );
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              CuButton(
+                bgColor: TextConfig.primary,
+                text: "清空统计数据",
+                width: 150.w,
+                height: 40.h,
+                onPressed: () {
+                  Store.instance.setAdInfos([]);
+                },
+              ),
+              CuButton(
+                bgColor: TextConfig.primary,
+                text: "观看激励视频",
+                width: 150.w,
+                height: 40.h,
+                onPressed: () {
+                  RewarderTool.to.showRewardedVideoFlutter();
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    });
     // return Center(
     //   child: CuButton(
     //     bgColor: TextConfig.primary,
@@ -131,6 +149,7 @@ class HomeController extends GetxController {
     Store.instance.initAdInfos();
     await Store.instance.getFkConfigFn();
     fetchCurrentIp();
+    unawaited(loadOaid());
 
     /// 上传地址
     // if (UserInfo.instance.isLoginIn) {
@@ -170,6 +189,12 @@ class HomeController extends GetxController {
       extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
     );
     RewarderTool.to.rewardedAdListen();
+
+    BannerTool.to.bannerListen();
+    await BannerTool.to.loadBannerWith(
+      {},
+      logicalWidth: Get.width,
+    );
 
     /// 是否显示新人邀请
     // isShowNewUser();
@@ -222,37 +247,97 @@ class HomeController extends GetxController {
   // ------------------- 响应式状态 -------------------
   final RxString appbarTitle = "首页".obs;
   final RxString currentIp = "获取中...".obs;
+  /// IP 请求结束后的本地时间（成功或失败均更新）
+  final RxString ipRefreshedAt = ''.obs;
+  /// 正在手动刷新 IP（用于按钮 loading）
+  final RxBool ipRefreshing = false.obs;
+  /// 当前 OAID（仅 Android 有值；iOS 展示说明文案）
+  final RxString currentOaid = '读取中…'.obs;
 
-  Future<void> fetchCurrentIp() async {
+  /// 读取 OAID（官方 [FlutterAndroidOaidPlugin.getOAID] + 5s 超时、无效值过滤、500ms 后重试一次）
+  Future<void> loadOaid() async {
+    currentOaid.value = '读取中…';
+    final String result = await OaidHelper.readOaidForDisplay();
+    currentOaid.value = result;
+    if (result == 'OAID 获取失败' || result == '未获取到 OAID') {
+      Utils.logError('loadOaid 结果: $result');
+    }
+  }
+
+  /// 复制当前 OAID（可复制说明类文案时由用户自行判断）
+  Future<void> copyCurrentOaid() async {
+    final String v = currentOaid.value.trim();
+    if (v.isEmpty ||
+        v == '读取中…' ||
+        v == '未获取到 OAID' ||
+        v == 'OAID 获取失败' ||
+        v == 'iOS 无 OAID') {
+      CuToast.error(msg: '暂无可复制的 OAID');
+      return;
+    }
+    if (await Utils.copyText(v)) {
+      CuToast.success(msg: 'OAID 已复制到剪贴板');
+    } else {
+      CuToast.error(msg: '复制失败');
+    }
+  }
+
+  /// [showLoading] 为 true 时展示 EasyLoading（手动点刷新）
+  Future<void> fetchCurrentIp({bool showLoading = false}) async {
+    if (showLoading) {
+      if (ipRefreshing.value) return;
+      ipRefreshing.value = true;
+      EasyLoading.show(
+        status: '正在获取 IP…',
+        maskType: EasyLoadingMaskType.clear,
+      );
+    }
     final dio = Dio(BaseOptions(
       connectTimeout: const Duration(seconds: 6),
       receiveTimeout: const Duration(seconds: 6),
     ));
-    // 优先用 httpbin（国内可访问），失败再试 ipify
     final urls = [
       "https://httpbin.org/ip",
       "https://api.ipify.org",
     ];
-    for (final url in urls) {
-      try {
-        if (url.contains("httpbin")) {
-          final res = await dio.get<Map<String, dynamic>>(url);
-          final origin = res.data?["origin"];
-          if (origin != null) {
-            currentIp.value = origin.toString().trim();
-            return;
+    try {
+      for (final url in urls) {
+        try {
+          if (url.contains("httpbin")) {
+            final res = await dio.get<Map<String, dynamic>>(url);
+            final origin = res.data?["origin"];
+            if (origin != null) {
+              currentIp.value = origin.toString().trim();
+              if (showLoading) {
+                CuToast.success(msg: 'IP 已更新', autoCloseDuration: const Duration(seconds: 2));
+              }
+              return;
+            }
+          } else {
+            final res = await dio.get<String>(url);
+            if (res.data != null && res.data!.isNotEmpty) {
+              currentIp.value = res.data!.trim();
+              if (showLoading) {
+                CuToast.success(msg: 'IP 已更新', autoCloseDuration: const Duration(seconds: 2));
+              }
+              return;
+            }
           }
-        } else {
-          final res = await dio.get<String>(url);
-          if (res.data != null && res.data!.isNotEmpty) {
-            currentIp.value = res.data!.trim();
-            return;
-          }
+        } catch (_) {
+          continue;
         }
-      } catch (_) {
-        continue;
       }
+      currentIp.value = "获取失败";
+      if (showLoading) {
+        CuToast.error(msg: 'IP 获取失败，请检查网络');
+      }
+    } finally {
+      if (showLoading) {
+        ipRefreshing.value = false;
+        EasyLoading.dismiss();
+      }
+      ipRefreshedAt.value =
+          Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss");
     }
-    currentIp.value = "获取失败";
   }
 }

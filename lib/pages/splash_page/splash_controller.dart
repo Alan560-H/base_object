@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/manager/splash_tool.dart';
@@ -10,17 +12,44 @@ import 'package:get/get.dart';
 
 class SplashController extends GetxController
     with GetSingleTickerProviderStateMixin {
-  /// 初始化广告
+  /// 初始化广告（带超时，避免部分机型 TopOn / 日志开关原生调用长时间不返回导致卡在闪屏）
   Future<void> initAd() async {
-    InitTool.to.setCustomDataDic({
-      "user_id": 0,
-      "extra": "userid_0_type_1_amount_0_time_0",
-    });
-    // 初始化广告
-    bool isInitAd = await InitTool.to.initTopon();
-    Utils.logError("广告初始化完成 $isInitAd ");
-    // 打开广告插件日志
-    await InitTool.to.setLogEnabled();
+    try {
+      await InitTool.to.setCustomDataDic({
+        "user_id": 0,
+        "extra": "userid_0_type_1_amount_0_time_0",
+      }).timeout(const Duration(seconds: 5));
+    } catch (e, st) {
+      Utils.logError(
+        'setCustomDataMap 超时或失败（继续尝试 initTopon）: $e',
+        error: e,
+        stackTrace: st,
+      );
+    }
+
+    try {
+      final bool isInitAd = await InitTool.to.initTopon().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          Utils.logError('initTopon 超过 5s 未返回，先进入首页');
+          return false;
+        },
+      );
+      Utils.logError("广告初始化完成 $isInitAd");
+    } catch (e, st) {
+      Utils.logError('initTopon 异常: $e', error: e, stackTrace: st);
+    }
+
+    // 打开 SDK 日志：部分 ROM 上可能阻塞主通道，不等待完成以免卡在闪屏
+    unawaited(_safeSetSdkLogEnabled());
+  }
+
+  Future<void> _safeSetSdkLogEnabled() async {
+    try {
+      await InitTool.to.setLogEnabled().timeout(const Duration(seconds: 5));
+    } catch (e, st) {
+      Utils.logError('setLogEnabled 超时或失败（可忽略）: $e', error: e, stackTrace: st);
+    }
   }
 
   late AnimationController animationController;
@@ -32,16 +61,20 @@ class SplashController extends GetxController
 
   void allInit() async {
     EasyLoading.show(status: "检测设备中..");
-    bool isPermission = await PermissionManager.requestAllPermissions();
-    Utils.logError(isPermission);
+    try {
+      bool isPermission = await PermissionManager.requestAllPermissions();
+      Utils.logError(isPermission);
 
-    /// 检测设备
-    await DeviceChecker.isAllCheckr();
+      /// 检测设备
+      await DeviceChecker.isAllCheckr();
 
-    /// 初始化广告
-    initAd();
-    SplashTool.to.splashListen();
-    SplashTool.to.loadSplash();
+      /// 须等待 TopOn 初始化完成后再进首页，避免激励/横幅 load 早于 SDK 就绪
+      await initAd();
+      SplashTool.to.splashListen();
+      SplashTool.to.loadSplash();
+    } finally {
+      EasyLoading.dismiss();
+    }
     Get.offAllNamed(AppRoutes.home);
   }
 

@@ -3,9 +3,21 @@ import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/models/localModels/AdInfo.dart';
+import 'package:base_object/store/store.dart';
+import 'package:base_object/utils/ad_log_collector.dart';
+import 'package:base_object/utils/ad_log_formatter.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:jiffy/jiffy.dart';
+
+/// 首页横幅占位条展示用状态
+enum HomeBannerSlotState {
+  idle,
+  loading,
+  ready,
+  failed,
+}
 
 class BannerTool extends GetxService {
   static BannerTool get to =>
@@ -13,12 +25,30 @@ class BannerTool extends GetxService {
           ? Get.find<BannerTool>()
           : Get.put(BannerTool());
 
-  loadBannerWith(Map<dynamic, dynamic> extraMap) async {
-    Utils.logError("横幅广告透传参数:$extraMap");
-    await ATBannerManager.loadBannerAd(
-      placementID: AppAdConfig.bannerPlacementID,
-      extraMap: extraMap,
-    );
+  final Rx<HomeBannerSlotState> bannerSlotState = HomeBannerSlotState.idle.obs;
+
+  /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例；默认 [Get.width]
+  Future<void> loadBannerWith(
+    Map<dynamic, dynamic> extraMap, {
+    double? logicalWidth,
+  }) async {
+    final double w = logicalWidth ?? Get.width;
+    final double h = w * 50 / 320;
+    final Map<dynamic, dynamic> merged = Map<dynamic, dynamic>.from(extraMap);
+    merged[ATCommon.getAdSizeKey()] =
+        ATBannerManager.createLoadBannerAdSize(w, h);
+
+    Utils.logError("横幅广告透传参数:$merged");
+    bannerSlotState.value = HomeBannerSlotState.loading;
+    try {
+      await ATBannerManager.loadBannerAd(
+        placementID: AppAdConfig.bannerPlacementID,
+        extraMap: merged,
+      );
+    } catch (e, st) {
+      bannerSlotState.value = HomeBannerSlotState.failed;
+      Utils.logError("横幅 loadBannerAd 异常: $e $st");
+    }
   }
 
   Future<bool> bannerAdReady() async {
@@ -72,14 +102,14 @@ class BannerTool extends GetxService {
     );
   }
 
-  showAdInPosition() async {
+  Future<void> showAdInPosition() async {
     await ATBannerManager.showAdInPosition(
       placementID: AppAdConfig.bannerPlacementID,
       position: ATCommon.getAdATBannerAdShowingPositionBottom(),
     );
   }
 
-  showSceneBannerAdInPosition() async {
+  Future<void> showSceneBannerAdInPosition() async {
     await ATBannerManager.showSceneBannerAdInPosition(
       placementID: AppAdConfig.bannerPlacementID,
       sceneID: AppAdConfig.bannerSceneID,
@@ -115,67 +145,83 @@ class BannerTool extends GetxService {
   StreamSubscription<ATBannerResponse>? _bannerSubscription;
 
   /// 横幅广告监听
-  bannerListen() {
-    // Utils.logError("监听哦：$_bannerSubscription");
+  void bannerListen() {
     if (_bannerSubscription != null) {
       return;
     }
     _bannerSubscription = ATListenerManager.bannerEventHandler.listen((value) {
-      CuNavBarController cuNavBarController =
+      final CuNavBarController cuNavBarController =
           Get.isRegistered<CuNavBarController>()
               ? Get.find<CuNavBarController>()
               : Get.put(CuNavBarController());
       switch (value.bannerStatus) {
-        //广告加载失败
         case BannerStatus.bannerAdFailToLoadAD:
-          ATBannerResponse atBannerResponse = value;
-          // Utils.logError(
-          //   "横幅广告 bannerAdFailToLoadAD ---- placementID: ${atBannerResponse.requestMessage}",
-          // );
-          // CuToast.error(msg: "横幅广告加载失败");
+          bannerSlotState.value = HomeBannerSlotState.failed;
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerFail(
+              placementId: value.placementID.toString(),
+              requestMessage: value.requestMessage,
+              extraMap: value.extraMap,
+            ),
+          );
           break;
-        //广告加载成功
         case BannerStatus.bannerAdDidFinishLoading:
           Utils.logError(
             "横幅广告 bannerAdDidFinishLoading ---- placementID: ${value.placementID}",
           );
-          showAdInPosition();
+          bannerSlotState.value = HomeBannerSlotState.ready;
+          showSceneBannerAdInPosition();
           break;
-        //广告自动刷新成功
         case BannerStatus.bannerAdAutoRefreshSucceed:
           Utils.logError(
             "横幅广告 bannerAdAutoRefreshSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           cuNavBarController.upDataADFn(value);
           break;
-        //广告被点击
         case BannerStatus.bannerAdDidClick:
           Utils.logError(
             "横幅广告 bannerAdDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
-        //Deeplink
         case BannerStatus.bannerAdDidDeepLink:
           Utils.logError(
             "横幅广告 bannerAdDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
           );
           break;
-        //广告展示成功
         case BannerStatus.bannerAdDidShowSucceed:
           Utils.logError(
             "横幅广告 bannerAdDidShowSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerSuccess(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+            ),
+          );
+          Store.instance.addAdInfos(
+            AdInfo.fromTakuExtra(
+              extraMap: value.extraMap,
+              placementID: value.placementID.toString(),
+              createdTime: Jiffy.now().format(),
+              adType: AdInfo.typeBanner,
+            ),
+          );
           break;
-        //广告关闭按钮被点击
         case BannerStatus.bannerAdTapCloseButton:
           Utils.logError(
             "横幅广告 bannerAdTapCloseButton ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           break;
-        //广告自动刷新失败
         case BannerStatus.bannerAdAutoRefreshFail:
           Utils.logError(
             "横幅广告 bannerAdAutoRefreshFail ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
+          );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerFail(
+              placementId: value.placementID.toString(),
+              requestMessage: value.requestMessage,
+              extraMap: value.extraMap,
+            ),
           );
           break;
         case BannerStatus.bannerAdUnknown:

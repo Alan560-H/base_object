@@ -13,19 +13,14 @@ class CuNavBarView extends GetView<CuNavBarController> {
             ? Get.find<CuNavBarController>()
             : Get.put(CuNavBarController());
     return Obx(
-      () => Container(
-        height: controller.height.value,
-        decoration: BoxDecoration(color: Colors.white),
-        child: Column(
-          children: [
-            BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              showUnselectedLabels: true,
-              items: controller.getNavigationItems(),
-              currentIndex: controller.currentPageIndex.value,
-              onTap: controller.onTabChange,
-            ),
-          ],
+      () => Material(
+        color: Colors.white,
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          showUnselectedLabels: true,
+          items: controller.getNavigationItems(),
+          currentIndex: controller.currentPageIndex.value,
+          onTap: controller.onTabChange,
         ),
       ),
     );

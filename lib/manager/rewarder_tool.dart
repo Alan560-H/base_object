@@ -6,6 +6,7 @@ import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/ad_log_collector.dart';
+import 'package:base_object/utils/ad_log_formatter.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -89,7 +90,11 @@ class RewarderTool extends GetxService {
             "激励广告 加载失败 ---- placementID: ${value.placementID} ---- errStr:${value.requestMessage}",
           );
           AdLogCollector.addLog(
-            "[激励] 加载失败 placementID=${value.placementID} err=${value.requestMessage}",
+            AdLogFormatter.rewardedFail(
+              placementId: value.placementID.toString(),
+              requestMessage: value.requestMessage,
+              extraMap: value.extraMap,
+            ),
           );
           break;
         //广告加载成功
@@ -105,21 +110,17 @@ class RewarderTool extends GetxService {
             "激励广告 激励成功 ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
           AdLogCollector.addLog(
-            "[激励] 激励成功 placementID=${value.placementID} extra=${value.extraMap}",
+            AdLogFormatter.rewardedSuccess(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+            ),
           );
-          AdInfo adInfo = AdInfo(
-            value.extraMap['publisher_revenue_cny'],
-            value.placementID,
-            value.extraMap['req_id'],
-            value.extraMap['network_firm_id'],
-            value.extraMap['adsource_id'],
-            Jiffy.now().format(),
+          final AdInfo adInfo = AdInfo.fromTakuExtra(
+            extraMap: value.extraMap,
+            placementID: value.placementID.toString(),
+            createdTime: Jiffy.now().format(),
+            adType: AdInfo.typeRewarded,
           );
-          Utils.logError(value.extraMap['publisher_revenue_cny'] is String);
-          Utils.logError(value.placementID);
-          Utils.logError(value.extraMap['req_id'] is String);
-          Utils.logError(value.extraMap['network_firm_id'] is int);
-          Utils.logError(value.extraMap['adsource_id'] is String);
           Store.instance.addAdInfos(adInfo);
           CuToast.success(msg: "观看完成，已记录收益");
           loadRewardedVideoFlutter(
@@ -159,7 +160,13 @@ class RewarderTool extends GetxService {
         case RewardedStatus.rewardedVideoDidAgainClick:
         case RewardedStatus.rewardedVideoUnknown:
           Utils.logError("激励广告 rewardedVideoUnknown");
-          AdLogCollector.addLog("[激励] unknown placementID=${value.placementID}");
+          AdLogCollector.addLog(
+            AdLogFormatter.rewardedFail(
+              placementId: value.placementID.toString(),
+              requestMessage: value.requestMessage,
+              extraMap: value.extraMap,
+            ),
+          );
           break;
       }
     });
