@@ -12,12 +12,7 @@ import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
 /// 首页横幅占位条展示用状态
-enum HomeBannerSlotState {
-  idle,
-  loading,
-  ready,
-  failed,
-}
+enum HomeBannerSlotState { idle, loading, ready, failed }
 
 class BannerTool extends GetxService {
   static BannerTool get to =>
@@ -27,6 +22,11 @@ class BannerTool extends GetxService {
 
   final Rx<HomeBannerSlotState> bannerSlotState = HomeBannerSlotState.idle.obs;
 
+  /// 展示成功后间隔此时长再发起下一次 [loadBannerAd]（多次展示回调时仅最后一次生效）
+  static const Duration _bannerReloadAfterShowDelay = Duration(seconds: 16);
+
+  int _reloadAfterShowToken = 0;
+
   /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例；默认 [Get.width]
   Future<void> loadBannerWith(
     Map<dynamic, dynamic> extraMap, {
@@ -35,8 +35,10 @@ class BannerTool extends GetxService {
     final double w = logicalWidth ?? Get.width;
     final double h = w * 50 / 320;
     final Map<dynamic, dynamic> merged = Map<dynamic, dynamic>.from(extraMap);
-    merged[ATCommon.getAdSizeKey()] =
-        ATBannerManager.createLoadBannerAdSize(w, h);
+    merged[ATCommon.getAdSizeKey()] = ATBannerManager.createLoadBannerAdSize(
+      w,
+      h,
+    );
 
     Utils.logError("横幅广告透传参数:$merged");
     bannerSlotState.value = HomeBannerSlotState.loading;
@@ -142,6 +144,24 @@ class BannerTool extends GetxService {
     getBannerValidAds();
   }
 
+  void _scheduleLoadNextBannerAfterShow() {
+    final int token = ++_reloadAfterShowToken;
+    unawaited(() async {
+      await Future<void>.delayed(_bannerReloadAfterShowDelay);
+      if (token != _reloadAfterShowToken) {
+        return;
+      }
+      try {
+        Utils.logError(
+          '横幅展示满 ${_bannerReloadAfterShowDelay.inSeconds}s，发起下一条 loadBannerAd',
+        );
+        await loadBannerWith({}, logicalWidth: Get.width);
+      } catch (e, st) {
+        Utils.logError('横幅延时 reload 异常: $e $st');
+      }
+    }());
+  }
+
   StreamSubscription<ATBannerResponse>? _bannerSubscription;
 
   /// 横幅广告监听
@@ -169,6 +189,13 @@ class BannerTool extends GetxService {
           Utils.logError(
             "横幅广告 bannerAdDidFinishLoading ---- placementID: ${value.placementID}",
           );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: '加载完成',
+            ),
+          );
           bannerSlotState.value = HomeBannerSlotState.ready;
           showSceneBannerAdInPosition();
           break;
@@ -176,16 +203,37 @@ class BannerTool extends GetxService {
           Utils.logError(
             "横幅广告 bannerAdAutoRefreshSucceed ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: '自动刷新成功',
+            ),
+          );
           cuNavBarController.upDataADFn(value);
           break;
         case BannerStatus.bannerAdDidClick:
           Utils.logError(
             "横幅广告 bannerAdDidClick ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
           );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: '点击',
+            ),
+          );
           break;
         case BannerStatus.bannerAdDidDeepLink:
           Utils.logError(
             "横幅广告 bannerAdDidDeepLink ---- placementID: ${value.placementID} ---- extra:${value.extraMap} ---- isDeeplinkSuccess:${value.isDeeplinkSuccess}",
+          );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: 'DeepLink（成功:${value.isDeeplinkSuccess}）',
+            ),
           );
           break;
         case BannerStatus.bannerAdDidShowSucceed:
@@ -202,14 +250,22 @@ class BannerTool extends GetxService {
             AdInfo.fromTakuExtra(
               extraMap: value.extraMap,
               placementID: value.placementID.toString(),
-              createdTime: Jiffy.now().format(),
+              createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
               adType: AdInfo.typeBanner,
             ),
           );
+          _scheduleLoadNextBannerAfterShow();
           break;
         case BannerStatus.bannerAdTapCloseButton:
           Utils.logError(
             "横幅广告 bannerAdTapCloseButton ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+          );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: '点击关闭',
+            ),
           );
           break;
         case BannerStatus.bannerAdAutoRefreshFail:
@@ -226,6 +282,13 @@ class BannerTool extends GetxService {
           break;
         case BannerStatus.bannerAdUnknown:
           Utils.logError("横幅广告 bannerAdUnknown");
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: '未知状态',
+            ),
+          );
           break;
       }
     });

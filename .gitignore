@@ -46,3 +46,6 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# 本地参考项目（含旧后端，不入库）
+base_object-sit_mdd/

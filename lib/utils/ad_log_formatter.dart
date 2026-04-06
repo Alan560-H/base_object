@@ -77,6 +77,20 @@ class AdLogFormatter {
     );
   }
 
+  /// 横幅生命周期事件（加载完成、点击、关闭等），写入首页「日志」列表
+  static String bannerEvent({
+    required String placementId,
+    required String desc,
+    Map<dynamic, dynamic>? extraMap,
+  }) {
+    return formatLogCard(
+      typeZh: '横幅',
+      code: _firm(extraMap),
+      placementId: placementId,
+      desc: desc,
+    );
+  }
+
   /// 激励加载失败 / 未知错误
   static String rewardedFail({
     required String placementId,

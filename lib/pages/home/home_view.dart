@@ -43,35 +43,34 @@ class HomeView extends GetView<HomeController> {
               ),
               SizedBox(height: 8.h),
               Expanded(
-                child: Obx(
-                  () {
-                    final lines = AdLogCollector.observable;
-                    if (lines.isEmpty) {
-                      return const Center(child: Text("暂无日志"));
-                    }
-                    return ListView.builder(
-                      itemCount: lines.length,
-                      itemBuilder: (_, i) => Padding(
-                        padding: EdgeInsets.only(bottom: 8.h),
-                        child: Card(
-                          margin: EdgeInsets.zero,
-                          elevation: 1,
-                          child: Padding(
-                            padding: EdgeInsets.all(10.w),
-                            child: Text(
-                              lines[i],
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                height: 1.4,
-                                color: Colors.black87,
+                child: Obx(() {
+                  final lines = AdLogCollector.observable;
+                  if (lines.isEmpty) {
+                    return const Center(child: Text("暂无日志"));
+                  }
+                  return ListView.builder(
+                    itemCount: lines.length,
+                    itemBuilder:
+                        (_, i) => Padding(
+                          padding: EdgeInsets.only(bottom: 8.h),
+                          child: Card(
+                            margin: EdgeInsets.zero,
+                            elevation: 1,
+                            child: Padding(
+                              padding: EdgeInsets.all(10.w),
+                              child: Text(
+                                lines[i],
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  height: 1.4,
+                                  color: Colors.black87,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                  );
+                }),
               ),
             ],
           ),
@@ -96,9 +95,7 @@ class HomeView extends GetView<HomeController> {
           spacing: 5.h,
           children: [
             _HomeTopSection(controller: controller),
-            Expanded(
-              child: controller.buildChatList(),
-            ),
+            Expanded(child: controller.buildChatList()),
           ],
         ),
       ),
@@ -150,32 +147,31 @@ class _HomeTopSection extends StatelessWidget {
                   ),
                 ),
               ),
-              Obx(
-                () {
-                  final bool busy = controller.ipRefreshing.value;
-                  return IconButton(
-                    onPressed: busy
-                        ? null
-                        : () => controller.fetchCurrentIp(showLoading: true),
-                    icon:
-                        busy
-                            ? SizedBox(
-                              width: 22.w,
-                              height: 22.w,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.black87,
-                              ),
-                            )
-                            : Icon(
-                              Icons.refresh,
-                              size: 24.sp,
+              Obx(() {
+                final bool busy = controller.ipRefreshing.value;
+                return IconButton(
+                  onPressed:
+                      busy
+                          ? null
+                          : () => controller.fetchCurrentIp(showLoading: true),
+                  icon:
+                      busy
+                          ? SizedBox(
+                            width: 22.w,
+                            height: 22.w,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                               color: Colors.black87,
                             ),
-                    tooltip: '刷新 IP',
-                  );
-                },
-              ),
+                          )
+                          : Icon(
+                            Icons.refresh,
+                            size: 24.sp,
+                            color: Colors.black87,
+                          ),
+                  tooltip: '刷新 IP',
+                );
+              }),
             ],
           ),
           Obx(
@@ -187,73 +183,45 @@ class _HomeTopSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 6.h),
-          Obx(
-            () => Row(
+          Obx(() {
+            final s = Store.instance;
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    '当前OAID：${controller.currentOaid.value}',
-                    style: TextStyle(fontSize: 12.sp, color: Colors.black87),
-                  ),
+                Text(
+                  '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalCny.toStringAsFixed(2)}元',
+                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  onPressed: () => controller.copyCurrentOaid(),
-                  child: Text(
-                    '复制',
-                    style: TextStyle(fontSize: 12.sp, color: TextConfig.primary),
-                  ),
+                Text(
+                  '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalCny.toStringAsFixed(2)}元',
+                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                ),
+                Text(
+                  '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayCny.toStringAsFixed(2)}元',
+                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                ),
+                Text(
+                  '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayCny.toStringAsFixed(2)}元',
+                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // CuButton(
+                    //   text: "日志",
+                    //   width: 70.w,
+                    //   height: 32.h,
+                    //   textColor: Colors.black87,
+                    //   bgColor: const Color(0xFFE8E8E8),
+                    //   radius: 6.r,
+                    //   onPressed: HomeView._showLogDialog,
+                    // ),
+                  ],
                 ),
               ],
-            ),
-          ),
-          SizedBox(height: 6.h),
-          Obx(
-            () {
-              final s = Store.instance;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalCny.toStringAsFixed(2)}元',
-                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                  ),
-                  Text(
-                    '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalCny.toStringAsFixed(2)}元',
-                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                  ),
-                  Text(
-                    '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayCny.toStringAsFixed(2)}元',
-                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                  ),
-                  Text(
-                    '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayCny.toStringAsFixed(2)}元',
-                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                  ),
-                  SizedBox(height: 4.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      CuButton(
-                        text: "日志",
-                        width: 70.w,
-                        height: 32.h,
-                        textColor: Colors.black87,
-                        bgColor: const Color(0xFFE8E8E8),
-                        radius: 6.r,
-                        onPressed: HomeView._showLogDialog,
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            },
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -291,15 +259,16 @@ class _HomeBannerPlaceholder extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           height: h,
-          child: msg.isEmpty
-              ? const SizedBox.shrink()
-              : Center(
-                  child: Text(
-                    msg,
-                    style: TextStyle(fontSize: 11.sp, color: Colors.black54),
-                    textAlign: TextAlign.center,
+          child:
+              msg.isEmpty
+                  ? const SizedBox.shrink()
+                  : Center(
+                    child: Text(
+                      msg,
+                      style: TextStyle(fontSize: 11.sp, color: Colors.black54),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
         ),
       );
     });

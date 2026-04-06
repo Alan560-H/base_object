@@ -1,0 +1,15 @@
+---
+description: base_object Flutter 广告变现应用通用约定（GetX、分层、Taku 文档入口）
+alwaysApply: true
+---
+
+# base_object 通用规则
+
+- **技术栈**：Flutter（Dart 3.7+）、**GetX**（路由与依赖）；屏幕适配与现有页面一致使用 **flutter_screenutil**（`.w` / `.h` / `.sp` 等）。
+- **广告聚合**：**Taku**，Flutter 通过 **`anythink_sdk`**（`package:anythink_sdk/at_index.dart`）接入。官方文档：<https://help.takuad.com/docs/flutter>。
+- **分层**：加载与监听放在 **`lib/manager/*_tool.dart`**（如 `BannerTool`、`RewarderTool`、`Init_tool`、`splash_tool`）；广告位 ID 等放在 **`lib/core/config/app_ad_config.dart`**。避免在单个 Widget 内堆长段 SDK 调用。
+- **初始化顺序**：须在 **`Init_tool.initTopon`**（`ATInitManger.initAnyThinkSDK`）完成后再对各广告位 `load`/`show`；闪屏流程见 **`lib/pages/splash_page/splash_controller.dart`**。
+- **监听**：`ATListenerManager.*EventHandler.listen` 需防重复订阅（如 `BannerTool.bannerListen` 单例内判空）。改动监听时核对官方回调枚举，避免遗漏新状态。
+- **日志**：业务排障用 **`AdLogCollector` + `AdLogFormatter`**（首页「日志」弹窗）；Taku 原生 logcat 开关用 **`InitTool.setSdkDebugLog`**，二者勿混为一谈。
+- **本地收益与条数**：**`Store` + `AdInfo`**；横幅记条/记收益以 **`bannerAdDidShowSucceed`** 写入为准，**`bannerAdAutoRefreshSucceed`** 为自动刷新链路，勿与曝光次数简单相加。
+- **改动习惯**：无用户明确要求时不做无关重构；改广告行为时同步考虑与后台 **placement / scene** 一致性。

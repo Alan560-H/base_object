@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:base_object/core/routes/app_routes.dart';
+import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/Init_tool.dart';
 import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/utils/DeviceChecker.dart';
@@ -40,15 +41,15 @@ class SplashController extends GetxController
       Utils.logError('initTopon 异常: $e', error: e, stackTrace: st);
     }
 
-    // 打开 SDK 日志：部分 ROM 上可能阻塞主通道，不等待完成以免卡在闪屏
-    unawaited(_safeSetSdkLogEnabled());
+    // 关闭 Taku 原生调试日志；横幅等业务日志见 [AdLogCollector]
+    unawaited(_safeSetSdkDebugLog(false));
   }
 
-  Future<void> _safeSetSdkLogEnabled() async {
+  Future<void> _safeSetSdkDebugLog(bool enabled) async {
     try {
-      await InitTool.to.setLogEnabled().timeout(const Duration(seconds: 5));
+      await InitTool.to.setSdkDebugLog(enabled).timeout(const Duration(seconds: 5));
     } catch (e, st) {
-      Utils.logError('setLogEnabled 超时或失败（可忽略）: $e', error: e, stackTrace: st);
+      Utils.logError('setSdkDebugLog 超时或失败（可忽略）: $e', error: e, stackTrace: st);
     }
   }
 
@@ -70,6 +71,7 @@ class SplashController extends GetxController
 
       /// 须等待 TopOn 初始化完成后再进首页，避免激励/横幅 load 早于 SDK 就绪
       await initAd();
+      BannerTool.to.bannerListen();
       SplashTool.to.splashListen();
       SplashTool.to.loadSplash();
     } finally {

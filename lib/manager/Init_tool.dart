@@ -8,8 +8,9 @@ class InitTool extends GetxService {
   static InitTool get to =>
       Get.isRegistered<InitTool>() ? Get.find<InitTool>() : Get.put(InitTool());
 
-  Future<bool> setLogEnabled() async {
-    return await ATInitManger.setLogEnabled(logEnabled: true);
+  /// Taku SDK 原生调试日志（logcat）；与业务侧 [AdLogCollector] 无关
+  Future<bool> setSdkDebugLog(bool enabled) async {
+    return await ATInitManger.setLogEnabled(logEnabled: enabled);
   }
 
   setChannelStr() async {
@@ -97,7 +98,7 @@ class InitTool extends GetxService {
   }
 
   Future<bool> initTopon() async {
-    // await setLogEnabled();
+    // await setSdkDebugLog(true);
     try {
       await ATInitManger.initAnyThinkSDK(
         appidStr: AppAdConfig.appidStr,

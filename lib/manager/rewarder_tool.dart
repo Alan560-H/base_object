@@ -118,7 +118,7 @@ class RewarderTool extends GetxService {
           final AdInfo adInfo = AdInfo.fromTakuExtra(
             extraMap: value.extraMap,
             placementID: value.placementID.toString(),
-            createdTime: Jiffy.now().format(),
+            createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
             adType: AdInfo.typeRewarded,
           );
           Store.instance.addAdInfos(adInfo);

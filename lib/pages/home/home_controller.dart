@@ -11,7 +11,6 @@ import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:base_object/utils/oaid_helper.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -69,20 +68,14 @@ class HomeController extends GetxController {
                           "类型：$typeLabel",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            fontSize: TextConfig.textSize_30,
                           ),
                         ),
-                        Text("广告位id：${currentItem.placementID}"),
                         Text(
-                          "预估收益（元）：${currentItem.publisherRevenue}",
+                          "预估收益（元）：${(currentItem.publisherRevenue*0.3 ).toStringAsFixed(2)}",
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: TextConfig.textSize_30,
                           ),
                         ),
-                        Text("请求id：${currentItem.reqId}"),
-                        Text("广告平台来源id：${currentItem.networkfirmId}"),
-                        Text("广告源id：${currentItem.adsourceId}"),
                         Text("生成时间：${currentItem.createdTime}"),
                       ],
                     ),
@@ -149,7 +142,6 @@ class HomeController extends GetxController {
     Store.instance.initAdInfos();
     await Store.instance.getFkConfigFn();
     fetchCurrentIp();
-    unawaited(loadOaid());
 
     /// 上传地址
     // if (UserInfo.instance.isLoginIn) {
@@ -191,10 +183,7 @@ class HomeController extends GetxController {
     RewarderTool.to.rewardedAdListen();
 
     BannerTool.to.bannerListen();
-    await BannerTool.to.loadBannerWith(
-      {},
-      logicalWidth: Get.width,
-    );
+    await BannerTool.to.loadBannerWith({}, logicalWidth: Get.width);
 
     /// 是否显示新人邀请
     // isShowNewUser();
@@ -247,59 +236,27 @@ class HomeController extends GetxController {
   // ------------------- 响应式状态 -------------------
   final RxString appbarTitle = "首页".obs;
   final RxString currentIp = "获取中...".obs;
+
   /// IP 请求结束后的本地时间（成功或失败均更新）
   final RxString ipRefreshedAt = ''.obs;
+
   /// 正在手动刷新 IP（用于按钮 loading）
   final RxBool ipRefreshing = false.obs;
-  /// 当前 OAID（仅 Android 有值；iOS 展示说明文案）
-  final RxString currentOaid = '读取中…'.obs;
-
-  /// 读取 OAID（官方 [FlutterAndroidOaidPlugin.getOAID] + 5s 超时、无效值过滤、500ms 后重试一次）
-  Future<void> loadOaid() async {
-    currentOaid.value = '读取中…';
-    final String result = await OaidHelper.readOaidForDisplay();
-    currentOaid.value = result;
-    if (result == 'OAID 获取失败' || result == '未获取到 OAID') {
-      Utils.logError('loadOaid 结果: $result');
-    }
-  }
-
-  /// 复制当前 OAID（可复制说明类文案时由用户自行判断）
-  Future<void> copyCurrentOaid() async {
-    final String v = currentOaid.value.trim();
-    if (v.isEmpty ||
-        v == '读取中…' ||
-        v == '未获取到 OAID' ||
-        v == 'OAID 获取失败' ||
-        v == 'iOS 无 OAID') {
-      CuToast.error(msg: '暂无可复制的 OAID');
-      return;
-    }
-    if (await Utils.copyText(v)) {
-      CuToast.success(msg: 'OAID 已复制到剪贴板');
-    } else {
-      CuToast.error(msg: '复制失败');
-    }
-  }
 
   /// [showLoading] 为 true 时展示 EasyLoading（手动点刷新）
   Future<void> fetchCurrentIp({bool showLoading = false}) async {
     if (showLoading) {
       if (ipRefreshing.value) return;
       ipRefreshing.value = true;
-      EasyLoading.show(
-        status: '正在获取 IP…',
-        maskType: EasyLoadingMaskType.clear,
-      );
+      EasyLoading.show(status: '正在获取 IP…', maskType: EasyLoadingMaskType.clear);
     }
-    final dio = Dio(BaseOptions(
-      connectTimeout: const Duration(seconds: 6),
-      receiveTimeout: const Duration(seconds: 6),
-    ));
-    final urls = [
-      "https://httpbin.org/ip",
-      "https://api.ipify.org",
-    ];
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 6),
+        receiveTimeout: const Duration(seconds: 6),
+      ),
+    );
+    final urls = ["https://httpbin.org/ip", "https://api.ipify.org"];
     try {
       for (final url in urls) {
         try {
@@ -309,7 +266,10 @@ class HomeController extends GetxController {
             if (origin != null) {
               currentIp.value = origin.toString().trim();
               if (showLoading) {
-                CuToast.success(msg: 'IP 已更新', autoCloseDuration: const Duration(seconds: 2));
+                CuToast.success(
+                  msg: 'IP 已更新',
+                  autoCloseDuration: const Duration(seconds: 2),
+                );
               }
               return;
             }
@@ -318,7 +278,10 @@ class HomeController extends GetxController {
             if (res.data != null && res.data!.isNotEmpty) {
               currentIp.value = res.data!.trim();
               if (showLoading) {
-                CuToast.success(msg: 'IP 已更新', autoCloseDuration: const Duration(seconds: 2));
+                CuToast.success(
+                  msg: 'IP 已更新',
+                  autoCloseDuration: const Duration(seconds: 2),
+                );
               }
               return;
             }
@@ -336,8 +299,7 @@ class HomeController extends GetxController {
         ipRefreshing.value = false;
         EasyLoading.dismiss();
       }
-      ipRefreshedAt.value =
-          Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss");
+      ipRefreshedAt.value = Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss");
     }
   }
 }
