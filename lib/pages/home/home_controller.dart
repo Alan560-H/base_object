@@ -17,6 +17,9 @@ import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
 class HomeController extends GetxController {
+  /// 首页收益记录列表最多展示条数（Store 仍保留全部，仅 UI 截取最新若干条）
+  static const int _kHomeAdRecordDisplayMax = 10;
+
   final ScrollController scrollController = ScrollController();
   // 2. 封装“滚动到最底部”的方法（关键：等列表构建完成后再滚动）
   void scrollToBottom() {
@@ -34,11 +37,52 @@ class HomeController extends GetxController {
     });
   }
 
+  Future<void> _onPauseBannerTap() async {
+    try {
+      await BannerTool.to.pauseBannerPlayback();
+      CuToast.success(
+        msg: '已停止横幅',
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+    } catch (e, st) {
+      Utils.logError('停止横幅: $e $st');
+      CuToast.error(msg: '停止横幅失败');
+    }
+  }
+
+  Future<void> _onStartBannerTap() async {
+    try {
+      await BannerTool.to.startBannerPlayback();
+      CuToast.success(
+        msg: '已开始加载横幅',
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+    } catch (e, st) {
+      Utils.logError('开始横幅: $e $st');
+      CuToast.error(msg: '开始横幅失败');
+    }
+  }
+
   /// 构建广告记录列表（Obx 订阅 Store 列表变化）
   Widget buildChatList() {
     Utils.logError("构建聊天列表");
     return Obx(() {
-      final list = Store.instance.getAdInfos;
+      final raw = Store.instance.getAdInfos;
+      final list =
+          raw.length <= _kHomeAdRecordDisplayMax
+              ? raw
+              : raw.sublist(raw.length - _kHomeAdRecordDisplayMax);
+      final bool bannerPaused = BannerTool.to.bannerPlaybackPaused.value;
+      final HomeBannerSlotState bannerState = BannerTool.to.bannerSlotState.value;
+      final bool bannerLoading =
+          !bannerPaused && bannerState == HomeBannerSlotState.loading;
+      final String bannerBtnText =
+          bannerPaused
+              ? '开始横幅广告'
+              : bannerLoading
+              ? '加载中…'
+              : '停止广告';
+      final bool bannerBtnDisabled = bannerLoading;
       return Column(
         spacing: 10.h,
         children: [
@@ -71,7 +115,7 @@ class HomeController extends GetxController {
                           ),
                         ),
                         Text(
-                          "预估收益（元）：${(currentItem.publisherRevenue*0.3 ).toStringAsFixed(2)}",
+                          "预估收益（元）：${AdInfo.formatDisplayRevenue(currentItem.publisherRevenue)}",
                           style: TextStyle(
                             color: Colors.red,
                           ),
@@ -84,25 +128,32 @@ class HomeController extends GetxController {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8.w,
+            runSpacing: 8.h,
             children: [
               CuButton(
                 bgColor: TextConfig.primary,
-                text: "清空统计数据",
-                width: 150.w,
+                text: "观看激励视频",
+                width: 108.w,
                 height: 40.h,
                 onPressed: () {
-                  Store.instance.setAdInfos([]);
+                  RewarderTool.to.showRewardedVideoFlutter();
                 },
               ),
               CuButton(
                 bgColor: TextConfig.primary,
-                text: "观看激励视频",
-                width: 150.w,
+                text: bannerBtnText,
+                width: 120.w,
                 height: 40.h,
+                disable: bannerBtnDisabled,
                 onPressed: () {
-                  RewarderTool.to.showRewardedVideoFlutter();
+                  if (bannerPaused) {
+                    _onStartBannerTap();
+                  } else {
+                    _onPauseBannerTap();
+                  }
                 },
               ),
             ],
@@ -183,7 +234,6 @@ class HomeController extends GetxController {
     RewarderTool.to.rewardedAdListen();
 
     BannerTool.to.bannerListen();
-    await BannerTool.to.loadBannerWith({}, logicalWidth: Get.width);
 
     /// 是否显示新人邀请
     // isShowNewUser();

@@ -1,6 +1,7 @@
 import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/banner_tool.dart';
+import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/ad_log_collector.dart';
 import 'package:flutter/material.dart';
@@ -189,19 +190,19 @@ class _HomeTopSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalCny.toStringAsFixed(2)}元',
+                  '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
                   style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
                 Text(
-                  '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalCny.toStringAsFixed(2)}元',
+                  '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
                   style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
                 Text(
-                  '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayCny.toStringAsFixed(2)}元',
+                  '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
                   style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
                 Text(
-                  '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayCny.toStringAsFixed(2)}元',
+                  '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
                   style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
                 SizedBox(height: 4.h),
@@ -238,6 +239,22 @@ class _HomeBannerPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final double h = bannerWidth * 50 / 320;
     return Obx(() {
+      if (BannerTool.to.bannerPlaybackPaused.value) {
+        return Material(
+          color: Colors.grey.shade300,
+          child: SizedBox(
+            width: double.infinity,
+            height: h,
+            child: Center(
+              child: Text(
+                '点击开始横幅加载广告',
+                style: TextStyle(fontSize: 11.sp, color: Colors.black87),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      }
       final HomeBannerSlotState state = BannerTool.to.bannerSlotState.value;
       String msg;
       switch (state) {

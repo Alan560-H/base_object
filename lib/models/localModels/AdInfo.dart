@@ -4,6 +4,23 @@ class AdInfo {
   static const String typeRewarded = 'rewarded';
   static const String typeBanner = 'banner';
 
+  /// 界面「预估收益」与首页汇总使用的系数（持久化仍为完整 [publisherRevenue]）
+  static const double displayRevenueShare = 0.2;
+
+  /// [formatDisplayRevenue] 小数位数；汇总金额再对该和做一次同位数格式化
+  static const int displayRevenueFractionDigits = 4;
+
+  /// 列表单行展示的「预估收益」字符串，与 [displayRevenueLineSumTerm] 成对使用以保证可逐项对账
+  static String formatDisplayRevenue(double rawPublisherRevenue) {
+    return (rawPublisherRevenue * displayRevenueShare)
+        .toStringAsFixed(displayRevenueFractionDigits);
+  }
+
+  /// 将单行展示值解析为 double，供 Store 汇总（等于各 [formatDisplayRevenue] 之和的数值部分）
+  static double displayRevenueLineSumTerm(double rawPublisherRevenue) {
+    return double.parse(formatDisplayRevenue(rawPublisherRevenue));
+  }
+
   final double publisherRevenue; // 展示收益（人民币）
   final String placementID; // 广告位id
   final String reqId; // 请求id

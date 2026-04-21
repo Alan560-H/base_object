@@ -22,10 +22,27 @@ class BannerTool extends GetxService {
 
   final Rx<HomeBannerSlotState> bannerSlotState = HomeBannerSlotState.idle.obs;
 
+  /// 未点「开始横幅」前为 true：不自动 load/show；用户开始后为 false，直至停止或加载失败
+  final RxBool bannerPlaybackPaused = true.obs;
+
   /// 展示成功后间隔此时长再发起下一次 [loadBannerAd]（多次展示回调时仅最后一次生效）
   static const Duration _bannerReloadAfterShowDelay = Duration(seconds: 16);
 
   int _reloadAfterShowToken = 0;
+
+  /// 停止横幅：移除原生横幅容器，并取消已排队的「展示后延时 reload」
+  Future<void> pauseBannerPlayback() async {
+    bannerPlaybackPaused.value = true;
+    _reloadAfterShowToken++;
+    await removeBannerAd();
+    bannerSlotState.value = HomeBannerSlotState.idle;
+  }
+
+  /// 开始横幅：允许展示后走 [loadBannerAd] 链路（与首页手动入口一致）
+  Future<void> startBannerPlayback() async {
+    bannerPlaybackPaused.value = false;
+    await loadBannerWith({}, logicalWidth: Get.width);
+  }
 
   /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例；默认 [Get.width]
   Future<void> loadBannerWith(
@@ -49,6 +66,9 @@ class BannerTool extends GetxService {
       );
     } catch (e, st) {
       bannerSlotState.value = HomeBannerSlotState.failed;
+      if (!bannerPlaybackPaused.value) {
+        bannerPlaybackPaused.value = true;
+      }
       Utils.logError("横幅 loadBannerAd 异常: $e $st");
     }
   }
@@ -177,6 +197,9 @@ class BannerTool extends GetxService {
       switch (value.bannerStatus) {
         case BannerStatus.bannerAdFailToLoadAD:
           bannerSlotState.value = HomeBannerSlotState.failed;
+          if (!bannerPlaybackPaused.value) {
+            bannerPlaybackPaused.value = true;
+          }
           AdLogCollector.addLog(
             AdLogFormatter.bannerFail(
               placementId: value.placementID.toString(),
@@ -197,7 +220,9 @@ class BannerTool extends GetxService {
             ),
           );
           bannerSlotState.value = HomeBannerSlotState.ready;
-          showSceneBannerAdInPosition();
+          if (!bannerPlaybackPaused.value) {
+            showSceneBannerAdInPosition();
+          }
           break;
         case BannerStatus.bannerAdAutoRefreshSucceed:
           Utils.logError(
@@ -254,7 +279,9 @@ class BannerTool extends GetxService {
               adType: AdInfo.typeBanner,
             ),
           );
-          _scheduleLoadNextBannerAfterShow();
+          if (!bannerPlaybackPaused.value) {
+            _scheduleLoadNextBannerAfterShow();
+          }
           break;
         case BannerStatus.bannerAdTapCloseButton:
           Utils.logError(

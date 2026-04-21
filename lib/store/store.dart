@@ -410,6 +410,38 @@ class Store extends GetxController {
       .where((e) => e.adType == AdInfo.typeBanner && _isLocalToday(e))
       .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
 
+  /// 激励：展示用金额合计（每条先 ×[AdInfo.displayRevenueShare] 再保留 [displayRevenueFractionDigits] 位后相加，与列表一致）
+  double get rewardedRevenueTotalDisplayCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeRewarded)
+      .fold(
+        0.0,
+        (double s, AdInfo e) => s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
+      );
+
+  /// 横幅：展示用金额合计（同上）
+  double get bannerRevenueTotalDisplayCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeBanner)
+      .fold(
+        0.0,
+        (double s, AdInfo e) => s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
+      );
+
+  /// 今日激励：展示用金额合计
+  double get rewardedRevenueTodayDisplayCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeRewarded && _isLocalToday(e))
+      .fold(
+        0.0,
+        (double s, AdInfo e) => s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
+      );
+
+  /// 今日横幅：展示用金额合计
+  double get bannerRevenueTodayDisplayCny => _adInfos
+      .where((e) => e.adType == AdInfo.typeBanner && _isLocalToday(e))
+      .fold(
+        0.0,
+        (double s, AdInfo e) => s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
+      );
+
   /// 全部广告收益总和（人民币，含激励与横幅）
   double get getAdInfosTotal {
     return _adInfos.fold(
