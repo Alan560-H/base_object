@@ -20,7 +20,7 @@ class SplashView extends GetView<SplashController> {
             Text(
               "加载中",
               style: TextStyle(
-                color: Colors.white70,
+                color: Colors.black,
                 fontSize: TextConfig.textSize_20,
               ),
             ),
@@ -65,14 +65,6 @@ class SplashView extends GetView<SplashController> {
 
           // mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // CachedNetworkImage(imageUrl: ImageConfig.firstTitle),
-            // CachedNetworkImage(imageUrl: ImageConfig.firstBotton),
-            CachedNetworkImage(
-              height: Get.height,
-              width: Get.width,
-              imageUrl: ImageConfig.ymzSplach,
-              fit: BoxFit.cover,
-            ),
             Positioned(
               child: SizedBox(
                 height: 100.h,

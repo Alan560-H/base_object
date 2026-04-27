@@ -51,11 +51,14 @@ class _MyAppState extends State<MyApp> with AppTheme {
           // 导航唯一键
           navigatorKey: CuGlobal.navigatorKey,
           // 初始化根路由路径
-          initialRoute: AppRoutes.firstPage,
+          initialRoute: AppRoutes.splashPage,
           // 路由列表
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: true,
-          title: Store.instance.getAppUpLoadModel.appName.isEmpty ? "小盒子" : Store.instance.getAppUpLoadModel.appName,
+          title:
+              Store.instance.getAppUpLoadModel.appName.isEmpty
+                  ? "宝家乐"
+                  : Store.instance.getAppUpLoadModel.appName,
           builder: EasyLoading.init(),
           theme: appTheme,
         );

@@ -85,13 +85,6 @@ class FirstEntryView extends GetView<FirstEntryController> {
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 30.h),
       constraints: BoxConstraints(maxHeight: 380.h, maxWidth: Get.width),
       alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        // color:Colors.red,
-        image: DecorationImage(
-          fit: BoxFit.fill,
-          image: CachedNetworkImageProvider(ImageConfig.loginBg2),
-        ),
-      ),
       child: CachedNetworkImage(imageUrl: ImageConfig.logo, height: 150.h),
     );
   }

@@ -2,16 +2,16 @@ import 'package:get/get.dart';
 
 class AppAdConfig extends GetxController {
   static AppAdConfig get instance => Get.find();
-  static const String appidStr = 'a68ada29a8380c';
-  static const String appidkeyStr = 'a18899a8b8b91ea35ba2138f06d22d980';
+  static const String appidStr = 'a69eb16d37c0df';
+  static const String appidkeyStr = 'af882731d2a7e4a4ebecbec601032924f';
 
   /// 开屏 id
   static const String splashID = 'b69451b0ea003a';
   static const String splashSceneID = 'b69451b0ea003a';
 
   /// 横幅 id
-  static const String bannerPlacementID = 'b69de35953c985';
-  static const String bannerSceneID = 'b69de35953c985';
+  static const String bannerPlacementID = 'b69eb1b699cf6b';
+  static const String bannerSceneID = 'b69eb1b699cf6b';
 
   /// 插屏id
   static const String interstitialPlacementID = 'b69451b0099d6d';

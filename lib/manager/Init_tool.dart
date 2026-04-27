@@ -100,6 +100,9 @@ class InitTool extends GetxService {
   Future<bool> initTopon() async {
     // await setSdkDebugLog(true);
     try {
+      Utils.logError(
+        '初始化得app参数：${AppAdConfig.appidStr}，${AppAdConfig.appidkeyStr}',
+      );
       await ATInitManger.initAnyThinkSDK(
         appidStr: AppAdConfig.appidStr,
         appidkeyStr: AppAdConfig.appidkeyStr,

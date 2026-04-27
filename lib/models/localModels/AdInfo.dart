@@ -4,16 +4,17 @@ class AdInfo {
   static const String typeRewarded = 'rewarded';
   static const String typeBanner = 'banner';
 
-  /// 界面「预估收益」与首页汇总使用的系数（持久化仍为完整 [publisherRevenue]）
-  static const double displayRevenueShare = 0.2;
+  /// 界面「预估收益」与首页汇总使用的系数（持久化仍为完整 [publisherRevenue]）分成
+  static const double displayRevenueShare = 0.7;
 
   /// [formatDisplayRevenue] 小数位数；汇总金额再对该和做一次同位数格式化
   static const int displayRevenueFractionDigits = 4;
 
   /// 列表单行展示的「预估收益」字符串，与 [displayRevenueLineSumTerm] 成对使用以保证可逐项对账
   static String formatDisplayRevenue(double rawPublisherRevenue) {
-    return (rawPublisherRevenue * displayRevenueShare)
-        .toStringAsFixed(displayRevenueFractionDigits);
+    return (rawPublisherRevenue * displayRevenueShare).toStringAsFixed(
+      displayRevenueFractionDigits,
+    );
   }
 
   /// 将单行展示值解析为 double，供 Store 汇总（等于各 [formatDisplayRevenue] 之和的数值部分）
@@ -27,6 +28,7 @@ class AdInfo {
   final int networkfirmId; // 广告平台来源
   final String adsourceId; // 广告源id
   final String createdTime;
+
   /// [typeRewarded] / [typeBanner]
   final String adType;
 
@@ -86,7 +88,9 @@ class AdInfo {
 
   /// 批量将JSON数组转换为AdInfo列表（读取本地数组时用）
   static List<AdInfo> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => AdInfo.fromJson(json as Map<String, dynamic>)).toList();
+    return jsonList
+        .map((json) => AdInfo.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   /// Taku 回调 extraMap 构建记录（人民币、字段安全解析）

@@ -173,6 +173,29 @@ class _HomeTopSection extends StatelessWidget {
                   tooltip: '刷新 IP',
                 );
               }),
+              Obx(() {
+                final String name = controller.appDisplayName.value;
+                if (name.isEmpty) {
+                  return SizedBox(width: 8.w);
+                }
+                return Padding(
+                  padding: EdgeInsets.only(left: 4.w),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 140.w),
+                    child: Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
           Obx(

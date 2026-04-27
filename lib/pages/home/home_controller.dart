@@ -15,6 +15,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeController extends GetxController {
   /// 首页收益记录列表最多展示条数（Store 仍保留全部，仅 UI 截取最新若干条）
@@ -264,8 +265,18 @@ class HomeController extends GetxController {
     // NativeTool.to.loadNativeWith();
     // HomeGroupChat.to.homeGroupChatInit();
     allInit();
+    _loadAppDisplayName();
 
     super.onInit();
+  }
+
+  Future<void> _loadAppDisplayName() async {
+    try {
+      final PackageInfo p = await PackageInfo.fromPlatform();
+      appDisplayName.value = p.appName;
+    } catch (e, st) {
+      Utils.logError('读取应用名称失败: $e $st');
+    }
   }
 
   @override
@@ -285,6 +296,10 @@ class HomeController extends GetxController {
 
   // ------------------- 响应式状态 -------------------
   final RxString appbarTitle = "首页".obs;
+
+  /// 系统展示的应用名（Android label / iOS CFBundleDisplayName）
+  final RxString appDisplayName = ''.obs;
+
   final RxString currentIp = "获取中...".obs;
 
   /// IP 请求结束后的本地时间（成功或失败均更新）

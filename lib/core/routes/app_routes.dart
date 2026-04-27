@@ -1,6 +1,6 @@
 abstract class AppRoutes {
   static const splashPage = "/splash_page";
-  static const firstPage = "/first_page";
+  static const firstPage = "/first_entry";
   static const login = "/login";
   static const root = "/root";
 
