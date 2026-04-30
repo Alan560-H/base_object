@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.baojiale"
+    namespace = "com.sdrj"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.baojiale"
+        applicationId = "com.sdrj"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -58,15 +58,15 @@ android {
 //    }
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
-            storeFile = file("baojiale.jks")  // 替换为你的签名文件名
+            storeFile = file("sdrj.jks")  // 替换为你的签名文件名
             storePassword = "hzs520.1314"  // 密钥库密码
-            keyAlias = "baojiale"            // 密钥别名
+            keyAlias = "sdrj"            // 密钥别名
             keyPassword = "hzs520.1314"      // 密钥密码
         }
         create("customDebug") {  // 定义名为 "release" 的签名配置
-            storeFile = file("baojiale.jks")  // 替换为你的签名文件名
+            storeFile = file("sdrj.jks")  // 替换为你的签名文件名
             storePassword = "hzs520.1314"  // 密钥库密码
-            keyAlias = "baojiale"            // 密钥别名
+            keyAlias = "sdrj"            // 密钥别名
             keyPassword = "hzs520.1314"      // 密钥密码
         }
     }

@@ -131,7 +131,7 @@ dev_dependencies:
   analyzer: ^7.5.9
   #提供了一些用于生成文件的通用命令，这些命令中有的可以用于测试生成的文件，
   build_runner: ^2.5.4
-  #更改应用程序包名称 命令 dart run change_app_package_name:main com.ruyimh   com.ruyimh : 如意盒子  com.ruyimh.www : 如意开盒 是新包名
+  #更改应用程序包名称 命令  fvm  dart run change_app_package_name:main com.ruyimh   com.ruyimh : 如意盒子  com.ruyimh.www : 如意开盒 是新包名
   change_app_package_name: ^1.5.0
   # 配置 app图标
   flutter_launcher_icons: ^0.14.4
@@ -175,7 +175,7 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 #配置图标
-# 生成图标 命令flutter pub run flutter_launcher_icons:main
+# 生成图标 命令 fvm flutter pub run flutter_launcher_icons:main
 flutter_launcher_icons:
   android: 'ic_launcher'
   ios: false

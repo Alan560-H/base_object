@@ -1,4 +1,4 @@
-package com.baojiale
+package com.sdrj
 
 import android.content.Intent
 import android.os.Bundle
