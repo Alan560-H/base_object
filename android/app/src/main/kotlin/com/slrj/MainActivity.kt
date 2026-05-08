@@ -1,4 +1,4 @@
-package com.sdrj
+package com.slrj
 
 import android.content.Intent
 import android.os.Bundle
