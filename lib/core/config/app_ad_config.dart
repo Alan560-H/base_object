@@ -2,32 +2,32 @@ import 'package:get/get.dart';
 
 class AppAdConfig extends GetxController {
   static AppAdConfig get instance => Get.find();
-  static const String appidStr = 'a69fad92ad270e';
-  static const String appidkeyStr = 'af3fa273f0ee087bbebcc37fa43249660';
+  static const String appidStr = 'a6a02edc510688';
+  static const String appidkeyStr = 'a9dfbeb796a19b7695dbc0d563734d86a';
 
   /// 开屏 id
-  static const String splashID = 'b69fc5b4a7b868';
-  static const String splashSceneID = 'b69fc5b4a7b868';
+  static const String splashID = 'b69fad6b5bdcfd';
+  static const String splashSceneID = 'b69fad6b5bdcfd';
 
   /// 横幅 id
-  static const String bannerPlacementID = 'b69fc5b2462299';
-  static const String bannerSceneID = 'b69fc5b2462299';
+  static const String bannerPlacementID = 'b6a02ee1db6f26';
+  static const String bannerSceneID = 'b6a02ee1db6f26';
 
   /// 插屏id
-  static const String interstitialPlacementID = 'b69fc5b3904ed1';
+  static const String interstitialPlacementID = 'b69fad6a45d07a';
 
   /// 插屏场景id
-  static const String interstitialSceneID = 'b69fc5b3904ed1';
+  static const String interstitialSceneID = 'b69fad6a45d07a';
 
   /// 原生id
-  static const String nativePlacementID = 'b69fc5af196537';
+  static const String nativePlacementID = 'b69fad6645bd21';
 
   /// 原生场景id
-  static const String nativeSceneID = 'b69fc5af196537';
+  static const String nativeSceneID = 'b69fad6645bd21';
 
   /// 激励视频id
-  static const String rewarderPlacementID = 'b69fc5b0f90830';
+  static const String rewarderPlacementID = 'b69fad67a43bb4';
 
   /// 激励视频场景id
-  static const String rewarderSceneID = 'b69fc5b0f90830';
+  static const String rewarderSceneID = 'b69fad67a43bb4';
 }
