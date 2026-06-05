@@ -16,10 +16,12 @@ class SplashController extends GetxController
   /// 初始化广告（带超时，避免部分机型 TopOn / 日志开关原生调用长时间不返回导致卡在闪屏）
   Future<void> initAd() async {
     try {
-      await InitTool.to.setCustomDataDic({
-        "user_id": 0,
-        "extra": "userid_0_type_1_amount_0_time_0",
-      }).timeout(const Duration(seconds: 5));
+      await InitTool.to
+          .setCustomDataDic({
+            "user_id": 0,
+            "extra": "userid_0_type_1_amount_0_time_0",
+          })
+          .timeout(const Duration(seconds: 5));
     } catch (e, st) {
       Utils.logError(
         'setCustomDataMap 超时或失败（继续尝试 initTopon）: $e',
@@ -42,12 +44,14 @@ class SplashController extends GetxController
     }
 
     // 关闭 Taku 原生调试日志；横幅等业务日志见 [AdLogCollector]
-    unawaited(_safeSetSdkDebugLog(false));
+    unawaited(_safeSetSdkDebugLog(true));
   }
 
   Future<void> _safeSetSdkDebugLog(bool enabled) async {
     try {
-      await InitTool.to.setSdkDebugLog(enabled).timeout(const Duration(seconds: 5));
+      await InitTool.to
+          .setSdkDebugLog(enabled)
+          .timeout(const Duration(seconds: 5));
     } catch (e, st) {
       Utils.logError('setSdkDebugLog 超时或失败（可忽略）: $e', error: e, stackTrace: st);
     }
