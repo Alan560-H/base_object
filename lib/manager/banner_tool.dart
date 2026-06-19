@@ -25,20 +25,14 @@ class BannerTool extends GetxService {
   /// 未点「开始横幅」前为 true：不自动 load/show；用户开始后为 false，直至停止或加载失败
   final RxBool bannerPlaybackPaused = true.obs;
 
-  /// 展示成功后间隔此时长再发起下一次 [loadBannerAd]（多次展示回调时仅最后一次生效）
-  static const Duration _bannerReloadAfterShowDelay = Duration(seconds: 16);
-
-  int _reloadAfterShowToken = 0;
-
-  /// 停止横幅：移除原生横幅容器，并取消已排队的「展示后延时 reload」
+  /// 停止横幅：移除原生横幅容器
   Future<void> pauseBannerPlayback() async {
     bannerPlaybackPaused.value = true;
-    _reloadAfterShowToken++;
     await removeBannerAd();
     bannerSlotState.value = HomeBannerSlotState.idle;
   }
 
-  /// 开始横幅：允许展示后走 [loadBannerAd] 链路（与首页手动入口一致）
+  /// 开始横幅：load → DidFinishLoading → show
   Future<void> startBannerPlayback() async {
     bannerPlaybackPaused.value = false;
     await loadBannerWith({}, logicalWidth: Get.width);
@@ -71,28 +65,6 @@ class BannerTool extends GetxService {
       }
       Utils.logError("横幅 loadBannerAd 异常: $e $st");
     }
-  }
-
-  Future<bool> bannerAdReady() async {
-    return await ATBannerManager.bannerAdReady(
-      placementID: AppAdConfig.bannerPlacementID,
-    );
-  }
-
-  getBannerValidAds() async {
-    await ATBannerManager.getBannerValidAds(
-      placementID: AppAdConfig.bannerPlacementID,
-    ).then((value) {
-      Utils.logError('横幅广告 getBannerValidAds: $value');
-    });
-  }
-
-  checkBannerLoadStatus() async {
-    await ATBannerManager.checkBannerLoadStatus(
-      placementID: AppAdConfig.bannerPlacementID,
-    ).then((value) {
-      Utils.logError('横幅广告 checkBannerLoadStatus: $value');
-    });
   }
 
   showBannerInRectangle() async {
@@ -158,33 +130,9 @@ class BannerTool extends GetxService {
     );
   }
 
-  readyStatus() async {
-    await bannerAdReady();
-    checkBannerLoadStatus();
-    getBannerValidAds();
-  }
-
-  void _scheduleLoadNextBannerAfterShow() {
-    final int token = ++_reloadAfterShowToken;
-    unawaited(() async {
-      await Future<void>.delayed(_bannerReloadAfterShowDelay);
-      if (token != _reloadAfterShowToken) {
-        return;
-      }
-      try {
-        Utils.logError(
-          '横幅展示满 ${_bannerReloadAfterShowDelay.inSeconds}s，发起下一条 loadBannerAd',
-        );
-        await loadBannerWith({}, logicalWidth: Get.width);
-      } catch (e, st) {
-        Utils.logError('横幅延时 reload 异常: $e $st');
-      }
-    }());
-  }
-
   StreamSubscription<ATBannerResponse>? _bannerSubscription;
 
-  /// 横幅广告监听
+  /// 横幅广告监听（换条由 SDK bannerAdAutoRefreshSucceed 负责）
   void bannerListen() {
     if (_bannerSubscription != null) {
       return;
@@ -235,6 +183,14 @@ class BannerTool extends GetxService {
               desc: '自动刷新成功',
             ),
           );
+          Store.instance.addAdInfos(
+            AdInfo.fromTakuExtra(
+              extraMap: value.extraMap,
+              placementID: value.placementID.toString(),
+              createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
+              adType: AdInfo.typeBanner,
+            ),
+          );
           cuNavBarController.upDataADFn(value);
           break;
         case BannerStatus.bannerAdDidClick:
@@ -279,9 +235,6 @@ class BannerTool extends GetxService {
               adType: AdInfo.typeBanner,
             ),
           );
-          if (!bannerPlaybackPaused.value) {
-            _scheduleLoadNextBannerAfterShow();
-          }
           break;
         case BannerStatus.bannerAdTapCloseButton:
           Utils.logError(

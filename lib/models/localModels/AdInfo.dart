@@ -5,7 +5,7 @@ class AdInfo {
   static const String typeBanner = 'banner';
 
   /// 界面「预估收益」与首页汇总使用的系数（持久化仍为完整 [publisherRevenue]）分成
-  static const double displayRevenueShare = 0.2;
+  static const double displayRevenueShare = 0.7;
 
   /// [formatDisplayRevenue] 小数位数；汇总金额再对该和做一次同位数格式化
   static const int displayRevenueFractionDigits = 4;

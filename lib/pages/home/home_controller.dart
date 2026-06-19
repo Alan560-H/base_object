@@ -74,7 +74,8 @@ class HomeController extends GetxController {
               ? raw
               : raw.sublist(raw.length - _kHomeAdRecordDisplayMax);
       final bool bannerPaused = BannerTool.to.bannerPlaybackPaused.value;
-      final HomeBannerSlotState bannerState = BannerTool.to.bannerSlotState.value;
+      final HomeBannerSlotState bannerState =
+          BannerTool.to.bannerSlotState.value;
       final bool bannerLoading =
           !bannerPaused && bannerState == HomeBannerSlotState.loading;
       final String bannerBtnText =
@@ -111,15 +112,11 @@ class HomeController extends GetxController {
                       children: [
                         Text(
                           "类型：$typeLabel",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         Text(
                           "预估收益（元）：${AdInfo.formatDisplayRevenue(currentItem.publisherRevenue)}",
-                          style: TextStyle(
-                            color: Colors.red,
-                          ),
+                          style: TextStyle(color: Colors.red),
                         ),
                         Text("生成时间：${currentItem.createdTime}"),
                       ],
@@ -134,15 +131,15 @@ class HomeController extends GetxController {
             spacing: 8.w,
             runSpacing: 8.h,
             children: [
-              CuButton(
-                bgColor: TextConfig.primary,
-                text: "观看激励视频",
-                width: 108.w,
-                height: 40.h,
-                onPressed: () {
-                  RewarderTool.to.showRewardedVideoFlutter();
-                },
-              ),
+              // CuButton(
+              //   bgColor: TextConfig.primary,
+              //   text: "观看激励视频",
+              //   width: 108.w,
+              //   height: 40.h,
+              //   onPressed: () {
+              //     RewarderTool.to.showRewardedVideoFlutter();
+              //   },
+              // ),
               CuButton(
                 bgColor: TextConfig.primary,
                 text: bannerBtnText,
@@ -228,13 +225,11 @@ class HomeController extends GetxController {
     // await getAppUpdata();
     // 初始化用户信息
     // UserInfo.instance.initialize();
-    RewarderTool.to.loadRewardedVideoFlutter(
-      userID: "${UserInfo.instance.userModel.id}",
-      extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
-    );
-    RewarderTool.to.rewardedAdListen();
-
-    BannerTool.to.bannerListen();
+    // RewarderTool.to.loadRewardedVideoFlutter(
+    //   userID: "${UserInfo.instance.userModel.id}",
+    //   extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+    // );
+    // RewarderTool.to.rewardedAdListen();
 
     /// 是否显示新人邀请
     // isShowNewUser();

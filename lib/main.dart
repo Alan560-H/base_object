@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> with AppTheme {
           debugShowCheckedModeBanner: true,
           title:
               Store.instance.getAppUpLoadModel.appName.isEmpty
-                  ? "咩咩笔记"
+                  ? "小新日记"
                   : Store.instance.getAppUpLoadModel.appName,
           builder: EasyLoading.init(),
           theme: appTheme,

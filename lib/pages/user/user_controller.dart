@@ -7,6 +7,7 @@ class UserController extends GetxController {
   RxString appbarTitle = "我的".obs;
   final UserInfo userInfo = Get.find<UserInfo>();
   List<MenuModel> menuList = [
+    MenuModel(id: 8, menuName: "设备 OAID", icon: Icons.phone_android),
     MenuModel(id: 4, menuName: "用户协议", icon: Icons.description),
     MenuModel(id: 5, menuName: "隐私政策", icon: Icons.description),
     MenuModel(id: 7, menuName: "清除缓存", icon: Icons.delete),

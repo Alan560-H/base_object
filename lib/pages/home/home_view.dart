@@ -4,11 +4,15 @@ import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/ad_log_collector.dart';
+import 'package:base_object/utils/oaid_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import 'home_controller.dart';
+
+/// 首页 OAID 调试按钮（临时隐藏，改 true 即可恢复）
+const bool _kShowHomeOaidButton = false;
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -229,20 +233,21 @@ class _HomeTopSection extends StatelessWidget {
                   style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
                 SizedBox(height: 4.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // CuButton(
-                    //   text: "日志",
-                    //   width: 70.w,
-                    //   height: 32.h,
-                    //   textColor: Colors.black87,
-                    //   bgColor: const Color(0xFFE8E8E8),
-                    //   radius: 6.r,
-                    //   onPressed: HomeView._showLogDialog,
-                    // ),
-                  ],
-                ),
+                if (_kShowHomeOaidButton)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CuButton(
+                        text: 'OAID',
+                        width: 70.w,
+                        height: 32.h,
+                        textColor: Colors.black87,
+                        bgColor: const Color(0xFFE8E8E8),
+                        radius: 6.r,
+                        onPressed: showOaidDialog,
+                      ),
+                    ],
+                  ),
               ],
             );
           }),

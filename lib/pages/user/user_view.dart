@@ -8,6 +8,7 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/pages/user/user_controller.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
+import 'package:base_object/utils/oaid_dialog.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -197,6 +198,10 @@ class UserView extends GetView<UserController> {
                           if (menu.path != null) {
                             Get.toNamed(menu.path!);
                           } else {
+                            if (menu.id == 8) {
+                              await showOaidDialog();
+                              return;
+                            }
                             if (menu.id == 4) {
                               Utils.openUrl(AppConfig.instance.protocolUri);
                             }

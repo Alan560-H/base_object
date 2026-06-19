@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/manager/Init_tool.dart';
-import 'package:base_object/manager/splash_tool.dart';
 import 'package:base_object/utils/DeviceChecker.dart';
 import 'package:base_object/utils/PermissionManager.dart';
 import 'package:base_object/utils/Utils.dart';
@@ -76,8 +75,6 @@ class SplashController extends GetxController
       /// 须等待 TopOn 初始化完成后再进首页，避免激励/横幅 load 早于 SDK 就绪
       await initAd();
       BannerTool.to.bannerListen();
-      SplashTool.to.splashListen();
-      SplashTool.to.loadSplash();
     } finally {
       EasyLoading.dismiss();
     }
