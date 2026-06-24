@@ -8,18 +8,12 @@ import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/services/ads/ad_log_collector.dart';
 import 'package:base_object/services/ads/ad_log_formatter.dart';
-import 'package:base_object/shared/config/cu_global.dart';
+import 'package:base_object/shared/config/screen_layout.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
 
-double _defaultLogicalWidth() {
-  final BuildContext? ctx = CuGlobal.navigatorKey.currentContext;
-  if (ctx != null) {
-    return MediaQuery.sizeOf(ctx).width;
-  }
-  return 375;
-}
+double _defaultLogicalWidth() => defaultLogicalWidth();
 
 /// 首页横幅占位条展示用状态
 enum HomeBannerSlotState { idle, loading, ready, failed }

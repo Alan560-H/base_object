@@ -7,9 +7,9 @@ import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/data/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/data/models/localModels/UpADModel.dart';
+import 'package:base_object/shared/config/screen_layout.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
 class NativeTool {
   NativeTool({
@@ -36,7 +36,7 @@ class NativeTool {
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
         ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width - 20.w, // 与 getAdConfig 中的宽度一致
+          defaultLogicalWidth() - 20.w, // 与 getAdConfig 中的宽度一致
           adHeight, // 与 adHeight 一致
         ),
         ATNativeManager.isAdaptiveHeight(): true,
@@ -89,7 +89,7 @@ class NativeTool {
     return {
       // 广告父容器（整体尺寸）
       ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-        Get.width - 20.w, // 宽度=屏幕宽-20（适配左右边距）
+        defaultLogicalWidth() - 20.w, // 宽度=屏幕宽-20（适配左右边距）
         adHeight,
         // 白色
         backgroundColorStr: '#FFFFFF',
@@ -105,7 +105,7 @@ class NativeTool {
       ),
       // 广告标题
       ATNativeManager.mainTitle(): ATNativeManager.createNativeSubViewAttribute(
-        Get.width - 190.w,
+        defaultLogicalWidth() - 190.w,
         20.h,
         x: 0.w,
         y: 0.h,
@@ -114,7 +114,7 @@ class NativeTool {
       ),
       // 广告描述
       ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-        Get.width - 190.w,
+        defaultLogicalWidth() - 190.w,
         20.h,
         x: 70.w,
         y: 70.h,
@@ -126,7 +126,7 @@ class NativeTool {
       ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
         100.w,
         35.h,
-        x: Get.width - 110.w,
+        x: defaultLogicalWidth() - 110.w,
         y: 40.h,
         textSize: 14.sp,
         textColorStr: '#FFFFFF',
@@ -136,7 +136,7 @@ class NativeTool {
       ),
       // 广告主图
       ATNativeManager.mainImage(): ATNativeManager.createNativeSubViewAttribute(
-        Get.width,
+        defaultLogicalWidth(),
         180.h,
         x: 20.w,
         y: 0.h,
@@ -160,7 +160,7 @@ class NativeTool {
       ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
         20.sp,
         20.sp,
-        x: Get.width - 30.w,
+        x: defaultLogicalWidth() - 30.w,
         y: 10.h,
         // 绿色
         backgroundColorStr: '#139343',
@@ -168,7 +168,7 @@ class NativeTool {
       // 广告合规六要素（Android中国区必需）
       ATNativeManager.elementsView():
           ATNativeManager.createNativeSubViewAttribute(
-            Get.width - 20.w,
+            defaultLogicalWidth() - 20.w,
             25.h,
             x: 10.w,
             y: adHeight - 25.h,
@@ -257,7 +257,7 @@ class NativeTool {
         case NativeStatus.nativeAdDidShowNativeAd:
           isViewCreated = await getNativeValidAds();
           Utils.logError(
-            "信息流广告展示成功: ${value.placementID},是否有缓存${isViewCreated}",
+            '信息流广告展示成功: ${value.placementID},是否有缓存$isViewCreated',
           );
           nativeUpDataADFn(value);
           loadNativeWith();
@@ -296,7 +296,7 @@ class NativeTool {
       placementID: AppAdConfig.nativePlacementID,
       extraMap: {
         ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width,
+          defaultLogicalWidth(),
           120,
           x: 0,
           y: 30,
@@ -311,14 +311,14 @@ class NativeTool {
         ),
         ATNativeManager.mainTitle():
             ATNativeManager.createNativeSubViewAttribute(
-              Get.width - 190,
+              defaultLogicalWidth() - 190,
               20,
               x: 70,
               y: 40,
               textSize: 15,
             ),
         ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-          Get.width - 190,
+          defaultLogicalWidth() - 190,
           20,
           x: 70,
           y: 70,
@@ -327,7 +327,7 @@ class NativeTool {
         ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
           100,
           50,
-          x: Get.width - 110,
+          x: defaultLogicalWidth() - 110,
           y: 40,
           textSize: 15,
           textColorStr: "#FFFFFF",
@@ -335,7 +335,7 @@ class NativeTool {
         ),
         ATNativeManager.mainImage():
             ATNativeManager.createNativeSubViewAttribute(
-              Get.width - 20,
+              defaultLogicalWidth() - 20,
               70,
               x: 10,
               y: 100,
@@ -351,7 +351,7 @@ class NativeTool {
         ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
           20,
           20,
-          x: Get.width - 30,
+          x: defaultLogicalWidth() - 30,
           y: 10,
         ),
       },
