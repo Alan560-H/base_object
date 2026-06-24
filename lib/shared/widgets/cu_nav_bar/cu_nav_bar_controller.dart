@@ -1,6 +1,7 @@
 import 'package:base_object/app/providers.dart';
+import 'package:base_object/app/router.dart';
+import 'package:base_object/app/routes.dart';
 import 'package:base_object/shared/config/image_config.dart';
-import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/services/ads/native_tool.dart';
 import 'package:base_object/data/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/data/models/localModels/MenuModel.dart';
@@ -51,18 +52,18 @@ class CuNavBarController extends GetxService {
       NativeTool.to.removeNativeAd();
       switch (index) {
         case 0:
-          Get.offAllNamed(AppRoutes.home);
+          appRouter.go(AppPaths.home);
           break;
         case 1:
-          Get.offAllNamed(AppRoutes.user);
+          appRouter.go(AppPaths.user);
           break;
         default:
-          Get.offAllNamed(AppRoutes.home);
+          appRouter.go(AppPaths.home);
           currentPageIndex.value = 0;
       }
     } catch (e) {
       Utils.logError("切换一级页面失败：$e");
-      Get.offAllNamed(AppRoutes.home);
+      appRouter.go(AppPaths.home);
       currentPageIndex.value = 0;
     }
   }

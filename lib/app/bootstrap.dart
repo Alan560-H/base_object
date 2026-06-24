@@ -1,4 +1,5 @@
 import 'package:base_object/app/providers.dart';
+import 'package:base_object/app/router.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,4 +8,5 @@ Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
   globalContainer = ProviderContainer();
   await warmUpProviders(globalContainer);
+  appRouter = createAppRouter();
 }
