@@ -3,15 +3,23 @@ import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/app/providers.dart';
 import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
-import 'package:base_object/shared/widgets/cu_nav_bar/cu_nav_bar_controller.dart';
+import 'package:base_object/services/ads/banner_ad_upload_handler.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/services/ads/ad_log_collector.dart';
 import 'package:base_object/services/ads/ad_log_formatter.dart';
+import 'package:base_object/shared/config/cu_global.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
+
+double _defaultLogicalWidth() {
+  final BuildContext? ctx = CuGlobal.navigatorKey.currentContext;
+  if (ctx != null) {
+    return MediaQuery.sizeOf(ctx).width;
+  }
+  return 375;
+}
 
 /// 首页横幅占位条展示用状态
 enum HomeBannerSlotState { idle, loading, ready, failed }
@@ -51,15 +59,15 @@ class BannerTool extends ChangeNotifier {
   /// 开始横幅：load → DidFinishLoading → show
   Future<void> startBannerPlayback() async {
     _setBannerPlaybackPaused(false);
-    await loadBannerWith({}, logicalWidth: Get.width);
+    await loadBannerWith({}, logicalWidth: _defaultLogicalWidth());
   }
 
-  /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例；默认 [Get.width]
+  /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例
   Future<void> loadBannerWith(
     Map<dynamic, dynamic> extraMap, {
     double? logicalWidth,
   }) async {
-    final double w = logicalWidth ?? Get.width;
+    final double w = logicalWidth ?? _defaultLogicalWidth();
     final double h = w * 50 / 320;
     final Map<dynamic, dynamic> merged = Map<dynamic, dynamic>.from(extraMap);
     merged[ATCommon.getAdSizeKey()] = ATBannerManager.createLoadBannerAdSize(
@@ -154,10 +162,6 @@ class BannerTool extends ChangeNotifier {
       return;
     }
     _bannerSubscription = ATListenerManager.bannerEventHandler.listen((value) {
-      final CuNavBarController cuNavBarController =
-          Get.isRegistered<CuNavBarController>()
-              ? Get.find<CuNavBarController>()
-              : Get.put(CuNavBarController());
       switch (value.bannerStatus) {
         case BannerStatus.bannerAdFailToLoadAD:
           _setBannerSlotState(HomeBannerSlotState.failed);
@@ -207,7 +211,7 @@ class BannerTool extends ChangeNotifier {
               adType: AdInfo.typeBanner,
             ),
           );
-          cuNavBarController.upDataADFn(value);
+          handleBannerAdUpload(value);
           break;
         case BannerStatus.bannerAdDidClick:
           Utils.logError(

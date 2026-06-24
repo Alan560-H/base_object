@@ -1,10 +1,9 @@
 import 'package:base_object/app/providers.dart';
+import 'package:base_object/app/routes.dart';
 import 'package:base_object/data/models/localModels/MenuModel.dart';
 import 'package:base_object/shared/config/image_config.dart';
 import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/shared/widgets/Avatar.dart';
-import 'package:base_object/shared/widgets/cu_nav_bar/cu_nav_bar_controller.dart';
-import 'package:base_object/shared/widgets/cu_nav_bar/cu_nav_bar_view.dart';
 import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class UserPage extends ConsumerStatefulWidget {
   const UserPage({super.key});
@@ -209,7 +209,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                       ),
                       onTap: () async {
                         if (menu.id == 8) {
-                          await showOaidDialog();
+                          await showOaidDialog(context);
                           return;
                         }
                         if (menu.id == 7) {
@@ -217,7 +217,9 @@ class _UserPageState extends ConsumerState<UserPage> {
                           await Future.delayed(const Duration(seconds: 3));
                           CuToast.success(msg: '清除成功');
                           EasyLoading.dismiss();
-                          CuNavBarController.to.onTabChange(0);
+                          if (context.mounted) {
+                            context.go(AppPaths.home);
+                          }
                         }
                       },
                     ),
@@ -228,7 +230,6 @@ class _UserPageState extends ConsumerState<UserPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const CuNavBarView(),
     );
   }
 }

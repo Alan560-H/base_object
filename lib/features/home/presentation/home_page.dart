@@ -35,9 +35,6 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final double bottomViewPadding = MediaQuery.viewPaddingOf(context).bottom;
-    final double screenW = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
       body: Container(
         color: TextConfig.comPageGrey,
@@ -48,13 +45,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             Expanded(child: _HomeAdListSection(scrollController: _scrollController)),
           ],
         ),
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _HomeBannerPlaceholder(bannerWidth: screenW),
-          SizedBox(height: bottomViewPadding),
-        ],
       ),
     );
   }
@@ -176,7 +166,7 @@ class _HomeTopSection extends ConsumerWidget {
                     textColor: Colors.black87,
                     bgColor: const Color(0xFFE8E8E8),
                     radius: 6.r,
-                    onPressed: showOaidDialog,
+                    onPressed: () => showOaidDialog(context),
                   ),
                 ],
               ),
@@ -282,64 +272,6 @@ class _HomeAdListSection extends ConsumerWidget {
               ],
             ),
           ],
-        );
-      },
-    );
-  }
-}
-
-class _HomeBannerPlaceholder extends ConsumerWidget {
-  const _HomeBannerPlaceholder({required this.bannerWidth});
-
-  final double bannerWidth;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bannerTool = ref.watch(bannerToolProvider);
-    final double h = bannerWidth * 50 / 320;
-
-    return ListenableBuilder(
-      listenable: bannerTool,
-      builder: (context, _) {
-        if (bannerTool.bannerPlaybackPaused) {
-          return Material(
-            color: Colors.grey.shade300,
-            child: SizedBox(
-              width: double.infinity,
-              height: h,
-              child: Center(
-                child: Text(
-                  '点击开始横幅加载广告',
-                  style: TextStyle(fontSize: 11.sp, color: Colors.black87),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
-        }
-        final HomeBannerSlotState state = bannerTool.bannerSlotState;
-        final String msg = switch (state) {
-          HomeBannerSlotState.idle => '等待横幅加载…',
-          HomeBannerSlotState.loading => '横幅加载中…',
-          HomeBannerSlotState.failed => '暂无广告或加载失败',
-          HomeBannerSlotState.ready => '',
-        };
-        return Material(
-          color: Colors.grey.shade300,
-          child: SizedBox(
-            width: double.infinity,
-            height: h,
-            child:
-                msg.isEmpty
-                    ? const SizedBox.shrink()
-                    : Center(
-                      child: Text(
-                        msg,
-                        style: TextStyle(fontSize: 11.sp, color: Colors.black54),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-          ),
         );
       },
     );

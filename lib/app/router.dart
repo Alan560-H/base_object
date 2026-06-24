@@ -1,3 +1,4 @@
+import 'package:base_object/app/app_shell.dart';
 import 'package:base_object/app/routes.dart';
 import 'package:base_object/features/home/presentation/home_page.dart';
 import 'package:base_object/features/splash/presentation/splash_page.dart';
@@ -16,13 +17,28 @@ GoRouter createAppRouter() {
         path: AppPaths.splash,
         builder: (context, state) => const SplashPage(),
       ),
-      GoRoute(
-        path: AppPaths.home,
-        builder: (context, state) => const HomePage(),
-      ),
-      GoRoute(
-        path: AppPaths.user,
-        builder: (context, state) => const UserPage(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AppShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppPaths.home,
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppPaths.user,
+                builder: (context, state) => const UserPage(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );

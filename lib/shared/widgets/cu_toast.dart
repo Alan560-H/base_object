@@ -1,9 +1,12 @@
+import 'package:base_object/shared/config/cu_global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
 import 'package:toastification/toastification.dart';
 
 class CuToast {
+  static BuildContext? get _overlayContext =>
+      CuGlobal.navigatorKey.currentContext;
+
   // 初始化 EasyLoading 配置
   static void initEasyLoading() {
     EasyLoading.instance
@@ -22,40 +25,64 @@ class CuToast {
       ..dismissOnTap = false;
   }
 
-  // 封装通用的 toast 显示方法，并检查上下文有效性
   static void _showToast(
-      String title, String msg, ToastificationType type,
-      {Duration autoCloseDuration = const Duration(seconds: 3),Color? backgroundColor,Color? foregroundColor}) {
+    String title,
+    String msg,
+    ToastificationType type, {
+    Duration autoCloseDuration = const Duration(seconds: 3),
+    Color? backgroundColor,
+    Color? foregroundColor,
+  }) {
+    final BuildContext? ctx = _overlayContext;
+    if (ctx == null || !ctx.mounted) return;
 
-      toastification.show(
-        context: Get.context,
-        title: Text(title),
-        style: ToastificationStyle.flat,
-        type: type,
-        alignment: Alignment.topCenter,
-        description: Text(msg),
-        borderRadius: BorderRadius.circular(12),
-        showProgressBar: true,
-        autoCloseDuration: autoCloseDuration,
-        backgroundColor: backgroundColor??Colors.white,
-          foregroundColor: foregroundColor??Colors.black
-      );
+    toastification.show(
+      context: ctx,
+      title: Text(title),
+      style: ToastificationStyle.flat,
+      type: type,
+      alignment: Alignment.topCenter,
+      description: Text(msg),
+      borderRadius: BorderRadius.circular(12),
+      showProgressBar: true,
+      autoCloseDuration: autoCloseDuration,
+      backgroundColor: backgroundColor ?? Colors.white,
+      foregroundColor: foregroundColor ?? Colors.black,
+    );
   }
 
-  static success({String title = "提示", String msg = "",Duration autoCloseDuration = const Duration(seconds: 3)}) {
-    _showToast(title, msg, ToastificationType.success,autoCloseDuration:autoCloseDuration,backgroundColor: Colors.white);
+  static success({
+    String title = '提示',
+    String msg = '',
+    Duration autoCloseDuration = const Duration(seconds: 3),
+  }) {
+    _showToast(
+      title,
+      msg,
+      ToastificationType.success,
+      autoCloseDuration: autoCloseDuration,
+      backgroundColor: Colors.white,
+    );
   }
 
-  static error({String title = "提示", String msg = "",Duration autoCloseDuration = const Duration(seconds: 3)}) {
-    _showToast(title, msg, ToastificationType.error,autoCloseDuration:autoCloseDuration,);
+  static error({
+    String title = '提示',
+    String msg = '',
+    Duration autoCloseDuration = const Duration(seconds: 3),
+  }) {
+    _showToast(
+      title,
+      msg,
+      ToastificationType.error,
+      autoCloseDuration: autoCloseDuration,
+    );
   }
 
-  // 通知提示，并统一参数结构
-  static toast(
-      BuildContext context,
-      String msg, {
-        EasyLoadingToastPosition toastPosition = EasyLoadingToastPosition.bottom,
-      }) {
+  static void toast(
+    BuildContext context,
+    String msg, {
+    EasyLoadingToastPosition toastPosition = EasyLoadingToastPosition.bottom,
+  }) {
     if (context.mounted) {
       EasyLoading.instance.toastPosition = toastPosition;
       EasyLoading.showToast(msg);
