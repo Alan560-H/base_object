@@ -4,10 +4,8 @@ import 'package:base_object/core/components/cu_button.dart';
 import 'package:base_object/core/components/cu_toast.dart';
 import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/manager/rewarder_tool.dart';
 import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -131,15 +129,6 @@ class HomeController extends GetxController {
             spacing: 8.w,
             runSpacing: 8.h,
             children: [
-              // CuButton(
-              //   bgColor: TextConfig.primary,
-              //   text: "观看激励视频",
-              //   width: 108.w,
-              //   height: 40.h,
-              //   onPressed: () {
-              //     RewarderTool.to.showRewardedVideoFlutter();
-              //   },
-              // ),
               CuButton(
                 bgColor: TextConfig.primary,
                 text: bannerBtnText,
@@ -159,106 +148,17 @@ class HomeController extends GetxController {
         ],
       );
     });
-    // return Center(
-    //   child: CuButton(
-    //     bgColor: TextConfig.primary,
-    //     text: "观看激励视频",
-    //     width: 150.w,
-    //     height: 40.h,
-    //     onPressed: () {
-    //       RewarderTool.to.showRewardedVideoFlutter();
-    //     },
-    //   ),
-    // );
-    // return Obx(
-    //   () => ListView.builder(
-    //     controller: scrollController, // 绑定新控制器
-    //     padding: EdgeInsets.all(10.sp),
-    //     itemCount: HomeGroupChat.to.messages.length,
-    //     reverse: false, // 最新消息在底部（需向下滚动查看）
-    //     itemBuilder: (context, index) {
-    //       final message = HomeGroupChat.to.messages[index];
-    //       return _buildMessageItem(message);
-    //     },
-    //   ),
-    // );
   }
-
-  /// 是否显示新人福利（无后端，占位方法）
-  Future<void> isShowNewUser() async {}
 
   void allInit() async {
     Store.instance.initAdInfos();
     await Store.instance.getFkConfigFn();
     fetchCurrentIp();
-
-    /// 上传地址
-    // if (UserInfo.instance.isLoginIn) {
-    //   await LocationUtil().getCurrentLocation((Map result) async {
-    //     Utils.logError("定位结果：$result");
-    //     if (result["errorCode"] != null || result["address"] == null) {
-    //       CuToast.error(msg: "定位失败，请打开定位");
-    //       await Future.delayed(const Duration(seconds: 2));
-    //       SystemNavigator.pop();
-    //       return;
-    //     }
-    //     LocationData locationData = LocationData(
-    //       address: result["address"],
-    //       latitude: result["latitude"],
-    //       longitude: result["longitude"],
-    //     );
-    //     Store.instance.setLocationData(locationData);
-    //   });
-    //
-    //   await Store.instance.getVer(
-    //     type: 3,
-    //     msg:
-    //         "地理位置${Store.instance.locationData?.address}，经度${Store.instance.locationData?.longitude}，纬度${Store.instance.locationData?.latitude}",
-    //   );
-    // }
-
-    /// 获取风控配置
-    // await Store.instance.getFkConfigFn();
-
-    /// 获取今日领取了多少个红包
-    // await Store.instance.initCurrentCount();
-    // await getAppUpdata();
-    // 初始化用户信息
-    // UserInfo.instance.initialize();
-    // RewarderTool.to.loadRewardedVideoFlutter(
-    //   userID: "${UserInfo.instance.userModel.id}",
-    //   extra: "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
-    // );
-    // RewarderTool.to.rewardedAdListen();
-
-    /// 是否显示新人邀请
-    // isShowNewUser();
-
-    /// 是否显示公告框
-    // isShow();
-
-    /// 检查低保任务
-    // await Store.instance.postMinAdPrizeList();
-
-    /// 如果任务状态是接取的，那么就跳转到任务大厅
-    // if (Store.instance.isTaskStatus == 1) {
-    //   CuNavBarController.to.onTabChange(1);
-    // }
-    // 初始化app升级信息
   }
 
   @override
   void onInit() {
     Utils.logError("首页页面onInit");
-
-    // 开启广告监听器
-    // InterstitialTool.to.interstitialListen();
-    // NativeTool.to.nativeLisListen();
-
-    // InterstitialTool.to.loadInterstitialAd();
-
-    // NativeTool.to.loadNativeWith();
-    // HomeGroupChat.to.homeGroupChatInit();
     allInit();
     _loadAppDisplayName();
 
@@ -283,9 +183,6 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     Utils.logError("首页页面onReady");
-    // TODO: implement onReady
-    // 打开维护弹窗
-    // Get.dialog(barrierDismissible: false, WeiHuDialog());
     super.onReady();
   }
 
@@ -312,42 +209,35 @@ class HomeController extends GetxController {
     }
     final dio = Dio(
       BaseOptions(
-        connectTimeout: const Duration(seconds: 6),
-        receiveTimeout: const Duration(seconds: 6),
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {'User-Agent': 'Mozilla/5.0'},
       ),
     );
-    final urls = ["https://httpbin.org/ip", "https://api.ipify.org"];
+    // 国内优先；国外源作兜底（部分网络环境可能不可达）
+    final urls = <String>[
+      'https://myip.ipip.net',
+      'https://api-ipv4.ip.sb/ip',
+      'https://qifu-api.baidubce.com/ip/local/geo/v1/district?ip=',
+      'https://api.ipify.org',
+      'https://httpbin.org/ip',
+    ];
     try {
       for (final url in urls) {
         try {
-          if (url.contains("httpbin")) {
-            final res = await dio.get<Map<String, dynamic>>(url);
-            final origin = res.data?["origin"];
-            if (origin != null) {
-              currentIp.value = origin.toString().trim();
-              if (showLoading) {
-                CuToast.success(
-                  msg: 'IP 已更新',
-                  autoCloseDuration: const Duration(seconds: 2),
-                );
-              }
-              return;
+          final String? ip = await _fetchIpFromUrl(dio, url);
+          if (ip != null) {
+            currentIp.value = ip;
+            if (showLoading) {
+              CuToast.success(
+                msg: 'IP 已更新',
+                autoCloseDuration: const Duration(seconds: 2),
+              );
             }
-          } else {
-            final res = await dio.get<String>(url);
-            if (res.data != null && res.data!.isNotEmpty) {
-              currentIp.value = res.data!.trim();
-              if (showLoading) {
-                CuToast.success(
-                  msg: 'IP 已更新',
-                  autoCloseDuration: const Duration(seconds: 2),
-                );
-              }
-              return;
-            }
+            return;
           }
-        } catch (_) {
-          continue;
+        } catch (e, st) {
+          Utils.logError('IP 请求失败 [$url]: $e', error: e, stackTrace: st);
         }
       }
       currentIp.value = "获取失败";
@@ -361,5 +251,50 @@ class HomeController extends GetxController {
       }
       ipRefreshedAt.value = Jiffy.now().format(pattern: "yyyy-MM-dd HH:mm:ss");
     }
+  }
+
+  static bool _isValidIpv4(String value) {
+    final parts = value.split('.');
+    if (parts.length != 4) return false;
+    for (final part in parts) {
+      final int? n = int.tryParse(part);
+      if (n == null || n < 0 || n > 255) return false;
+    }
+    return true;
+  }
+
+  Future<String?> _fetchIpFromUrl(Dio dio, String url) async {
+    if (url.contains('httpbin')) {
+      final res = await dio.get<Map<String, dynamic>>(url);
+      final origin = res.data?['origin']?.toString().trim();
+      if (origin != null && origin.isNotEmpty) {
+        final ip = origin.split(',').first.trim();
+        return _isValidIpv4(ip) ? ip : null;
+      }
+      return null;
+    }
+    if (url.contains('baidubce')) {
+      final res = await dio.get<Map<String, dynamic>>(url);
+      final Map<String, dynamic>? data = res.data;
+      final dynamic nested = data?['data'];
+      if (nested is Map) {
+        final String? ip = nested['ip']?.toString().trim();
+        if (ip != null && _isValidIpv4(ip)) return ip;
+      }
+      final String? direct = data?['ip']?.toString().trim();
+      if (direct != null && _isValidIpv4(direct)) return direct;
+      return null;
+    }
+    final res = await dio.get<String>(
+      url,
+      options: Options(responseType: ResponseType.plain),
+    );
+    final String? raw = res.data?.trim();
+    if (raw == null || raw.isEmpty) return null;
+    if (_isValidIpv4(raw)) return raw;
+    // 部分接口可能返回带换行或前后缀的纯文本
+    final match = RegExp(r'\d{1,3}(?:\.\d{1,3}){3}').firstMatch(raw);
+    final String? ip = match?.group(0);
+    return ip != null && _isValidIpv4(ip) ? ip : null;
   }
 }

@@ -3,7 +3,6 @@ import 'package:base_object/core/config/text_config.dart';
 import 'package:base_object/manager/banner_tool.dart';
 import 'package:base_object/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
-import 'package:base_object/utils/ad_log_collector.dart';
 import 'package:base_object/utils/oaid_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,78 +10,8 @@ import 'package:get/get.dart';
 
 import 'home_controller.dart';
 
-/// 首页 OAID 调试按钮（临时隐藏，改 true 即可恢复）
-const bool _kShowHomeOaidButton = false;
-
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
-
-  static void _showLogDialog() {
-    AdLogCollector.printLogsToConsole();
-    Get.dialog(
-      barrierDismissible: true,
-      Dialog(
-        child: Container(
-          width: Get.width * 0.9,
-          height: Get.height * 0.6,
-          padding: EdgeInsets.all(12.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("广告日志", style: TextStyle(fontSize: 18.sp)),
-                  CuButton(
-                    text: "清空",
-                    width: 60.w,
-                    height: 32.h,
-                    textColor: Colors.black87,
-                    bgColor: const Color(0xFFE8E8E8),
-                    radius: 6.r,
-                    onPressed: () {
-                      AdLogCollector.clear();
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 8.h),
-              Expanded(
-                child: Obx(() {
-                  final lines = AdLogCollector.observable;
-                  if (lines.isEmpty) {
-                    return const Center(child: Text("暂无日志"));
-                  }
-                  return ListView.builder(
-                    itemCount: lines.length,
-                    itemBuilder:
-                        (_, i) => Padding(
-                          padding: EdgeInsets.only(bottom: 8.h),
-                          child: Card(
-                            margin: EdgeInsets.zero,
-                            elevation: 1,
-                            child: Padding(
-                              padding: EdgeInsets.all(10.w),
-                              child: Text(
-                                lines[i],
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  height: 1.4,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                  );
-                }),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,21 +162,20 @@ class _HomeTopSection extends StatelessWidget {
                   style: TextStyle(fontSize: 13.sp, color: Colors.black87),
                 ),
                 SizedBox(height: 4.h),
-                if (_kShowHomeOaidButton)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      CuButton(
-                        text: 'OAID',
-                        width: 70.w,
-                        height: 32.h,
-                        textColor: Colors.black87,
-                        bgColor: const Color(0xFFE8E8E8),
-                        radius: 6.r,
-                        onPressed: showOaidDialog,
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CuButton(
+                      text: 'OAID',
+                      width: 70.w,
+                      height: 32.h,
+                      textColor: Colors.black87,
+                      bgColor: const Color(0xFFE8E8E8),
+                      radius: 6.r,
+                      onPressed: showOaidDialog,
+                    ),
+                  ],
+                ),
               ],
             );
           }),

@@ -72,7 +72,7 @@ class SplashController extends GetxController
       /// 检测设备
       await DeviceChecker.isAllCheckr();
 
-      /// 须等待 TopOn 初始化完成后再进首页，避免激励/横幅 load 早于 SDK 就绪
+      /// 须等待 TopOn 初始化完成后再进首页，避免横幅 load 早于 SDK 就绪
       await initAd();
       BannerTool.to.bannerListen();
     } finally {

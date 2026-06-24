@@ -176,7 +176,7 @@ class NativeTool extends GetxService {
     try {
       UserInfo userInfo = UserInfo.instance;
       if (userInfo.isLoginIn) {
-        await Store.instance.checkFkConfig();
+        await Store.instance.getFkConfigFn();
 
         UpDataADForm upDataADForm = UpDataADForm();
 
