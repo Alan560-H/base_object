@@ -1,3 +1,5 @@
+import 'package:base_object/features/home/presentation/home_notifier.dart';
+import 'package:base_object/features/home/presentation/home_state.dart';
 import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
 import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/data/models/ad_stats_state.dart';
@@ -20,6 +22,10 @@ final adStatsProvider = NotifierProvider<AdStatsNotifier, AdStatsState>(
 
 final userProvider = NotifierProvider<UserNotifier, UserState>(
   UserNotifier.new,
+);
+
+final homeProvider = NotifierProvider<HomeNotifier, HomeState>(
+  HomeNotifier.new,
 );
 
 final initToolProvider = Provider<InitTool>((ref) => InitTool());
