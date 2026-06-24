@@ -1,12 +1,10 @@
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/app/providers.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:get/get.dart';
 
-class InitTool extends GetxService {
-  // GetX单例获取方式
-  static InitTool get to =>
-      Get.isRegistered<InitTool>() ? Get.find<InitTool>() : Get.put(InitTool());
+class InitTool {
+  static InitTool get to => globalContainer.read(initToolProvider);
 
   /// Taku SDK 原生调试日志（logcat）；与业务侧 [AdLogCollector] 无关
   Future<bool> setSdkDebugLog(bool enabled) async {

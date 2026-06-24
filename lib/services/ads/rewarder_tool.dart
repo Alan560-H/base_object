@@ -1,22 +1,28 @@
 import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/app/providers.dart';
+import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
+import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
-import 'package:base_object/store/store.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:base_object/services/ads/ad_log_collector.dart';
 import 'package:base_object/services/ads/ad_log_formatter.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
-class RewarderTool extends GetxService {
-  static RewarderTool get to =>
-      Get.isRegistered<RewarderTool>()
-          ? Get.find<RewarderTool>()
-          : Get.put(RewarderTool());
+class RewarderTool {
+  RewarderTool({
+    required AdStatsNotifier adStatsNotifier,
+    required UserNotifier userNotifier,
+  }) : _adStatsNotifier = adStatsNotifier,
+       _userNotifier = userNotifier;
+
+  final AdStatsNotifier _adStatsNotifier;
+  final UserNotifier _userNotifier;
+
+  static RewarderTool get to => globalContainer.read(rewarderToolProvider);
 
   /// 激励视频加载
   loadRewardedVideoFlutter({userID = '', extra = ""}) async {
@@ -56,8 +62,26 @@ class RewarderTool extends GetxService {
     });
   }
 
+  Future<bool> canLookReward() async {
+    final bool isReady = await rewardedVideoReady();
+    Utils.logError('准备状态：$isReady}');
+    if (!isReady) {
+      EasyLoading.show(status: '广告还没准备好，请稍后再试');
+      final userId = _userNotifier.userModel.id;
+      await loadRewardedVideoFlutter(
+        userID: '$userId',
+        extra: 'userid_${userId}_type_1_amount_0_time_0',
+      );
+      await Future<void>.delayed(const Duration(seconds: 3));
+      EasyLoading.dismiss();
+      return false;
+    }
+    EasyLoading.dismiss();
+    return true;
+  }
+
   showRewardedVideoFlutter() async {
-    bool isOk = await Store.instance.canLookReward();
+    final bool isOk = await canLookReward();
     if (!isOk) {
       return;
     }
@@ -110,12 +134,12 @@ class RewarderTool extends GetxService {
             createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
             adType: AdInfo.typeRewarded,
           );
-          Store.instance.addAdInfos(adInfo);
+          _adStatsNotifier.addAdInfos(adInfo);
           CuToast.success(msg: "观看完成，已记录收益");
+          final userId = _userNotifier.userModel.id;
           loadRewardedVideoFlutter(
-            userID: "${UserInfo.instance.userModel.id}",
-            extra:
-                "userid_${UserInfo.instance.userModel.id}_type_1_amount_0_time_0",
+            userID: "$userId",
+            extra: "userid_${userId}_type_1_amount_0_time_0",
           );
           break;
         case RewardedStatus.rewardedVideoDidClose:

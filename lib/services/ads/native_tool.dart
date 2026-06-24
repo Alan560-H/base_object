@@ -1,24 +1,30 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/app/providers.dart';
+import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
+import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/data/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/data/models/localModels/UpADModel.dart';
-import 'package:base_object/store/store.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class NativeTool extends GetxService {
+class NativeTool {
+  NativeTool({
+    required AdStatsNotifier adStatsNotifier,
+    required UserNotifier userNotifier,
+  }) : _adStatsNotifier = adStatsNotifier,
+       _userNotifier = userNotifier;
+
+  final AdStatsNotifier _adStatsNotifier;
+  final UserNotifier _userNotifier;
+
   /// 信息流原生广告是否启用（当前关闭，保留实现供后续开启）
   static const bool _nativeAdEnabled = false;
 
-  // GetX单例获取方式
-  static NativeTool get to =>
-      Get.isRegistered<NativeTool>()
-          ? Get.find<NativeTool>()
-          : Get.put(NativeTool());
+  static NativeTool get to => globalContainer.read(nativeToolProvider);
 
   // 加载原生广告（当前不加载信息流）
   loadNativeWith() async {
@@ -76,7 +82,7 @@ class NativeTool extends GetxService {
   }
 
   // 统一广告高度，与文档和加载配置保持一致
-  final double adHeight = 250.h;
+  double get adHeight => 250.h;
 
   // 原生广告控件配置
   Map<String, dynamic> getAdConfig() {
@@ -174,12 +180,11 @@ class NativeTool extends GetxService {
     };
   }
 
-  final isViewCreated = false.obs; // true有广告缓存，false没有
+  bool isViewCreated = false;
   nativeUpDataADFn(dynamic event) async {
     try {
-      UserInfo userInfo = UserInfo.instance;
-      if (userInfo.isLoginIn) {
-        await Store.instance.getFkConfigFn();
+      if (_userNotifier.isLoggedIn) {
+        await _adStatsNotifier.getFkConfigFn();
 
         UpDataADForm upDataADForm = UpDataADForm();
 
@@ -193,7 +198,7 @@ class NativeTool extends GetxService {
         String reqId = event.extraMap?['req_id'];
         String adsourceId = event.extraMap?['adsource_id'];
         // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
-        String userId = UserInfo.instance.userModel.id.toString();
+        String userId = _userNotifier.userModel.id.toString();
         upDataADForm.extra =
             "userid_${userId}_type_2_amount_${publisherRevenueCny ?? 0}_time_0";
         upDataADForm.transId = event.extraMap?['id'];
@@ -207,9 +212,8 @@ class NativeTool extends GetxService {
         );
         Utils.logError("原生广告凑成的字符串${upDataADForm.toJson()}");
         Utils.logError(
-          "一：$amount,二：${Store.instance.getFkConfig.wactchMaxAmountV1}，三：原生广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}，四：塔酷广告回调信息：${event.extraMap}",
+          "一：$amount,二：${_adStatsNotifier.fkConfig.wactchMaxAmountV1}，三：原生广告金额$amount，限制金额${_adStatsNotifier.fkConfig.wactchMaxAmountV1}，四：塔酷广告回调信息：${event.extraMap}",
         );
-        if (!UserInfo.instance.isLoginIn) return;
         if (amount == null) return;
         double amount1 = amount * 10000;
         UpADModel upADModel = UpADModel(
@@ -220,13 +224,13 @@ class NativeTool extends GetxService {
         );
 
         /// 如果广告金额大于风控设置的最高金额
-        if (amount1 > Store.instance.getFkConfig.wactchMaxAmountV1) {
-          Store.instance.addWactchMaxADList(upADModel);
+        if (amount1 > _adStatsNotifier.fkConfig.wactchMaxAmountV1) {
+          _adStatsNotifier.addWatchMaxAdList(upADModel);
         }
 
         /// 如果广告金额小于风控设置得最低金额
-        if (amount1 < Store.instance.getFkConfig.wactchMinAmountV1) {
-          Store.instance.addWactchMinADList(upADModel);
+        if (amount1 < _adStatsNotifier.fkConfig.wactchMinAmountV1) {
+          _adStatsNotifier.addWatchMinAdList(upADModel);
         }
       }
     } catch (e) {
@@ -246,14 +250,14 @@ class NativeTool extends GetxService {
     ) async {
       switch (value.nativeStatus) {
         case NativeStatus.nativeAdDidFinishLoading:
-          isViewCreated.value = true;
+          isViewCreated = true;
           Utils.logError("信息流广告加载完成: ${value.placementID}");
           break;
 
         case NativeStatus.nativeAdDidShowNativeAd:
-          isViewCreated.value = await getNativeValidAds();
+          isViewCreated = await getNativeValidAds();
           Utils.logError(
-            "信息流广告展示成功: ${value.placementID},是否有缓存${isViewCreated.value}",
+            "信息流广告展示成功: ${value.placementID},是否有缓存${isViewCreated}",
           );
           nativeUpDataADFn(value);
           loadNativeWith();
@@ -264,7 +268,7 @@ class NativeTool extends GetxService {
           break;
 
         case NativeStatus.nativeAdFailToLoadAD:
-          isViewCreated.value = await getNativeValidAds();
+          isViewCreated = await getNativeValidAds();
           Utils.logError("信息流广告加载失败: ${value.requestMessage}");
 
           await Future.delayed(const Duration(seconds: 2));

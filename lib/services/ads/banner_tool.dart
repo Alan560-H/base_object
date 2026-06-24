@@ -1,40 +1,56 @@
 import 'dart:async';
 
 import 'package:anythink_sdk/at_index.dart';
+import 'package:base_object/app/providers.dart';
+import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
 import 'package:base_object/shared/widgets/cu_nav_bar/cu_nav_bar_controller.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/services/ads/ad_log_collector.dart';
 import 'package:base_object/services/ads/ad_log_formatter.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
 /// 首页横幅占位条展示用状态
 enum HomeBannerSlotState { idle, loading, ready, failed }
 
-class BannerTool extends GetxService {
-  static BannerTool get to =>
-      Get.isRegistered<BannerTool>()
-          ? Get.find<BannerTool>()
-          : Get.put(BannerTool());
+class BannerTool extends ChangeNotifier {
+  BannerTool({required AdStatsNotifier adStatsNotifier})
+    : _adStatsNotifier = adStatsNotifier;
 
-  final Rx<HomeBannerSlotState> bannerSlotState = HomeBannerSlotState.idle.obs;
+  final AdStatsNotifier _adStatsNotifier;
+
+  static BannerTool get to => globalContainer.read(bannerToolProvider);
+
+  HomeBannerSlotState _bannerSlotState = HomeBannerSlotState.idle;
+  HomeBannerSlotState get bannerSlotState => _bannerSlotState;
 
   /// 未点「开始横幅」前为 true：不自动 load/show；用户开始后为 false，直至停止或加载失败
-  final RxBool bannerPlaybackPaused = true.obs;
+  bool _bannerPlaybackPaused = true;
+  bool get bannerPlaybackPaused => _bannerPlaybackPaused;
+
+  void _setBannerSlotState(HomeBannerSlotState value) {
+    _bannerSlotState = value;
+    notifyListeners();
+  }
+
+  void _setBannerPlaybackPaused(bool value) {
+    _bannerPlaybackPaused = value;
+    notifyListeners();
+  }
 
   /// 停止横幅：移除原生横幅容器
   Future<void> pauseBannerPlayback() async {
-    bannerPlaybackPaused.value = true;
+    _setBannerPlaybackPaused(true);
     await removeBannerAd();
-    bannerSlotState.value = HomeBannerSlotState.idle;
+    _setBannerSlotState(HomeBannerSlotState.idle);
   }
 
   /// 开始横幅：load → DidFinishLoading → show
   Future<void> startBannerPlayback() async {
-    bannerPlaybackPaused.value = false;
+    _setBannerPlaybackPaused(false);
     await loadBannerWith({}, logicalWidth: Get.width);
   }
 
@@ -52,16 +68,16 @@ class BannerTool extends GetxService {
     );
 
     Utils.logError("横幅广告透传参数:$merged");
-    bannerSlotState.value = HomeBannerSlotState.loading;
+    _setBannerSlotState(HomeBannerSlotState.loading);
     try {
       await ATBannerManager.loadBannerAd(
         placementID: AppAdConfig.bannerPlacementID,
         extraMap: merged,
       );
     } catch (e, st) {
-      bannerSlotState.value = HomeBannerSlotState.failed;
-      if (!bannerPlaybackPaused.value) {
-        bannerPlaybackPaused.value = true;
+      _setBannerSlotState(HomeBannerSlotState.failed);
+      if (!_bannerPlaybackPaused) {
+        _setBannerPlaybackPaused(true);
       }
       Utils.logError("横幅 loadBannerAd 异常: $e $st");
     }
@@ -144,9 +160,9 @@ class BannerTool extends GetxService {
               : Get.put(CuNavBarController());
       switch (value.bannerStatus) {
         case BannerStatus.bannerAdFailToLoadAD:
-          bannerSlotState.value = HomeBannerSlotState.failed;
-          if (!bannerPlaybackPaused.value) {
-            bannerPlaybackPaused.value = true;
+          _setBannerSlotState(HomeBannerSlotState.failed);
+          if (!_bannerPlaybackPaused) {
+            _setBannerPlaybackPaused(true);
           }
           AdLogCollector.addLog(
             AdLogFormatter.bannerFail(
@@ -167,8 +183,8 @@ class BannerTool extends GetxService {
               desc: '加载完成',
             ),
           );
-          bannerSlotState.value = HomeBannerSlotState.ready;
-          if (!bannerPlaybackPaused.value) {
+          _setBannerSlotState(HomeBannerSlotState.ready);
+          if (!_bannerPlaybackPaused) {
             showSceneBannerAdInPosition();
           }
           break;
@@ -183,7 +199,7 @@ class BannerTool extends GetxService {
               desc: '自动刷新成功',
             ),
           );
-          Store.instance.addAdInfos(
+          _adStatsNotifier.addAdInfos(
             AdInfo.fromTakuExtra(
               extraMap: value.extraMap,
               placementID: value.placementID.toString(),
@@ -227,7 +243,7 @@ class BannerTool extends GetxService {
               extraMap: value.extraMap,
             ),
           );
-          Store.instance.addAdInfos(
+          _adStatsNotifier.addAdInfos(
             AdInfo.fromTakuExtra(
               extraMap: value.extraMap,
               placementID: value.placementID.toString(),

@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:base_object/app/providers.dart';
 import 'package:base_object/shared/widgets/cu_button.dart';
 import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
-import 'package:base_object/store/store.dart';
+import 'package:base_object/data/models/ad_stats_state.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
@@ -62,97 +64,102 @@ class HomeController extends GetxController {
     }
   }
 
-  /// 构建广告记录列表（Obx 订阅 Store 列表变化）
-  Widget buildChatList() {
+  /// 构建广告记录列表（由 [Consumer] 注入 [adStatsProvider]）
+  Widget buildAdListSection(WidgetRef ref) {
     Utils.logError("构建聊天列表");
-    return Obx(() {
-      final raw = Store.instance.getAdInfos;
-      final list =
-          raw.length <= _kHomeAdRecordDisplayMax
-              ? raw
-              : raw.sublist(raw.length - _kHomeAdRecordDisplayMax);
-      final bool bannerPaused = BannerTool.to.bannerPlaybackPaused.value;
-      final HomeBannerSlotState bannerState =
-          BannerTool.to.bannerSlotState.value;
-      final bool bannerLoading =
-          !bannerPaused && bannerState == HomeBannerSlotState.loading;
-      final String bannerBtnText =
-          bannerPaused
-              ? '开始横幅广告'
-              : bannerLoading
-              ? '加载中…'
-              : '停止广告';
-      final bool bannerBtnDisabled = bannerLoading;
-      return Column(
-        spacing: 10.h,
-        children: [
-          Expanded(
-            child: SizedBox(
-              width: Get.width,
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: list.length,
-                itemBuilder: (context, i) {
-                  final AdInfo currentItem = list[i];
-                  final String typeLabel =
-                      currentItem.adType == AdInfo.typeBanner ? '横幅' : '激励视频';
-                  return Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.h,
-                      vertical: 5.w,
-                    ),
-                    margin: EdgeInsets.only(bottom: 10.h),
-                    width: 100.w,
-                    color: Colors.white70,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "类型：$typeLabel",
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          "预估收益（元）：${AdInfo.formatDisplayRevenue(currentItem.publisherRevenue)}",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        Text("生成时间：${currentItem.createdTime}"),
-                      ],
-                    ),
-                  );
-                },
+    final AdStatsState stats = ref.watch(adStatsProvider);
+    final BannerTool bannerTool = ref.watch(bannerToolProvider);
+    final raw = stats.adInfos;
+    final list =
+        raw.length <= _kHomeAdRecordDisplayMax
+            ? raw
+            : raw.sublist(raw.length - _kHomeAdRecordDisplayMax);
+    return ListenableBuilder(
+      listenable: bannerTool,
+      builder: (context, _) {
+        final bool bannerPaused = bannerTool.bannerPlaybackPaused;
+        final HomeBannerSlotState bannerState = bannerTool.bannerSlotState;
+        final bool bannerLoading =
+            !bannerPaused && bannerState == HomeBannerSlotState.loading;
+        final String bannerBtnText =
+            bannerPaused
+                ? '开始横幅广告'
+                : bannerLoading
+                ? '加载中…'
+                : '停止广告';
+        final bool bannerBtnDisabled = bannerLoading;
+        return Column(
+          spacing: 10.h,
+          children: [
+            Expanded(
+              child: SizedBox(
+                width: Get.width,
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: EdgeInsets.zero,
+                  itemCount: list.length,
+                  itemBuilder: (context, i) {
+                    final AdInfo currentItem = list[i];
+                    final String typeLabel =
+                        currentItem.adType == AdInfo.typeBanner
+                            ? '横幅'
+                            : '激励视频';
+                    return Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.h,
+                        vertical: 5.w,
+                      ),
+                      margin: EdgeInsets.only(bottom: 10.h),
+                      width: 100.w,
+                      color: Colors.white70,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "类型：$typeLabel",
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            "预估收益（元）：${AdInfo.formatDisplayRevenue(currentItem.publisherRevenue)}",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          Text("生成时间：${currentItem.createdTime}"),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8.w,
-            runSpacing: 8.h,
-            children: [
-              CuButton(
-                bgColor: TextConfig.primary,
-                text: bannerBtnText,
-                width: 120.w,
-                height: 40.h,
-                disable: bannerBtnDisabled,
-                onPressed: () {
-                  if (bannerPaused) {
-                    _onStartBannerTap();
-                  } else {
-                    _onPauseBannerTap();
-                  }
-                },
-              ),
-            ],
-          ),
-        ],
-      );
-    });
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8.w,
+              runSpacing: 8.h,
+              children: [
+                CuButton(
+                  bgColor: TextConfig.primary,
+                  text: bannerBtnText,
+                  width: 120.w,
+                  height: 40.h,
+                  disable: bannerBtnDisabled,
+                  onPressed: () {
+                    if (bannerPaused) {
+                      _onStartBannerTap();
+                    } else {
+                      _onPauseBannerTap();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void allInit() async {
-    Store.instance.initAdInfos();
-    await Store.instance.getFkConfigFn();
     fetchCurrentIp();
   }
 

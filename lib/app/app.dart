@@ -1,8 +1,8 @@
+import 'package:base_object/app/providers.dart';
 import 'package:base_object/shared/config/app_theme.dart';
 import 'package:base_object/shared/config/cu_global.dart';
 import 'package:base_object/core/routes/app_pages.dart';
 import 'package:base_object/core/routes/app_routes.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/ChineseLocalizationsDelegate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,8 @@ class App extends StatefulWidget {
 class _AppState extends State<App> with AppTheme {
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
+    return UncontrolledProviderScope(
+      container: globalContainer,
       child: ScreenUtilInit(
         enableScaleText: () => false,
         enableScaleWH: () => false,
@@ -42,9 +43,12 @@ class _AppState extends State<App> with AppTheme {
             getPages: AppPages.routes,
             debugShowCheckedModeBanner: true,
             title:
-                Store.instance.getAppUpLoadModel.appName.isEmpty
+                globalContainer.read(adStatsProvider).appUpLoadModel.appName.isEmpty
                     ? '小新日记'
-                    : Store.instance.getAppUpLoadModel.appName,
+                    : globalContainer
+                        .read(adStatsProvider)
+                        .appUpLoadModel
+                        .appName,
             builder: EasyLoading.init(),
             theme: appTheme,
           );

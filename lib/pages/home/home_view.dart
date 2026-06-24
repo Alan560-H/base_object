@@ -1,10 +1,11 @@
+import 'package:base_object/app/providers.dart';
 import 'package:base_object/shared/widgets/cu_button.dart';
 import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
-import 'package:base_object/store/store.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -29,7 +30,12 @@ class HomeView extends GetView<HomeController> {
           spacing: 5.h,
           children: [
             _HomeTopSection(controller: controller),
-            Expanded(child: controller.buildChatList()),
+            Expanded(
+              child: Consumer(
+                builder: (context, ref, _) =>
+                    controller.buildAdListSection(ref),
+              ),
+            ),
           ],
         ),
       ),
@@ -140,45 +146,47 @@ class _HomeTopSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 6.h),
-          Obx(() {
-            final s = Store.instance;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                ),
-                Text(
-                  '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                ),
-                Text(
-                  '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                ),
-                Text(
-                  '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                  style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-                ),
-                SizedBox(height: 4.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CuButton(
-                      text: 'OAID',
-                      width: 70.w,
-                      height: 32.h,
-                      textColor: Colors.black87,
-                      bgColor: const Color(0xFFE8E8E8),
-                      radius: 6.r,
-                      onPressed: showOaidDialog,
-                    ),
-                  ],
-                ),
-              ],
-            );
-          }),
+          Consumer(
+            builder: (context, ref, _) {
+              final s = ref.watch(adStatsProvider);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '激励（总计）：${s.rewardedAdCount}次，约${s.rewardedRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  Text(
+                    '横幅（总计）：${s.bannerAdCount}次，约${s.bannerRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  Text(
+                    '激励（今日）：${s.rewardedCountToday}次，约${s.rewardedRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  Text(
+                    '横幅（今日）：${s.bannerCountToday}次，约${s.bannerRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
+                    style: TextStyle(fontSize: 13.sp, color: Colors.black87),
+                  ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CuButton(
+                        text: 'OAID',
+                        width: 70.w,
+                        height: 32.h,
+                        textColor: Colors.black87,
+                        bgColor: const Color(0xFFE8E8E8),
+                        radius: 6.r,
+                        onPressed: showOaidDialog,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
@@ -194,56 +202,67 @@ class _HomeBannerPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double h = bannerWidth * 50 / 320;
-    return Obx(() {
-      if (BannerTool.to.bannerPlaybackPaused.value) {
-        return Material(
-          color: Colors.grey.shade300,
-          child: SizedBox(
-            width: double.infinity,
-            height: h,
-            child: Center(
-              child: Text(
-                '点击开始横幅加载广告',
-                style: TextStyle(fontSize: 11.sp, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        );
-      }
-      final HomeBannerSlotState state = BannerTool.to.bannerSlotState.value;
-      String msg;
-      switch (state) {
-        case HomeBannerSlotState.idle:
-          msg = '等待横幅加载…';
-          break;
-        case HomeBannerSlotState.loading:
-          msg = '横幅加载中…';
-          break;
-        case HomeBannerSlotState.failed:
-          msg = '暂无广告或加载失败';
-          break;
-        case HomeBannerSlotState.ready:
-          msg = '';
-          break;
-      }
-      return Material(
-        color: Colors.grey.shade300,
-        child: SizedBox(
-          width: double.infinity,
-          height: h,
-          child:
-              msg.isEmpty
-                  ? const SizedBox.shrink()
-                  : Center(
+    return Consumer(
+      builder: (context, ref, _) {
+        final bannerTool = ref.watch(bannerToolProvider);
+        return ListenableBuilder(
+          listenable: bannerTool,
+          builder: (context, _) {
+            if (bannerTool.bannerPlaybackPaused) {
+              return Material(
+                color: Colors.grey.shade300,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: h,
+                  child: Center(
                     child: Text(
-                      msg,
-                      style: TextStyle(fontSize: 11.sp, color: Colors.black54),
+                      '点击开始横幅加载广告',
+                      style: TextStyle(fontSize: 11.sp, color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),
                   ),
-        ),
-      );
-    });
+                ),
+              );
+            }
+            final HomeBannerSlotState state = bannerTool.bannerSlotState;
+            String msg;
+            switch (state) {
+              case HomeBannerSlotState.idle:
+                msg = '等待横幅加载…';
+                break;
+              case HomeBannerSlotState.loading:
+                msg = '横幅加载中…';
+                break;
+              case HomeBannerSlotState.failed:
+                msg = '暂无广告或加载失败';
+                break;
+              case HomeBannerSlotState.ready:
+                msg = '';
+                break;
+            }
+            return Material(
+              color: Colors.grey.shade300,
+              child: SizedBox(
+                width: double.infinity,
+                height: h,
+                child:
+                    msg.isEmpty
+                        ? const SizedBox.shrink()
+                        : Center(
+                          child: Text(
+                            msg,
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: Colors.black54,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

@@ -1,10 +1,10 @@
-import 'package:base_object/shared/config/app_config.dart';
-import 'package:base_object/store/di.dart';
+import 'package:base_object/app/providers.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// 应用启动前初始化（GetX DI、配置等）；步骤 3 起扩展 Riverpod [ProviderContainer]。
+/// 应用启动前初始化；创建 [globalContainer] 并预热 Riverpod。
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DependencyInjection.mainInit();
-  AppConfig.instance.init();
+  globalContainer = ProviderContainer();
+  await warmUpProviders(globalContainer);
 }

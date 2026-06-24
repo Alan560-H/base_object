@@ -1,11 +1,10 @@
+import 'package:base_object/app/providers.dart';
 import 'package:base_object/shared/config/image_config.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/services/ads/native_tool.dart';
 import 'package:base_object/data/models/FormModel/upADForm/UpDataADForm.dart';
 import 'package:base_object/data/models/localModels/MenuModel.dart';
 import 'package:base_object/data/models/localModels/UpADModel.dart';
-import 'package:base_object/store/store.dart';
-import 'package:base_object/store/user_info.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +118,10 @@ class CuNavBarController extends GetxService {
       String reqId = event.extraMap?['req_id'];
       String adsourceId = event.extraMap?['adsource_id'];
       // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
-      String userId = UserInfo.instance.userModel.id.toString();
+      final userState = globalContainer.read(userProvider);
+      final adStats = globalContainer.read(adStatsProvider.notifier);
+      final fkConfig = globalContainer.read(adStatsProvider).fkConfig;
+      String userId = userState.userModel.id.toString();
       upDataADForm.extra =
           "userid_${userId}_type_2_amount_${publisherRevenueCny ?? 0}_time_0";
       upDataADForm.transId = event.extraMap?['id'];
@@ -135,9 +137,9 @@ class CuNavBarController extends GetxService {
       Utils.logError("横幅广告凑成的字符串${upDataADForm.toJson()}");
       // 4. 原有进度逻辑不变（保留你的业务逻辑）
       Utils.logError(
-        "横幅广告金额$amount，限制金额${Store.instance.getFkConfig.wactchMaxAmountV1}",
+        "横幅广告金额$amount，限制金额${fkConfig.wactchMaxAmountV1}",
       );
-      if (!UserInfo.instance.isLoginIn) return;
+      if (!userState.isLoggedIn) return;
       if (amount == null) return;
       // 如果最高限制金币为0，判断可能没获取到风控配置，此时要去本地存储获取配置
 
@@ -150,13 +152,13 @@ class CuNavBarController extends GetxService {
       );
 
       /// 如果广告金额大于风控设置的最高金额
-      if (amount1 > Store.instance.getFkConfig.wactchMaxAmountV1) {
-        Store.instance.addWactchMaxADList(upADModel);
+      if (amount1 > fkConfig.wactchMaxAmountV1) {
+        adStats.addWatchMaxAdList(upADModel);
       }
 
       /// 如果广告金额小于风控设置得最低金额
-      if (amount1 < Store.instance.getFkConfig.wactchMinAmountV1) {
-        Store.instance.addWactchMinADList(upADModel);
+      if (amount1 < fkConfig.wactchMinAmountV1) {
+        adStats.addWatchMinAdList(upADModel);
       }
     } catch (e) {
       Utils.logError("上报副广失败：$e");
