@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:base_object/core/components/cu_toast.dart';
+import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:emulator_checker/emulator_checker.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';

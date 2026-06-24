@@ -1,7 +1,7 @@
-import 'package:base_object/models/backModel/userModel/UserModel.dart';
+import 'package:base_object/data/models/backModel/userModel/UserModel.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:base_object/utils/local_storage.dart';
-import 'package:base_object/core/config/app_keys.dart';
+import 'package:base_object/services/storage/local_storage.dart';
+import 'package:base_object/shared/config/app_keys.dart';
 import 'package:get/get.dart';
 
 class UserInfo extends GetxController {

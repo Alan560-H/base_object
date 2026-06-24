@@ -1,5 +1,5 @@
-import 'package:base_object/core/config/app_ad_config.dart';
-import 'package:base_object/core/config/app_config.dart';
+import 'package:base_object/shared/config/app_ad_config.dart';
+import 'package:base_object/shared/config/app_config.dart';
 import 'package:base_object/store/store.dart';
 import 'package:get/get.dart';
 import 'user_info.dart';

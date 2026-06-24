@@ -1,5 +1,5 @@
-import 'package:base_object/core/config/app_theme.dart';
-import 'package:base_object/core/config/cu_global.dart';
+import 'package:base_object/shared/config/app_theme.dart';
+import 'package:base_object/shared/config/cu_global.dart';
 import 'package:base_object/core/routes/app_pages.dart';
 import 'package:base_object/core/routes/app_routes.dart';
 import 'package:base_object/store/store.dart';

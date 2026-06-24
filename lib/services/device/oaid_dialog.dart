@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/utils/oaid_helper.dart';
+import 'package:base_object/shared/widgets/cu_button.dart';
+import 'package:base_object/shared/widgets/cu_toast.dart';
+import 'package:base_object/services/device/oaid_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';

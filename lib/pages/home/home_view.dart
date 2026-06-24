@@ -1,9 +1,9 @@
-import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/models/localModels/AdInfo.dart';
+import 'package:base_object/shared/widgets/cu_button.dart';
+import 'package:base_object/shared/config/text_config.dart';
+import 'package:base_object/services/ads/banner_tool.dart';
+import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
-import 'package:base_object/utils/oaid_dialog.dart';
+import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

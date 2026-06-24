@@ -1,4 +1,4 @@
-import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/shared/config/text_config.dart';
 import 'package:flutter/material.dart';
 
 mixin AppTheme {

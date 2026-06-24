@@ -1,4 +1,4 @@
-import 'package:base_object/models/localModels/MenuModel.dart';
+import 'package:base_object/data/models/localModels/MenuModel.dart';
 import 'package:base_object/store/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

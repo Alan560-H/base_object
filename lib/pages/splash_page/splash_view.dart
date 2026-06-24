@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:base_object/core/config/text_config.dart';
+import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/pages/splash_page/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

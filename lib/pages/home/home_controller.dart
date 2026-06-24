@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:base_object/core/components/cu_button.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/config/text_config.dart';
-import 'package:base_object/manager/banner_tool.dart';
-import 'package:base_object/models/localModels/AdInfo.dart';
+import 'package:base_object/shared/widgets/cu_button.dart';
+import 'package:base_object/shared/widgets/cu_toast.dart';
+import 'package:base_object/shared/config/text_config.dart';
+import 'package:base_object/services/ads/banner_tool.dart';
+import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:dio/dio.dart';

@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/core/components/cu_toast.dart';
-import 'package:base_object/core/config/app_ad_config.dart';
-import 'package:base_object/models/localModels/AdInfo.dart';
+import 'package:base_object/shared/widgets/cu_toast.dart';
+import 'package:base_object/shared/config/app_ad_config.dart';
+import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/store/store.dart';
 import 'package:base_object/store/user_info.dart';
-import 'package:base_object/utils/ad_log_collector.dart';
-import 'package:base_object/utils/ad_log_formatter.dart';
+import 'package:base_object/services/ads/ad_log_collector.dart';
+import 'package:base_object/services/ads/ad_log_formatter.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
