@@ -163,9 +163,4 @@ class CuNavBarController extends GetxService {
     }
   }
 
-  @override
-  void onInit() async {
-    super.onInit();
-    // 不加载 Banner 广告
-  }
 }

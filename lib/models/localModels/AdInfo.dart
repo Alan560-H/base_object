@@ -1,4 +1,4 @@
-/// 收益列表（publisherRevenue 存人民币口径，与 Taku publisher_revenue_cny 一致）
+// 收益列表（publisherRevenue 存人民币口径，与 Taku publisher_revenue_cny 一致）
 
 class AdInfo {
   static const String typeRewarded = 'rewarded';

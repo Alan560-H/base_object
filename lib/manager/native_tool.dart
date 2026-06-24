@@ -11,6 +11,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class NativeTool extends GetxService {
+  /// 信息流原生广告是否启用（当前关闭，保留实现供后续开启）
+  static const bool _nativeAdEnabled = false;
+
   // GetX单例获取方式
   static NativeTool get to =>
       Get.isRegistered<NativeTool>()
@@ -19,7 +22,7 @@ class NativeTool extends GetxService {
 
   // 加载原生广告（当前不加载信息流）
   loadNativeWith() async {
-    return;
+    if (!_nativeAdEnabled) return;
     Utils.logError("加载原生广告");
 
     await getNativeValidAds();
@@ -233,7 +236,7 @@ class NativeTool extends GetxService {
 
   /// 原生广告监听（当前不加载信息流，不注册监听）
   nativeLisListen() async {
-    return;
+    if (!_nativeAdEnabled) return;
     Utils.logError("原生广告是不是监听哦：$_nativeAdSubscription");
     if (_nativeAdSubscription != null) {
       return;

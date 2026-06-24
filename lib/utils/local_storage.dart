@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:base_object/utils/Utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 本地数据存储工具类
@@ -38,7 +39,7 @@ class LocalStorage {
       // 遍历数组，逐个转换为NoticeModel对象
       return jsonList.map((json) => fromJson(json)).toList();
     } catch (e) {
-      print('Error retrieving object list: $e');
+      Utils.logError('Error retrieving object list: $e');
       return null;
     }
   }
@@ -60,7 +61,7 @@ class LocalStorage {
       // 使用传入的 fromJson 方法将 Map 转换为目标对象
       return fromJson(jsonMap);
     } catch (e) {
-      print('Error retrieving object: $e');
+      Utils.logError('Error retrieving object: $e');
       return null;
     }
   }

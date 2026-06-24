@@ -10,8 +10,4 @@ class UserController extends GetxController {
     MenuModel(id: 8, menuName: "设备 OAID", icon: Icons.phone_android),
     MenuModel(id: 7, menuName: "清除缓存", icon: Icons.delete),
   ];
-  @override
-  void onInit() {
-    super.onInit();
-  }
 }

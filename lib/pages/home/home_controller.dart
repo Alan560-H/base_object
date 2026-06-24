@@ -87,7 +87,7 @@ class HomeController extends GetxController {
         spacing: 10.h,
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               width: Get.width,
               child: ListView.builder(
                 padding: EdgeInsets.zero,
