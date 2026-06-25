@@ -31,15 +31,12 @@ disable-model-invocation: false
    - 当前仓库里 android:label 为：（助手读取后填写）
    - 代码/资源中是否要把上述字符串全局替换为新名称？新名称是：（若不需要替换写「不替换」）
 
-4. Taku `AppAdConfig`（`lib/core/config/app_ad_config.dart`），请给出终值：
+4. Taku `AppAdConfig`（`lib/shared/config/app_ad_config.dart`），请给出终值：
    - appidStr：
    - appidkeyStr：
-   - splashID：
    - bannerPlacementID：
-   - interstitialPlacementID：
    - nativePlacementID：
    - rewarderPlacementID：
-   - 各 *SceneID 是否与本条 placement 同值一并改？（是 / 否 / 我自己另有说明：___）
 
 5. 预估收益系数 `AdInfo.displayRevenueShare`（0～1，含端点）：
 
@@ -81,17 +78,13 @@ fvm dart run change_app_package_name:main [包名]
 
 ## 第四步：Taku 广告配置
 
-修改 `lib/core/config/app_ad_config.dart` 中与后台一致的常量（**数值须与用户确认后再写入**）：
+修改 `lib/shared/config/app_ad_config.dart` 中与后台一致的常量（**数值须与用户确认后再写入**）：
 
 - `appidStr`
 - `appidkeyStr`
-- `splashID`
 - `bannerPlacementID`
-- `interstitialPlacementID`
 - `nativePlacementID`
 - `rewarderPlacementID`
-
-说明：文件中若还有对应的 `*SceneID`，通常应与 placement 保持一致；若用户只要求改上述字段，改完后提醒用户核对 **sceneID** 是否也需同步（见 `.cursor/rules/app-ad-config.mdc`）。
 
 ## 第五步：预估收益分成系数
 

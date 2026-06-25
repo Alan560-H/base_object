@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:base_object/app/routes.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
 import 'package:base_object/services/ads/Init_tool.dart';
+import 'package:base_object/services/ads/rewarder_tool.dart';
 import 'package:base_object/services/device/DeviceChecker.dart';
 import 'package:base_object/services/device/PermissionManager.dart';
 import 'package:base_object/shared/config/text_config.dart';
@@ -49,6 +50,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
       await DeviceChecker.isAllCheckr();
       await _initAd();
       BannerTool.to.bannerListen();
+      // initTopon 后注册；未注册则发奖回调无法记收益
+      RewarderTool.to.rewardedAdListen();
     } finally {
       EasyLoading.dismiss();
     }

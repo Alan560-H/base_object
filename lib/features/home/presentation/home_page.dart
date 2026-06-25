@@ -2,6 +2,7 @@ import 'package:base_object/app/providers.dart';
 import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/features/home/presentation/home_notifier.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
+import 'package:base_object/services/ads/rewarder_tool.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/shared/widgets/cu_button.dart';
@@ -268,6 +269,13 @@ class _HomeAdListSection extends ConsumerWidget {
                       homeNotifier.pauseBanner();
                     }
                   },
+                ),
+                CuButton(
+                  bgColor: TextConfig.primary,
+                  text: '观看激励视频',
+                  width: 140.w,
+                  height: 40.h,
+                  onPressed: () => RewarderTool.to.watchRewardedVideo(),
                 ),
               ],
             ),

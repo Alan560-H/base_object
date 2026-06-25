@@ -1,11 +1,11 @@
 ---
 description: AppAdConfig 广告位与密钥修改注意
-globs: lib/core/config/app_ad_config.dart
+globs: lib/shared/config/app_ad_config.dart
 alwaysApply: false
 ---
 
 # AppAdConfig 规则
 
-- **一致性**：`appidStr`、`appidkeyStr`、各 **`placementID` / `sceneID`** 必须与 Taku 开发者后台一致；修改后需真机回归 **开屏、横幅、激励**（及已接入的插屏/原生）。
-- **影响面**：ID 变更后同步检查 **`lib/manager/*_tool.dart`**、**`Init_tool`**、**`splash_controller`** 等所有引用，避免遗漏旧 ID。
+- **一致性**：`appidStr`、`appidkeyStr`、各 **`placementID`** 必须与 Taku 开发者后台一致；修改后需真机回归 **横幅、激励**（及已接入的原生等）。
+- **影响面**：ID 变更后同步检查 **`lib/services/ads/*_tool.dart`**、**`Init_tool`**、**`splash_page`** 等所有引用，避免遗漏旧 ID。
 - **安全**：若仓库对公网可见，评估是否将密钥与广告位迁出源码（如构建注入、本地覆盖文件），避免长期明文暴露生产凭据。

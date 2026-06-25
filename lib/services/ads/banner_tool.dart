@@ -99,34 +99,10 @@ class BannerTool extends ChangeNotifier {
     );
   }
 
-  showSceneBannerInRectangle() async {
-    await ATBannerManager.showSceneBannerInRectangle(
-      placementID: AppAdConfig.bannerPlacementID,
-      sceneID: AppAdConfig.bannerSceneID,
-      extraMap: {
-        ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
-          400,
-          500,
-          x: 0,
-          y: 200,
-        ),
-      },
-    );
-  }
-
   Future<void> showAdInPosition() async {
     await ATBannerManager.showAdInPosition(
       placementID: AppAdConfig.bannerPlacementID,
       position: ATCommon.getAdATBannerAdShowingPositionBottom(),
-    );
-  }
-
-  Future<void> showSceneBannerAdInPosition() async {
-    await ATBannerManager.showSceneBannerAdInPosition(
-      placementID: AppAdConfig.bannerPlacementID,
-      sceneID: AppAdConfig.bannerSceneID,
-      position: ATCommon.getAdATBannerAdShowingPositionBottom(),
-      showCustomExt: '{"isShow":true}',
     );
   }
 
@@ -183,7 +159,8 @@ class BannerTool extends ChangeNotifier {
           );
           _setBannerSlotState(HomeBannerSlotState.ready);
           if (!_bannerPlaybackPaused) {
-            showSceneBannerAdInPosition();
+            // 非场景展示，仅用 placementID（与 AppAdConfig 一致）
+            showAdInPosition();
           }
           break;
         case BannerStatus.bannerAdAutoRefreshSucceed:
