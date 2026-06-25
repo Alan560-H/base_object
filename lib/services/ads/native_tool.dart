@@ -18,8 +18,19 @@ import 'package:jiffy/jiffy.dart';
 /// 首页信息流槽位 UI 状态
 enum NativeSlotState { idle, loading, ready, failed }
 
-/// load 用途：首载 / 换条预加载 / 首载失败重试
-enum _NativeLoadPurpose { initial, refreshPreload, retry }
+/// load 用途：首载 / 换条预加载 / 首载失败重试 / 换条重建 PlatformView
+enum _NativeLoadPurpose { initial, refreshPreload, retry, swapRemount }
+
+String _nativeFeedExtraPreview(dynamic extra) {
+  if (extra == null) return 'null';
+  final String s = extra.toString();
+  const int maxLen = 480;
+  return s.length > maxLen ? '${s.substring(0, maxLen)}?(len=${s.length})' : s;
+}
+
+void _logNativeFeed(String message) {
+  Utils.logError('[NativeFeed] $message');
+}
 
 class NativeTool extends ChangeNotifier {
   NativeTool({
@@ -29,6 +40,7 @@ class NativeTool extends ChangeNotifier {
        _userNotifier = userNotifier;
 
   static const int _maxFailRetries = 3;
+  static const Duration _platformViewRemountDelay = Duration(milliseconds: 300);
   static const Duration _refreshPollInterval = Duration(seconds: 3);
 
   final AdStatsNotifier _adStatsNotifier;
@@ -45,13 +57,30 @@ class NativeTool extends ChangeNotifier {
   int _slotGeneration = 0;
   int get slotGeneration => _slotGeneration;
 
+  /// 为 true 时才挂载 [PlatformNativeWidget]，避免 remove 后原生 View 未就绪导致 getView()=null
+  bool _nativePlatformViewReady = false;
+  bool get nativePlatformViewReady => _nativePlatformViewReady;
+
+  void _setNativePlatformViewReady(bool value) {
+    if (_nativePlatformViewReady == value) return;
+    _nativePlatformViewReady = value;
+    notifyListeners();
+  }
+
   double _contentLogicalWidth = defaultLogicalWidth();
   double get contentLogicalWidth => _contentLogicalWidth;
 
   int _failRetryCount = 0;
+  int _nativeFailReloadToken = 0;
   final Set<String> _recordedReqIds = <String>{};
 
   int _impressionRecordedGeneration = -1;
+
+  /// 当前条曝光后累计等待秒数（轮询等 SDK 下一条，非固定换条定时器）
+  int _nativeWaitElapsedSeconds = 0;
+  Timer? _nativeWaitTickTimer;
+
+  int get nativeWaitElapsedSeconds => _nativeWaitElapsedSeconds;
 
   _NativeLoadPurpose _loadPurpose = _NativeLoadPurpose.initial;
   bool _refreshPreloadInFlight = false;
@@ -67,6 +96,32 @@ class NativeTool extends ChangeNotifier {
   void _setNativeSlotState(NativeSlotState value) {
     _nativeSlotState = value;
     notifyListeners();
+  }
+
+  void _startNativeWaitTick() {
+    _stopNativeWaitTick();
+    _nativeWaitElapsedSeconds = 0;
+    _nativeWaitTickTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_nativePlaybackPaused) {
+        _stopNativeWaitTick();
+        return;
+      }
+      _nativeWaitElapsedSeconds++;
+      notifyListeners();
+    });
+  }
+
+  void _stopNativeWaitTick() {
+    _nativeWaitTickTimer?.cancel();
+    _nativeWaitTickTimer = null;
+    if (_nativeWaitElapsedSeconds != 0) {
+      _nativeWaitElapsedSeconds = 0;
+      notifyListeners();
+    }
+  }
+
+  void _bumpNativeFailReloadToken() {
+    _nativeFailReloadToken++;
   }
 
   static double contentWidthFromScreen(double screenWidth) => screenWidth - 32.w;
@@ -157,19 +212,14 @@ class NativeTool extends ChangeNotifier {
 
   Future<void> startNativePlayback(double logicalWidth) async {
     _contentLogicalWidth = logicalWidth;
+    _bumpNativeFailReloadToken();
     _nativePlaybackPaused = false;
     _failRetryCount = 0;
     _impressionRecordedGeneration = -1;
     _refreshPreloadInFlight = false;
     _swapInProgress = false;
-
-    if (await nativeAdReady()) {
-      _slotGeneration++;
-      _setNativeSlotState(NativeSlotState.ready);
-      _startRefreshPoll();
-      unawaited(_captureCurrentReqIdFromCache());
-      return;
-    }
+    _stopNativeWaitTick();
+    _setNativePlatformViewReady(false);
 
     _loadPurpose = _NativeLoadPurpose.initial;
     _setNativeSlotState(NativeSlotState.loading);
@@ -178,6 +228,7 @@ class NativeTool extends ChangeNotifier {
   }
 
   Future<void> pauseNativePlayback() async {
+    _bumpNativeFailReloadToken();
     _nativePlaybackPaused = true;
     _failRetryCount = 0;
     _impressionRecordedGeneration = -1;
@@ -185,6 +236,8 @@ class NativeTool extends ChangeNotifier {
     _swapInProgress = false;
     _currentDisplayedReqId = null;
     _stopRefreshPoll();
+    _stopNativeWaitTick();
+    _setNativePlatformViewReady(false);
     await removeNativeAd();
     _setNativeSlotState(NativeSlotState.idle);
   }
@@ -201,15 +254,13 @@ class NativeTool extends ChangeNotifier {
     _refreshPollTimer = null;
   }
 
-  Future<void> loadNativeWith(double logicalWidth) async {
-    if (_nativePlaybackPaused) return;
-    Utils.logError('加载原生信息流 purpose=$_loadPurpose');
-
-    // Android 插件 loadNativeAd 未回传 result，不可 await 否则会卡住后续轮询
+  Future<void> _invokeNativeLoadPipeline(double logicalWidth) async {
+    // Android 插件 loadNativeAd 未回传 result，不可无限 await
     try {
       await ATNativeManager.loadNativeAd(
         placementID: AppAdConfig.nativePlacementID,
         extraMap: {
+          ATCommon.isNativeShow(): false,
           ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
             logicalWidth,
             adHeight,
@@ -220,8 +271,15 @@ class NativeTool extends ChangeNotifier {
     } on TimeoutException {
       // 忽略：加载结果由 nativeListen 回调处理
     } catch (e) {
-      Utils.logError('loadNativeAd: $e');
+      _logNativeFeed('loadNativeAd err: $e');
     }
+  }
+
+  Future<void> loadNativeWith(double logicalWidth) async {
+    if (_nativePlaybackPaused) return;
+    _logNativeFeed('loadNativeWith purpose=$_loadPurpose');
+
+    await _invokeNativeLoadPipeline(logicalWidth);
   }
 
   Future<bool> nativeAdReady() async {
@@ -291,7 +349,7 @@ class NativeTool extends ChangeNotifier {
       final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
       if (topReqId == null) return;
       _currentDisplayedReqId = topReqId;
-      Utils.logError('信息流当前条 req_id=$_currentDisplayedReqId');
+      _logNativeFeed('当前条 req_id=$_currentDisplayedReqId');
     } catch (e) {
       Utils.logError('读取信息流 topAdInfo 失败: $e');
     }
@@ -321,9 +379,7 @@ class NativeTool extends ChangeNotifier {
           current.isNotEmpty &&
           topReqId != current &&
           _impressionRecordedGeneration == _slotGeneration) {
-        Utils.logError(
-          '信息流 SDK 可换下一条 top=$topReqId current=$current',
-        );
+        _logNativeFeed('SDK 可换下一条 top=$topReqId current=$current');
         await _trySwapToNextAd(nextReqId: topReqId);
         return;
       }
@@ -352,13 +408,19 @@ class NativeTool extends ChangeNotifier {
 
     _swapInProgress = true;
     try {
+      _setNativePlatformViewReady(false);
+      notifyListeners();
       await removeNativeAd();
       _slotGeneration++;
       _impressionRecordedGeneration = -1;
       _currentDisplayedReqId = nextReqId;
-      _nativeSlotState = NativeSlotState.ready;
-      notifyListeners();
-      Utils.logError('信息流已换条 slotGen=$_slotGeneration req_id=$nextReqId');
+      _stopNativeWaitTick();
+      await Future<void>.delayed(_platformViewRemountDelay);
+      if (_nativePlaybackPaused) return;
+      _loadPurpose = _NativeLoadPurpose.swapRemount;
+      _setNativeSlotState(NativeSlotState.loading);
+      _logNativeFeed('已换条 slotGen=$_slotGeneration req_id=$nextReqId，重新 load');
+      await loadNativeWith(_contentLogicalWidth);
     } catch (e, st) {
       Utils.logError('信息流换条失败: $e', error: e, stackTrace: st);
     } finally {
@@ -421,11 +483,13 @@ class NativeTool extends ChangeNotifier {
     _nativeAdSubscription = ATListenerManager.nativeEventHandler.listen((
       value,
     ) async {
+      _logNativeFeed(
+        'evt status=${value.nativeStatus} placement=${value.placementID} '
+        'msg=${value.requestMessage} extra=${_nativeFeedExtraPreview(value.extraMap)}',
+      );
       switch (value.nativeStatus) {
         case NativeStatus.nativeAdDidFinishLoading:
-          Utils.logError(
-            '信息流加载完成 purpose=$_loadPurpose placement=${value.placementID}',
-          );
+          _logNativeFeed('加载完成 purpose=$_loadPurpose placement=${value.placementID}');
           if (_nativePlaybackPaused) return;
           switch (_loadPurpose) {
             case _NativeLoadPurpose.initial:
@@ -434,7 +498,14 @@ class NativeTool extends ChangeNotifier {
               _slotGeneration++;
               _failRetryCount = 0;
               _setNativeSlotState(NativeSlotState.ready);
+              _setNativePlatformViewReady(true);
               unawaited(_captureCurrentReqIdFromCache());
+            case _NativeLoadPurpose.swapRemount:
+              if (_nativeSlotState != NativeSlotState.loading) return;
+              _failRetryCount = 0;
+              _setNativeSlotState(NativeSlotState.ready);
+              _setNativePlatformViewReady(true);
+              _logNativeFeed('swapRemount 加载完成，允许挂载 PlatformView');
             case _NativeLoadPurpose.refreshPreload:
               _refreshPreloadInFlight = false;
               await _evaluateAutoRefresh();
@@ -443,33 +514,46 @@ class NativeTool extends ChangeNotifier {
 
         case NativeStatus.nativeAdDidShowNativeAd:
         case NativeStatus.nativeAdDidLoadSuccessDraw:
-          Utils.logError('信息流展示: ${value.placementID}');
+          _logNativeFeed('展示 placement=${value.placementID}');
+          if (!_nativePlatformViewReady) {
+            _setNativePlatformViewReady(true);
+          }
           await _onNativeImpression(value);
           break;
 
         case NativeStatus.nativeAdDidTapCloseButton:
-          Utils.logError('信息流被关闭: ${value.placementID}');
+          _logNativeFeed('用户关闭 placement=${value.placementID}');
           await pauseNativePlayback();
           break;
 
         case NativeStatus.nativeAdFailToLoadAD:
-          Utils.logError(
-            '信息流加载失败 purpose=$_loadPurpose ${value.requestMessage}',
+          _logNativeFeed(
+            '加载失败 purpose=$_loadPurpose ${value.requestMessage}',
           );
           if (_nativePlaybackPaused) return;
           if (_loadPurpose == _NativeLoadPurpose.refreshPreload) {
             _refreshPreloadInFlight = false;
             if (_isFrequencyFilteredError(value.requestMessage)) {
-              Utils.logError('信息流预加载频次限制(4005)，等待轮询再试');
+              _logNativeFeed('预加载频次限制(4005)，等待轮询再试');
             } else {
-              Utils.logError('信息流预加载失败，等待轮询再试');
+              _logNativeFeed('预加载失败，等待轮询再试');
             }
+            return;
+          }
+          if (_loadPurpose == _NativeLoadPurpose.swapRemount) {
+            _logNativeFeed('swapRemount 加载失败 ${value.requestMessage}');
+            _setNativeSlotState(NativeSlotState.failed);
             return;
           }
           _setNativeSlotState(NativeSlotState.failed);
           if (_failRetryCount >= _maxFailRetries) return;
           _failRetryCount++;
+          final int token = _nativeFailReloadToken;
           await Future.delayed(const Duration(seconds: 2));
+          if (token != _nativeFailReloadToken) {
+            _logNativeFeed('failToLoad 取消重试：token 已变');
+            return;
+          }
           if (_nativePlaybackPaused) return;
           _loadPurpose = _NativeLoadPurpose.retry;
           _setNativeSlotState(NativeSlotState.loading);
@@ -477,8 +561,8 @@ class NativeTool extends ChangeNotifier {
           break;
 
         default:
-          Utils.logError(
-            '信息流事件: ${value.nativeStatus}, 参数: ${value.extraMap}',
+          _logNativeFeed(
+            '其他 status=${value.nativeStatus} placement=${value.placementID}',
           );
           break;
       }
@@ -497,6 +581,8 @@ class NativeTool extends ChangeNotifier {
     if (reqId.isNotEmpty) {
       _currentDisplayedReqId = reqId;
     }
+
+    _startNativeWaitTick();
 
     await _adStatsNotifier.addAdInfos(
       AdInfo.fromTakuExtra(

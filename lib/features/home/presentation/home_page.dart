@@ -1,9 +1,6 @@
-import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/app/providers.dart';
-import 'package:base_object/services/ads/banner_tool.dart';
-import 'package:base_object/services/ads/native_tool.dart';
-import 'package:base_object/services/ads/rewarder_tool.dart';
-import 'package:base_object/shared/config/app_ad_config.dart';
+import 'package:base_object/features/home/presentation/home_ad_controls.dart';
+import 'package:base_object/features/home/presentation/home_native_feed_slot.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/shared/widgets/cu_button.dart';
@@ -36,7 +33,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           spacing: 5.h,
           children: [
             const _HomeTopSection(),
-            const _HomeNativeSlot(),
+            const HomeNativeFeedSlot(),
             const Expanded(child: _HomeActionSection()),
           ],
         ),
@@ -150,172 +147,16 @@ class _HomeTopSection extends ConsumerWidget {
   }
 }
 
-class _HomeNativeSlot extends ConsumerWidget {
-  const _HomeNativeSlot();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final nativeTool = ref.watch(nativeToolProvider);
-    final double contentWidth = NativeTool.contentWidthFromScreen(
-      MediaQuery.sizeOf(context).width,
-    );
-
-    return ListenableBuilder(
-      listenable: nativeTool,
-      builder: (context, _) {
-        final bool paused = nativeTool.nativePlaybackPaused;
-        final NativeSlotState state = nativeTool.nativeSlotState;
-        final double slotHeight = nativeTool.adHeight;
-
-        if (paused || state == NativeSlotState.idle) {
-          return _nativePlaceholder(
-            height: slotHeight,
-            message: '点击开始信息流加载广告',
-          );
-        }
-
-        if (state == NativeSlotState.loading) {
-          return _nativePlaceholder(height: slotHeight, message: '信息流加载中…');
-        }
-
-        if (state == NativeSlotState.failed) {
-          return _nativePlaceholder(
-            height: slotHeight,
-            message: '暂无广告或加载失败',
-          );
-        }
-
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: SizedBox(
-            height: slotHeight,
-            width: contentWidth,
-            child: KeyedSubtree(
-              key: ValueKey<int>(nativeTool.slotGeneration),
-              child: PlatformNativeWidget(
-                AppAdConfig.nativePlacementID,
-                nativeTool.getAdConfig(contentWidth),
-                isAdaptiveHeight: true,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _nativePlaceholder({required double height, required String message}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Material(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(6.r),
-        child: SizedBox(
-          height: height,
-          width: double.infinity,
-          child: Center(
-            child: Text(
-              message,
-              style: TextStyle(fontSize: 12.sp, color: Colors.black54),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _HomeActionSection extends ConsumerWidget {
   const _HomeActionSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bannerTool = ref.watch(bannerToolProvider);
-    final nativeTool = ref.watch(nativeToolProvider);
-    final homeNotifier = ref.read(homeProvider.notifier);
-    final double contentWidth = NativeTool.contentWidthFromScreen(
-      MediaQuery.sizeOf(context).width,
-    );
-
-    return ListenableBuilder(
-      listenable: Listenable.merge([bannerTool, nativeTool]),
-      builder: (context, _) {
-        final bool bannerPaused = bannerTool.bannerPlaybackPaused;
-        final HomeBannerSlotState bannerState = bannerTool.bannerSlotState;
-        final bool bannerLoading =
-            !bannerPaused && bannerState == HomeBannerSlotState.loading;
-        final String bannerBtnText =
-            bannerPaused
-                ? '开始横幅广告'
-                : bannerLoading
-                ? '加载中…'
-                : '停止广告';
-
-        final bool nativePaused = nativeTool.nativePlaybackPaused;
-        final NativeSlotState nativeState = nativeTool.nativeSlotState;
-        final bool nativeLoading =
-            !nativePaused && nativeState == NativeSlotState.loading;
-        final String nativeBtnText =
-            nativePaused
-                ? '开始信息流'
-                : nativeLoading
-                ? '加载中…'
-                : '停止信息流';
-
-        final double bottomInset = bannerTool.contentBottomInset(context);
-
-        return Column(
-          children: [
-            const Spacer(),
-            Padding(
-              padding: EdgeInsets.only(bottom: 16.h + bottomInset),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8.w,
-                runSpacing: 8.h,
-                children: [
-                  CuButton(
-                    bgColor: TextConfig.primary,
-                    text: bannerBtnText,
-                    width: 120.w,
-                    height: 40.h,
-                    disable: bannerLoading,
-                    onPressed: () {
-                      if (bannerPaused) {
-                        homeNotifier.startBanner();
-                      } else {
-                        homeNotifier.pauseBanner();
-                      }
-                    },
-                  ),
-                  CuButton(
-                    bgColor: TextConfig.primary,
-                    text: '观看激励视频',
-                    width: 140.w,
-                    height: 40.h,
-                    onPressed: () => RewarderTool.to.watchRewardedVideo(),
-                  ),
-                  CuButton(
-                    bgColor: TextConfig.primary,
-                    text: nativeBtnText,
-                    width: 120.w,
-                    height: 40.h,
-                    disable: nativeLoading,
-                    onPressed: () {
-                      if (nativePaused) {
-                        homeNotifier.startNative(contentWidth);
-                      } else {
-                        homeNotifier.pauseNative();
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
+    return const Column(
+      children: [
+        Spacer(),
+        HomeAdControls(),
+      ],
     );
   }
 }

@@ -14,6 +14,9 @@ class AppAdConfig {
   /// 原生信息流广告位（[NativeTool]）
   static const String nativePlacementID = 'b6a2bdabf9155f';
 
+  /// 信息流场景 ID（与 placement 一致，供 entryNativeScenario / PlatformNativeWidget）
+  static const String nativeSceneID = nativePlacementID;
+
   /// 激励视频广告位
   static const String rewarderPlacementID = 'b6a3b7682af958';
 }
