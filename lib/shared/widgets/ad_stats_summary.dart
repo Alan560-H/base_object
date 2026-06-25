@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// 激励/横幅 总计与今日 四行统计。
+/// 激励/横幅/信息流 总计与今日统计。
 class AdStatsSummary extends ConsumerWidget {
   const AdStatsSummary({super.key});
 
@@ -35,11 +35,19 @@ class AdStatsSummary extends ConsumerWidget {
             style: lineStyle,
           ),
           Text(
+            '信息流（总计）：${stats.nativeAdCount}次，约${stats.nativeRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
+            style: lineStyle,
+          ),
+          Text(
             '激励（今日）：${stats.rewardedCountToday}次，约${stats.rewardedRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
             style: lineStyle,
           ),
           Text(
             '横幅（今日）：${stats.bannerCountToday}次，约${stats.bannerRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
+            style: lineStyle,
+          ),
+          Text(
+            '信息流（今日）：${stats.nativeCountToday}次，约${stats.nativeRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
             style: lineStyle,
           ),
         ],

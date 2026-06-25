@@ -11,7 +11,7 @@ class AppAdConfig {
   /// 横幅广告位
   static const String bannerPlacementID = 'b6a2bda6aa050a';
 
-  /// 原生信息流广告位（[NativeTool] 默认关闭）
+  /// 原生信息流广告位（[NativeTool]）
   static const String nativePlacementID = 'b6a2bdabf9155f';
 
   /// 激励视频广告位

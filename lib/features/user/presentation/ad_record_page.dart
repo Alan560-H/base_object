@@ -33,8 +33,7 @@ class AdRecordPage extends ConsumerWidget {
             itemCount: list.length,
             itemBuilder: (context, i) {
               final AdInfo item = list[i];
-              final String typeLabel =
-                  item.adType == AdInfo.typeBanner ? '横幅' : '激励视频';
+                  final String typeLabel = AdInfo.displayTypeLabel(item.adType);
               return Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: 10.w,

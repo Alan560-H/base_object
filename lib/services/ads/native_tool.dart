@@ -1,150 +1,130 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/app/providers.dart';
+import 'package:base_object/data/models/FormModel/upADForm/UpDataADForm.dart';
+import 'package:base_object/data/models/localModels/AdInfo.dart';
+import 'package:base_object/data/models/localModels/UpADModel.dart';
 import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
 import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
-import 'package:base_object/data/models/FormModel/upADForm/UpDataADForm.dart';
-import 'package:base_object/data/models/localModels/UpADModel.dart';
 import 'package:base_object/shared/config/screen_layout.dart';
 import 'package:base_object/utils/Utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:jiffy/jiffy.dart';
 
-class NativeTool {
+/// 首页信息流槽位 UI 状态
+enum NativeSlotState { idle, loading, ready, failed }
+
+/// load 用途：首载 / 换条预加载 / 首载失败重试
+enum _NativeLoadPurpose { initial, refreshPreload, retry }
+
+class NativeTool extends ChangeNotifier {
   NativeTool({
     required AdStatsNotifier adStatsNotifier,
     required UserNotifier userNotifier,
   }) : _adStatsNotifier = adStatsNotifier,
        _userNotifier = userNotifier;
 
+  static const int _maxFailRetries = 3;
+  static const Duration _refreshPollInterval = Duration(seconds: 3);
+
   final AdStatsNotifier _adStatsNotifier;
   final UserNotifier _userNotifier;
 
-  /// 信息流原生广告是否启用（当前关闭，保留实现供后续开启）
-  static const bool _nativeAdEnabled = false;
-
   static NativeTool get to => globalContainer.read(nativeToolProvider);
 
-  // 加载原生广告（当前不加载信息流）
-  loadNativeWith() async {
-    if (!_nativeAdEnabled) return;
-    Utils.logError("加载原生广告");
+  NativeSlotState _nativeSlotState = NativeSlotState.idle;
+  NativeSlotState get nativeSlotState => _nativeSlotState;
 
-    await getNativeValidAds();
-    await ATNativeManager.loadNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
-      extraMap: {
-        ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-          defaultLogicalWidth() - 20.w, // 与 getAdConfig 中的宽度一致
-          adHeight, // 与 adHeight 一致
-        ),
-        ATNativeManager.isAdaptiveHeight(): true,
-      },
-    );
-  }
+  bool _nativePlaybackPaused = true;
+  bool get nativePlaybackPaused => _nativePlaybackPaused;
 
-  Future<bool> nativeAdReady() async {
-    try {
-      bool isReady = await ATNativeManager.nativeAdReady(
-        placementID: AppAdConfig.nativePlacementID,
-      );
-      Utils.logError('原生广告：原生广告是否就绪：$isReady');
-      return isReady;
-    } catch (e) {
-      Utils.logError('原生广告：原生广告是否就绪：$e');
-      return false;
-    }
-  }
+  int _slotGeneration = 0;
+  int get slotGeneration => _slotGeneration;
 
-  // 获取当前广告位下所有可用广告的信息,返回true则代表有广告缓存，false，则没有
-  Future<bool> getNativeValidAds() async {
-    String res = await ATNativeManager.getNativeValidAds(
-      placementID: AppAdConfig.nativePlacementID,
-    );
-    Utils.logError("获取当前广告位下所有可用广告的信息${res.isNotEmpty},广告信息：$res");
-    return res.isNotEmpty;
-  }
+  double _contentLogicalWidth = defaultLogicalWidth();
+  double get contentLogicalWidth => _contentLogicalWidth;
 
-  // 检查加载状态
-  Future<bool> checkNativeAdLoadStatus() async {
-    try {
-      final value = await ATNativeManager.checkNativeAdLoadStatus(
-        placementID: AppAdConfig.nativePlacementID,
-      );
-      Utils.logError("检查加载状态$value");
-      final isLoading = value['isLoading'] ?? 0;
-      return isLoading;
-    } catch (error) {
-      Utils.logError('检查原生广告状态失败: $error');
-      return false;
-    }
-  }
+  int _failRetryCount = 0;
+  final Set<String> _recordedReqIds = <String>{};
 
-  // 统一广告高度，与文档和加载配置保持一致
+  int _impressionRecordedGeneration = -1;
+
+  _NativeLoadPurpose _loadPurpose = _NativeLoadPurpose.initial;
+  bool _refreshPreloadInFlight = false;
+  bool _swapInProgress = false;
+  String? _currentDisplayedReqId;
+
+  Timer? _refreshPollTimer;
+
+  StreamSubscription<ATNativeResponse>? _nativeAdSubscription;
+
   double get adHeight => 250.h;
 
-  // 原生广告控件配置
-  Map<String, dynamic> getAdConfig() {
+  void _setNativeSlotState(NativeSlotState value) {
+    _nativeSlotState = value;
+    notifyListeners();
+  }
+
+  static double contentWidthFromScreen(double screenWidth) => screenWidth - 32.w;
+
+  static bool _isMapFlag(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    return false;
+  }
+
+  Map<String, dynamic> getAdConfig(double logicalWidth) {
     return {
-      // 广告父容器（整体尺寸）
       ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-        defaultLogicalWidth() - 20.w, // 宽度=屏幕宽-20（适配左右边距）
+        logicalWidth,
         adHeight,
-        // 白色
         backgroundColorStr: '#FFFFFF',
       ),
-      // App图标
       ATNativeManager.appIcon(): ATNativeManager.createNativeSubViewAttribute(
         50.sp,
         50.sp,
         x: 10.w,
         y: 40.h,
-        // 紫色
         backgroundColorStr: '#736bba',
       ),
-      // 广告标题
       ATNativeManager.mainTitle(): ATNativeManager.createNativeSubViewAttribute(
-        defaultLogicalWidth() - 190.w,
+        logicalWidth - 170.w,
         20.h,
-        x: 0.w,
-        y: 0.h,
-        textSize: 8.sp,
+        x: 70.w,
+        y: 40.h,
+        textSize: 15.sp,
         textColorStr: '#f31e17',
       ),
-      // 广告描述
       ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-        defaultLogicalWidth() - 190.w,
+        logicalWidth - 170.w,
         20.h,
         x: 70.w,
         y: 70.h,
         textSize: 13.sp,
-        // 紫色
         textColorStr: '#736bba',
       ),
-      // 行动按钮（立即下载）
       ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
         100.w,
         35.h,
-        x: defaultLogicalWidth() - 110.w,
+        x: logicalWidth - 110.w,
         y: 40.h,
         textSize: 14.sp,
         textColorStr: '#FFFFFF',
-        // 黄色
         backgroundColorStr: '#faa683',
         cornerRadius: 4,
       ),
-      // 广告主图
       ATNativeManager.mainImage(): ATNativeManager.createNativeSubViewAttribute(
-        defaultLogicalWidth(),
+        logicalWidth - 20.w,
         180.h,
-        x: 20.w,
-        y: 0.h,
-        // 红色
+        x: 10.w,
+        y: 90.h,
         backgroundColorStr: '#b54747',
         cornerRadius: 4,
       ),
-      // 广告标签（广告二字）
       ATNativeManager.adLogo(): ATNativeManager.createNativeSubViewAttribute(
         40.w,
         18.h,
@@ -152,212 +132,393 @@ class NativeTool {
         y: 10.h,
         textSize: 12.sp,
         textColorStr: '#FFFFFF',
-        // 蓝色
         backgroundColorStr: '#3574f0',
         cornerRadius: 2,
       ),
-      // 关闭按钮
       ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
         20.sp,
         20.sp,
-        x: defaultLogicalWidth() - 30.w,
+        x: logicalWidth - 30.w,
         y: 10.h,
-        // 绿色
         backgroundColorStr: '#139343',
       ),
-      // 广告合规六要素（Android中国区必需）
       ATNativeManager.elementsView():
           ATNativeManager.createNativeSubViewAttribute(
-            defaultLogicalWidth() - 20.w,
+            logicalWidth,
             25.h,
-            x: 10.w,
+            x: 0,
             y: adHeight - 25.h,
             textSize: 10.sp,
             textColorStr: '#FFFFFF',
-            // 黑色区域
             backgroundColorStr: '#1e1f22',
           ),
     };
   }
 
-  bool isViewCreated = false;
-  nativeUpDataADFn(dynamic event) async {
+  Future<void> startNativePlayback(double logicalWidth) async {
+    _contentLogicalWidth = logicalWidth;
+    _nativePlaybackPaused = false;
+    _failRetryCount = 0;
+    _impressionRecordedGeneration = -1;
+    _refreshPreloadInFlight = false;
+    _swapInProgress = false;
+
+    if (await nativeAdReady()) {
+      _slotGeneration++;
+      _setNativeSlotState(NativeSlotState.ready);
+      _startRefreshPoll();
+      unawaited(_captureCurrentReqIdFromCache());
+      return;
+    }
+
+    _loadPurpose = _NativeLoadPurpose.initial;
+    _setNativeSlotState(NativeSlotState.loading);
+    await loadNativeWith(logicalWidth);
+    _startRefreshPoll();
+  }
+
+  Future<void> pauseNativePlayback() async {
+    _nativePlaybackPaused = true;
+    _failRetryCount = 0;
+    _impressionRecordedGeneration = -1;
+    _refreshPreloadInFlight = false;
+    _swapInProgress = false;
+    _currentDisplayedReqId = null;
+    _stopRefreshPoll();
+    await removeNativeAd();
+    _setNativeSlotState(NativeSlotState.idle);
+  }
+
+  void _startRefreshPoll() {
+    _stopRefreshPoll();
+    _refreshPollTimer = Timer.periodic(_refreshPollInterval, (_) {
+      unawaited(_evaluateAutoRefresh());
+    });
+  }
+
+  void _stopRefreshPoll() {
+    _refreshPollTimer?.cancel();
+    _refreshPollTimer = null;
+  }
+
+  Future<void> loadNativeWith(double logicalWidth) async {
+    if (_nativePlaybackPaused) return;
+    Utils.logError('加载原生信息流 purpose=$_loadPurpose');
+
+    // Android 插件 loadNativeAd 未回传 result，不可 await 否则会卡住后续轮询
     try {
-      if (_userNotifier.isLoggedIn) {
-        await _adStatsNotifier.getFkConfigFn();
-
-        UpDataADForm upDataADForm = UpDataADForm();
-
-        // 1. 安全获取 publisher_revenue_cny + 处理类型转换（核心改这里）
-        // 逐层判空+类型兼容，最终转成 double? 赋值给 amount
-        dynamic publisherRevenueCny = event.extraMap?['publisher_revenue_cny'];
-        // 先转成 String 再解析 double（兼容 int/String 类型，避免直接赋值类型冲突）
-        double? amount = double.tryParse(
-          publisherRevenueCny?.toString() ?? "0",
-        );
-        String reqId = event.extraMap?['req_id'];
-        String adsourceId = event.extraMap?['adsource_id'];
-        // 2. 拼接 extra 字符串（用原始值的字符串形式，避免类型问题）
-        String userId = _userNotifier.userModel.id.toString();
-        upDataADForm.extra =
-            "userid_${userId}_type_2_amount_${publisherRevenueCny ?? 0}_time_0";
-        upDataADForm.transId = event.extraMap?['id'];
-        upDataADForm.amount = amount;
-        upDataADForm.adsourceId = adsourceId;
-        upDataADForm.reqId = reqId;
-        upDataADForm.sign = Utils.generateEncryptedString(
-          userId: userId,
-          reqId: reqId,
-          adsourceId: adsourceId,
-        );
-        Utils.logError("原生广告凑成的字符串${upDataADForm.toJson()}");
-        Utils.logError(
-          "一：$amount,二：${_adStatsNotifier.fkConfig.wactchMaxAmountV1}，三：原生广告金额$amount，限制金额${_adStatsNotifier.fkConfig.wactchMaxAmountV1}，四：塔酷广告回调信息：${event.extraMap}",
-        );
-        if (amount == null) return;
-        double amount1 = amount * 10000;
-        UpADModel upADModel = UpADModel(
-          adsourceId: adsourceId,
-          reqId: reqId,
-          adType: "原生（信息流)广告",
-          adAmount: amount1,
-        );
-
-        /// 如果广告金额大于风控设置的最高金额
-        if (amount1 > _adStatsNotifier.fkConfig.wactchMaxAmountV1) {
-          _adStatsNotifier.addWatchMaxAdList(upADModel);
-        }
-
-        /// 如果广告金额小于风控设置得最低金额
-        if (amount1 < _adStatsNotifier.fkConfig.wactchMinAmountV1) {
-          _adStatsNotifier.addWatchMinAdList(upADModel);
-        }
-      }
+      await ATNativeManager.loadNativeAd(
+        placementID: AppAdConfig.nativePlacementID,
+        extraMap: {
+          ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
+            logicalWidth,
+            adHeight,
+          ),
+          ATNativeManager.isAdaptiveHeight(): true,
+        },
+      ).timeout(const Duration(milliseconds: 300));
+    } on TimeoutException {
+      // 忽略：加载结果由 nativeListen 回调处理
     } catch (e) {
-      Utils.logError("上报副广失败：$e");
+      Utils.logError('loadNativeAd: $e');
     }
   }
 
-  /// 原生广告监听（当前不加载信息流，不注册监听）
-  nativeLisListen() async {
-    if (!_nativeAdEnabled) return;
-    Utils.logError("原生广告是不是监听哦：$_nativeAdSubscription");
-    if (_nativeAdSubscription != null) {
+  Future<bool> nativeAdReady() async {
+    try {
+      return await ATNativeManager.nativeAdReady(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+    } catch (e) {
+      Utils.logError('原生广告是否就绪: $e');
+      return false;
+    }
+  }
+
+  Future<bool> _isNativeReadyForShow() async {
+    try {
+      final Map<dynamic, dynamic> status =
+          await ATNativeManager.checkNativeAdLoadStatus(
+            placementID: AppAdConfig.nativePlacementID,
+          );
+      return _isMapFlag(status['isReady']) && !_isMapFlag(status['isLoading']);
+    } catch (e) {
+      Utils.logError('检查信息流状态失败: $e');
+      return await nativeAdReady();
+    }
+  }
+
+  static String _extractReqId(Map<dynamic, dynamic> map) {
+    final dynamic value = map['req_id'] ?? map['reqId'];
+    return value?.toString() ?? '';
+  }
+
+  static bool _isFrequencyFilteredError(String requestMessage) {
+    return requestMessage.contains('4005') ||
+        requestMessage.toLowerCase().contains('filtered');
+  }
+
+  /// 从 [checkNativeAdLoadStatus] 的 adInfo（JSON 字符串或 Map）解析 req_id
+  static String? _parseReqIdFromAdInfo(dynamic adInfo) {
+    if (adInfo == null) return null;
+    try {
+      if (adInfo is Map) {
+        final String id = _extractReqId(adInfo);
+        return id.isEmpty ? null : id;
+      }
+      if (adInfo is String && adInfo.isNotEmpty) {
+        final dynamic decoded = jsonDecode(adInfo);
+        if (decoded is Map) {
+          final String id = _extractReqId(decoded);
+          return id.isEmpty ? null : id;
+        }
+      }
+    } catch (e) {
+      Utils.logError('解析 topAdInfo 失败: $e');
+    }
+    return null;
+  }
+
+  Future<void> _captureCurrentReqIdFromCache() async {
+    if (_currentDisplayedReqId != null && _currentDisplayedReqId!.isNotEmpty) {
       return;
     }
+    try {
+      final Map<dynamic, dynamic> status =
+          await ATNativeManager.checkNativeAdLoadStatus(
+            placementID: AppAdConfig.nativePlacementID,
+          );
+      final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
+      if (topReqId == null) return;
+      _currentDisplayedReqId = topReqId;
+      Utils.logError('信息流当前条 req_id=$_currentDisplayedReqId');
+    } catch (e) {
+      Utils.logError('读取信息流 topAdInfo 失败: $e');
+    }
+  }
+
+  /// 轮询 + 预加载完成时调用：以 SDK topAdInfo 为准换条（尊重 Taku 后台展示间隔/频次）
+  Future<void> _evaluateAutoRefresh() async {
+    if (_nativePlaybackPaused || _swapInProgress) return;
+    if (_nativeSlotState != NativeSlotState.ready) return;
+
+    try {
+      final Map<dynamic, dynamic> status =
+          await ATNativeManager.checkNativeAdLoadStatus(
+            placementID: AppAdConfig.nativePlacementID,
+          );
+      if (_isMapFlag(status['isLoading'])) return;
+
+      await _captureCurrentReqIdFromCache();
+
+      final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
+      final bool ready = _isMapFlag(status['isReady']);
+      final String? current = _currentDisplayedReqId;
+
+      if (ready &&
+          topReqId != null &&
+          current != null &&
+          current.isNotEmpty &&
+          topReqId != current &&
+          _impressionRecordedGeneration == _slotGeneration) {
+        Utils.logError(
+          '信息流 SDK 可换下一条 top=$topReqId current=$current',
+        );
+        await _trySwapToNextAd(nextReqId: topReqId);
+        return;
+      }
+
+      if (_impressionRecordedGeneration == _slotGeneration &&
+          !_refreshPreloadInFlight) {
+        unawaited(_startRefreshPreload());
+      }
+    } catch (e, st) {
+      Utils.logError('信息流换条检测失败: $e', error: e, stackTrace: st);
+    }
+  }
+
+  Future<void> _trySwapToNextAd({required String nextReqId}) async {
+    if (_nativePlaybackPaused || _swapInProgress) return;
+    if (_nativeSlotState != NativeSlotState.ready) return;
+    if (_impressionRecordedGeneration != _slotGeneration) return;
+    if (!await _isNativeReadyForShow()) return;
+
+    final Map<dynamic, dynamic> status =
+        await ATNativeManager.checkNativeAdLoadStatus(
+          placementID: AppAdConfig.nativePlacementID,
+        );
+    final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
+    if (topReqId == null || topReqId != nextReqId) return;
+
+    _swapInProgress = true;
+    try {
+      await removeNativeAd();
+      _slotGeneration++;
+      _impressionRecordedGeneration = -1;
+      _currentDisplayedReqId = nextReqId;
+      _nativeSlotState = NativeSlotState.ready;
+      notifyListeners();
+      Utils.logError('信息流已换条 slotGen=$_slotGeneration req_id=$nextReqId');
+    } catch (e, st) {
+      Utils.logError('信息流换条失败: $e', error: e, stackTrace: st);
+    } finally {
+      _swapInProgress = false;
+    }
+  }
+
+  Future<void> _startRefreshPreload() async {
+    if (_nativePlaybackPaused || _refreshPreloadInFlight) return;
+    _refreshPreloadInFlight = true;
+    _loadPurpose = _NativeLoadPurpose.refreshPreload;
+    await loadNativeWith(_contentLogicalWidth);
+  }
+
+  Future<void> nativeUpDataADFn(ATNativeResponse event) async {
+    try {
+      if (!_userNotifier.isLoggedIn) return;
+      await _adStatsNotifier.getFkConfigFn();
+
+      final UpDataADForm upDataADForm = UpDataADForm();
+      final dynamic publisherRevenueCny = event.extraMap['publisher_revenue_cny'];
+      final double? amount = double.tryParse(
+        publisherRevenueCny?.toString() ?? '0',
+      );
+      final String reqId = event.extraMap['req_id']?.toString() ?? '';
+      final String adsourceId = event.extraMap['adsource_id']?.toString() ?? '';
+      final String userId = _userNotifier.userModel.id.toString();
+      upDataADForm.extra =
+          'userid_${userId}_type_2_amount_${publisherRevenueCny ?? 0}_time_0';
+      upDataADForm.transId = event.extraMap['id'];
+      upDataADForm.amount = amount;
+      upDataADForm.adsourceId = adsourceId;
+      upDataADForm.reqId = reqId;
+      upDataADForm.sign = Utils.generateEncryptedString(
+        userId: userId,
+        reqId: reqId,
+        adsourceId: adsourceId,
+      );
+      if (amount == null) return;
+      final double amount1 = amount * 10000;
+      final UpADModel upADModel = UpADModel(
+        adsourceId: adsourceId,
+        reqId: reqId,
+        adType: '原生（信息流)广告',
+        adAmount: amount1,
+      );
+      if (amount1 > _adStatsNotifier.fkConfig.wactchMaxAmountV1) {
+        _adStatsNotifier.addWatchMaxAdList(upADModel);
+      }
+      if (amount1 < _adStatsNotifier.fkConfig.wactchMinAmountV1) {
+        _adStatsNotifier.addWatchMinAdList(upADModel);
+      }
+    } catch (e) {
+      Utils.logError('上报信息流失败：$e');
+    }
+  }
+
+  void nativeListen() {
+    if (_nativeAdSubscription != null) return;
     _nativeAdSubscription = ATListenerManager.nativeEventHandler.listen((
       value,
     ) async {
       switch (value.nativeStatus) {
         case NativeStatus.nativeAdDidFinishLoading:
-          isViewCreated = true;
-          Utils.logError("信息流广告加载完成: ${value.placementID}");
+          Utils.logError(
+            '信息流加载完成 purpose=$_loadPurpose placement=${value.placementID}',
+          );
+          if (_nativePlaybackPaused) return;
+          switch (_loadPurpose) {
+            case _NativeLoadPurpose.initial:
+            case _NativeLoadPurpose.retry:
+              if (_nativeSlotState != NativeSlotState.loading) return;
+              _slotGeneration++;
+              _failRetryCount = 0;
+              _setNativeSlotState(NativeSlotState.ready);
+              unawaited(_captureCurrentReqIdFromCache());
+            case _NativeLoadPurpose.refreshPreload:
+              _refreshPreloadInFlight = false;
+              await _evaluateAutoRefresh();
+          }
           break;
 
         case NativeStatus.nativeAdDidShowNativeAd:
-          isViewCreated = await getNativeValidAds();
-          Utils.logError(
-            '信息流广告展示成功: ${value.placementID},是否有缓存$isViewCreated',
-          );
-          nativeUpDataADFn(value);
-          loadNativeWith();
+        case NativeStatus.nativeAdDidLoadSuccessDraw:
+          Utils.logError('信息流展示: ${value.placementID}');
+          await _onNativeImpression(value);
           break;
 
         case NativeStatus.nativeAdDidTapCloseButton:
-          Utils.logError("信息流广告被关闭: ${value.placementID}");
+          Utils.logError('信息流被关闭: ${value.placementID}');
+          await pauseNativePlayback();
           break;
 
         case NativeStatus.nativeAdFailToLoadAD:
-          isViewCreated = await getNativeValidAds();
-          Utils.logError("信息流广告加载失败: ${value.requestMessage}");
-
+          Utils.logError(
+            '信息流加载失败 purpose=$_loadPurpose ${value.requestMessage}',
+          );
+          if (_nativePlaybackPaused) return;
+          if (_loadPurpose == _NativeLoadPurpose.refreshPreload) {
+            _refreshPreloadInFlight = false;
+            if (_isFrequencyFilteredError(value.requestMessage)) {
+              Utils.logError('信息流预加载频次限制(4005)，等待轮询再试');
+            } else {
+              Utils.logError('信息流预加载失败，等待轮询再试');
+            }
+            return;
+          }
+          _setNativeSlotState(NativeSlotState.failed);
+          if (_failRetryCount >= _maxFailRetries) return;
+          _failRetryCount++;
           await Future.delayed(const Duration(seconds: 2));
-          loadNativeWith();
+          if (_nativePlaybackPaused) return;
+          _loadPurpose = _NativeLoadPurpose.retry;
+          _setNativeSlotState(NativeSlotState.loading);
+          await loadNativeWith(_contentLogicalWidth);
           break;
 
-        // ... 其他事件可根据需要处理
         default:
           Utils.logError(
-            "信息流广告事件: ${value.nativeStatus}, 参数: ${value.extraMap}",
+            '信息流事件: ${value.nativeStatus}, 参数: ${value.extraMap}',
           );
           break;
       }
     });
   }
 
-  removeNativeAd() async {
-    await ATNativeManager.removeNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
+  Future<void> _onNativeImpression(ATNativeResponse value) async {
+    if (_impressionRecordedGeneration == _slotGeneration) return;
+
+    final String reqId = value.extraMap['req_id']?.toString() ?? '';
+    if (reqId.isNotEmpty && _recordedReqIds.contains(reqId)) return;
+    if (reqId.isNotEmpty) _recordedReqIds.add(reqId);
+
+    _impressionRecordedGeneration = _slotGeneration;
+
+    if (reqId.isNotEmpty) {
+      _currentDisplayedReqId = reqId;
+    }
+
+    await _adStatsNotifier.addAdInfos(
+      AdInfo.fromTakuExtra(
+        extraMap: value.extraMap,
+        placementID: value.placementID.toString(),
+        createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
+        adType: AdInfo.typeNative,
+      ),
     );
+    await nativeUpDataADFn(value);
   }
 
-  showNative() async {
-    return await ATNativeManager.showNativeAd(
-      placementID: AppAdConfig.nativePlacementID,
-      extraMap: {
-        ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-          defaultLogicalWidth(),
-          120,
-          x: 0,
-          y: 30,
-          backgroundColorStr: '#FFFFFF',
-        ),
-        ATNativeManager.appIcon(): ATNativeManager.createNativeSubViewAttribute(
-          50,
-          50,
-          x: 10,
-          y: 40,
-          backgroundColorStr: 'clearColor',
-        ),
-        ATNativeManager.mainTitle():
-            ATNativeManager.createNativeSubViewAttribute(
-              defaultLogicalWidth() - 190,
-              20,
-              x: 70,
-              y: 40,
-              textSize: 15,
-            ),
-        ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-          defaultLogicalWidth() - 190,
-          20,
-          x: 70,
-          y: 70,
-          textSize: 15,
-        ),
-        ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
-          100,
-          50,
-          x: defaultLogicalWidth() - 110,
-          y: 40,
-          textSize: 15,
-          textColorStr: "#FFFFFF",
-          backgroundColorStr: "#2095F1",
-        ),
-        ATNativeManager.mainImage():
-            ATNativeManager.createNativeSubViewAttribute(
-              defaultLogicalWidth() - 20,
-              70,
-              x: 10,
-              y: 100,
-              backgroundColorStr: '#00000000',
-            ),
-        ATNativeManager.adLogo(): ATNativeManager.createNativeSubViewAttribute(
-          20,
-          10,
-          x: 10,
-          y: 10,
-          backgroundColorStr: '#00000000',
-        ),
-        ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
-          20,
-          20,
-          x: defaultLogicalWidth() - 30,
-          y: 10,
-        ),
-      },
-      isAdaptiveHeight: true,
-    );
+  Future<void> removeNativeAd() async {
+    // anythink_sdk Android 端 removeNativeAd 未调用 result.success，await 会永久挂起
+    try {
+      await ATNativeManager.removeNativeAd(
+        placementID: AppAdConfig.nativePlacementID,
+      ).timeout(const Duration(milliseconds: 300));
+    } on TimeoutException {
+      // 忽略：原生侧通常已执行 removeView
+    } catch (e) {
+      Utils.logError('removeNativeAd: $e');
+    }
   }
-
-  StreamSubscription<ATNativeResponse>? _nativeAdSubscription;
 }

@@ -11,7 +11,10 @@ class AppShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   void _onTabTap(int index) {
-    NativeTool.to.removeNativeAd();
+    // 方案 A：仅离开首页时暂停信息流
+    if (navigationShell.currentIndex == 0 && index != 0) {
+      NativeTool.to.pauseNativePlayback();
+    }
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,

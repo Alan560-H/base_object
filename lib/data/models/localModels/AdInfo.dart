@@ -3,6 +3,19 @@
 class AdInfo {
   static const String typeRewarded = 'rewarded';
   static const String typeBanner = 'banner';
+  static const String typeNative = 'native';
+
+  /// 列表/卡片展示用类型文案
+  static String displayTypeLabel(String adType) {
+    switch (adType) {
+      case typeBanner:
+        return '横幅';
+      case typeNative:
+        return '信息流';
+      default:
+        return '激励视频';
+    }
+  }
 
   /// 界面「预估收益」与首页汇总使用的系数（持久化仍为完整 [publisherRevenue]）分成
   static const double displayRevenueShare = 0.7;
@@ -29,7 +42,7 @@ class AdInfo {
   final String adsourceId; // 广告源id
   final String createdTime;
 
-  /// [typeRewarded] / [typeBanner]
+  /// [typeRewarded] / [typeBanner] / [typeNative]
   final String adType;
 
   AdInfo(

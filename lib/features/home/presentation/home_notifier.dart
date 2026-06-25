@@ -1,5 +1,6 @@
 import 'package:base_object/features/home/presentation/home_state.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
+import 'package:base_object/services/ads/native_tool.dart';
 import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:dio/dio.dart';
@@ -50,6 +51,32 @@ class HomeNotifier extends Notifier<HomeState> {
     } catch (e, st) {
       Utils.logError('开始横幅: $e $st');
       CuToast.error(msg: '开始横幅失败');
+    }
+  }
+
+  Future<void> pauseNative() async {
+    try {
+      await NativeTool.to.pauseNativePlayback();
+      CuToast.success(
+        msg: '已停止信息流',
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+    } catch (e, st) {
+      Utils.logError('停止信息流: $e $st');
+      CuToast.error(msg: '停止信息流失败');
+    }
+  }
+
+  Future<void> startNative(double contentLogicalWidth) async {
+    try {
+      await NativeTool.to.startNativePlayback(contentLogicalWidth);
+      CuToast.success(
+        msg: '已开始加载信息流',
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+    } catch (e, st) {
+      Utils.logError('开始信息流: $e $st');
+      CuToast.error(msg: '开始信息流失败');
     }
   }
 

@@ -48,6 +48,9 @@ class AdStatsState {
   int get bannerAdCount =>
       adInfos.where((e) => e.adType == AdInfo.typeBanner).length;
 
+  int get nativeAdCount =>
+      adInfos.where((e) => e.adType == AdInfo.typeNative).length;
+
   double get rewardedRevenueTotalCny => adInfos
       .where((e) => e.adType == AdInfo.typeRewarded)
       .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
@@ -62,6 +65,10 @@ class AdStatsState {
 
   int get bannerCountToday => adInfos
       .where((e) => e.adType == AdInfo.typeBanner && _isLocalToday(e))
+      .length;
+
+  int get nativeCountToday => adInfos
+      .where((e) => e.adType == AdInfo.typeNative && _isLocalToday(e))
       .length;
 
   double get rewardedRevenueTodayCny => adInfos
@@ -92,8 +99,24 @@ class AdStatsState {
             s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
       );
 
+  double get nativeRevenueTotalDisplayCny => adInfos
+      .where((e) => e.adType == AdInfo.typeNative)
+      .fold(
+        0.0,
+        (double s, AdInfo e) =>
+            s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
+      );
+
   double get rewardedRevenueTodayDisplayCny => adInfos
       .where((e) => e.adType == AdInfo.typeRewarded && _isLocalToday(e))
+      .fold(
+        0.0,
+        (double s, AdInfo e) =>
+            s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
+      );
+
+  double get nativeRevenueTodayDisplayCny => adInfos
+      .where((e) => e.adType == AdInfo.typeNative && _isLocalToday(e))
       .fold(
         0.0,
         (double s, AdInfo e) =>
