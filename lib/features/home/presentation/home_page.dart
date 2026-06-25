@@ -1,6 +1,4 @@
 import 'package:base_object/app/providers.dart';
-import 'package:base_object/data/models/localModels/AdInfo.dart';
-import 'package:base_object/features/home/presentation/home_notifier.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
 import 'package:base_object/services/ads/rewarder_tool.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
@@ -18,20 +16,12 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  final ScrollController _scrollController = ScrollController();
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(homeProvider.notifier).init();
     });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   @override
@@ -43,7 +33,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           spacing: 5.h,
           children: [
             const _HomeTopSection(),
-            Expanded(child: _HomeAdListSection(scrollController: _scrollController)),
+            const Expanded(child: _HomeActionSection()),
           ],
         ),
       ),
@@ -57,7 +47,6 @@ class _HomeTopSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final home = ref.watch(homeProvider);
-    final stats = ref.watch(adStatsProvider);
     final homeNotifier = ref.read(homeProvider.notifier);
     final double topPad = MediaQuery.paddingOf(context).top;
 
@@ -137,39 +126,17 @@ class _HomeTopSection extends ConsumerWidget {
             style: TextStyle(fontSize: 12.sp, color: Colors.black54),
           ),
           SizedBox(height: 6.h),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                '激励（总计）：${stats.rewardedAdCount}次，约${stats.rewardedRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-              ),
-              Text(
-                '横幅（总计）：${stats.bannerAdCount}次，约${stats.bannerRevenueTotalDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-              ),
-              Text(
-                '激励（今日）：${stats.rewardedCountToday}次，约${stats.rewardedRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-              ),
-              Text(
-                '横幅（今日）：${stats.bannerCountToday}次，约${stats.bannerRevenueTodayDisplayCny.toStringAsFixed(AdInfo.displayRevenueFractionDigits)}元',
-                style: TextStyle(fontSize: 13.sp, color: Colors.black87),
-              ),
-              SizedBox(height: 4.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CuButton(
-                    text: 'OAID',
-                    width: 70.w,
-                    height: 32.h,
-                    textColor: Colors.black87,
-                    bgColor: const Color(0xFFE8E8E8),
-                    radius: 6.r,
-                    onPressed: () => showOaidDialog(context),
-                  ),
-                ],
+              CuButton(
+                text: 'OAID',
+                width: 70.w,
+                height: 32.h,
+                textColor: Colors.black87,
+                bgColor: const Color(0xFFE8E8E8),
+                radius: 6.r,
+                onPressed: () => showOaidDialog(context),
               ),
             ],
           ),
@@ -179,22 +146,13 @@ class _HomeTopSection extends ConsumerWidget {
   }
 }
 
-class _HomeAdListSection extends ConsumerWidget {
-  const _HomeAdListSection({required this.scrollController});
-
-  final ScrollController scrollController;
+class _HomeActionSection extends ConsumerWidget {
+  const _HomeActionSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stats = ref.watch(adStatsProvider);
     final bannerTool = ref.watch(bannerToolProvider);
     final homeNotifier = ref.read(homeProvider.notifier);
-    final raw = stats.adInfos;
-    final list =
-        raw.length <= HomeNotifier.kAdRecordDisplayMax
-            ? raw
-            : raw.sublist(raw.length - HomeNotifier.kAdRecordDisplayMax);
-    final double listWidth = MediaQuery.sizeOf(context).width;
 
     return ListenableBuilder(
       listenable: bannerTool,
@@ -211,73 +169,38 @@ class _HomeAdListSection extends ConsumerWidget {
                 : '停止广告';
 
         return Column(
-          spacing: 10.h,
           children: [
-            Expanded(
-              child: SizedBox(
-                width: listWidth,
-                child: ListView.builder(
-                  controller: scrollController,
-                  padding: EdgeInsets.zero,
-                  itemCount: list.length,
-                  itemBuilder: (context, i) {
-                    final AdInfo item = list[i];
-                    final String typeLabel =
-                        item.adType == AdInfo.typeBanner ? '横幅' : '激励视频';
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10.h,
-                        vertical: 5.w,
-                      ),
-                      margin: EdgeInsets.only(bottom: 10.h),
-                      width: 100.w,
-                      color: Colors.white70,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '类型：$typeLabel',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            '预估收益（元）：${AdInfo.formatDisplayRevenue(item.publisherRevenue)}',
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                          Text('生成时间：${item.createdTime}'),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+            const Spacer(),
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8.w,
+                runSpacing: 8.h,
+                children: [
+                  CuButton(
+                    bgColor: TextConfig.primary,
+                    text: bannerBtnText,
+                    width: 120.w,
+                    height: 40.h,
+                    disable: bannerLoading,
+                    onPressed: () {
+                      if (bannerPaused) {
+                        homeNotifier.startBanner();
+                      } else {
+                        homeNotifier.pauseBanner();
+                      }
+                    },
+                  ),
+                  CuButton(
+                    bgColor: TextConfig.primary,
+                    text: '观看激励视频',
+                    width: 140.w,
+                    height: 40.h,
+                    onPressed: () => RewarderTool.to.watchRewardedVideo(),
+                  ),
+                ],
               ),
-            ),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8.w,
-              runSpacing: 8.h,
-              children: [
-                CuButton(
-                  bgColor: TextConfig.primary,
-                  text: bannerBtnText,
-                  width: 120.w,
-                  height: 40.h,
-                  disable: bannerLoading,
-                  onPressed: () {
-                    if (bannerPaused) {
-                      homeNotifier.startBanner();
-                    } else {
-                      homeNotifier.pauseBanner();
-                    }
-                  },
-                ),
-                CuButton(
-                  bgColor: TextConfig.primary,
-                  text: '观看激励视频',
-                  width: 140.w,
-                  height: 40.h,
-                  onPressed: () => RewarderTool.to.watchRewardedVideo(),
-                ),
-              ],
             ),
           ],
         );

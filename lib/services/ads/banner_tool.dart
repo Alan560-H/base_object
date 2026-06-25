@@ -10,7 +10,7 @@ import 'package:base_object/services/ads/ad_log_collector.dart';
 import 'package:base_object/services/ads/ad_log_formatter.dart';
 import 'package:base_object/shared/config/screen_layout.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:jiffy/jiffy.dart';
 
 double _defaultLogicalWidth() => defaultLogicalWidth();
@@ -25,6 +25,17 @@ class BannerTool extends ChangeNotifier {
   final AdStatsNotifier _adStatsNotifier;
 
   static BannerTool get to => globalContainer.read(bannerToolProvider);
+
+  /// 与 [loadBannerWith] 一致的 320:50 横幅高度。
+  static double standardBannerHeight(double logicalWidth) =>
+      logicalWidth * 50 / 320;
+
+  /// 横幅播放中时，页面底部需预留高度（含安全区），避免列表被 SDK 横幅遮挡。
+  double contentBottomInset(BuildContext context) {
+    final double safeBottom = MediaQuery.viewPaddingOf(context).bottom;
+    if (_bannerPlaybackPaused) return safeBottom;
+    return standardBannerHeight(MediaQuery.sizeOf(context).width) + safeBottom;
+  }
 
   HomeBannerSlotState _bannerSlotState = HomeBannerSlotState.idle;
   HomeBannerSlotState get bannerSlotState => _bannerSlotState;
@@ -62,7 +73,7 @@ class BannerTool extends ChangeNotifier {
     double? logicalWidth,
   }) async {
     final double w = logicalWidth ?? _defaultLogicalWidth();
-    final double h = w * 50 / 320;
+    final double h = standardBannerHeight(w);
     final Map<dynamic, dynamic> merged = Map<dynamic, dynamic>.from(extraMap);
     merged[ATCommon.getAdSizeKey()] = ATBannerManager.createLoadBannerAdSize(
       w,

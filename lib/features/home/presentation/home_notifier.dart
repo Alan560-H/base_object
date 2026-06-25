@@ -9,8 +9,6 @@ import 'package:jiffy/jiffy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeNotifier extends Notifier<HomeState> {
-  static const int kAdRecordDisplayMax = 10;
-
   @override
   HomeState build() => const HomeState();
 

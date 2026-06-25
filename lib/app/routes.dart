@@ -3,4 +3,5 @@ abstract final class AppPaths {
   static const splash = '/splash';
   static const home = '/home';
   static const user = '/user';
+  static const userAdRecords = '/user/ad-records';
 }

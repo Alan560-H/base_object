@@ -3,7 +3,7 @@ import 'package:base_object/app/routes.dart';
 import 'package:base_object/data/models/localModels/MenuModel.dart';
 import 'package:base_object/shared/config/image_config.dart';
 import 'package:base_object/shared/config/text_config.dart';
-import 'package:base_object/shared/widgets/Avatar.dart';
+import 'package:base_object/shared/widgets/ad_stats_summary.dart';
 import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,26 +13,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class UserPage extends ConsumerStatefulWidget {
+class UserPage extends ConsumerWidget {
   const UserPage({super.key});
 
-  @override
-  ConsumerState<UserPage> createState() => _UserPageState();
-}
-
-class _UserPageState extends ConsumerState<UserPage> {
   static final List<MenuModel> _menuList = [
+    MenuModel(id: 9, menuName: '收益列表', icon: Icons.receipt_long),
     MenuModel(id: 8, menuName: '设备 OAID', icon: Icons.phone_android),
     MenuModel(id: 7, menuName: '清除缓存', icon: Icons.delete),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(userProvider.notifier).getUserInfoFn();
-    });
-  }
 
   Widget _statColumn({String value = '', String title = ''}) {
     return Column(
@@ -59,10 +47,9 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final double topPadding = MediaQuery.paddingOf(context).top;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final user = ref.watch(userProvider);
     final stats = ref.watch(adStatsProvider);
 
     return Scaffold(
@@ -76,67 +63,6 @@ class _UserPageState extends ConsumerState<UserPage> {
         child: Column(
           spacing: 10.h,
           children: [
-            Row(
-              spacing: 20.w,
-              children: [
-                Avatar(
-                  headImage: user.userModel.headImage,
-                  size: 30.r,
-                ),
-                Column(
-                  spacing: 10.h,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      spacing: 10.w,
-                      children: [
-                        Text(
-                          user.userModel.id > 0
-                              ? user.userModel.username
-                              : '游客',
-                          style: TextStyle(
-                            fontSize: TextConfig.textSize_20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return const LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                Color(0xFFFF6600),
-                                Color(0xFFFFC107),
-                              ],
-                              stops: [0.0, 1],
-                            ).createShader(bounds);
-                          },
-                          blendMode: BlendMode.srcIn,
-                          child: Text(
-                            user.userLevel,
-                            style: TextStyle(
-                              fontSize: TextConfig.textSize_14,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      user.userModel.id > 0
-                          ? '会员ID:${user.userModel.id}'
-                          : '游客',
-                      style: TextStyle(
-                        fontSize: TextConfig.textSize_14,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
             Container(
               width: screenWidth,
               constraints: BoxConstraints(
@@ -173,6 +99,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                 ],
               ),
             ),
+            const AdStatsSummary(),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
@@ -208,6 +135,10 @@ class _UserPageState extends ConsumerState<UserPage> {
                         size: TextConfig.textSize_14,
                       ),
                       onTap: () async {
+                        if (menu.id == 9) {
+                          context.push(AppPaths.userAdRecords);
+                          return;
+                        }
                         if (menu.id == 8) {
                           await showOaidDialog(context);
                           return;

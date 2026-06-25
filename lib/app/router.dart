@@ -2,6 +2,7 @@ import 'package:base_object/app/app_shell.dart';
 import 'package:base_object/app/routes.dart';
 import 'package:base_object/features/home/presentation/home_page.dart';
 import 'package:base_object/features/splash/presentation/splash_page.dart';
+import 'package:base_object/features/user/presentation/ad_record_page.dart';
 import 'package:base_object/features/user/presentation/user_page.dart';
 import 'package:base_object/shared/config/cu_global.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +36,13 @@ GoRouter createAppRouter() {
               GoRoute(
                 path: AppPaths.user,
                 builder: (context, state) => const UserPage(),
+                routes: [
+                  GoRoute(
+                    path: 'ad-records',
+                    parentNavigatorKey: CuGlobal.navigatorKey,
+                    builder: (context, state) => const AdRecordPage(),
+                  ),
+                ],
               ),
             ],
           ),
