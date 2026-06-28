@@ -30,9 +30,9 @@ android {
         versionName = flutter.versionName
         manifestPlaceholders["OPENINSTALL_APPKEY"] = "kl25pf"
         manifestPlaceholders["channel"] = "default"
-        // 真机: arm64-v8a, armeabi-v7a；模拟器(雷电等 64 位): x86_64（请用 64 位雷电）
+        // 真机: arm64-v8a + armeabi-v7a（老 32 位机）；不含 x86_64（模拟器）
         ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
         }
     }
 

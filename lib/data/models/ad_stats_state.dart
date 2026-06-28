@@ -123,10 +123,20 @@ class AdStatsState {
             s + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
       );
 
-  double get adInfosTotal => adInfos.fold(
+  double get adInfosTotalDisplayCny => adInfos.fold(
     0.0,
-    (double sum, AdInfo adInfo) => sum + adInfo.publisherRevenue,
+    (double sum, AdInfo e) =>
+        sum + AdInfo.displayRevenueLineSumTerm(e.publisherRevenue),
   );
+
+  /// 全部广告原始 publisher 收益之和（人民币，未乘 [AdInfo.displayRevenueShare]）。
+  double get adInfosRawTotalCny => adInfos.fold(
+    0.0,
+    (double sum, AdInfo e) => sum + e.publisherRevenue,
+  );
+
+  /// @deprecated 请用 [adInfosTotalDisplayCny]；旧实现误用原始收益且未格式化。
+  double get adInfosTotal => adInfosTotalDisplayCny;
 
   static bool _isLocalToday(AdInfo e) {
     try {

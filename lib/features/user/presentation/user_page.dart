@@ -1,17 +1,19 @@
 import 'package:base_object/app/providers.dart';
 import 'package:base_object/app/routes.dart';
+import 'package:base_object/data/models/localModels/AdInfo.dart';
 import 'package:base_object/data/models/localModels/MenuModel.dart';
-import 'package:base_object/shared/config/image_config.dart';
 import 'package:base_object/shared/config/text_config.dart';
 import 'package:base_object/shared/widgets/ad_stats_summary.dart';
 import 'package:base_object/shared/widgets/cu_toast.dart';
 import 'package:base_object/services/device/oaid_dialog.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
+/// 暂时隐藏「我的」页顶部汇总卡片（广告数 / 总收益），恢复时改为 true。
+const _kShowUserRevenueSummaryCard = false;
 
 class UserPage extends ConsumerWidget {
   const UserPage({super.key});
@@ -22,35 +24,9 @@ class UserPage extends ConsumerWidget {
     MenuModel(id: 7, menuName: '清除缓存', icon: Icons.delete),
   ];
 
-  Widget _statColumn({String value = '', String title = ''}) {
-    return Column(
-      spacing: 10.h,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: TextConfig.textSize_20,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: TextConfig.textSize_14,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double topPadding = MediaQuery.paddingOf(context).top;
-    final double screenWidth = MediaQuery.sizeOf(context).width;
-    final stats = ref.watch(adStatsProvider);
 
     return Scaffold(
       body: Container(
@@ -63,42 +39,7 @@ class UserPage extends ConsumerWidget {
         child: Column(
           spacing: 10.h,
           children: [
-            Container(
-              width: screenWidth,
-              constraints: BoxConstraints(
-                minHeight: 100.h,
-                maxHeight: 130.h,
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 10.w,
-                vertical: 10.h,
-              ),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  alignment: Alignment.center,
-                  fit: BoxFit.fill,
-                  image: CachedNetworkImageProvider(
-                    ImageConfig.userMenoyCardBg,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _statColumn(
-                      value: '广告数：${stats.adInfos.length}',
-                      title: '累计观看',
-                    ),
-                  ),
-                  Expanded(
-                    child: _statColumn(
-                      value: stats.adInfosTotal.toString(),
-                      title: '总收益(展示)',
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            if (_kShowUserRevenueSummaryCard) const _UserRevenueSummaryCard(),
             const AdStatsSummary(),
             Expanded(
               child: ListView.builder(
@@ -160,6 +101,75 @@ class UserPage extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _UserRevenueSummaryCard extends ConsumerWidget {
+  const _UserRevenueSummaryCard();
+
+  Widget _statColumn({required String value, required String title}) {
+    return Column(
+      spacing: 10.h,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: TextConfig.textSize_20,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: TextConfig.textSize_14,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(adStatsProvider);
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final String totalDisplay = stats.adInfosTotalDisplayCny.toStringAsFixed(
+      AdInfo.displayRevenueFractionDigits,
+    );
+
+    return Container(
+      width: screenWidth,
+      constraints: BoxConstraints(
+        minHeight: 100.h,
+        maxHeight: 130.h,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 10.w,
+        vertical: 10.h,
+      ),
+      decoration: BoxDecoration(
+        color: TextConfig.primary.withValues(alpha: 0.85),
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _statColumn(
+              value: '广告数：${stats.adInfos.length}',
+              title: '累计观看',
+            ),
+          ),
+          Expanded(
+            child: _statColumn(
+              value: totalDisplay,
+              title: '总收益(展示)',
+            ),
+          ),
+        ],
       ),
     );
   }

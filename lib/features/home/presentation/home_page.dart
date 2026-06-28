@@ -4,6 +4,7 @@ import 'package:base_object/features/home/presentation/home_ad_revenue_list_sect
 import 'package:base_object/features/home/presentation/home_banner_revenue_section.dart';
 import 'package:base_object/features/home/presentation/home_native_feed_slot.dart';
 // import 'package:base_object/services/device/oaid_dialog.dart';
+import 'package:base_object/shared/config/home_ui_strings.dart';
 import 'package:base_object/shared/config/text_config.dart';
 // import 'package:base_object/shared/widgets/cu_button.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           children: [
             const _HomeTopSection(),
             const HomeBannerRevenueSection(),
-            const HomeNativeFeedSlot(),
+            if (HomeUiStrings.showHomeNativeFeedUi) const HomeNativeFeedSlot(),
             Expanded(
               child: Column(
                 children: [

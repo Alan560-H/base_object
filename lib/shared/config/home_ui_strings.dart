@@ -1,5 +1,11 @@
 /// 首页广告相关用户可见文案（信息流、横幅按钮与槽位占位）
 abstract final class HomeUiStrings {
+  /// 暂时隐藏首页信息流槽位与按钮，恢复时改为 true。
+  static const showHomeNativeFeedUi = false;
+
+  /// 暂时隐藏首页激励视频按钮，恢复时改为 true。
+  static const showHomeRewardedVideoControl = false;
+
   static const startBannerAd = '开始横幅';
   static const stopBannerAd = '停止广告';
   static const startNativeFeed = '开始信息流';

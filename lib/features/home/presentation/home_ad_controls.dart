@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+/// 暂时隐藏首页信息流与激励视频入口，恢复时改 [HomeUiStrings] 中对应开关。
 class HomeAdControls extends ConsumerWidget {
   const HomeAdControls({super.key});
 
@@ -19,8 +20,13 @@ class HomeAdControls extends ConsumerWidget {
     final homeNotifier = ref.read(homeProvider.notifier);
     final double bottomInset = bannerTool.contentBottomInset(context);
 
+    final listenables = <Listenable>[bannerTool];
+    if (HomeUiStrings.showHomeNativeFeedUi) {
+      listenables.add(native);
+    }
+
     return ListenableBuilder(
-      listenable: Listenable.merge([bannerTool, native]),
+      listenable: Listenable.merge(listenables),
       builder: (context, _) {
         final bool bannerPaused = bannerTool.bannerPlaybackPaused;
         final HomeBannerSlotState bannerState = bannerTool.bannerSlotState;
@@ -62,33 +68,37 @@ class HomeAdControls extends ConsumerWidget {
                   },
                 ),
               ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: CuButton(
-                  bgColor: TextConfig.primary,
-                  text: '观看激励视频',
-                  height: 40.h,
-                  fontSize: 12.sp,
-                  onPressed: () => RewarderTool.to.watchRewardedVideo(),
+              if (HomeUiStrings.showHomeRewardedVideoControl) ...[
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: CuButton(
+                    bgColor: TextConfig.primary,
+                    text: '观看激励视频',
+                    height: 40.h,
+                    fontSize: 12.sp,
+                    onPressed: () => RewarderTool.to.watchRewardedVideo(),
+                  ),
                 ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: CuButton(
-                  bgColor: TextConfig.primary,
-                  text: nativeBtnText,
-                  height: 40.h,
-                  fontSize: 12.sp,
-                  disable: nativeLoading,
-                  onPressed: () {
-                    if (nativePaused) {
-                      homeNotifier.startNative();
-                    } else {
-                      homeNotifier.pauseNative();
-                    }
-                  },
+              ],
+              if (HomeUiStrings.showHomeNativeFeedUi) ...[
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: CuButton(
+                    bgColor: TextConfig.primary,
+                    text: nativeBtnText,
+                    height: 40.h,
+                    fontSize: 12.sp,
+                    disable: nativeLoading,
+                    onPressed: () {
+                      if (nativePaused) {
+                        homeNotifier.startNative();
+                      } else {
+                        homeNotifier.pauseNative();
+                      }
+                    },
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         );
