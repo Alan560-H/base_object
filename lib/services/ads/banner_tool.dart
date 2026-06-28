@@ -33,7 +33,7 @@ class BannerTool extends ChangeNotifier {
       logicalWidth * 50 / 320;
 
   /// 底栏上抬 / 内容区底部预留的最小高度（screenutil .h）。
-  static const double minBannerBottomLiftH = 65;
+  static const double minBannerBottomLiftH = 64;
 
   /// 横幅播放时底栏上抬高度：屏宽 320:50 与 [minBannerBottomLiftH.h] 取较大值。
   double bannerBottomLiftHeight(BuildContext context) {

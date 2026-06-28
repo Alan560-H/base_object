@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// 暂时隐藏首页信息流与激励视频入口，恢复时改 [HomeUiStrings] 中对应开关。
+/// 首页广告操作区：横幅 / 激励 / 信息流（可见性见 [HomeUiStrings] 开关）。
 class HomeAdControls extends ConsumerWidget {
   const HomeAdControls({super.key});
 

@@ -1,4 +1,4 @@
-package com.ruyimh
+package com.xxrj
 
 import android.content.Intent
 import android.os.Bundle

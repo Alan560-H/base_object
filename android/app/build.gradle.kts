@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ruyimh"
+    namespace = "com.xxrj"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ruyimh"
+        applicationId = "com.xxrj"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -58,16 +58,16 @@ android {
 //    }
     signingConfigs {
         create("release") {  // 定义名为 "release" 的签名配置
-            storeFile = file("ruyikh.jks")  // 替换为你的签名文件名
-            storePassword = "aa123456"  // 密钥库密码
-            keyAlias = "ruyikh"            // 密钥别名
-            keyPassword = "aa123456"      // 密钥密码
+            storeFile = file("xxrj.jks")  // 替换为你的签名文件名
+            storePassword = "hzs520.1314"  // 密钥库密码
+            keyAlias = "xxrj"            // 密钥别名
+            keyPassword = "hzs520.1314"      // 密钥密码
         }
         create("customDebug") {  // 定义名为 "release" 的签名配置
-            storeFile = file("ruyikh.jks")  // 替换为你的签名文件名
-            storePassword = "aa123456"  // 密钥库密码
-            keyAlias = "ruyikh"            // 密钥别名
-            keyPassword = "aa123456"      // 密钥密码
+            storeFile = file("xxrj.jks")  // 替换为你的签名文件名
+            storePassword = "hzs520.1314"  // 密钥库密码
+            keyAlias = "xxrj"            // 密钥别名
+            keyPassword = "hzs520.1314"      // 密钥密码
         }
     }
 
@@ -134,7 +134,7 @@ dependencies {
 //    //GDT
 //    api("com.anythink.sdk:adapter-taku-gdt:6.5.15")
 //    api("com.qq.e.union:union:4.642.1512")
-    // 本地 aar/jar：Taku 核心 + 五形态 + 优量汇 GDT（见 libs 目录，勿随意增删其它广告源 aar）
+    // 本地 aar/jar：Taku 核心 + 五形态 + 优量汇 GDT + Taku ADX（酷盈）
     api(fileTree(mapOf(
         "dir" to "libs", // 指向 app 模块内的 libs 目录（相对路径）
         "include" to listOf("*.aar", "*.jar"), // 包含 libs 下所有 .aar 和 .jar 文件

@@ -7,7 +7,7 @@
 -keep class io.flutter.plugins.** { *; }
 
 # Keep MainActivity and MethodChannel usage
--keep class com.ruyimh.MainActivity { *; }
+-keep class com.xxrj.MainActivity { *; }
 
 # Anythink / 优量汇 GDT（按需补充 keep，若崩溃再加）
 -keep class com.anythink.** { *; }
