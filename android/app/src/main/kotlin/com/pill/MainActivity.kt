@@ -1,4 +1,4 @@
-package com.xxrj
+package com.pill
 
 import android.content.Intent
 import android.os.Bundle

@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 允许修改wifi状态 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 允许 APP保持设备唤醒状态（如屏幕常亮、CPU 不休眠） -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- 读取图片权限 -->
-    <uses-permission android:name="${applicationId}.openadsdk.permission.TT_PANGOLIN" /><!-- 字节跳动 “穿山甲广告 SDK” 的自定义权限（用于广告投放、数据统计、设备匹配） -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" /><!-- 允许 APP读取手机中已登录的账户列表（如 Google 账户、微信 / QQ 账户、手机厂商账户） -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
@@ -26,7 +25,7 @@
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="小新日记"
+        android:label="吃药助手"
         android:networkSecurityConfig="@xml/net_config"
         tools:replace="android:label,android:allowBackup"
         android:theme="@style/AppTheme"
@@ -45,12 +44,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_sigmob_file_path"/>
         </provider> -->
-        <!-- source file: china_jcenter/network_sdk/csj/6.9.2.3/AndroidManifest.xml -->
-<!--        穿山甲-->
-        <provider
-            android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
-            android:authorities="${applicationId}.TTMultiProvider"
-            android:exported="false" />
         <!-- 美数文件提供者 -->
         <provider
             android:name="com.meishu.sdk.core.service.MeishuFileProvider"
@@ -70,17 +63,6 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_gdt_file_path" />
-        </provider>
-<!--        穿山甲-->
-        <provider
-            android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
-            android:authorities="${applicationId}.TTFileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true"
-            tools:replace="android:authorities">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/anythink_bk_tt_file_path" />
         </provider>
 <!--        倍兹-->
 <!--        <provider-->
@@ -107,16 +89,6 @@
             android:name="hw_ads_sdk_type"
             android:value="6"
         tools:replace="android:value" />
-        <!-- 解决 ZEUS_PLUGIN_PANGLE 的 meta-data 冲突 -->
-        <meta-data
-            android:name="ZEUS_PLUGIN_PANGLE"
-            android:value="({
-                             apiVersionCode:7029,
-                             packageName:com.byted.pangle,
-                             minPluginVersion:7029,
-                             internalPath:'',
-                             internalVersionCode:7029})"
-            tools:replace="android:value" /> <!-- 强制覆盖冲突的 android:value -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

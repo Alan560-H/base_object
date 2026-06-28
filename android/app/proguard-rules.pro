@@ -9,11 +9,9 @@
 # Keep MainActivity and MethodChannel usage
 -keep class com.jialeb.MainActivity { *; }
 
-# Anythink / 穿山甲 / 广告 SDK（按需补充 keep，若崩溃再加）
--keep class com.bytedance.sdk.openadsdk.** { *; }
+# Anythink / 广告 SDK（按需补充 keep，若崩溃再加）
 -keep class com.anythink.** { *; }
 -dontwarn com.anythink.**
--dontwarn com.bytedance.**
 
 # 保留 native 方法
 -keepclasseswithmembernames class * {
