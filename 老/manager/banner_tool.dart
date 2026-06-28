@@ -1,91 +1,56 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:anythink_sdk/at_index.dart';
-import 'package:base_object/app/providers.dart';
-import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
-import 'package:base_object/services/ads/banner_ad_upload_handler.dart';
-import 'package:base_object/shared/config/app_ad_config.dart';
-import 'package:base_object/data/models/localModels/AdInfo.dart';
-import 'package:base_object/services/ads/ad_log_collector.dart';
-import 'package:base_object/services/ads/ad_log_formatter.dart';
-import 'package:base_object/shared/config/screen_layout.dart';
+import 'package:base_object/core/components/cu_nav_bar/cu_nav_bar_controller.dart';
+import 'package:base_object/core/config/app_ad_config.dart';
+import 'package:base_object/models/localModels/AdInfo.dart';
+import 'package:base_object/store/store.dart';
+import 'package:base_object/utils/ad_log_collector.dart';
+import 'package:base_object/utils/ad_log_formatter.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
-
-double _defaultLogicalWidth() => defaultLogicalWidth();
 
 /// 首页横幅占位条展示用状态
 enum HomeBannerSlotState { idle, loading, ready, failed }
 
-class BannerTool extends ChangeNotifier {
-  BannerTool({required AdStatsNotifier adStatsNotifier})
-    : _adStatsNotifier = adStatsNotifier;
+class BannerTool extends GetxService {
+  static BannerTool get to =>
+      Get.isRegistered<BannerTool>()
+          ? Get.find<BannerTool>()
+          : Get.put(BannerTool());
 
-  final AdStatsNotifier _adStatsNotifier;
-
-  static BannerTool get to => globalContainer.read(bannerToolProvider);
-
-  /// 与 [loadBannerWith] 一致的 320:50 横幅高度。
-  static double standardBannerHeight(double logicalWidth) =>
-      logicalWidth * 50 / 320;
-
-  /// 底栏上抬 / 内容区底部预留的最小高度（screenutil .h）。
-  static const double minBannerBottomLiftH = 65;
-
-  /// 横幅播放时底栏上抬高度：屏宽 320:50 与 [minBannerBottomLiftH.h] 取较大值。
-  double bannerBottomLiftHeight(BuildContext context) {
-    final double proportional =
-        standardBannerHeight(MediaQuery.sizeOf(context).width);
-    return math.max(proportional, minBannerBottomLiftH.h);
-  }
-
-  /// 横幅播放中时，页面底部需预留高度（含安全区），避免列表被 SDK 横幅遮挡。
-  double contentBottomInset(BuildContext context) {
-    final double safeBottom = MediaQuery.viewPaddingOf(context).bottom;
-    if (_bannerPlaybackPaused) return safeBottom;
-    return bannerBottomLiftHeight(context) + safeBottom;
-  }
-
-  HomeBannerSlotState _bannerSlotState = HomeBannerSlotState.idle;
-  HomeBannerSlotState get bannerSlotState => _bannerSlotState;
+  final Rx<HomeBannerSlotState> bannerSlotState = HomeBannerSlotState.idle.obs;
 
   /// 未点「开始横幅」前为 true：不自动 load/show；用户开始后为 false，直至停止或加载失败
-  bool _bannerPlaybackPaused = true;
-  bool get bannerPlaybackPaused => _bannerPlaybackPaused;
+  final RxBool bannerPlaybackPaused = true.obs;
 
-  void _setBannerSlotState(HomeBannerSlotState value) {
-    _bannerSlotState = value;
-    notifyListeners();
-  }
+  /// 展示成功后间隔此时长再发起下一次 [loadBannerAd]（多次展示回调时仅最后一次生效）
+  static const Duration _bannerReloadAfterShowDelay = Duration(seconds: 16);
 
-  void _setBannerPlaybackPaused(bool value) {
-    _bannerPlaybackPaused = value;
-    notifyListeners();
-  }
+  int _reloadAfterShowToken = 0;
 
-  /// 停止横幅：移除原生横幅容器
+  /// 停止横幅：移除原生横幅容器，并取消已排队的「展示后延时 reload」
   Future<void> pauseBannerPlayback() async {
-    _setBannerPlaybackPaused(true);
+    bannerPlaybackPaused.value = true;
+    _reloadAfterShowToken++;
     await removeBannerAd();
-    _setBannerSlotState(HomeBannerSlotState.idle);
+    bannerSlotState.value = HomeBannerSlotState.idle;
   }
 
-  /// 开始横幅：load → DidFinishLoading → show
+  /// 开始横幅：允许展示后走 [loadBannerAd] 链路（与首页手动入口一致）
   Future<void> startBannerPlayback() async {
-    _setBannerPlaybackPaused(false);
-    await loadBannerWith({}, logicalWidth: _defaultLogicalWidth());
+    bannerPlaybackPaused.value = false;
+    await loadBannerWith({}, logicalWidth: Get.width);
   }
 
-  /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例
+  /// [logicalWidth] 屏宽逻辑像素，用于 320:50 比例；默认 [Get.width]
   Future<void> loadBannerWith(
     Map<dynamic, dynamic> extraMap, {
     double? logicalWidth,
   }) async {
-    final double w = logicalWidth ?? _defaultLogicalWidth();
-    final double h = standardBannerHeight(w);
+    final double w = logicalWidth ?? Get.width;
+    final double h = w * 50 / 320;
     final Map<dynamic, dynamic> merged = Map<dynamic, dynamic>.from(extraMap);
     merged[ATCommon.getAdSizeKey()] = ATBannerManager.createLoadBannerAdSize(
       w,
@@ -93,19 +58,41 @@ class BannerTool extends ChangeNotifier {
     );
 
     Utils.logError("横幅广告透传参数:$merged");
-    _setBannerSlotState(HomeBannerSlotState.loading);
+    bannerSlotState.value = HomeBannerSlotState.loading;
     try {
       await ATBannerManager.loadBannerAd(
         placementID: AppAdConfig.bannerPlacementID,
         extraMap: merged,
       );
     } catch (e, st) {
-      _setBannerSlotState(HomeBannerSlotState.failed);
-      if (!_bannerPlaybackPaused) {
-        _setBannerPlaybackPaused(true);
+      bannerSlotState.value = HomeBannerSlotState.failed;
+      if (!bannerPlaybackPaused.value) {
+        bannerPlaybackPaused.value = true;
       }
       Utils.logError("横幅 loadBannerAd 异常: $e $st");
     }
+  }
+
+  Future<bool> bannerAdReady() async {
+    return await ATBannerManager.bannerAdReady(
+      placementID: AppAdConfig.bannerPlacementID,
+    );
+  }
+
+  getBannerValidAds() async {
+    await ATBannerManager.getBannerValidAds(
+      placementID: AppAdConfig.bannerPlacementID,
+    ).then((value) {
+      Utils.logError('横幅广告 getBannerValidAds: $value');
+    });
+  }
+
+  checkBannerLoadStatus() async {
+    await ATBannerManager.checkBannerLoadStatus(
+      placementID: AppAdConfig.bannerPlacementID,
+    ).then((value) {
+      Utils.logError('横幅广告 checkBannerLoadStatus: $value');
+    });
   }
 
   showBannerInRectangle() async {
@@ -122,10 +109,34 @@ class BannerTool extends ChangeNotifier {
     );
   }
 
+  showSceneBannerInRectangle() async {
+    await ATBannerManager.showSceneBannerInRectangle(
+      placementID: AppAdConfig.bannerPlacementID,
+      sceneID: AppAdConfig.bannerSceneID,
+      extraMap: {
+        ATCommon.getAdSizeKey(): ATBannerManager.createLoadBannerAdSize(
+          400,
+          500,
+          x: 0,
+          y: 200,
+        ),
+      },
+    );
+  }
+
   Future<void> showAdInPosition() async {
     await ATBannerManager.showAdInPosition(
       placementID: AppAdConfig.bannerPlacementID,
       position: ATCommon.getAdATBannerAdShowingPositionBottom(),
+    );
+  }
+
+  Future<void> showSceneBannerAdInPosition() async {
+    await ATBannerManager.showSceneBannerAdInPosition(
+      placementID: AppAdConfig.bannerPlacementID,
+      sceneID: AppAdConfig.bannerSceneID,
+      position: ATCommon.getAdATBannerAdShowingPositionBottom(),
+      showCustomExt: '{"isShow":true}',
     );
   }
 
@@ -147,19 +158,47 @@ class BannerTool extends ChangeNotifier {
     );
   }
 
+  readyStatus() async {
+    await bannerAdReady();
+    checkBannerLoadStatus();
+    getBannerValidAds();
+  }
+
+  void _scheduleLoadNextBannerAfterShow() {
+    final int token = ++_reloadAfterShowToken;
+    unawaited(() async {
+      await Future<void>.delayed(_bannerReloadAfterShowDelay);
+      if (token != _reloadAfterShowToken) {
+        return;
+      }
+      try {
+        Utils.logError(
+          '横幅展示满 ${_bannerReloadAfterShowDelay.inSeconds}s，发起下一条 loadBannerAd',
+        );
+        await loadBannerWith({}, logicalWidth: Get.width);
+      } catch (e, st) {
+        Utils.logError('横幅延时 reload 异常: $e $st');
+      }
+    }());
+  }
+
   StreamSubscription<ATBannerResponse>? _bannerSubscription;
 
-  /// 横幅广告监听（换条由 SDK bannerAdAutoRefreshSucceed 负责）
+  /// 横幅广告监听
   void bannerListen() {
     if (_bannerSubscription != null) {
       return;
     }
     _bannerSubscription = ATListenerManager.bannerEventHandler.listen((value) {
+      final CuNavBarController cuNavBarController =
+          Get.isRegistered<CuNavBarController>()
+              ? Get.find<CuNavBarController>()
+              : Get.put(CuNavBarController());
       switch (value.bannerStatus) {
         case BannerStatus.bannerAdFailToLoadAD:
-          _setBannerSlotState(HomeBannerSlotState.failed);
-          if (!_bannerPlaybackPaused) {
-            _setBannerPlaybackPaused(true);
+          bannerSlotState.value = HomeBannerSlotState.failed;
+          if (!bannerPlaybackPaused.value) {
+            bannerPlaybackPaused.value = true;
           }
           AdLogCollector.addLog(
             AdLogFormatter.bannerFail(
@@ -180,10 +219,9 @@ class BannerTool extends ChangeNotifier {
               desc: '加载完成',
             ),
           );
-          _setBannerSlotState(HomeBannerSlotState.ready);
-          if (!_bannerPlaybackPaused) {
-            // 非场景展示，仅用 placementID（与 AppAdConfig 一致）
-            showAdInPosition();
+          bannerSlotState.value = HomeBannerSlotState.ready;
+          if (!bannerPlaybackPaused.value) {
+            showSceneBannerAdInPosition();
           }
           break;
         case BannerStatus.bannerAdAutoRefreshSucceed:
@@ -197,15 +235,7 @@ class BannerTool extends ChangeNotifier {
               desc: '自动刷新成功',
             ),
           );
-          _adStatsNotifier.addAdInfos(
-            AdInfo.fromTakuExtra(
-              extraMap: value.extraMap,
-              placementID: value.placementID.toString(),
-              createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
-              adType: AdInfo.typeBanner,
-            ),
-          );
-          handleBannerAdUpload(value);
+          cuNavBarController.upDataADFn(value);
           break;
         case BannerStatus.bannerAdDidClick:
           Utils.logError(
@@ -241,7 +271,7 @@ class BannerTool extends ChangeNotifier {
               extraMap: value.extraMap,
             ),
           );
-          _adStatsNotifier.addAdInfos(
+          Store.instance.addAdInfos(
             AdInfo.fromTakuExtra(
               extraMap: value.extraMap,
               placementID: value.placementID.toString(),
@@ -249,6 +279,9 @@ class BannerTool extends ChangeNotifier {
               adType: AdInfo.typeBanner,
             ),
           );
+          if (!bannerPlaybackPaused.value) {
+            _scheduleLoadNextBannerAfterShow();
+          }
           break;
         case BannerStatus.bannerAdTapCloseButton:
           Utils.logError(

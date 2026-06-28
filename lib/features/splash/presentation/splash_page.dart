@@ -54,6 +54,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
       // initTopon 后注册；未注册则发奖回调无法记收益
       RewarderTool.to.rewardedAdListen();
       NativeTool.to.nativeListen();
+      unawaited(NativeTool.to.preloadNativeFeedOnce());
     } finally {
       EasyLoading.dismiss();
     }

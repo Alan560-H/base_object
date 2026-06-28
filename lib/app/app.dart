@@ -37,8 +37,12 @@ class _AppState extends State<App> with AppTheme {
             routerConfig: appRouter,
             debugShowCheckedModeBanner: true,
             title:
-                globalContainer.read(adStatsProvider).appUpLoadModel.appName.isEmpty
-                    ? '小新日记'
+                globalContainer
+                        .read(adStatsProvider)
+                        .appUpLoadModel
+                        .appName
+                        .isEmpty
+                    ? ''
                     : globalContainer
                         .read(adStatsProvider)
                         .appUpLoadModel

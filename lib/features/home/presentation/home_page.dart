@@ -1,9 +1,11 @@
 import 'package:base_object/app/providers.dart';
 import 'package:base_object/features/home/presentation/home_ad_controls.dart';
+import 'package:base_object/features/home/presentation/home_ad_revenue_list_section.dart';
+import 'package:base_object/features/home/presentation/home_banner_revenue_section.dart';
 import 'package:base_object/features/home/presentation/home_native_feed_slot.dart';
-import 'package:base_object/services/device/oaid_dialog.dart';
+// import 'package:base_object/services/device/oaid_dialog.dart';
 import 'package:base_object/shared/config/text_config.dart';
-import 'package:base_object/shared/widgets/cu_button.dart';
+// import 'package:base_object/shared/widgets/cu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,8 +35,24 @@ class _HomePageState extends ConsumerState<HomePage> {
           spacing: 5.h,
           children: [
             const _HomeTopSection(),
+            const HomeBannerRevenueSection(),
             const HomeNativeFeedSlot(),
-            const Expanded(child: _HomeActionSection()),
+            Expanded(
+              child: Column(
+                children: [
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 400.h),
+                        child: const HomeAdRevenueListSection(),
+                      ),
+                    ),
+                  ),
+                  const Expanded(child: _HomeActionSection()),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -127,20 +145,21 @@ class _HomeTopSection extends ConsumerWidget {
             style: TextStyle(fontSize: 12.sp, color: Colors.black54),
           ),
           SizedBox(height: 6.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CuButton(
-                text: 'OAID',
-                width: 70.w,
-                height: 32.h,
-                textColor: Colors.black87,
-                bgColor: const Color(0xFFE8E8E8),
-                radius: 6.r,
-                onPressed: () => showOaidDialog(context),
-              ),
-            ],
-          ),
+          // 暂时隐藏 OAID 按钮（showOaidDialog 仍可在「我的」页使用）
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: [
+          //     CuButton(
+          //       text: 'OAID',
+          //       width: 70.w,
+          //       height: 32.h,
+          //       textColor: Colors.black87,
+          //       bgColor: const Color(0xFFE8E8E8),
+          //       radius: 6.r,
+          //       onPressed: () => showOaidDialog(context),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

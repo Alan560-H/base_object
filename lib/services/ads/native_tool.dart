@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:anythink_sdk/at_index.dart';
 import 'package:base_object/app/providers.dart';
@@ -9,29 +8,26 @@ import 'package:base_object/data/models/localModels/UpADModel.dart';
 import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
 import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/shared/config/app_ad_config.dart';
-import 'package:base_object/shared/config/screen_layout.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jiffy/jiffy.dart';
 
-/// 首页信息流槽位 UI 状态
-enum NativeSlotState { idle, loading, ready, failed }
-
-/// load 用途：首载 / 换条预加载 / 首载失败重试 / 换条重建 PlatformView
-enum _NativeLoadPurpose { initial, refreshPreload, retry, swapRemount }
+/// 首页信息流槽位状态
+enum HomeNativeSlotState { idle, loading, ready, failed }
 
 String _nativeFeedExtraPreview(dynamic extra) {
   if (extra == null) return 'null';
   final String s = extra.toString();
   const int maxLen = 480;
-  return s.length > maxLen ? '${s.substring(0, maxLen)}?(len=${s.length})' : s;
+  return s.length > maxLen ? '${s.substring(0, maxLen)}…(len=${s.length})' : s;
 }
 
 void _logNativeFeed(String message) {
   Utils.logError('[NativeFeed] $message');
 }
 
+/// Taku 原生信息流：展示时序与老项目一致；黄忠胜1/2/3 仅调试日志。
 class NativeTool extends ChangeNotifier {
   NativeTool({
     required AdStatsNotifier adStatsNotifier,
@@ -39,103 +35,387 @@ class NativeTool extends ChangeNotifier {
   }) : _adStatsNotifier = adStatsNotifier,
        _userNotifier = userNotifier;
 
-  static const int _maxFailRetries = 3;
-  static const Duration _platformViewRemountDelay = Duration(milliseconds: 300);
-  static const Duration _refreshPollInterval = Duration(seconds: 3);
+  /// 单次展示成功后，延迟自动先停再开（与 nativeAdDidShowNativeAd 联动）
+  static const Duration _nativeFeedPostShowReloadDelay = Duration(seconds: 16);
+
+  /// 黄忠胜3：有效广告列表轮询间隔（仅日志，不参与挂载/换条）。
+  static const Duration _nativeValidAdsPollInterval = Duration(seconds: 5);
 
   final AdStatsNotifier _adStatsNotifier;
   final UserNotifier _userNotifier;
 
   static NativeTool get to => globalContainer.read(nativeToolProvider);
 
-  NativeSlotState _nativeSlotState = NativeSlotState.idle;
-  NativeSlotState get nativeSlotState => _nativeSlotState;
+  bool _nativeFeedPlaybackPaused = true;
+  bool get nativeFeedPlaybackPaused => _nativeFeedPlaybackPaused;
 
-  bool _nativePlaybackPaused = true;
-  bool get nativePlaybackPaused => _nativePlaybackPaused;
+  HomeNativeSlotState _nativeSlotState = HomeNativeSlotState.idle;
+  HomeNativeSlotState get nativeSlotState => _nativeSlotState;
 
-  int _slotGeneration = 0;
-  int get slotGeneration => _slotGeneration;
+  bool _isViewCreated = false;
+  bool get isViewCreated => _isViewCreated;
 
-  /// 为 true 时才挂载 [PlatformNativeWidget]，避免 remove 后原生 View 未就绪导致 getView()=null
-  bool _nativePlatformViewReady = false;
-  bool get nativePlatformViewReady => _nativePlatformViewReady;
+  int _nativeFeedPlatformGeneration = 0;
+  int get nativeFeedPlatformGeneration => _nativeFeedPlatformGeneration;
 
-  void _setNativePlatformViewReady(bool value) {
-    if (_nativePlatformViewReady == value) return;
-    _nativePlatformViewReady = value;
-    notifyListeners();
-  }
+  int? _nativeFeedAutoReloadCountdown;
+  int? get nativeFeedAutoReloadCountdown => _nativeFeedAutoReloadCountdown;
 
-  double _contentLogicalWidth = defaultLogicalWidth();
-  double get contentLogicalWidth => _contentLogicalWidth;
+  /// 仅驱动「停止信息流（N）」按钮文案，避免每秒 notify 重建 PlatformView。
+  final ChangeNotifier _reloadCountdownListenable = ChangeNotifier();
+  Listenable get reloadCountdownListenable => _reloadCountdownListenable;
 
-  int _failRetryCount = 0;
   int _nativeFailReloadToken = 0;
-  final Set<String> _recordedReqIds = <String>{};
-
-  int _impressionRecordedGeneration = -1;
-
-  /// 当前条曝光后累计等待秒数（轮询等 SDK 下一条，非固定换条定时器）
-  int _nativeWaitElapsedSeconds = 0;
-  Timer? _nativeWaitTickTimer;
-
-  int get nativeWaitElapsedSeconds => _nativeWaitElapsedSeconds;
-
-  _NativeLoadPurpose _loadPurpose = _NativeLoadPurpose.initial;
-  bool _refreshPreloadInFlight = false;
-  bool _swapInProgress = false;
-  String? _currentDisplayedReqId;
-
-  Timer? _refreshPollTimer;
-
+  bool _preloadInFlight = false;
+  Timer? _nativeFeedPostShowReloadTimer;
+  Timer? _nativeValidAdsPollTimer;
   StreamSubscription<ATNativeResponse>? _nativeAdSubscription;
 
   double get adHeight => 250.h;
 
-  void _setNativeSlotState(NativeSlotState value) {
+  void _notify() => notifyListeners();
+
+  void _setPaused(bool value) {
+    if (_nativeFeedPlaybackPaused == value) return;
+    _nativeFeedPlaybackPaused = value;
+    _notify();
+  }
+
+  void _setSlotState(HomeNativeSlotState value) {
+    if (_nativeSlotState == value) return;
     _nativeSlotState = value;
-    notifyListeners();
+    _notify();
   }
 
-  void _startNativeWaitTick() {
-    _stopNativeWaitTick();
-    _nativeWaitElapsedSeconds = 0;
-    _nativeWaitTickTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_nativePlaybackPaused) {
-        _stopNativeWaitTick();
-        return;
-      }
-      _nativeWaitElapsedSeconds++;
-      notifyListeners();
-    });
+  void _setViewCreated(bool value, {String reason = ''}) {
+    if (_isViewCreated == value) return;
+    final String from = _isViewCreated ? 'true' : 'false';
+    _isViewCreated = value;
+    _notify();
+    _logNativeFeed(
+      'isViewCreated $from→${value ? 'true' : 'false'}'
+      '${reason.isEmpty ? '' : ' reason=$reason'} '
+      'paused=$_nativeFeedPlaybackPaused slot=$_nativeSlotState',
+    );
   }
 
-  void _stopNativeWaitTick() {
-    _nativeWaitTickTimer?.cancel();
-    _nativeWaitTickTimer = null;
-    if (_nativeWaitElapsedSeconds != 0) {
-      _nativeWaitElapsedSeconds = 0;
-      notifyListeners();
+  void _setReloadCountdown(int? value) {
+    if (_nativeFeedAutoReloadCountdown == value) return;
+    _nativeFeedAutoReloadCountdown = value;
+    _reloadCountdownListenable.notifyListeners();
+  }
+
+  void _cancelNativeFeedPostShowReloadTimer() {
+    _nativeFeedPostShowReloadTimer?.cancel();
+    _nativeFeedPostShowReloadTimer = null;
+    _setReloadCountdown(null);
+  }
+
+  void _onNativeFeedPostShowReloadPeriodicTick(Timer t) {
+    final int? cur = _nativeFeedAutoReloadCountdown;
+    if (cur == null) {
+      t.cancel();
+      _nativeFeedPostShowReloadTimer = null;
+      return;
     }
+    if (cur <= 1) {
+      _nativeFeedPostShowReloadTimer?.cancel();
+      _nativeFeedPostShowReloadTimer = null;
+      _setReloadCountdown(null);
+      if (!_nativeFeedPlaybackPaused) {
+        unawaited(_nativeFeedPostShowReloadTick());
+      }
+      return;
+    }
+    _setReloadCountdown(cur - 1);
   }
 
-  void _bumpNativeFailReloadToken() {
-    _nativeFailReloadToken++;
+  void _scheduleNativeFeedPostShowReload() {
+    _cancelNativeFeedPostShowReloadTimer();
+    final int total = _nativeFeedPostShowReloadDelay.inSeconds;
+    _setReloadCountdown(total);
+    _logNativeFeed(
+      '已启动 ${total}s 自动刷新倒计时（每秒更新），到时 remove→startNativeFeedPlayback 全自动',
+    );
+    _nativeFeedPostShowReloadTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      _onNativeFeedPostShowReloadPeriodicTick,
+    );
   }
 
-  static double contentWidthFromScreen(double screenWidth) => screenWidth - 32.w;
+  Future<void> _nativeFeedPostShowReloadTick() async {
+    if (_nativeFeedPlaybackPaused) {
+      _logNativeFeed('postShowReload：已跳过（playbackPaused=true）');
+      return;
+    }
+    _logNativeFeed(
+      'postShowReload：${_nativeFeedPostShowReloadDelay.inSeconds}s 到，'
+      'remove → 短延迟 → startNativeFeedPlayback（与手动「开始」相同：始终 load+展示）',
+    );
+    _preloadInFlight = false;
+    _nativeFeedPlatformGeneration++;
+    _setViewCreated(false, reason: 'postShowReload');
+    _setSlotState(HomeNativeSlotState.loading);
+    try {
+      await removeNativeAd();
+      _logNativeFeed('postShowReload removeNativeAd 完成');
+    } catch (e, st) {
+      _logNativeFeed('postShowReload removeNativeAd 异常: $e $st');
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await startNativeFeedPlayback();
+  }
 
-  static bool _isMapFlag(dynamic value) {
-    if (value is bool) return value;
-    if (value is num) return value != 0;
+  void _stopNativeValidAdsPoll() {
+    _nativeValidAdsPollTimer?.cancel();
+    _nativeValidAdsPollTimer = null;
+  }
+
+  void _startNativeValidAdsPoll() {
+    _stopNativeValidAdsPoll();
+    unawaited(_pollHuangZhongsheng3());
+    _nativeValidAdsPollTimer = Timer.periodic(
+      _nativeValidAdsPollInterval,
+      (_) => unawaited(_pollHuangZhongsheng3()),
+    );
+    _logNativeFeed(
+      '已启动每 ${_nativeValidAdsPollInterval.inSeconds} 秒轮询（黄忠胜3）',
+    );
+  }
+
+  bool _parseNativeIsLoading(dynamic value) {
+    if (value is! Map) return true;
+    final dynamic isLoading = value['isLoading'];
+    if (isLoading is bool) return isLoading;
+    if (isLoading is num) return isLoading != 0;
     return false;
   }
 
-  Map<String, dynamic> getAdConfig(double logicalWidth) {
+  /// 黄忠胜1 + 黄忠胜2（仅日志，不改变 load/挂载时序）。
+  Future<void> _pollHuangZhongsheng1And2() async {
+    try {
+      final bool ready = await ATNativeManager.nativeAdReady(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+      _logNativeFeed('黄忠胜1：信息流广告是否就绪（有缓存）：$ready');
+    } catch (e, st) {
+      _logNativeFeed('黄忠胜1：查询失败：$e $st');
+    }
+    try {
+      final dynamic value = await ATNativeManager.checkNativeAdLoadStatus(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+      final bool isLoading = _parseNativeIsLoading(value);
+      _logNativeFeed('黄忠胜2：信息流广告加载状态：$value');
+      _logNativeFeed(
+        '黄忠胜2：isLoading=$isLoading canShowHint=${!isLoading && (_isViewCreated || !_nativeFeedPlaybackPaused)}',
+      );
+    } catch (e, st) {
+      _logNativeFeed('黄忠胜2：查询失败：$e $st');
+    }
+  }
+
+  Future<void> _pollHuangZhongsheng3() async {
+    try {
+      final String value = await ATNativeManager.getNativeValidAds(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+      if (value.isEmpty) {
+        _logNativeFeed(
+          '黄忠胜3：信息流有效广告列表为空 '
+          '(isViewCreated=$_isViewCreated slot=$_nativeSlotState)',
+        );
+      } else {
+        _logNativeFeed('黄忠胜3：信息流有效广告列表：$value');
+      }
+    } catch (e, st) {
+      _logNativeFeed('黄忠胜3：查询失败：$e $st');
+    }
+  }
+
+  double get _nativeContentWidth => ScreenUtil().screenWidth - 20.w;
+
+  Map<String, dynamic> _nativeLoadExtraMap() {
+    return {
+      ATCommon.isNativeShow(): false,
+      ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
+        _nativeContentWidth,
+        adHeight,
+      ),
+      ATNativeManager.isAdaptiveHeight(): true,
+    };
+  }
+
+  Future<void> _invokeNativeLoadPipeline() async {
+    await ATNativeManager.loadNativeAd(
+      placementID: AppAdConfig.nativePlacementID,
+      extraMap: _nativeLoadExtraMap(),
+    );
+    _logNativeFeed('loadNativeAd 调用已返回（挂载由 nativeAdDidFinishLoading 触发）');
+    // 非阻塞 entry：finishLoading 已挂 PlatformView，await entry 完成可能触发二次 renderNativeView（no cache 卡死）
+    unawaited(
+      () async {
+        try {
+          await ATNativeManager.entryNativeScenario(
+            placementID: AppAdConfig.nativePlacementID,
+            sceneID: AppAdConfig.nativeSceneID,
+          );
+          _logNativeFeed('entryNativeScenario 已调用（非阻塞）');
+        } catch (e, st) {
+          _logNativeFeed('entryNativeScenario 异常: $e $st');
+        }
+      }(),
+    );
+  }
+
+  Future<void> preloadNativeFeedOnce() async {
+    if (_preloadInFlight) {
+      _logNativeFeed('preloadNativeFeedOnce 跳过：已在执行');
+      return;
+    }
+    try {
+      if (await nativeAdReady()) {
+        _logNativeFeed('preloadNativeFeedOnce 跳过：nativeAdReady 已为 true');
+        if (!_isViewCreated) {
+          _setViewCreated(true, reason: 'preloadNativeFeedOnce nativeAdReady');
+        }
+        _setSlotState(HomeNativeSlotState.ready);
+        return;
+      }
+    } catch (e, st) {
+      _logNativeFeed('preloadNativeFeedOnce nativeAdReady 检查异常: $e $st');
+    }
+    _preloadInFlight = true;
+    _logNativeFeed(
+      'preloadNativeFeedOnce 开始（paused=$_nativeFeedPlaybackPaused）',
+    );
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (!_preloadInFlight || !_nativeFeedPlaybackPaused) {
+        _logNativeFeed('preloadNativeFeedOnce abort: 用户已开始或已取消');
+        return;
+      }
+      await _invokeNativeLoadPipeline();
+    } catch (e, st) {
+      _logNativeFeed('preloadNativeFeedOnce 异常: $e\n$st');
+      if (_nativeFeedPlaybackPaused) {
+        _setSlotState(HomeNativeSlotState.idle);
+      }
+    } finally {
+      _preloadInFlight = false;
+    }
+  }
+
+  Future<void> loadNativeWith({bool forceShowLoading = false}) async {
+    if (_nativeFeedPlaybackPaused) {
+      _logNativeFeed(
+        'loadNativeWith 跳过：playbackPaused=true placement=${AppAdConfig.nativePlacementID}',
+      );
+      return;
+    }
+    if (forceShowLoading || !_isViewCreated) {
+      _setSlotState(HomeNativeSlotState.loading);
+    }
+    _logNativeFeed(
+      'loadNativeWith 开始 forceShowLoading=$forceShowLoading '
+      'isViewCreated=$_isViewCreated slot=$_nativeSlotState '
+      'placement=${AppAdConfig.nativePlacementID} scene=${AppAdConfig.nativeSceneID} '
+      'size=($_nativeContentWidth x $adHeight)',
+    );
+    try {
+      await _invokeNativeLoadPipeline();
+    } catch (e, st) {
+      _logNativeFeed('loadNativeWith 异常: $e\n$st');
+      if (!_nativeFeedPlaybackPaused && !_isViewCreated) {
+        _setSlotState(HomeNativeSlotState.failed);
+      }
+    }
+  }
+
+  Future<void> startNativeFeedPlayback() async {
+    _cancelNativeFeedPostShowReloadTimer();
+    _nativeFailReloadToken++;
+    _preloadInFlight = false;
+    _setPaused(false);
+    _logNativeFeed(
+      'startNativeFeedPlayback token=$_nativeFailReloadToken（始终 load）',
+    );
+    _setViewCreated(false, reason: 'startNativeFeedPlayback');
+    _setSlotState(HomeNativeSlotState.loading);
+    await _pollHuangZhongsheng1And2();
+    await loadNativeWith(forceShowLoading: true);
+    _startNativeValidAdsPoll();
+  }
+
+  Future<void> pauseNativeFeedPlayback() async {
+    _stopNativeValidAdsPoll();
+    _cancelNativeFeedPostShowReloadTimer();
+    _nativeFailReloadToken++;
+    _preloadInFlight = false;
+    _logNativeFeed('pauseNativeFeedPlayback token=$_nativeFailReloadToken');
+    _setPaused(true);
+    _setViewCreated(false, reason: 'pauseNativeFeedPlayback');
+    _setSlotState(HomeNativeSlotState.idle);
+    try {
+      await removeNativeAd();
+      _logNativeFeed('pauseNativeFeedPlayback removeNativeAd 完成');
+    } catch (e, st) {
+      _logNativeFeed('pauseNativeFeedPlayback removeNativeAd 异常: $e $st');
+    }
+  }
+
+  Future<void> startNativePlayback([double? _]) => startNativeFeedPlayback();
+
+  Future<void> pauseNativePlayback() => pauseNativeFeedPlayback();
+
+  Future<bool> nativeAdReady() async {
+    try {
+      final bool isReady = await ATNativeManager.nativeAdReady(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+      Utils.logError('原生广告：原生广告是否就绪：$isReady');
+      return isReady;
+    } catch (e) {
+      Utils.logError('原生广告：原生广告是否就绪：$e');
+      return false;
+    }
+  }
+
+  Future<bool> getNativeValidAds() async {
+    final String res = await ATNativeManager.getNativeValidAds(
+      placementID: AppAdConfig.nativePlacementID,
+    );
+    final bool has = res.isNotEmpty;
+    _logNativeFeed(
+      'getNativeValidAds placement=${AppAdConfig.nativePlacementID} hasData=$has len=${res.length}',
+    );
+    if (has) {
+      _logNativeFeed('getNativeValidAds 内容预览: ${_nativeFeedExtraPreview(res)}');
+    }
+    return has;
+  }
+
+  Future<bool> checkNativeAdLoadStatus() async {
+    try {
+      final value = await ATNativeManager.checkNativeAdLoadStatus(
+        placementID: AppAdConfig.nativePlacementID,
+      );
+      Utils.logError('检查加载状态$value');
+      final dynamic isLoading = value['isLoading'] ?? 0;
+      if (isLoading is bool) return isLoading;
+      if (isLoading is num) return isLoading != 0;
+      return false;
+    } catch (error) {
+      Utils.logError('检查原生广告状态失败: $error');
+      return false;
+    }
+  }
+
+  Map<String, dynamic> getAdConfig() {
+    final double w = _nativeContentWidth;
     return {
       ATNativeManager.parent(): ATNativeManager.createNativeSubViewAttribute(
-        logicalWidth,
+        w,
         adHeight,
         backgroundColorStr: '#FFFFFF',
       ),
@@ -147,15 +427,15 @@ class NativeTool extends ChangeNotifier {
         backgroundColorStr: '#736bba',
       ),
       ATNativeManager.mainTitle(): ATNativeManager.createNativeSubViewAttribute(
-        logicalWidth - 170.w,
+        w - 190.w,
         20.h,
-        x: 70.w,
-        y: 40.h,
-        textSize: 15.sp,
+        x: 0.w,
+        y: 0.h,
+        textSize: 8.sp,
         textColorStr: '#f31e17',
       ),
       ATNativeManager.desc(): ATNativeManager.createNativeSubViewAttribute(
-        logicalWidth - 170.w,
+        w - 190.w,
         20.h,
         x: 70.w,
         y: 70.h,
@@ -165,7 +445,7 @@ class NativeTool extends ChangeNotifier {
       ATNativeManager.cta(): ATNativeManager.createNativeSubViewAttribute(
         100.w,
         35.h,
-        x: logicalWidth - 110.w,
+        x: w - 110.w,
         y: 40.h,
         textSize: 14.sp,
         textColorStr: '#FFFFFF',
@@ -173,10 +453,10 @@ class NativeTool extends ChangeNotifier {
         cornerRadius: 4,
       ),
       ATNativeManager.mainImage(): ATNativeManager.createNativeSubViewAttribute(
-        logicalWidth - 20.w,
+        ScreenUtil().screenWidth,
         180.h,
-        x: 10.w,
-        y: 90.h,
+        x: 20.w,
+        y: 0.h,
         backgroundColorStr: '#b54747',
         cornerRadius: 4,
       ),
@@ -193,246 +473,21 @@ class NativeTool extends ChangeNotifier {
       ATNativeManager.dislike(): ATNativeManager.createNativeSubViewAttribute(
         20.sp,
         20.sp,
-        x: logicalWidth - 30.w,
+        x: w - 30.w,
         y: 10.h,
         backgroundColorStr: '#139343',
       ),
       ATNativeManager.elementsView():
           ATNativeManager.createNativeSubViewAttribute(
-            logicalWidth,
+            w - 20.w,
             25.h,
-            x: 0,
+            x: 10.w,
             y: adHeight - 25.h,
             textSize: 10.sp,
             textColorStr: '#FFFFFF',
             backgroundColorStr: '#1e1f22',
           ),
     };
-  }
-
-  Future<void> startNativePlayback(double logicalWidth) async {
-    _contentLogicalWidth = logicalWidth;
-    _bumpNativeFailReloadToken();
-    _nativePlaybackPaused = false;
-    _failRetryCount = 0;
-    _impressionRecordedGeneration = -1;
-    _refreshPreloadInFlight = false;
-    _swapInProgress = false;
-    _stopNativeWaitTick();
-    _setNativePlatformViewReady(false);
-
-    _loadPurpose = _NativeLoadPurpose.initial;
-    _setNativeSlotState(NativeSlotState.loading);
-    await loadNativeWith(logicalWidth);
-    _startRefreshPoll();
-  }
-
-  Future<void> pauseNativePlayback() async {
-    _bumpNativeFailReloadToken();
-    _nativePlaybackPaused = true;
-    _failRetryCount = 0;
-    _impressionRecordedGeneration = -1;
-    _refreshPreloadInFlight = false;
-    _swapInProgress = false;
-    _currentDisplayedReqId = null;
-    _stopRefreshPoll();
-    _stopNativeWaitTick();
-    _setNativePlatformViewReady(false);
-    await removeNativeAd();
-    _setNativeSlotState(NativeSlotState.idle);
-  }
-
-  void _startRefreshPoll() {
-    _stopRefreshPoll();
-    _refreshPollTimer = Timer.periodic(_refreshPollInterval, (_) {
-      unawaited(_evaluateAutoRefresh());
-    });
-  }
-
-  void _stopRefreshPoll() {
-    _refreshPollTimer?.cancel();
-    _refreshPollTimer = null;
-  }
-
-  Future<void> _invokeNativeLoadPipeline(double logicalWidth) async {
-    // Android 插件 loadNativeAd 未回传 result，不可无限 await
-    try {
-      await ATNativeManager.loadNativeAd(
-        placementID: AppAdConfig.nativePlacementID,
-        extraMap: {
-          ATCommon.isNativeShow(): false,
-          ATCommon.getAdSizeKey(): ATNativeManager.createNativeSubViewAttribute(
-            logicalWidth,
-            adHeight,
-          ),
-          ATNativeManager.isAdaptiveHeight(): true,
-        },
-      ).timeout(const Duration(milliseconds: 300));
-    } on TimeoutException {
-      // 忽略：加载结果由 nativeListen 回调处理
-    } catch (e) {
-      _logNativeFeed('loadNativeAd err: $e');
-    }
-  }
-
-  Future<void> loadNativeWith(double logicalWidth) async {
-    if (_nativePlaybackPaused) return;
-    _logNativeFeed('loadNativeWith purpose=$_loadPurpose');
-
-    await _invokeNativeLoadPipeline(logicalWidth);
-  }
-
-  Future<bool> nativeAdReady() async {
-    try {
-      return await ATNativeManager.nativeAdReady(
-        placementID: AppAdConfig.nativePlacementID,
-      );
-    } catch (e) {
-      Utils.logError('原生广告是否就绪: $e');
-      return false;
-    }
-  }
-
-  Future<bool> _isNativeReadyForShow() async {
-    try {
-      final Map<dynamic, dynamic> status =
-          await ATNativeManager.checkNativeAdLoadStatus(
-            placementID: AppAdConfig.nativePlacementID,
-          );
-      return _isMapFlag(status['isReady']) && !_isMapFlag(status['isLoading']);
-    } catch (e) {
-      Utils.logError('检查信息流状态失败: $e');
-      return await nativeAdReady();
-    }
-  }
-
-  static String _extractReqId(Map<dynamic, dynamic> map) {
-    final dynamic value = map['req_id'] ?? map['reqId'];
-    return value?.toString() ?? '';
-  }
-
-  static bool _isFrequencyFilteredError(String requestMessage) {
-    return requestMessage.contains('4005') ||
-        requestMessage.toLowerCase().contains('filtered');
-  }
-
-  /// 从 [checkNativeAdLoadStatus] 的 adInfo（JSON 字符串或 Map）解析 req_id
-  static String? _parseReqIdFromAdInfo(dynamic adInfo) {
-    if (adInfo == null) return null;
-    try {
-      if (adInfo is Map) {
-        final String id = _extractReqId(adInfo);
-        return id.isEmpty ? null : id;
-      }
-      if (adInfo is String && adInfo.isNotEmpty) {
-        final dynamic decoded = jsonDecode(adInfo);
-        if (decoded is Map) {
-          final String id = _extractReqId(decoded);
-          return id.isEmpty ? null : id;
-        }
-      }
-    } catch (e) {
-      Utils.logError('解析 topAdInfo 失败: $e');
-    }
-    return null;
-  }
-
-  Future<void> _captureCurrentReqIdFromCache() async {
-    if (_currentDisplayedReqId != null && _currentDisplayedReqId!.isNotEmpty) {
-      return;
-    }
-    try {
-      final Map<dynamic, dynamic> status =
-          await ATNativeManager.checkNativeAdLoadStatus(
-            placementID: AppAdConfig.nativePlacementID,
-          );
-      final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
-      if (topReqId == null) return;
-      _currentDisplayedReqId = topReqId;
-      _logNativeFeed('当前条 req_id=$_currentDisplayedReqId');
-    } catch (e) {
-      Utils.logError('读取信息流 topAdInfo 失败: $e');
-    }
-  }
-
-  /// 轮询 + 预加载完成时调用：以 SDK topAdInfo 为准换条（尊重 Taku 后台展示间隔/频次）
-  Future<void> _evaluateAutoRefresh() async {
-    if (_nativePlaybackPaused || _swapInProgress) return;
-    if (_nativeSlotState != NativeSlotState.ready) return;
-
-    try {
-      final Map<dynamic, dynamic> status =
-          await ATNativeManager.checkNativeAdLoadStatus(
-            placementID: AppAdConfig.nativePlacementID,
-          );
-      if (_isMapFlag(status['isLoading'])) return;
-
-      await _captureCurrentReqIdFromCache();
-
-      final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
-      final bool ready = _isMapFlag(status['isReady']);
-      final String? current = _currentDisplayedReqId;
-
-      if (ready &&
-          topReqId != null &&
-          current != null &&
-          current.isNotEmpty &&
-          topReqId != current &&
-          _impressionRecordedGeneration == _slotGeneration) {
-        _logNativeFeed('SDK 可换下一条 top=$topReqId current=$current');
-        await _trySwapToNextAd(nextReqId: topReqId);
-        return;
-      }
-
-      if (_impressionRecordedGeneration == _slotGeneration &&
-          !_refreshPreloadInFlight) {
-        unawaited(_startRefreshPreload());
-      }
-    } catch (e, st) {
-      Utils.logError('信息流换条检测失败: $e', error: e, stackTrace: st);
-    }
-  }
-
-  Future<void> _trySwapToNextAd({required String nextReqId}) async {
-    if (_nativePlaybackPaused || _swapInProgress) return;
-    if (_nativeSlotState != NativeSlotState.ready) return;
-    if (_impressionRecordedGeneration != _slotGeneration) return;
-    if (!await _isNativeReadyForShow()) return;
-
-    final Map<dynamic, dynamic> status =
-        await ATNativeManager.checkNativeAdLoadStatus(
-          placementID: AppAdConfig.nativePlacementID,
-        );
-    final String? topReqId = _parseReqIdFromAdInfo(status['adInfo']);
-    if (topReqId == null || topReqId != nextReqId) return;
-
-    _swapInProgress = true;
-    try {
-      _setNativePlatformViewReady(false);
-      notifyListeners();
-      await removeNativeAd();
-      _slotGeneration++;
-      _impressionRecordedGeneration = -1;
-      _currentDisplayedReqId = nextReqId;
-      _stopNativeWaitTick();
-      await Future<void>.delayed(_platformViewRemountDelay);
-      if (_nativePlaybackPaused) return;
-      _loadPurpose = _NativeLoadPurpose.swapRemount;
-      _setNativeSlotState(NativeSlotState.loading);
-      _logNativeFeed('已换条 slotGen=$_slotGeneration req_id=$nextReqId，重新 load');
-      await loadNativeWith(_contentLogicalWidth);
-    } catch (e, st) {
-      Utils.logError('信息流换条失败: $e', error: e, stackTrace: st);
-    } finally {
-      _swapInProgress = false;
-    }
-  }
-
-  Future<void> _startRefreshPreload() async {
-    if (_nativePlaybackPaused || _refreshPreloadInFlight) return;
-    _refreshPreloadInFlight = true;
-    _loadPurpose = _NativeLoadPurpose.refreshPreload;
-    await loadNativeWith(_contentLogicalWidth);
   }
 
   Future<void> nativeUpDataADFn(ATNativeResponse event) async {
@@ -479,132 +534,148 @@ class NativeTool extends ChangeNotifier {
   }
 
   void nativeListen() {
-    if (_nativeAdSubscription != null) return;
+    if (_nativeAdSubscription != null) {
+      return;
+    }
     _nativeAdSubscription = ATListenerManager.nativeEventHandler.listen((
       value,
     ) async {
       _logNativeFeed(
-        'evt status=${value.nativeStatus} placement=${value.placementID} '
-        'msg=${value.requestMessage} extra=${_nativeFeedExtraPreview(value.extraMap)}',
+        '<<< 回调 status=${value.nativeStatus} placementID=${value.placementID} '
+        'requestMessage=${value.requestMessage} '
+        'paused=$_nativeFeedPlaybackPaused '
+        'isViewCreated=$_isViewCreated slot=$_nativeSlotState '
+        'extra=${_nativeFeedExtraPreview(value.extraMap)}',
       );
       switch (value.nativeStatus) {
         case NativeStatus.nativeAdDidFinishLoading:
-          _logNativeFeed('加载完成 purpose=$_loadPurpose placement=${value.placementID}');
-          if (_nativePlaybackPaused) return;
-          switch (_loadPurpose) {
-            case _NativeLoadPurpose.initial:
-            case _NativeLoadPurpose.retry:
-              if (_nativeSlotState != NativeSlotState.loading) return;
-              _slotGeneration++;
-              _failRetryCount = 0;
-              _setNativeSlotState(NativeSlotState.ready);
-              _setNativePlatformViewReady(true);
-              unawaited(_captureCurrentReqIdFromCache());
-            case _NativeLoadPurpose.swapRemount:
-              if (_nativeSlotState != NativeSlotState.loading) return;
-              _failRetryCount = 0;
-              _setNativeSlotState(NativeSlotState.ready);
-              _setNativePlatformViewReady(true);
-              _logNativeFeed('swapRemount 加载完成，允许挂载 PlatformView');
-            case _NativeLoadPurpose.refreshPreload:
-              _refreshPreloadInFlight = false;
-              await _evaluateAutoRefresh();
+          _setViewCreated(true, reason: 'nativeAdDidFinishLoading');
+          _setSlotState(HomeNativeSlotState.ready);
+          unawaited(_pollHuangZhongsheng1And2());
+          if (_nativeFeedPlaybackPaused) {
+            _logNativeFeed(
+              'nativeAdDidFinishLoading 预加载完成（UI 仍为暂停）placement=${value.placementID} '
+              '→ isViewCreated=true 供后续「开始信息流」直接展示',
+            );
+          } else {
+            _logNativeFeed(
+              'nativeAdDidFinishLoading → isViewCreated=true slot=ready placement=${value.placementID}',
+            );
           }
           break;
 
         case NativeStatus.nativeAdDidShowNativeAd:
-        case NativeStatus.nativeAdDidLoadSuccessDraw:
-          _logNativeFeed('展示 placement=${value.placementID}');
-          if (!_nativePlatformViewReady) {
-            _setNativePlatformViewReady(true);
+          if (_nativeFeedPlaybackPaused) {
+            _logNativeFeed(
+              'nativeAdDidShowNativeAd 忽略：playbackPaused=true placement=${value.placementID}',
+            );
+            return;
           }
-          await _onNativeImpression(value);
+          _logNativeFeed(
+            'nativeAdDidShowNativeAd 展示成功 placement=${value.placementID} '
+            '保持 isViewCreated=true slot=ready（不 notify 槽位，避免二次 renderNativeView）',
+          );
+          await _adStatsNotifier.addAdInfos(
+            AdInfo.fromTakuExtra(
+              extraMap: value.extraMap,
+              placementID: value.placementID.toString(),
+              createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
+              adType: AdInfo.typeNative,
+            ),
+          );
+          _logNativeFeed('nativeAdDidShowNativeAd 已写入 AdInfo');
+          await nativeUpDataADFn(value);
+          final String pid = value.placementID.toString();
+          if (pid == AppAdConfig.nativePlacementID) {
+            _scheduleNativeFeedPostShowReload();
+          } else {
+            _logNativeFeed(
+              'nativeAdDidShowNativeAd 跳过 postShowReload：placement=$pid '
+              '!= ${AppAdConfig.nativePlacementID}',
+            );
+          }
           break;
 
         case NativeStatus.nativeAdDidTapCloseButton:
-          _logNativeFeed('用户关闭 placement=${value.placementID}');
-          await pauseNativePlayback();
+          _logNativeFeed(
+            'nativeAdDidTapCloseButton placement=${value.placementID}',
+          );
           break;
 
         case NativeStatus.nativeAdFailToLoadAD:
-          _logNativeFeed(
-            '加载失败 purpose=$_loadPurpose ${value.requestMessage}',
-          );
-          if (_nativePlaybackPaused) return;
-          if (_loadPurpose == _NativeLoadPurpose.refreshPreload) {
-            _refreshPreloadInFlight = false;
-            if (_isFrequencyFilteredError(value.requestMessage)) {
-              _logNativeFeed('预加载频次限制(4005)，等待轮询再试');
-            } else {
-              _logNativeFeed('预加载失败，等待轮询再试');
+          final bool wasShowing =
+              _isViewCreated && !_nativeFeedPlaybackPaused;
+          final bool hasValid = await getNativeValidAds();
+          if (wasShowing && !hasValid) {
+            // 老项目 show 回调注释：展示后 validAds 可能短暂为空，勿拆掉 PlatformView（一闪而过）
+            _logNativeFeed(
+              'failToLoad 播放中 validAds 空 → 保持 isViewCreated=true 防一闪 '
+              'msg=${value.requestMessage}',
+            );
+          } else {
+            _setViewCreated(
+              hasValid,
+              reason: 'nativeAdFailToLoadAD hasValid=$hasValid',
+            );
+            if (!_isViewCreated) {
+              if (_nativeFeedPlaybackPaused) {
+                _setSlotState(HomeNativeSlotState.idle);
+                _logNativeFeed(
+                  'nativeAdFailToLoadAD 预加载失败（暂停态）placement=${value.placementID} '
+                  'msg=${value.requestMessage}',
+                );
+              } else {
+                _setSlotState(HomeNativeSlotState.failed);
+              }
             }
-            return;
           }
-          if (_loadPurpose == _NativeLoadPurpose.swapRemount) {
-            _logNativeFeed('swapRemount 加载失败 ${value.requestMessage}');
-            _setNativeSlotState(NativeSlotState.failed);
-            return;
-          }
-          _setNativeSlotState(NativeSlotState.failed);
-          if (_failRetryCount >= _maxFailRetries) return;
-          _failRetryCount++;
+          unawaited(_pollHuangZhongsheng3());
+          _logNativeFeed(
+            'nativeAdFailToLoadAD placement=${value.placementID} '
+            'msg=${value.requestMessage} isViewCreated=$_isViewCreated '
+            'slot=$_nativeSlotState wasShowing=$wasShowing hasValid=$hasValid',
+          );
           final int token = _nativeFailReloadToken;
-          await Future.delayed(const Duration(seconds: 2));
+          await Future<void>.delayed(const Duration(seconds: 2));
           if (token != _nativeFailReloadToken) {
-            _logNativeFeed('failToLoad 取消重试：token 已变');
+            _logNativeFeed(
+              'nativeAdFailToLoadAD 取消重试：token 已变 ($token != $_nativeFailReloadToken)',
+            );
             return;
           }
-          if (_nativePlaybackPaused) return;
-          _loadPurpose = _NativeLoadPurpose.retry;
-          _setNativeSlotState(NativeSlotState.loading);
-          await loadNativeWith(_contentLogicalWidth);
+          if (_nativeFeedPlaybackPaused) {
+            _logNativeFeed('nativeAdFailToLoadAD 取消重试：playbackPaused=true');
+            return;
+          }
+          _logNativeFeed('nativeAdFailToLoadAD → 2s 后重试 loadNativeWith');
+          await loadNativeWith(forceShowLoading: false);
           break;
 
         default:
           _logNativeFeed(
-            '其他 status=${value.nativeStatus} placement=${value.placementID}',
+            '其它事件 status=${value.nativeStatus} placement=${value.placementID} '
+            'msg=${value.requestMessage}',
           );
           break;
       }
     });
-  }
-
-  Future<void> _onNativeImpression(ATNativeResponse value) async {
-    if (_impressionRecordedGeneration == _slotGeneration) return;
-
-    final String reqId = value.extraMap['req_id']?.toString() ?? '';
-    if (reqId.isNotEmpty && _recordedReqIds.contains(reqId)) return;
-    if (reqId.isNotEmpty) _recordedReqIds.add(reqId);
-
-    _impressionRecordedGeneration = _slotGeneration;
-
-    if (reqId.isNotEmpty) {
-      _currentDisplayedReqId = reqId;
-    }
-
-    _startNativeWaitTick();
-
-    await _adStatsNotifier.addAdInfos(
-      AdInfo.fromTakuExtra(
-        extraMap: value.extraMap,
-        placementID: value.placementID.toString(),
-        createdTime: Jiffy.now().format(pattern: 'yyyy-MM-dd HH:mm:ss'),
-        adType: AdInfo.typeNative,
-      ),
+    _logNativeFeed(
+      'nativeListen 已订阅 nativeEventHandler placement=${AppAdConfig.nativePlacementID}',
     );
-    await nativeUpDataADFn(value);
   }
 
   Future<void> removeNativeAd() async {
-    // anythink_sdk Android 端 removeNativeAd 未调用 result.success，await 会永久挂起
-    try {
-      await ATNativeManager.removeNativeAd(
-        placementID: AppAdConfig.nativePlacementID,
-      ).timeout(const Duration(milliseconds: 300));
-    } on TimeoutException {
-      // 忽略：原生侧通常已执行 removeView
-    } catch (e) {
-      Utils.logError('removeNativeAd: $e');
-    }
+    _logNativeFeed('removeNativeAd placement=${AppAdConfig.nativePlacementID}');
+    await ATNativeManager.removeNativeAd(
+      placementID: AppAdConfig.nativePlacementID,
+    );
+  }
+
+  @override
+  void dispose() {
+    _stopNativeValidAdsPoll();
+    _cancelNativeFeedPostShowReloadTimer();
+    _nativeAdSubscription?.cancel();
+    super.dispose();
   }
 }

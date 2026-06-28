@@ -9,82 +9,84 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// 首页信息流槽位：仅 SDK 回调确认 View 已创建后才挂载 [PlatformNativeWidget]。
+/// 首页信息流槽位：[NativeTool.isViewCreated] 为 true 时挂载 PlatformView。
 class HomeNativeFeedSlot extends ConsumerWidget {
   const HomeNativeFeedSlot({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!Platform.isAndroid) {
-      return _nativePlaceholder(
-        height: 250.h,
-        message: HomeUiStrings.nativeAndroidOnly,
+      return Center(
+        child: Text(
+          HomeUiStrings.nativeAndroidOnly,
+          style: TextStyle(fontSize: 13.sp, color: Colors.black54),
+        ),
       );
     }
 
-    final nativeTool = ref.watch(nativeToolProvider);
-    final double contentWidth = NativeTool.contentWidthFromScreen(
-      MediaQuery.sizeOf(context).width,
-    );
-
+    final native = ref.watch(nativeToolProvider);
     return ListenableBuilder(
-      listenable: nativeTool,
-      builder: (context, _) {
-        final bool paused = nativeTool.nativePlaybackPaused;
-        final NativeSlotState state = nativeTool.nativeSlotState;
-        final double slotHeight = nativeTool.adHeight;
-
-        if (paused || state == NativeSlotState.idle) {
-          return _nativePlaceholder(
-            height: slotHeight,
-            message: HomeUiStrings.nativeTapToLoad,
+      listenable: native,
+      builder: (_, __) {
+        if (native.nativeFeedPlaybackPaused) {
+          return _placeholder(
+            HomeUiStrings.nativeTapToLoad,
+            minH: native.adHeight + 16.h,
           );
         }
-
-        if (!nativeTool.nativePlatformViewReady) {
-          final String msg = switch (state) {
-            NativeSlotState.loading => HomeUiStrings.nativeLoading,
-            NativeSlotState.failed => HomeUiStrings.nativeFailed,
-            NativeSlotState.ready => HomeUiStrings.nativeLoading,
-            NativeSlotState.idle => HomeUiStrings.nativeTapToLoad,
-          };
-          return _nativePlaceholder(height: slotHeight, message: msg);
-        }
-
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: SizedBox(
-            height: slotHeight,
-            width: contentWidth,
-            child: KeyedSubtree(
-              key: ValueKey<int>(nativeTool.slotGeneration),
+        if (native.isViewCreated) {
+          return SizedBox(
+            key: ValueKey<int>(native.nativeFeedPlatformGeneration),
+            height: native.adHeight + 16.h,
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: PlatformNativeWidget(
                 AppAdConfig.nativePlacementID,
-                nativeTool.getAdConfig(contentWidth),
+                native.getAdConfig(),
+                sceneID: AppAdConfig.nativeSceneID,
                 isAdaptiveHeight: true,
               ),
             ),
-          ),
-        );
+          );
+        }
+        switch (native.nativeSlotState) {
+          case HomeNativeSlotState.idle:
+            return _placeholder(
+              HomeUiStrings.nativeTapToLoad,
+              minH: native.adHeight + 16.h,
+            );
+          case HomeNativeSlotState.loading:
+            return _placeholder(
+              HomeUiStrings.nativeLoading,
+              minH: native.adHeight + 16.h,
+            );
+          case HomeNativeSlotState.failed:
+            return _placeholder(
+              HomeUiStrings.nativeFailed,
+              minH: native.adHeight + 16.h,
+            );
+          case HomeNativeSlotState.ready:
+            return _placeholder(
+              HomeUiStrings.nativeWaitingShow,
+              minH: native.adHeight + 16.h,
+            );
+        }
       },
     );
   }
 
-  Widget _nativePlaceholder({required double height, required String message}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Material(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(6.r),
-        child: SizedBox(
-          height: height,
-          width: double.infinity,
-          child: Center(
-            child: Text(
-              message,
-              style: TextStyle(fontSize: 12.sp, color: Colors.black54),
-              textAlign: TextAlign.center,
-            ),
+  Widget _placeholder(String text, {required double minH}) {
+    return Material(
+      color: Colors.grey.shade300,
+      child: SizedBox(
+        width: double.infinity,
+        height: minH,
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 11.sp, color: Colors.black87),
+            textAlign: TextAlign.center,
           ),
         ),
       ),

@@ -25,7 +25,9 @@ class AdStatsNotifier extends Notifier<AdStatsState> {
     final List<AdInfo>? adInfoList = await _repository.loadAdInfos();
     Utils.logError('到底是什么$adInfoList');
     if (adInfoList != null) {
-      state = state.copyWith(adInfos: List<AdInfo>.from(adInfoList));
+      state = state.copyWith(
+        adInfos: AdInfo.sortedByCreatedTimeDesc(adInfoList),
+      );
     }
   }
 
@@ -41,7 +43,10 @@ class AdStatsNotifier extends Notifier<AdStatsState> {
   }
 
   Future<void> addAdInfos(AdInfo value) async {
-    final List<AdInfo> next = List<AdInfo>.from(state.adInfos)..add(value);
+    final List<AdInfo> next = AdInfo.sortedByCreatedTimeDesc([
+      ...state.adInfos,
+      value,
+    ]);
     state = state.copyWith(adInfos: next);
     await _repository.saveAdInfos(next);
     Utils.logError('当前记录：${state.adInfos}');

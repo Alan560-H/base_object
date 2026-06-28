@@ -12,7 +12,7 @@ class AdRecordPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(adStatsProvider);
     final bannerTool = ref.watch(bannerToolProvider);
-    final List<AdInfo> list = stats.adInfos.reversed.toList();
+    final List<AdInfo> list = stats.adInfos;
 
     return Scaffold(
       appBar: AppBar(title: const Text('收益列表')),

@@ -18,7 +18,7 @@ class AdInfo {
   }
 
   /// 界面「预估收益」与首页汇总使用的系数（持久化仍为完整 [publisherRevenue]）分成
-  static const double displayRevenueShare = 0.7;
+  static const double displayRevenueShare = 0.2;
 
   /// [formatDisplayRevenue] 小数位数；汇总金额再对该和做一次同位数格式化
   static const int displayRevenueFractionDigits = 4;
@@ -54,6 +54,17 @@ class AdInfo {
     this.createdTime, {
     this.adType = typeRewarded,
   });
+
+  /// 按 [createdTime] 降序（最新在前）；格式为 `yyyy-MM-dd HH:mm:ss` 时可字符串比较。
+  static List<AdInfo> sortedByCreatedTimeDesc(Iterable<AdInfo> items) {
+    final List<AdInfo> list = List<AdInfo>.from(items);
+    list.sort((AdInfo a, AdInfo b) {
+      final int byTime = b.createdTime.compareTo(a.createdTime);
+      if (byTime != 0) return byTime;
+      return b.reqId.compareTo(a.reqId);
+    });
+    return list;
+  }
 
   /// 将AdInfo实例转换为JSON格式的Map
   Map<String, dynamic> toJson() {
