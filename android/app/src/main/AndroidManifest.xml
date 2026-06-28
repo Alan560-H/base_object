@@ -25,7 +25,7 @@
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="吃药助手"
+        android:label="如意盒子"
         android:networkSecurityConfig="@xml/net_config"
         tools:replace="android:label,android:allowBackup"
         android:theme="@style/AppTheme"

@@ -3,13 +3,13 @@ class AppAdConfig {
   AppAdConfig._();
 
   /// Taku 应用 ID（[InitTool.initTopon]）
-  static const String appidStr = 'a6a3bdafad0763';
+  static const String appidStr = 'a68ada29a8380c';
 
   /// Taku App Key
-  static const String appidkeyStr = 'aae845a3b9c714a789ff6f491dbbdf0a6';
+  static const String appidkeyStr = 'a18899a8b8b91ea35ba2138f06d22d980';
 
   /// 横幅广告位
-  static const String bannerPlacementID = 'b6a3e7cccd4ba1';
+  static const String bannerPlacementID = 'b69de35953c985';
 
   /// 原生信息流广告位（[NativeTool]）
   static const String nativePlacementID = 'b6a06907ae251e';
