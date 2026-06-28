@@ -134,7 +134,7 @@ dependencies {
 //    //GDT
 //    api("com.anythink.sdk:adapter-taku-gdt:6.5.15")
 //    api("com.qq.e.union:union:4.642.1512")
-    // 本地 aar/jar 依赖
+    // 本地 aar/jar：Taku 核心 + 五形态 + 优量汇 GDT（见 libs 目录，勿随意增删其它广告源 aar）
     api(fileTree(mapOf(
         "dir" to "libs", // 指向 app 模块内的 libs 目录（相对路径）
         "include" to listOf("*.aar", "*.jar"), // 包含 libs 下所有 .aar 和 .jar 文件

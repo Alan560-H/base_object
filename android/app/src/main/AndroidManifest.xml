@@ -33,28 +33,7 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-        <!-- Sigmob 已移除：APK 中无 SigmobFileV4Provider 会触发 ClassNotFoundException，故注释
-        <provider
-            android:name="com.sigmob.sdk.SigmobFileV4Provider"
-            android:authorities="${applicationId}.sigprovider"
-            android:exported="false"
-            android:initOrder="200"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/anythink_bk_sigmob_file_path"/>
-        </provider> -->
-        <!-- 美数文件提供者 -->
-        <provider
-            android:name="com.meishu.sdk.core.service.MeishuFileProvider"
-            android:authorities="${applicationId}.MeishuFileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/anythink_bk_meishu_file_path" />
-        </provider>
-<!--        腾讯广点通-->
+        <!-- 腾讯优量汇（GDT） -->
         <provider
             android:name="com.qq.e.comm.GDTFileProvider"
             android:authorities="${applicationId}.gdt.fileprovider"
@@ -64,17 +43,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/anythink_bk_gdt_file_path" />
         </provider>
-<!--        倍兹-->
-<!--        <provider-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="${applicationId}.fileprovider"-->
-<!--            android:grantUriPermissions="true"-->
-<!--            android:exported="false"-->
-<!--        >-->
-<!--        <meta-data-->
-<!--            android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--            android:resource="@xml/beizi_file_path" />-->
-<!--    </provider>-->
         <meta-data
             android:name="com.openinstall.APP_KEY"
             android:value="kl25pf"/>
