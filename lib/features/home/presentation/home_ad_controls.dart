@@ -20,11 +20,7 @@ class HomeAdControls extends ConsumerWidget {
     final double bottomInset = bannerTool.contentBottomInset(context);
 
     return ListenableBuilder(
-      listenable: Listenable.merge([
-        bannerTool,
-        native,
-        native.reloadCountdownListenable,
-      ]),
+      listenable: Listenable.merge([bannerTool, native]),
       builder: (context, _) {
         final bool bannerPaused = bannerTool.bannerPlaybackPaused;
         final HomeBannerSlotState bannerState = bannerTool.bannerSlotState;
@@ -40,14 +36,11 @@ class HomeAdControls extends ConsumerWidget {
         final HomeNativeSlotState nativeState = native.nativeSlotState;
         final bool nativeLoading =
             !nativePaused && nativeState == HomeNativeSlotState.loading;
-        final int? reloadCd = native.nativeFeedAutoReloadCountdown;
         final String nativeBtnText = nativePaused
             ? HomeUiStrings.startNativeFeed
             : nativeLoading
                 ? HomeUiStrings.loadingEllipsis
-                : (reloadCd != null && reloadCd > 0)
-                    ? '${HomeUiStrings.stopNativeFeed}（$reloadCd）'
-                    : HomeUiStrings.stopNativeFeed;
+                : HomeUiStrings.stopNativeFeed;
 
         return Padding(
           padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h + bottomInset),
