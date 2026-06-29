@@ -56,7 +56,7 @@ dependencies:
   # 启动 URL 的插件（支持 Web） https://github.com/flutter/packages/tree/main/packages/url_launcher
   url_launcher: ^6.3.2
   # 广告（Taku / TopOn）
-  anythink_sdk: ^1.0.7
+  anythink_sdk: ^1.0.12
   # 查询应用程序包信息的 API
   package_info_plus: ^8.3.0
   # 获取 OAID（Android）

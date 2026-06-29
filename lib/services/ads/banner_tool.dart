@@ -274,6 +274,35 @@ class BannerTool extends ChangeNotifier {
             ),
           );
           break;
+        case BannerStatus.bannerAdDidMultipleLoaded:
+          Utils.logError(
+            "横幅广告 bannerAdDidMultipleLoaded ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+          );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: '多条广告加载完成',
+            ),
+          );
+          break;
+        case BannerStatus.bannerAdDidAdSourceBiddingAttempt:
+        case BannerStatus.bannerAdDidAdSourceBiddingFilled:
+        case BannerStatus.bannerAdDidAdSourceBiddingFail:
+        case BannerStatus.bannerAdDidAdSourceAttempt:
+        case BannerStatus.bannerAdDidAdSourceLoadFilled:
+        case BannerStatus.bannerAdDidAdSourceLoadFail:
+          Utils.logError(
+            "横幅广告 ${value.bannerStatus} ---- placementID: ${value.placementID} ---- extra:${value.extraMap}",
+          );
+          AdLogCollector.addLog(
+            AdLogFormatter.bannerEvent(
+              placementId: value.placementID.toString(),
+              extraMap: value.extraMap,
+              desc: value.bannerStatus.toString(),
+            ),
+          );
+          break;
         case BannerStatus.bannerAdUnknown:
           Utils.logError("横幅广告 bannerAdUnknown");
           AdLogCollector.addLog(

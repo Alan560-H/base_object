@@ -21,10 +21,10 @@ packages:
     dependency: "direct main"
     description:
       name: anythink_sdk
-      sha256: "993b5e718ae48a20d54f07d1d4779225f465b3a782088e5e3289f55cbcb63f6a"
+      sha256: e3be5a2a32d8a12d1f7ce0f5f54b290cac94a5693952ced0e6e50c3d0df52a01
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.7"
+    version: "1.0.12"
   archive:
     dependency: transitive
     description:

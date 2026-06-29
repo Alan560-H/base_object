@@ -218,6 +218,24 @@ class RewarderTool {
           '激励广告 Again 点击 ---- placementID: ${value.placementID} ---- extra:${value.extraMap}',
         );
         break;
+      case RewardedStatus.rewardedVideoDidMultipleLoaded:
+        Utils.logError(
+          '激励广告 多条加载完成 ---- placementID: ${value.placementID} ---- extra:${value.extraMap}',
+        );
+        if (_pendingShow) {
+          _safePresentFromListener();
+        }
+        break;
+      case RewardedStatus.rewardedVideoDidAdSourceBiddingAttempt:
+      case RewardedStatus.rewardedVideoDidAdSourceBiddingFilled:
+      case RewardedStatus.rewardedVideoDidAdSourceBiddingFail:
+      case RewardedStatus.rewardedVideoDidAdSourceAttempt:
+      case RewardedStatus.rewardedVideoDidAdSourceLoadFilled:
+      case RewardedStatus.rewardedVideoDidAdSourceLoadFail:
+        Utils.logError(
+          '激励广告 ${value.rewardStatus} ---- placementID: ${value.placementID} ---- extra:${value.extraMap}',
+        );
+        break;
       case RewardedStatus.rewardedVideoUnknown:
         Utils.logError('激励广告 rewardedVideoUnknown');
         break;
