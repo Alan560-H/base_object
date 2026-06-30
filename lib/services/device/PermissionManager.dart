@@ -7,6 +7,7 @@ class PermissionManager {
     Map<Permission, PermissionStatus> statuses =
         await [
           Permission.bluetooth,
+          Permission.phone,
         ].request();
     // 打印每个权限的状态
     statuses.forEach((permission, status) {

@@ -7,13 +7,19 @@
 -keep class io.flutter.plugins.** { *; }
 
 # Keep MainActivity and MethodChannel usage
--keep class com.recorder.MainActivity { *; }
+-keep class com.xxrj.MainActivity { *; }
 
-# Anythink / 优量汇 GDT（按需补充 keep，若崩溃再加）
+# Anythink / 优量汇 GDT / SDM（按需补充 keep，若崩溃再加）
 -keep class com.anythink.** { *; }
 -dontwarn com.anythink.**
+-keep class com.anythink.network.** { *; }
+-keepclassmembers class com.anythink.network.** { public *; }
+-dontwarn com.anythink.china.api.**
+-keep class com.anythink.china.api.** { *; }
 -keep class com.qq.e.** { *; }
 -dontwarn com.qq.e.**
+-keep class com.smartdigimkt.** { *; }
+-dontwarn com.smartdigimkt.**
 
 # 保留 native 方法
 -keepclasseswithmembernames class * {

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 检查网络状态 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入外部存储权限 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 检查wifi网络状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- Taku 中国区 SDK 建议 -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 允许 APP触发 “安装 APK” 的系统弹窗（如 APP 内下载更新包后提示用户安装） -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 读取外部存储权限 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 允许修改wifi状态 -->
@@ -25,7 +26,7 @@
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="拾音机"
+        android:label="本地拾光"
         android:networkSecurityConfig="@xml/net_config"
         tools:replace="android:label,android:allowBackup"
         android:theme="@style/AppTheme"
