@@ -14,7 +14,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jiffy/jiffy.dart';
 
 /// 首页信息流槽位状态
-enum HomeNativeSlotState { idle, loading, ready, failed }
+enum HomeNativeSlotState { idle, loading, ready, failed, noFill }
 
 String _nativeFeedExtraPreview(dynamic extra) {
   if (extra == null) return 'null';
@@ -86,7 +86,18 @@ class NativeTool extends ChangeNotifier {
   int _nativeFeedFillPollToken = 0;
   bool _nativeLoadPipelineRequestedWhileWaiting = false;
   Timer? _nativeValidAdsPollTimer;
+  Timer? _nativePollingTimer;
+  Timer? _nativePollingCountdownTimer;
+  int _nativePollingToken = 0;
+  int _nativePollingCountdownToken = 0;
+  DateTime? _lastNativeShowAt;
   StreamSubscription<ATNativeResponse>? _nativeAdSubscription;
+
+  bool get _nativePollingEnabled =>
+      globalContainer.read(homeAdPollingProvider).nativePollingEnabled;
+
+  int get _nativePollingIntervalSeconds =>
+      globalContainer.read(homeAdPollingProvider).nativeIntervalSeconds;
 
   double get adHeight => 250.h;
 
@@ -128,6 +139,7 @@ class NativeTool extends ChangeNotifier {
   }
 
   void _startNativeValidAdsPoll() {
+    if (_nativePollingEnabled) return;
     _stopNativeValidAdsPoll();
     unawaited(_pollHuangZhongsheng3());
     _nativeValidAdsPollTimer = Timer.periodic(
@@ -372,12 +384,20 @@ class NativeTool extends ChangeNotifier {
       _stopNativeFeedFillPoll();
       if (_isViewCreated) {
         _logNativeFeed('轮询：黄忠胜1 已就绪且 isViewCreated=true，跳过重复 load');
-        _startNativeValidAdsPoll();
+        if (!_nativePollingEnabled) {
+          _startNativeValidAdsPoll();
+        }
         return;
       }
-      _logNativeFeed('轮询：黄忠胜1 已就绪 → loadNativeWith');
+      _logNativeFeed(
+        _nativePollingEnabled
+            ? '[NativePoll] 3秒轮询：有缓存 → loadNativeWith 下一条'
+            : '轮询：黄忠胜1 已就绪 → loadNativeWith',
+      );
       await loadNativeWith(forceShowLoading: forceShowLoading);
-      _startNativeValidAdsPoll();
+      if (!_nativePollingEnabled) {
+        _startNativeValidAdsPoll();
+      }
       return;
     }
 
@@ -398,6 +418,12 @@ class NativeTool extends ChangeNotifier {
 
   /// 视频播完：记收益 → 拆容器 → 黄忠胜1/2 → **始终 loadNativeWith** 换下一条。
   Future<void> _handleNativeAdVideoEndPlayback(ATNativeResponse value) async {
+    if (_nativePollingEnabled) {
+      _logNativeFeed(
+        'nativeAdDidEndPlayingVideo 忽略：nativePollingEnabled=true placement=${value.placementID}',
+      );
+      return;
+    }
     if (_nativeFeedPlaybackPaused) {
       _logNativeFeed(
         'nativeAdDidEndPlayingVideo 忽略：playbackPaused=true placement=${value.placementID}',
@@ -560,6 +586,9 @@ class NativeTool extends ChangeNotifier {
   }
 
   Future<void> startNativeFeedPlayback() async {
+    _cancelNativePollingTimer();
+    _nativePollingToken++;
+    _lastNativeShowAt = null;
     _videoEndReloadToken++;
     _nativeFailReloadToken++;
     _preloadInFlight = false;
@@ -575,6 +604,8 @@ class NativeTool extends ChangeNotifier {
   }
 
   Future<void> pauseNativeFeedPlayback() async {
+    _cancelNativePollingTimer();
+    _nativePollingToken++;
     _stopNativeFeedFillPoll();
     _stopNativeValidAdsPoll();
     _videoEndReloadToken++;
@@ -763,6 +794,140 @@ class NativeTool extends ChangeNotifier {
     }
   }
 
+  void onPollingConfigChanged() {
+    if (!_nativePollingEnabled) {
+      _cancelNativePollingTimer();
+      _nativePollingToken++;
+      return;
+    }
+    _reapplyNativePollingSchedule();
+  }
+
+  void _reapplyNativePollingSchedule() {
+    if (!_nativePollingEnabled || _nativeFeedPlaybackPaused) return;
+    if (_lastNativeShowAt != null) {
+      _rescheduleNativePollingFromLastShow();
+    } else {
+      _logNativeFeed(
+        '[NativePoll] 尚无 DidShow，按完整间隔 $_nativePollingIntervalSeconds s 启动',
+      );
+      _scheduleNativePollingSwitch();
+    }
+  }
+
+  void _cancelNativePollingTimer() {
+    _nativePollingTimer?.cancel();
+    _nativePollingTimer = null;
+    _nativePollingCountdownToken++;
+    _nativePollingCountdownTimer?.cancel();
+    _nativePollingCountdownTimer = null;
+  }
+
+  void _startNativePollingCountdown({
+    required int totalSeconds,
+    required int token,
+  }) {
+    _nativePollingCountdownToken++;
+    final int countdownToken = _nativePollingCountdownToken;
+    _nativePollingCountdownTimer?.cancel();
+    int remaining = totalSeconds;
+    _logNativeFeed(
+      '[NativePoll] 倒计时开始 设定=${totalSeconds}s token=$token',
+    );
+    _nativePollingCountdownTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer t) {
+        if (countdownToken != _nativePollingCountdownToken ||
+            token != _nativePollingToken) {
+          t.cancel();
+          return;
+        }
+        remaining--;
+        if (remaining <= 0) {
+          _logNativeFeed('[NativePoll] 倒计时归零 token=$token');
+          t.cancel();
+          return;
+        }
+        _logNativeFeed(
+          '[NativePoll] 倒计时 剩余 ${remaining}s / ${totalSeconds}s token=$token',
+        );
+      },
+    );
+  }
+
+  void _armNativePollingSwitch({
+    required Duration delay,
+    required int token,
+  }) {
+    final int seconds = delay.inSeconds;
+    _logNativeFeed('[NativePoll] 已排期 ${seconds}s 后换条 token=$token');
+    _startNativePollingCountdown(totalSeconds: seconds, token: token);
+    _nativePollingTimer = Timer(delay, () {
+      _nativePollingCountdownTimer?.cancel();
+      unawaited(_onNativePollingTick(token));
+    });
+  }
+
+  void _scheduleNativePollingSwitch() {
+    if (!_nativePollingEnabled || _nativeFeedPlaybackPaused) return;
+    _cancelNativePollingTimer();
+    final int token = ++_nativePollingToken;
+    final int seconds = _nativePollingIntervalSeconds;
+    _armNativePollingSwitch(
+      delay: Duration(seconds: seconds),
+      token: token,
+    );
+  }
+
+  void _rescheduleNativePollingFromLastShow() {
+    _cancelNativePollingTimer();
+    final DateTime? lastShow = _lastNativeShowAt;
+    if (lastShow == null) return;
+    final int seconds = _nativePollingIntervalSeconds;
+    final Duration elapsed = DateTime.now().difference(lastShow);
+    final Duration total = Duration(seconds: seconds);
+    final int token = ++_nativePollingToken;
+    if (elapsed >= total) {
+      _logNativeFeed('[NativePoll] 已超时，立即换条 token=$token');
+      unawaited(_onNativePollingTick(token));
+      return;
+    }
+    final Duration remaining = total - elapsed;
+    _logNativeFeed(
+      '[NativePoll] 按剩余 ${remaining.inSeconds}s 重排（设定=${seconds}s）token=$token',
+    );
+    _armNativePollingSwitch(delay: remaining, token: token);
+  }
+
+  Future<void> _onNativePollingTick(int token) async {
+    if (token != _nativePollingToken) return;
+    if (!_nativePollingEnabled || _nativeFeedPlaybackPaused) return;
+
+    _logNativeFeed(
+      '[NativePoll] 倒计时结束，移除当前信息流 设定=${_nativePollingIntervalSeconds}s token=$token',
+    );
+
+    await _tearDownNativeFeedContainer(reason: 'nativePollingTick');
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    if (token != _nativePollingToken || _nativeFeedPlaybackPaused) return;
+
+    _logNativeFeed(
+      '[NativePoll] 开始每 ${_nativeFeedFillPollInterval.inSeconds} 秒轮询查缓存',
+    );
+    _setSlotState(HomeNativeSlotState.noFill);
+    _startNativeFeedFillPoll(forceShowLoading: false);
+  }
+
+  void _onNativeDidShowForPolling() {
+    _lastNativeShowAt = DateTime.now();
+    if (_nativePollingEnabled && !_nativeFeedPlaybackPaused) {
+      _logNativeFeed(
+        '[NativePoll] DidShow 成功，按设定 ${_nativePollingIntervalSeconds}s 启动倒计时',
+      );
+      _scheduleNativePollingSwitch();
+    }
+  }
+
   void nativeListen() {
     if (_nativeAdSubscription != null) {
       return;
@@ -812,6 +977,7 @@ class NativeTool extends ChangeNotifier {
             placementID: value.placementID.toString(),
             reason: 'nativeAdDidShowNativeAd',
           );
+          _onNativeDidShowForPolling();
           break;
 
         case NativeStatus.nativeAdDidEndPlayingVideo:
@@ -895,6 +1061,7 @@ class NativeTool extends ChangeNotifier {
 
   @override
   void dispose() {
+    _cancelNativePollingTimer();
     _stopNativeFeedFillPoll();
     _stopNativeValidAdsPoll();
     _nativeAdSubscription?.cancel();

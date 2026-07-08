@@ -136,6 +136,7 @@ flutter:
 
 # 配置图标；生成命令：fvm dart run flutter_launcher_icons
 # 更改应用程序包名，命令： fvm  dart run change_app_package_name:main com.baojiale
+# 打包命令：fvm flutter build apk --release -v
 flutter_launcher_icons:
   android: 'ic_launcher'
   ios: false

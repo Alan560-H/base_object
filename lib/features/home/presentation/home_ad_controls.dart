@@ -49,14 +49,14 @@ class HomeAdControls extends ConsumerWidget {
                 : HomeUiStrings.stopNativeFeed;
 
         return Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h + bottomInset),
+          padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 8.h + bottomInset),
           child: Row(
             children: [
               Expanded(
                 child: CuButton(
                   bgColor: TextConfig.primary,
                   text: bannerBtnText,
-                  height: 40.h,
+                  height: 36.h,
                   fontSize: 12.sp,
                   disable: bannerLoading,
                   onPressed: () {
@@ -74,7 +74,7 @@ class HomeAdControls extends ConsumerWidget {
                   child: CuButton(
                     bgColor: TextConfig.primary,
                     text: '观看激励视频',
-                    height: 40.h,
+                    height: 36.h,
                     fontSize: 12.sp,
                     onPressed: () => RewarderTool.to.watchRewardedVideo(),
                   ),
@@ -86,7 +86,7 @@ class HomeAdControls extends ConsumerWidget {
                   child: CuButton(
                     bgColor: TextConfig.primary,
                     text: nativeBtnText,
-                    height: 40.h,
+                    height: 36.h,
                     fontSize: 12.sp,
                     disable: nativeLoading,
                     onPressed: () {

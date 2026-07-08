@@ -66,6 +66,11 @@ class HomeNativeFeedSlot extends ConsumerWidget {
               HomeUiStrings.nativeFailed,
               minH: native.adHeight + 16.h,
             );
+          case HomeNativeSlotState.noFill:
+            return _placeholder(
+              HomeUiStrings.nativeNoFill,
+              minH: native.adHeight + 16.h,
+            );
           case HomeNativeSlotState.ready:
             return _placeholder(
               HomeUiStrings.nativeWaitingShow,

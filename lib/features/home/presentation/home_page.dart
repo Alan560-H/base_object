@@ -1,5 +1,6 @@
 import 'package:base_object/app/providers.dart';
 import 'package:base_object/features/home/presentation/home_ad_controls.dart';
+import 'package:base_object/features/home/presentation/home_ad_polling_row.dart';
 import 'package:base_object/features/home/presentation/home_ad_revenue_list_section.dart';
 import 'package:base_object/features/home/presentation/home_banner_revenue_section.dart';
 import 'package:base_object/features/home/presentation/home_native_feed_slot.dart';
@@ -30,12 +31,20 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 键盘浮在页面上方，不挤压 Column，避免 bottom overflow
+      resizeToAvoidBottomInset: false,
       body: Container(
         color: TextConfig.comPageGrey,
         child: Column(
           spacing: 5.h,
           children: [
-            const _HomeTopSection(),
+            Flexible(
+              fit: FlexFit.loose,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: const _HomeTopSection(),
+              ),
+            ),
             const HomeBannerRevenueSection(),
             if (HomeUiStrings.showHomeNativeFeedUi) const HomeNativeFeedSlot(),
             Expanded(
@@ -50,7 +59,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                     ),
                   ),
-                  const Expanded(child: _HomeActionSection()),
+                  SizedBox(height: 6.h),
+                  const HomeAdControls(),
                 ],
               ),
             ),
@@ -139,12 +149,7 @@ class _HomeTopSection extends ConsumerWidget {
                 SizedBox(width: 8.w),
             ],
           ),
-          Text(
-            home.ipRefreshedAt.isEmpty
-                ? '尚未刷新'
-                : '刷新时间：${home.ipRefreshedAt}',
-            style: TextStyle(fontSize: 12.sp, color: Colors.black54),
-          ),
+          const HomeAdPollingRow(),
           SizedBox(height: 6.h),
           // 暂时隐藏 OAID 按钮（showOaidDialog 仍可在「我的」页使用）
           // Row(
@@ -163,20 +168,6 @@ class _HomeTopSection extends ConsumerWidget {
           // ),
         ],
       ),
-    );
-  }
-}
-
-class _HomeActionSection extends ConsumerWidget {
-  const _HomeActionSection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return const Column(
-      children: [
-        Spacer(),
-        HomeAdControls(),
-      ],
     );
   }
 }

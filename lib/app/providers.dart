@@ -1,3 +1,5 @@
+import 'package:base_object/features/home/presentation/home_ad_polling_notifier.dart';
+import 'package:base_object/features/home/presentation/home_ad_polling_state.dart';
 import 'package:base_object/features/home/presentation/home_notifier.dart';
 import 'package:base_object/features/home/presentation/home_state.dart';
 import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
@@ -26,6 +28,11 @@ final userProvider = NotifierProvider<UserNotifier, UserState>(
 
 final homeProvider = NotifierProvider<HomeNotifier, HomeState>(
   HomeNotifier.new,
+);
+
+final homeAdPollingProvider =
+    NotifierProvider<HomeAdPollingNotifier, HomeAdPollingState>(
+  HomeAdPollingNotifier.new,
 );
 
 final initToolProvider = Provider<InitTool>((ref) => InitTool());

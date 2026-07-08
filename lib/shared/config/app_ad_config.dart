@@ -3,20 +3,20 @@ class AppAdConfig {
   AppAdConfig._();
 
   /// Taku 应用 ID（[InitTool.initTopon]）
-  static const String appidStr = 'a6a02edc510688';
+  static const String appidStr = 'a6a0d60edb9321';
 
   /// Taku App Key
-  static const String appidkeyStr = 'a9dfbeb796a19b7695dbc0d563734d86a';
+  static const String appidkeyStr = 'a7fac837f14cfaf4f8b761418f7faa2c3';
 
   /// 横幅广告位
-  static const String bannerPlacementID = 'b6a02ee1db6f26';
+  static const String bannerPlacementID = 'b6a0d615e4ed64';
 
   /// 原生信息流广告位（[NativeTool]）
-  static const String nativePlacementID = 'b6a033299c2230';
+  static const String nativePlacementID = 'b6a0d61722f617';
 
   /// 信息流场景 ID（与 placement 一致，供 entryNativeScenario / PlatformNativeWidget）
   static const String nativeSceneID = nativePlacementID;
 
   /// 激励视频广告位
-  static const String rewarderPlacementID = 'b69fad67a43bb4';
+  static const String rewarderPlacementID = 'b6a41e32ebd6be';
 }

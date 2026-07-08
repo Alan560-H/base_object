@@ -57,10 +57,6 @@ class HomeNotifier extends Notifier<HomeState> {
   Future<void> pauseNative() async {
     try {
       await NativeTool.to.pauseNativeFeedPlayback();
-      CuToast.success(
-        msg: '已停止信息流',
-        autoCloseDuration: const Duration(seconds: 2),
-      );
     } catch (e, st) {
       Utils.logError('停止信息流: $e $st');
       CuToast.error(msg: '停止信息流失败');
@@ -70,10 +66,6 @@ class HomeNotifier extends Notifier<HomeState> {
   Future<void> startNative() async {
     try {
       await NativeTool.to.startNativeFeedPlayback();
-      CuToast.success(
-        msg: '已开始加载信息流',
-        autoCloseDuration: const Duration(seconds: 2),
-      );
     } catch (e, st) {
       Utils.logError('开始信息流: $e $st');
       CuToast.error(msg: '开始信息流失败');
