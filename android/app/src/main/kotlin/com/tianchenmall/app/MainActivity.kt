@@ -1,4 +1,4 @@
-package com.naozhongle
+package com.tianchenmall.app
 
 import android.content.Intent
 import android.os.Bundle
