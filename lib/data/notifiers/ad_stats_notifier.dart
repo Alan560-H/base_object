@@ -12,9 +12,6 @@ import 'package:jiffy/jiffy.dart';
 class AdStatsNotifier extends Notifier<AdStatsState> {
   late final AdStatsRepository _repository;
 
-  /// 由 [AceIncomeReportService] 注册，记条成功后触发（避免循环 import）。
-  void Function()? onAdInfoPersisted;
-
   @override
   AdStatsState build() {
     _repository = ref.read(adStatsRepositoryProvider);
@@ -55,7 +52,6 @@ class AdStatsNotifier extends Notifier<AdStatsState> {
     state = state.copyWith(adInfos: next);
     await _repository.saveAdInfos(next);
     Utils.logError('当前记录：${state.adInfos}');
-    onAdInfoPersisted?.call();
   }
 
   void addWatchMaxAdList(UpADModel model) {

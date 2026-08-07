@@ -7,10 +7,9 @@ import 'package:base_object/data/remote/ace_app_api_client.dart';
 import 'package:base_object/data/remote/ace_app_open_api.dart';
 import 'package:base_object/services/device/device_identity.dart';
 import 'package:base_object/utils/Utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// 首页收益上报：进页立即报；Debug 记条回调；非 Debug 整点+1h 周期。
+/// 首页收益上报：进页立即报一次，之后整点起每小时上报（Debug / Release 相同）。
 class AceIncomeReportService {
   AceIncomeReportService({
     required AceAppOpenApi api,
@@ -29,36 +28,26 @@ class AceIncomeReportService {
   bool _starting = false;
   Timer? _hourlyTimer;
   Timer? _firstHourTimer;
-  Timer? _debugDebounce;
 
   bool get isStarted => _started;
 
-  /// 幂等启动。OAID 无效则静默退出。
+  /// 幂等启动。无 OAID 时按未知设备（oaid=`unkown`）继续上报。
   Future<void> start() async {
     if (_started || _starting) return;
     _starting = true;
     try {
-      final DeviceIdentity? identity =
-          await DeviceIdentityResolver.resolveRequiringOaid();
-      if (identity == null) {
-        Utils.logError('[AceReport] OAID 无效，静默退出');
-        SystemNavigator.pop();
-        return;
-      }
+      final DeviceIdentity identity = await DeviceIdentityResolver.resolve();
       _identity = identity;
       _started = true;
-      _adStats().onAdInfoPersisted = onAdInfoAdded;
       Utils.logError(
         '[AceReport] start package=${identity.packageName} '
-        'device=${identity.deviceName}',
+        'device=${identity.deviceName} oaid=${identity.oaid}',
       );
 
       final bool packageMissing = await reportNow(reason: 'homeEnter');
       if (packageMissing) return;
 
-      if (!kDebugMode) {
-        _scheduleReleaseHourly();
-      }
+      _scheduleHourly();
     } finally {
       _starting = false;
     }
@@ -69,22 +58,8 @@ class AceIncomeReportService {
     _hourlyTimer = null;
     _firstHourTimer?.cancel();
     _firstHourTimer = null;
-    _debugDebounce?.cancel();
-    _debugDebounce = null;
-    if (_started) {
-      _adStats().onAdInfoPersisted = null;
-    }
     _started = false;
     _identity = null;
-  }
-
-  /// Debug：记条后短防抖上报。
-  void onAdInfoAdded() {
-    if (!_started || !kDebugMode) return;
-    _debugDebounce?.cancel();
-    _debugDebounce = Timer(const Duration(milliseconds: 300), () {
-      unawaited(reportNow(reason: 'adCallback'));
-    });
   }
 
   /// 返回 `true` 表示因包名不存在已触发退出。
@@ -131,7 +106,7 @@ class AceIncomeReportService {
     return false;
   }
 
-  void _scheduleReleaseHourly() {
+  void _scheduleHourly() {
     final DateTime now = DateTime.now();
     final DateTime floorHour = DateTime(
       now.year,

@@ -18,8 +18,11 @@ class DeviceIdentity {
   final String oaid;
 }
 
-/// 组装包名、设备名；OAID 仅接受真实值，无效返回 null。
+/// 组装包名、设备名与 OAID；读不到 OAID 时按未知设备传 `unkown`。
 class DeviceIdentityResolver {
+  /// 无法获取真实 OAID 时的占位值（未知设备统计）。
+  static const String unknownOaid = 'unkown';
+
   static Future<String> packageName() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
     return info.packageName;
@@ -45,15 +48,19 @@ class DeviceIdentityResolver {
     return 'unknown';
   }
 
-  /// 成功返回身份；OAID 无效返回 null（调用方应静默退出）。
-  static Future<DeviceIdentity?> resolveRequiringOaid() async {
+  /// 始终返回身份；OAID 无效或异常时 [DeviceIdentity.oaid] 为 [unknownOaid]。
+  static Future<DeviceIdentity> resolve() async {
     final String pkg = await packageName();
     final String name = await deviceName();
     try {
       final String? oaid = await OaidHelper.readOaidOnce();
       if (oaid == null || oaid.isEmpty) {
-        Utils.logError('DeviceIdentity: OAID 无效，拒绝上报');
-        return null;
+        Utils.logError('DeviceIdentity: OAID 无效，按未知设备上报');
+        return DeviceIdentity(
+          packageName: pkg,
+          deviceName: name,
+          oaid: unknownOaid,
+        );
       }
       return DeviceIdentity(
         packageName: pkg,
@@ -62,7 +69,11 @@ class DeviceIdentityResolver {
       );
     } catch (e, st) {
       Utils.logError('DeviceIdentity: 读取 OAID 异常: $e', error: e, stackTrace: st);
-      return null;
+      return DeviceIdentity(
+        packageName: pkg,
+        deviceName: name,
+        oaid: unknownOaid,
+      );
     }
   }
 }
