@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_object/app/providers.dart';
 import 'package:base_object/features/home/presentation/home_ad_controls.dart';
 import 'package:base_object/features/home/presentation/home_ad_polling_row.dart';
@@ -25,6 +27,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(homeProvider.notifier).init();
+      unawaited(ref.read(aceIncomeReportServiceProvider).start());
     });
   }
 

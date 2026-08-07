@@ -1,4 +1,4 @@
-package com.tianchenmall.app
+package com.sanzhimie
 
 import android.content.Intent
 import android.os.Bundle

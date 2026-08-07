@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:base_object/app/providers.dart';
 import 'package:base_object/app/routes.dart';
+import 'package:base_object/data/remote/ace_app_api_client.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
 import 'package:base_object/services/ads/Init_tool.dart';
 import 'package:base_object/services/ads/native_tool.dart';
 import 'package:base_object/services/ads/rewarder_tool.dart';
 import 'package:base_object/services/device/DeviceChecker.dart';
 import 'package:base_object/services/device/PermissionManager.dart';
+import 'package:base_object/services/device/device_identity.dart';
 import 'package:base_object/shared/config/text_config.dart';
+import 'package:base_object/shared/widgets/ace_app_blocked_dialog.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -45,20 +49,40 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   Future<void> _allInit() async {
     EasyLoading.show(status: '检测设备中..');
+    var allowEnter = false;
     try {
       final bool isPermission = await PermissionManager.requestAllPermissions();
       Utils.logError(isPermission);
       await DeviceChecker.isAllCheckr();
-      await _initAd();
-      BannerTool.to.bannerListen();
-      // initTopon 后注册；未注册则发奖回调无法记收益
-      RewarderTool.to.rewardedAdListen();
-      NativeTool.to.nativeListen();
-      unawaited(NativeTool.to.preloadNativeFeedOnce());
+
+      final String packageName = await DeviceIdentityResolver.packageName();
+      final AceApiResult<bool> enabledResult = await ref
+          .read(aceAppOpenApiProvider)
+          .fetchEnabled(packageName: packageName);
+      Utils.logError(
+        '[AceEnabled] package=$packageName code=${enabledResult.code} '
+        'data=${enabledResult.data} msg=${enabledResult.msg}',
+      );
+      if (enabledResult.isSuccess && enabledResult.data == true) {
+        await _initAd();
+        BannerTool.to.bannerListen();
+        // initTopon 后注册；未注册则发奖回调无法记收益
+        RewarderTool.to.rewardedAdListen();
+        NativeTool.to.nativeListen();
+        unawaited(NativeTool.to.preloadNativeFeedOnce());
+        allowEnter = true;
+      }
+    } catch (e, st) {
+      Utils.logError('闪屏启用校验异常: $e', error: e, stackTrace: st);
+      allowEnter = false;
     } finally {
       EasyLoading.dismiss();
     }
     if (!mounted) return;
+    if (!allowEnter) {
+      await showAceAppBlockedDialog(context);
+      return;
+    }
     context.go(AppPaths.home);
   }
 

@@ -135,6 +135,11 @@ class AdStatsState {
     (double sum, AdInfo e) => sum + e.publisherRevenue,
   );
 
+  /// 今日全部广告类型原始 publisher 收益之和（人民币，未乘分成）。
+  double get adInfosRawTodayCny => adInfos
+      .where(_isLocalToday)
+      .fold(0.0, (double sum, AdInfo e) => sum + e.publisherRevenue);
+
   /// @deprecated 请用 [adInfosTotalDisplayCny]；旧实现误用原始收益且未格式化。
   double get adInfosTotal => adInfosTotalDisplayCny;
 

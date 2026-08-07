@@ -6,6 +6,9 @@ import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
 import 'package:base_object/data/notifiers/user_notifier.dart';
 import 'package:base_object/data/models/ad_stats_state.dart';
 import 'package:base_object/data/models/user_state.dart';
+import 'package:base_object/data/remote/ace_app_api_client.dart';
+import 'package:base_object/data/remote/ace_app_open_api.dart';
+import 'package:base_object/services/ace/ace_income_report_service.dart';
 import 'package:base_object/services/ads/Init_tool.dart';
 import 'package:base_object/services/ads/banner_tool.dart';
 import 'package:base_object/services/ads/native_tool.dart';
@@ -17,6 +20,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 late ProviderContainer globalContainer;
 
 final appConfigProvider = Provider<AppConfig>((ref) => AppConfig());
+
+final aceAppApiClientProvider = Provider<AceAppApiClient>((ref) {
+  return AceAppApiClient(appConfig: ref.watch(appConfigProvider));
+});
+
+final aceAppOpenApiProvider = Provider<AceAppOpenApi>((ref) {
+  return AceAppOpenApi(client: ref.watch(aceAppApiClientProvider));
+});
+
+final aceIncomeReportServiceProvider = Provider<AceIncomeReportService>((ref) {
+  return AceIncomeReportService(
+    api: ref.watch(aceAppOpenApiProvider),
+    adStats: () => ref.read(adStatsProvider.notifier),
+  );
+});
 
 final adStatsProvider = NotifierProvider<AdStatsNotifier, AdStatsState>(
   AdStatsNotifier.new,
@@ -65,4 +83,5 @@ Future<void> warmUpProviders(ProviderContainer container) async {
   container.read(bannerToolProvider);
   container.read(rewarderToolProvider);
   container.read(nativeToolProvider);
+  container.read(aceIncomeReportServiceProvider);
 }

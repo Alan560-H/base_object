@@ -26,6 +26,9 @@ class AppConfig {
 
   String get getBaseUrl => _baseUrl;
 
+  /// ACE App 开放接口基址（启用校验 / 收益上报），与如意 [getBaseUrl] 分离。
+  String get aceOpenApiBaseUrl => 'http://hzsdemo.cn/prod-api';
+
   void init() {
     if (const bool.fromEnvironment('dart.vm.product')) {
       _baseUrl = 'https://prd.ruyigx.com';
