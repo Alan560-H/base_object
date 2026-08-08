@@ -85,7 +85,8 @@ App 启动时先调本接口：`false` 则拦截/提示；`true` 再进入正常
   "deviceName": "小米13",
   "oaid": "设备OAID字符串",
   "todayIncome": 12.34,
-  "revenueShare": 0.2
+  "revenueShare": 0.2,
+  "ipAddress": "1.2.3.4"
 }
 ```
 
@@ -96,6 +97,7 @@ App 启动时先调本接口：`false` 则拦截/提示；`true` 再进入正常
 | `oaid` | string | 是 | 非空，最长 128 | 设备 OAID |
 | `todayIncome` | number | 是 | `>= 0.00` | 今日收益（原始 CNY，未乘分成） |
 | `revenueShare` | number | 否 | App 可选上报 | 客户端展示分成系数（如 `0.2`）；**后端可忽略** |
+| `ipAddress` | string | 否 | 最长 64 | 公网 IP；客户端获取失败时可传 `unknown` |
 
 ### 成功响应示例
 

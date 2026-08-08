@@ -6,6 +6,7 @@ import 'package:base_object/data/notifiers/ad_stats_notifier.dart';
 import 'package:base_object/data/remote/ace_app_api_client.dart';
 import 'package:base_object/data/remote/ace_app_open_api.dart';
 import 'package:base_object/services/device/device_identity.dart';
+import 'package:base_object/services/device/public_ip_helper.dart';
 import 'package:base_object/utils/Utils.dart';
 import 'package:flutter/services.dart';
 
@@ -76,17 +77,20 @@ class AceIncomeReportService {
       return false;
     }
 
+    final String ipAddress = await PublicIpHelper.resolve();
     final AceAppReportRequest body = AceAppReportRequest(
       packageName: identity.packageName,
       deviceName: identity.deviceName,
       oaid: identity.oaid,
       todayIncome: double.parse(todayIncome.toStringAsFixed(4)),
       revenueShare: AdInfo.displayRevenueShare,
+      ipAddress: ipAddress,
     );
 
     Utils.logError(
       '[AceReport] POST report reason=$reason '
-      'todayIncome=${body.todayIncome} share=${body.revenueShare}',
+      'todayIncome=${body.todayIncome} share=${body.revenueShare} '
+      'ip=${body.ipAddress}',
     );
 
     final AceApiResult<int> result = await _api.reportIncome(body);
